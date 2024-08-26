@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selector de archivos JSON</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#fileSelector').change(function(){
+                var selectedFile = $(this).val();
+                $.getJSON(selectedFile, function(data){
+                    console.log(data);
+                    $('#output').html(JSON.stringify(data, null, 2));
+                })
+                .fail(function() {
+                    console.error("Error al cargar el archivo JSON");
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Selector de archivos JSON</h1>
+    <select id="fileSelector">
+        <option value="escolaridad.json">Escolaridad</option>
+        <option value="estado.json">Estado</option>
+        <option value="municipio.json">Municipio</option>
+        <option value="estado_civil.json">Estado Civil</option>
+        <option value="giro_negocio.json">Giro de Negocio</option>
+    </select>
+    
+    <h1>Leer archivo JSON con jQuery</h1>
+    <pre id="output"></pre>
+    
+    
+</body>
+</html>

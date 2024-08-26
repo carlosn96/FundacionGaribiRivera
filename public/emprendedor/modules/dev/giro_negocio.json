@@ -1,0 +1,93 @@
+
+[
+    {
+        "id_giro": "2",
+        "descripcion_giro": "ARTESANÍAS",
+        "id_clasificacion": "1",
+        "descripcion_clasificacion": "Comercio"
+    },
+    {
+        "id_giro": "3",
+        "descripcion_giro": "CONSTRUCCIÓN Y MANTENIMIENTO",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "4",
+        "descripcion_giro": "EDUCACIÓN Y CAPACITACIÓN",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "5",
+        "descripcion_giro": "ESTÉTICA Y COSMÉTICOS",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "6",
+        "descripcion_giro": "PANADERÍA Y REPOSTERÍA",
+        "id_clasificacion": "3",
+        "descripcion_clasificacion": "Industria"
+    },
+    {
+        "id_giro": "7",
+        "descripcion_giro": "PAPELERÍA, CYBER Y MERCANCÍA",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "8",
+        "descripcion_giro": "ROPA Y CALZADO",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "9",
+        "descripcion_giro": "ABARROTES",
+        "id_clasificacion": "1",
+        "descripcion_clasificacion": "Comercio"
+    },
+    {
+        "id_giro": "10",
+        "descripcion_giro": "ALIMENTOS Y BEBIDAS",
+        "id_clasificacion": "1",
+        "descripcion_clasificacion": "Comercio"
+    },
+    {
+        "id_giro": "11",
+        "descripcion_giro": "SALUD (FARMACIA, SPA, ETC.)",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "12",
+        "descripcion_giro": "TÉCNICOS (FONTANERÍA, CARPINTERÍA, ETC.)",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "13",
+        "descripcion_giro": "PROFESIONAL (ABOGADO, INGENIERO, ETC.)",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "14",
+        "descripcion_giro": "SUBLIMADO Y SERIGRAFÍA",
+        "id_clasificacion": "3",
+        "descripcion_clasificacion": "Industria"
+    },
+    {
+        "id_giro": "15",
+        "descripcion_giro": "TALLER AUTOMOTRIZ, BICICLETAS",
+        "id_clasificacion": "2",
+        "descripcion_clasificacion": "Servicio"
+    },
+    {
+        "id_giro": "16",
+        "descripcion_giro": "TLAPALERÍA",
+        "id_clasificacion": "1",
+        "descripcion_clasificacion": "Comercio"
+    }
+]
