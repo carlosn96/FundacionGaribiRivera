@@ -32,7 +32,7 @@ function ready() {
                     text: 'Hubo un problema al procesar la respuesta del servidor. Inténtalo de nuevo más tarde.'
                 }).then(refresh);
             }
-            );
+            , "text");
         });
 
     });
