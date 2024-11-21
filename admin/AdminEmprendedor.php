@@ -5,7 +5,7 @@ class AdminEmprendedor extends Admin {
     public function __construct() {
         parent::__construct(new EmprendedorDAO());
     }
-    
+
     public function listar() {
         return $this->dao->listar();
     }
@@ -35,8 +35,12 @@ class AdminEmprendedor extends Admin {
         return new SeguimientoCaso($idLineaBase, $numeroCaso, $etapasFormacion,
                 $observacionesGenerales, $fotografiasCaso, $idSeguimientoCaso);
     }
-    
+
     public function eliminarSeguimientoCaso($id) {
         return $this->dao->eliminarSeguimientoCaso($id);
+    }
+
+    public function eliminarEmprendedor($id) {
+        return $this->dao->eliminarEmprendedor($id);
     }
 }

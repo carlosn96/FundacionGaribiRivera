@@ -48,4 +48,7 @@ abstract class API {
         $this->data = $data;
     }
 
+    function getData($key) {
+        return $this->data[$key] ?? "";
+    }
 }

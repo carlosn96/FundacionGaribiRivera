@@ -5,27 +5,30 @@
  *
  * @author JuanCarlos
  */
-require_once 'PHPMailer/src/PHPMailer.php';
-require_once 'PHPMailer/src/SMTP.php';
+require_once 'PHPMailer/PHPMailer.php';
+require_once 'PHPMailer/SMTP.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer;
 
 class AdminMailer {
 
-    private const REMITENTE = "soporte@fundaciongaribirivera.com";
+    private const EMAIL_USER = "support@fundaciongaribirivera.com";
+    private const EMAIL_HOST = "smtp.hostinger.com";
+    private const EMAIL_PASSWORD = "az8BbVj=3";
+    private const EMAIL_PORT = 587;
 
     private static function enviarCorreo($destinatario, $asunto, $tipo, $body) {
         $mailer = new PHPMailer(true);
         $mailer->isSMTP();
-        $mailer->Host = EMAIL_HOST;
+        $mailer->Host = self::EMAIL_HOST;
         $mailer->SMTPAuth = true;
-        $mailer->Username = EMAIL_USER;
-        $mailer->Password = EMAIL_PASSWORD;
+        $mailer->Username = self::EMAIL_USER;
+        $mailer->Password = self::EMAIL_PASSWORD;
         $mailer->SMTPSecure = 'tls';
-        $mailer->Port = EMAIL_PORT;
+        $mailer->Port = self::EMAIL_PORT;
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
-        $mailer->setFrom(self::REMITENTE, 'Fundación Cardenal Garibi Rivera - Soporte');
+        $mailer->setFrom(self::EMAIL_USER, 'Fundación Cardenal Garibi Rivera - Soporte');
         $mailer->addAddress($destinatario);
         $mailer->Subject = $asunto;
         $mailer->isHTML(true);

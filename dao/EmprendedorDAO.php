@@ -28,9 +28,12 @@ class EmprendedorDAO extends DAO {
     public function eliminarSeguimientoCaso($id) {
         return $this->eliminarPorId("seguimiento_caso", "id_seguimiento", $id);
     }
-    
+
+    public function eliminarEmprendedor($id) {
+        return $this->eliminarPorId("usuario", "id", $id);
+    }
+
     public function listar() {
         return getAdminUsuario()->listarEmprendedores();
     }
-
 }

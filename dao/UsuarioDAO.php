@@ -6,7 +6,7 @@ class UsuarioDAO extends DAO {
     private const BUSCAR_USUARIO_CORREO = "SELECT * FROM " . self::NOMBRE_TABLA . " WHERE correo_electronico = ?";
     private const ACTUALIZAR_CONTRASENA = "UPDATE " . self::NOMBRE_TABLA . " SET contrasena = ? WHERE correo_electronico = ?";
     private const INSERTAR_USUARIO = "INSERT INTO " . self::NOMBRE_TABLA . " "
-            . "(nombre, apellidos, correo_electronico, numero_celular, contrasena, id_tipo_usuario, fotografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            . "(nombre, apellidos, correo_electronico, numero_celular, contrasena, tipo_usuario, fotografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private const ACTUALIZAR_FOTO_PERFIL = "UPDATE " . self::NOMBRE_TABLA . " SET fotografia = ? WHERE id = ?";
     private const LISTAR_EMPRENDEDORES = "SELECT * FROM listar_emprendedores";
 

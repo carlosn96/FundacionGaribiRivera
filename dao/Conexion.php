@@ -37,7 +37,8 @@ class Conexion {
     }
 
     public function prepararInstruccion($instruccion) {
-        return $this->conexion->prepare($instruccion);
+        $prep = $this->conexion->prepare($instruccion);
+        return $prep;
     }
 
     public function errorInfo() {

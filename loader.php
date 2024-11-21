@@ -90,11 +90,6 @@ define('DB_USER', 'u775111066_pruebas');
 define('DB_PASS', 'Pruebas2024');
 define('DB_NAME', 'u775111066_pruebas');
 
-// Definir variables de correo electrónico
-define('EMAIL_HOST', 'smtp.hostinger.com');
-define('EMAIL_USER', 'soporte@fundaciongaribirivera.com');
-define('EMAIL_PASSWORD', '72P37y^K4bh|G');
-define('EMAIL_PORT', 587);
 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
 define("DIR_FOTOGRAFIAS", ROOT_APP . "public" . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");

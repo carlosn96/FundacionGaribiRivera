@@ -1,6 +1,8 @@
+const urlAPI = "api/InicioAdminProyectosAPI.php";
+
 function ready() {
 
-    crearPeticion("api/InicioAdminProyectosAPI.php", {case: "recuperarEmprendedores"}, function (res) {
+    crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
         print(res);
         var data = [];
         $.each(res, (i, emprendedor) => {
@@ -16,7 +18,8 @@ function ready() {
                         })
                         ).append(" " + emprendedor.numero_celular),
                 "Correo": emprendedor.correo_electronico,
-                "Status": emprendedor.status
+                "Status": emprendedor.status,
+                "Acciones": crearBotonesAccion(emprendedor.id)
             });
         });
 
@@ -28,3 +31,15 @@ function ready() {
 
 }
 
+function crearBotonesAccion(id) {
+    return crearBotonEliminar({
+        idRegistro: id,
+        url: urlAPI,
+        data: {
+            case: "eliminarEmprendedor",
+            data: $.param({
+                id: id
+            })
+        }
+    });
+}
