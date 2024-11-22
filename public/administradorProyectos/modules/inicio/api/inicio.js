@@ -18,7 +18,6 @@ function ready() {
                         })
                         ).append(" " + emprendedor.numero_celular),
                 "Correo": emprendedor.correo_electronico,
-                "Status": emprendedor.status,
                 "Acciones": crearBotonesAccion(emprendedor.id)
             });
         });
@@ -35,11 +34,23 @@ function crearBotonesAccion(id) {
     return crearBotonEliminar({
         idRegistro: id,
         url: urlAPI,
+        tituloBoton: "Eliminar",
         data: {
             case: "eliminarEmprendedor",
             data: $.param({
                 id: id
             })
         }
-    });
+    }) + crearBoton(
+            "Ver Ficha", // Título del botón
+            "btn btn-sm btn-primary", // Clase del botón con estilo Bootstrap
+            "fas fa-search", // Icono (Font Awesome, puedes cambiarlo por otro)
+            "", // Value (no necesario en este caso)
+            "verFicha_" + id, // ID único para el botón
+            "verFichaInscripcion(" + id + ")" // Acción (llamar a la función verFichaInscripcion)
+            );
+}
+
+function verFichaInscripcion(id) {
+   print(id);
 }

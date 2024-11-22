@@ -131,15 +131,19 @@ function crearBotonMenuDesplegable(title, enlaces, color) {
 }
 
 function crearBoton(title, clase, icono, value, id, action) {
-    return "<button type='button' data-toggle='tooltip' title='" + title + "' " +
-            "class='" + clase + "' data-original-title='" + title + "' value='" + value + "' onclick='" + action + "' id='" + id + "'>" +
+    return "<button type='button' " +
+            "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
+            "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
             "<span class='btn-label'><i class='" + icono + "'></i></span> " + title + "</button>";
 }
 
+
 function crearBotonIcon(title, clase, icono, value, id, action) {
-    return "<button type='button' data-toggle='tooltip' title='" + title + "' " +
-            "class='" + clase + "' data-original-title='" + title + "' value='" + value + "' onclick='" + action + "' id='" + id + "'>" +
-            "<i class='" + icono + "'></i>" + title + "</button>";
+    return "<button type='button' " +
+            "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
+            "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
+            "<i class='" + icono + "'></i>" +
+            "</button>";
 }
 
 /**

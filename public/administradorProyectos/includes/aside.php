@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <!-- ============================= -->
-                <!-- Administración -->
+                <!-- Configuraciones -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
                     <span class="hide-menu">Configuraciones</span>
@@ -45,10 +45,10 @@
                     </a>
                 </li>
                 <!-- ============================= -->
-                <!-- Documentacion -->
+                <!-- Seguimiento -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <span class="hide-menu">Documentación</span>
+                    <span class="hide-menu">Seguimiento</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../seguimientoCaso/" aria-expanded="false">

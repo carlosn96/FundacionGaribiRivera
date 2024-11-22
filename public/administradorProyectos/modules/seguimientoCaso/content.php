@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-body wizard-content">
-        <h4 class="card-title">Segumiento de caso</h4>
+        <h4 class="card-title">Seguimiento de caso</h4>
         <p class="card-subtitle mb-3"> Listado de emprendedores con linea base completa</p>
         <p class="card-subtitle mb-3"> Haz clic en el registro deseado para ver las opciones </p>
         <div id="tablaEmprendedoresContenedor" class="table-responsive"></div>

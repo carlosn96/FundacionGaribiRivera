@@ -19,8 +19,8 @@
                 <!-- Inicio -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu">Inicio</span>
+                <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                <span class="hide-menu">Inicio</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link primary-hover-bg" href="../inicio/" aria-expanded="false">
@@ -34,23 +34,31 @@
                 <!-- Documentacion -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu">Documentación</span>
+                <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                <span class="hide-menu">Linea Base</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBase/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:file-text-line-duotone" class="fs-6"></iconify-icon>
+                            <iconify-icon icon="streamline:navigation-arrow-on" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Linea base</span>
+                        <span class="hide-menu ps-1">Inicial</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBase/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="gis:route-end" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Final</span>
                     </a>
                 </li>
                 <!-- ============================= -->
                 <!-- Formacion -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu">Formación</span>
+                <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                <span class="hide-menu">Formación</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="../evaluacionFormacion/" aria-expanded="false">
@@ -69,8 +77,8 @@
                     </a>
                 </li>
                 <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu">Sitios</span>
+                <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                <span class="hide-menu">Sitios</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link info-hover-bg" target="_blank" href="https://fundaciongaribirivera.com/" aria-expanded="false">
