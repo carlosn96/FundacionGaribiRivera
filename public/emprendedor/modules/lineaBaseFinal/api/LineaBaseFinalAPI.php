@@ -12,33 +12,27 @@ class LineaBaseAPI extends API {
     function recuperarCamposInformacion() {
         $admin = getAdminLineaBase();
         $existeLineaBase = $admin->existeLineaBase(Sesion::obtenerIDUsuarioActual());
+        $etapaFormacion = ["nombre"=>"ETAPA"];
         $this->enviarRespuesta(
-                !$existeLineaBase ?
-                        [
-                    "etapaFormacion" => getAdminEtapaFormacion()->obtenerEtapaActual(),
+                [
+                    "etapaFormacion"=>$etapaFormacion,
+                    "radio" => [
+                        "ocupacionActual" => $admin->recuperarListaOcupaciones(),
+                        "ingresoMensual" => $admin->recuperarListaRangosIngreso(),
+                    ],
+                    
                     "checkbox" => [
                         "medioConocimiento" => $admin->recuperarListaMedioConocimientoFund(),
                         "estrategiasIncrementarVentas" => $admin->recuperarListaEstrategiasIncrementarVentas(),
                         "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
                     ],
-                    "radio" => [
-                        "tiempoCapacitacion" => $admin->recuperarListaTiempoCapacitacion(),
-                        "razonRecurre" => $admin->recuperarListaRazonRecurreFund(),
-                        "solicitaCredito" => $admin->recuperarListaSolicitaCredito(),
-                        "utilizaCredito" => $admin->recuperarListaUtilizaCredito(),
-                        "cantidadDependientesEconomicos" => $this->getCantidadDependientesEconomicos(),
-                        "ocupacionActual" => $admin->recuperarListaOcupaciones(),
-                        "ingresoMensual" => $admin->recuperarListaRangosIngreso(),
-                    ],
                     "selector" => [
                         "estadoCivil" => $admin->recuperarListaEstadoCivil(),
                         "escolaridad" => $admin->recuperarListaEscolaridad(),
-                        // "vicaria" => $admin->recuperarListaVicarias(),
                         "giroNegocio" => $admin->recuperarListaGiroNegocio(),
                         "actividadNegocio" => $admin->recuperarListaActividadNegocio(),
                     ]
-                        ] :
-                        ["existeLineaBase" => $existeLineaBase]);
+        ]);
     }
 
     function getCantidadDependientesEconomicos() {

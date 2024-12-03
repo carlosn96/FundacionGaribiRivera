@@ -4,7 +4,7 @@ function ready() {
         let hayEvaluacion = res.evaluacion.length !== 0;
         if (res.existeLineaBase) {
             if (hayEvaluacion) { // Hay evaluacion, redirigir a la vista
-                redireccionar("../evaluacionFormacionVista/?rs=" + JSON.stringify(res.evaluacion));
+                redireccionar("../evaluacionFormacionVista/");
             } else { // No hay evaluacion todavia, realizar evaluacion
                 recuperarCamposFormulario(res.camposFormulario);
                 configurarEventos();

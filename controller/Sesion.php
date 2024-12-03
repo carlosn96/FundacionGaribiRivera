@@ -44,6 +44,14 @@ class Sesion {
         return $_SESSION["usuario"] ?? null;
     }
 
+    public static function setInfoTemporal($key, $val) {
+        $_SESSION[$key] = $val;
+    }
+
+    public static function getInfoTemporal($key) {
+        return $_SESSION[$key] ?? [];
+    }
+
     public static function obtenerIDUsuarioActual() {
         return self::obtenerUsuarioActual()["id"] ?? 0;
     }
@@ -66,24 +74,23 @@ class Sesion {
         self::setUsuarioActual($usuario);
     }
 
-    /*private static function verificarURLSesion($usuario) {
-        switch (is_null($usuario) ? "" : $usuario["id_tipo_usuario"]) {
-            case TipoUsuario::EMPRENDEDOR:
-                $url = self::EMPRENDEDOR;
-                break;
-            case TipoUsuario::ADMINISTRADOR:
-                $url = self::ADMINISTRACION;
-                break;
-            default:
-                $url = "";
-        }
-        return $url;
-    }*/
+    /* private static function verificarURLSesion($usuario) {
+      switch (is_null($usuario) ? "" : $usuario["id_tipo_usuario"]) {
+      case TipoUsuario::EMPRENDEDOR:
+      $url = self::EMPRENDEDOR;
+      break;
+      case TipoUsuario::ADMINISTRADOR:
+      $url = self::ADMINISTRACION;
+      break;
+      default:
+      $url = "";
+      }
+      return $url;
+      } */
 
     public static function info(): array {
         $info["usuario"] = ($usuario = self::obtenerUsuarioActual());
         //$info["url"] = self::verificarURLSesion($usuario);
         return $info;
     }
-
 }

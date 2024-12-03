@@ -14,11 +14,13 @@ class LineaBaseNegocio {
     private $codigoPostal;
     private $antiguedad;
     private $cantEmpleados;
+    private $actividad;
+    private $otraActividad;
     private $giro;
-    private $otroGiro;
-    private $actividadPrincipal;
 
-    public function __construct($nombre, $telefono, $calle, $calleCruce1, $calleCruce2, $numExterior, $numInterior, $codigoPostal, $antiguedad, $cantEmpleados, $giro, $otroGiro, $actividadPrincipal) {
+    public function __construct($nombre, $telefono, $calle, $calleCruce1, $calleCruce2, $numExterior,
+            $numInterior, $codigoPostal, $antiguedad, $cantEmpleados,
+            $actividad, $otraActividad, $giroNegocio) {
         $this->nombre = $nombre;
         $this->telefono = $telefono;
         $this->calle = $calle;
@@ -29,9 +31,9 @@ class LineaBaseNegocio {
         $this->codigoPostal = $codigoPostal;
         $this->antiguedad = $antiguedad;
         $this->cantEmpleados = $cantEmpleados;
-        $this->giro = $giro;
-        $this->otroGiro = $otroGiro;
-        $this->actividadPrincipal = $actividadPrincipal;
+        $this->actividad = $actividad;
+        $this->otraActividad = $otraActividad;
+        $this->giro = $giroNegocio;
     }
 
     public function getNombre() {
@@ -74,16 +76,16 @@ class LineaBaseNegocio {
         return $this->cantEmpleados;
     }
 
-    public function getGiro() {
+    public function getActividad() {
+        return $this->actividad;
+    }
+
+    public function getOtraActividad() {
+        return $this->otraActividad;
+    }
+
+    public function getGiroNegocio() {
         return $this->giro;
-    }
-
-    public function getOtroGiro() {
-        return $this->otroGiro;
-    }
-
-    public function getActividadPrincipal() {
-        return $this->actividadPrincipal;
     }
 
     public function setNombre($nombre): void {
@@ -126,15 +128,15 @@ class LineaBaseNegocio {
         $this->cantEmpleados = $cantEmpleados;
     }
 
-    public function setGiro($giro): void {
-        $this->giro = $giro;
+    public function setActividad($actividad): void {
+        $this->actividad = $actividad;
     }
 
-    public function setOtroGiro($otroGiro): void {
-        $this->otroGiro = $otroGiro;
+    public function setOtraActividad($otraActividad): void {
+        $this->otraActividad = $otraActividad;
     }
 
-    public function setActividadPrincipal($actividadPrincipal): void {
-        $this->actividadPrincipal = $actividadPrincipal;
+    public function setGiroNegocio($giroNegocio): void {
+        $this->giroNegocio = $giroNegocio;
     }
 }

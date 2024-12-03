@@ -46,7 +46,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBase/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBaseFinal/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="gis:route-end" class="fs-6"></iconify-icon>
                         </span>

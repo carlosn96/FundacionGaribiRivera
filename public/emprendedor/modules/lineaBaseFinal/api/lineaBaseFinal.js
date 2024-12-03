@@ -1,49 +1,35 @@
 
-const urlAPI = "api/LineaBaseAPI.php";
+const urlAPI = "api/LineaBaseFinalAPI.php";
 
 function ready() {
-
     bloquearSeccion($("#contenido"));
-
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
         print(rs);
-        if (rs.existeLineaBase) {
-            redireccionar("../lineaBaseVista/");
-        } else {
-            let etapa = rs.etapaFormacion;
-            $("#etapaFormacion").val(etapa.nombre);
-            $("#idEtapa").val(etapa.idEtapa);
-            $.each(rs.checkbox, (idx, elementos) => {
-                crearGroupCheckbox($("#" + idx), elementos, idx);
-            });
-            $.each(rs.radio, (idx, elementos) => {
-                crearGroupRadio($("#" + idx), elementos, idx);
-            });
-            $.each(rs.selector, (idx, elementos) => {
-                crearSelector($("#" + idx + "List"), idx, elementos);
-            });
-            configurarSeccionPreliminar();
-            configurarSeccionIdentificacion();
-            configurarSeccionDomicilio();
-            configurarSeccionInformacionNegocio();
-            configurarSeccionAnalisisNegocio();
-            configurarCampoComunidadParroquial();
-            desbloquearSeccion($("#contenido"));
-        }
+        // redireccionar("../lineaBaseVista/");
+        let etapa = rs.etapaFormacion;
+        $("#etapaFormacion").val(etapa.nombre);
+        $.each(rs.checkbox, (idx, elementos) => {
+            crearGroupCheckbox($("#" + idx), elementos, idx);
+        });
+        $.each(rs.radio, (idx, elementos) => {
+            crearGroupRadio($("#" + idx), elementos, idx);
+        });
+        $.each(rs.selector, (idx, elementos) => {
+            crearSelector($("#" + idx + "List"), idx, elementos);
+        });
+        configurarSeccionPreliminar();
+        configurarSeccionIdentificacion();
+        configurarSeccionDomicilio();
+        configurarSeccionInformacionNegocio();
+        configurarSeccionAnalisisNegocio();
+        configurarCampoComunidadParroquial();
+        desbloquearSeccion($("#contenido"));
     });
 }
 
 function enviarForm() {
-    //seccion Información preliminar
-    /*if (isArrayEmpty(recuperarListadoInputsValue("input[name='medioConocimiento[]']:checked")) && 
-     isArrayEmpty(recuperarListadoInputsValue("input[name='otroMedioConocimiento[]']:checked"))) {
-     mostrarMensajeAdvertencia("Selecciona al menos un elemento de la pregunta '¿Cómo te enteresaste de la Fundación?'", false);
-     } else {
-     crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()}, print, ()=>{}, "text");
-     }*/
     crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
 }
-
 
 function configurarSeccionAnalisisNegocio() {
     $('input[name="identificaCompetencia"]').change(function () {
@@ -67,7 +53,6 @@ function configurarSeccionAnalisisNegocio() {
     });
 }
 
-
 function configurarSeccionInformacionNegocio() {
     const TEXTO_OTRA_ACTIVIDAD = "Otra";
     let $actividadNegocio = $("#actividadNegocio");
@@ -83,7 +68,6 @@ function configurarSeccionInformacionNegocio() {
         $("#mensajeNoTieneNegocio").prop("hidden", tieneNegocio);
         $("#seccionAnalisisNegocio").prop("hidden", !tieneNegocio);
     });
-
     configurarCampoCodigoPostal($("#codigoPostalNegocio"), function (idCodigoPostal, estado, municipio, colonia) {
         $("#idCodigoPostalNegocio").val(idCodigoPostal);
         $("#estadoNegocio").val(estado);

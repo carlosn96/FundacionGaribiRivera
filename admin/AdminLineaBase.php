@@ -29,7 +29,6 @@ class AdminLineaBase extends Admin {
 
     private function agruparLineaBase($result) {
         $lineaBase = [];
-
         $lineaBase['idLineaBase'] = $result['idLineaBase'];
         $lineaBase['idUsuario'] = $result['idUsuario'];
         $lineaBase['etapa'] = [
@@ -138,8 +137,10 @@ class AdminLineaBase extends Admin {
                     'id' => $result['negocioIdGiro'],
                     'descripcion' => $result['negocioGiro']
                 ],
-                'otroGiro' => $result['otroGiro'],
-                'actividadPrincipal' => $result['negocioActividadPrincipal']
+                'actividad' => [
+                    'id' => $result['idNegocioActividad'],
+                    'descripcion' => $result['negocioActividadDescripcion'] ?? $result['otraActividad']
+                ]
             ];
 
             $lineaBase['analisisNegocio'] = [
@@ -163,7 +164,7 @@ class AdminLineaBase extends Admin {
     }
 
     public function existeLineaBase($idUsuario): bool {
-        return $this->dao->existeLineaBase($idUsuario);
+        return boolval($this->dao->existeLineaBase($idUsuario));
     }
 
     public function construirSeccionAnalisisNegocio($data): LineaBaseAnalisisNegocio {
@@ -206,12 +207,11 @@ class AdminLineaBase extends Admin {
         $numInterior = empty($data["numInteriorNegocio"]) ? null : $data["numInterior"];
         $codigoPostal = $data["idCodigoPostalNegocio"];
         $cantEmpleados = $data["cantEmpleadosNegocio"];
-        [$giro, $otroGiro] = $data["giroNegocio"] === "Otro" ? [null, $data["otroGiroNegocio"]] : [$data["giroNegocio"], null];
-        $actividadPrincipal = $data["principalActividad"];
-
+        $giroNegocio = $data["giroNegocio"];
+        [$actividad, $otraActividad] = $data["actividadNegocio"] === "Otra" ? [null, $data["otraActividadNegocio"]] : [$data["actividadNegocio"], null];
         return new LineaBaseNegocio($nombre, $telefono, $calle, $calleCruce1,
                 $calleCruce2, $numExterior, $numInterior, $codigoPostal,
-                $antiguedad, $cantEmpleados, $giro, $otroGiro, $actividadPrincipal);
+                $antiguedad, $cantEmpleados, $actividad, $otraActividad, $giroNegocio);
     }
 
     public function construirSeccionSocioeconomico($data): LineaBaseSocioeconomico {
@@ -316,9 +316,14 @@ class AdminLineaBase extends Admin {
                         "id_rango", "descripcion");
     }
 
-    public function recuperarListaGiroNegocio() {
+    public function recuperarListaActividadNegocio() {
         return $this->extraerInfoCampoEspecifico("linea_base_giro_negocio",
                         "id_giro", "descripcion");
+    }
+
+    public function recuperarListaGiroNegocio() {
+        return $this->extraerInfoCampoEspecifico("linea_base_giro_negocio_tipo",
+                        "id_tipo_giro", "descripcion");
     }
 
     public function listarEmprendoresConLineaBase() {
@@ -329,4 +334,7 @@ class AdminLineaBase extends Admin {
         return $this->dao->buscarCodigoPostal($cp);
     }
 
+    public function buscarParroquia($parroquia) {
+        return $this->dao->buscarParroquia($parroquia);
+    }
 }

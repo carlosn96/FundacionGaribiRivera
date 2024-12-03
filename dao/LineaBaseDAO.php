@@ -4,6 +4,7 @@ class LineaBaseDAO extends DAO {
 
     private const LISTAR_EMPRENDEDOR_LINEA_BASE = "SELECT * FROM listar_emprendedor_con_linea_base";
     private const BUSCAR_CP = "CALL buscar_codigo_postal(?)";
+    private const BUSCAR_PARROQUIA = "CALL buscar_comunidad_parroquial(?)";
     private const EXISTE_LINEA_BASE = "SELECT EXISTS(SELECT * FROM linea_base "
             . "WHERE id_usuario = ?) existe_linea_base";
     private const GUARDAR_LINEA_BASE = "CALL guardar_linea_base(?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -20,6 +21,12 @@ class LineaBaseDAO extends DAO {
     public function buscarCodigoPostal($cp) {
         $prep = $this->prepararInstruccion(self::BUSCAR_CP);
         $prep->agregarString($cp);
+        return $prep->ejecutarConsultaMultiple();
+    }
+
+    public function buscarParroquia($parroquia) {
+        $prep = $this->prepararInstruccion(self::BUSCAR_PARROQUIA);
+        $prep->agregarString($parroquia);
         return $prep->ejecutarConsultaMultiple();
     }
 
@@ -47,11 +54,10 @@ class LineaBaseDAO extends DAO {
         $lb["listaEstrategiaVentas"] = $this->selectAllPorId(self::CONSULTAR_LISTA_ESTRATEGIAS_VENTAS, $id);
         return $lb;
     }
-    
+
     public function existeLineaBase($idUsuario): bool {
         $prep = $this->prepararInstruccion(self::EXISTE_LINEA_BASE);
         $prep->agregarInt($idUsuario);
         return $prep->ejecutarConsulta()["existe_linea_base"];
     }
-
 }

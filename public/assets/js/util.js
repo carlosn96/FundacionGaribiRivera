@@ -1,15 +1,12 @@
-
 function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoError = () => {return true; }, fnSuccess = mostrarMensajeResultado) {
     $(idFormulario.startsWith('#') ? idFormulario : '#' + idFormulario).submit(function (e) {
         e.preventDefault();
-
         e.stopPropagation();
         const form = $(this);
         if (form[0].checkValidity() && fnValidateNoError()) {
             crearPeticion(urlAPI, {case: submitCase, data: form.serialize()}, fnSuccess);
         }
         form.addClass("was-validated");
-
     });
 }
 
@@ -85,7 +82,6 @@ function mostrarMensajeThen(title, type, msg, then, moreOptions = {}) {
     });
 }
 
-
 function mostrarMensajeReload(title, type, msg, reloading = true, fnthen = () => {}) {
     return mostrarMensajeThen(title, type, msg, reloading ? refresh : fnthen);
 }
@@ -136,7 +132,6 @@ function crearBoton(title, clase, icono, value, id, action) {
             "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
             "<span class='btn-label'><i class='" + icono + "'></i></span> " + title + "</button>";
 }
-
 
 function crearBotonIcon(title, clase, icono, value, id, action) {
     return "<button type='button' " +
@@ -270,7 +265,6 @@ function getFechaHoraActual() {
     return getFechaActual() + "T" + (new Date().toLocaleTimeString());
 }
 
-
 function habilitarDeshabilitarCampoBinario(inputRadioName, componenteName) {
     var inputRadio = $("input[name=" + inputRadioName + "]");
     var componente = $("#" + componenteName);
@@ -343,7 +337,6 @@ function llenar_inputs_form(obj) {
         }
     });
 }
-
 
 function crearOpcionSelector($selector, val, text) {
     $selector.append($('<option>', {
@@ -455,8 +448,6 @@ function construirInputRadio(id, value, name, text, required, checked = false, c
             .append(radioLabel);
 }
 
-
-
 function extraerParametrosURL(location) {
     var queryParams = location.search.substring(1).split('&');
     var parametros = {};
@@ -472,7 +463,6 @@ function extraerParametrosURL(location) {
 function boolToString(valor) {
     return typeof valor === 'boolean' ? (valor ? 'Sí' : 'No') : valor;
 }
-
 
 function construirTabla(data, tableClass, container, tableID) {
     const $tabla = $('<table>', {class: `table ${tableClass}`, id: tableID});
@@ -525,7 +515,6 @@ function bloquearSeccion($seccion) {
         }
     });
 }
-
 
 function desbloquearSeccion($seccion) {
     $seccion.unblock();

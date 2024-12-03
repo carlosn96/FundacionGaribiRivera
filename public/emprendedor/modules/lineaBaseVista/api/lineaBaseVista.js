@@ -79,8 +79,8 @@ print(lineaBase);
         $('#negocio-estado-nombre').text(lineaBase.negocio.estado);
         $('#negocio-antiguedad').text(lineaBase.negocio.antiguedad);
         $('#negocio-cantEmpleados').text(lineaBase.negocio.cantEmpleados);
-        $('#negocio-giro-descripcion').text(lineaBase.negocio.giro.descripcion || lineaBase.negocio.otroGiro);
-        $('#negocio-actividadPrincipal').text(lineaBase.negocio.actividadPrincipal);
+        $('#negocio-giro-descripcion').text(lineaBase.negocio.giro.descripcion);
+        $('#negocio-actividadPrincipal').text(lineaBase.negocio.actividad.descripcion);
 
         $('#analisisNegocio-problemasNegocio').text(lineaBase.analisisNegocio.problemasNegocio);
         $('#analisisNegocio-registraEntradaSalida').text(lineaBase.analisisNegocio.registraEntradaSalida);

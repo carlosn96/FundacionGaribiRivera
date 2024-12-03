@@ -3,7 +3,6 @@ const urlAPI = "api/InicioAdminProyectosAPI.php";
 function ready() {
 
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
-        print(res);
         var data = [];
         $.each(res, (i, emprendedor) => {
             print(emprendedor.numero_celular.trim());
@@ -41,14 +40,7 @@ function crearBotonesAccion(id) {
                 id: id
             })
         }
-    }) + crearBoton(
-            "Ver Ficha", // Título del botón
-            "btn btn-sm btn-primary", // Clase del botón con estilo Bootstrap
-            "fas fa-search", // Icono (Font Awesome, puedes cambiarlo por otro)
-            "", // Value (no necesario en este caso)
-            "verFicha_" + id, // ID único para el botón
-            "verFichaInscripcion(" + id + ")" // Acción (llamar a la función verFichaInscripcion)
-            );
+    });
 }
 
 function verFichaInscripcion(id) {

@@ -1,7 +1,7 @@
 
 <div class="card" id="contenido">
     <div class="card-body wizard-content">
-        <h4 class="card-title">Ficha de inscripción (Linea Base)</h4>
+        <h4 class="card-title">Ficha de inscripción (Linea Base inicial)</h4>
         <p class="mb-3">
             Nos da gusto que estés interesado en los programas de <strong><ins>Promoción y Solidaridad</ins></strong>  
             que se promueven desde la <strong><ins>Fundación Cardenal Garibi Rivera</ins></strong>. 
@@ -174,31 +174,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label" for="vicaria">Vicaria:</label>
-                            <div id="vicariaList"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label" for="decanato">Decanato:</label>
-                            <div id="decanatoList">
-                                <select class="form-select" id="decanato" name="decanato" required="">
-                                    <option value="">Selecciona una opción</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label" for="comunidadParroquial">Parroquia o comunidad parroquial:</label>
-                            <div id="comunidadParroquialList">
-                                <select class="form-select" id="comunidadParroquial" name="comunidadParroquial" required="">
-                                    <option value="">Selecciona una opción</option>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="comunidadParroquial">Parroquia o comunidad parroquial:</label>
+                        <select class="select2-data-ajax form-control" id="comunidadParroquial" name="comunidadParroquial" required=""></select>
+                        <input type="hidden" id="idComunidad" name="idComunidad" />
                     </div>
                 </div>
             </section>
@@ -327,45 +306,43 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <!-- Cantidad de empleados -->
-                        <div class="col-md-5">
+
+                    <div class="row mb-3">
+                        <!-- Giro del negocio -->
+                        <div class="col">
                             <div class="mb-3">
-                                <label class="form-label" for="empleadosNegocio">Cantidad de empleados que trabajan en tu negocio</label>
-                                <input type="number" class="form-control" id="cantEmpleadosNegocio" name="cantEmpleadosNegocio" min="0" required="">
+                                <label class="form-label" for="giroNegocio">Giro de tu negocio</label>
+                                <div id="giroNegocioList"></div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="row mb-3">
-                                <!-- Giro del negocio -->
-                                <div class="col">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="giroNegocio">Giro de tu negocio</label>
-                                        <div id="giroNegocioList"></div>
-                                    </div>
-                                </div>
-                                <!-- Otro giro -->
-                                <div class="col" id="otroGiroDiv" hidden="">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="otroGiroNegocio">Otro giro</label>
-                                        <input type="text" class="form-control" id="otroGiroNegocio" name="otroGiroNegocio" required="">
-                                    </div>
-                                </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="actividadNegocio">Actividad de tu negocio</label>
+                                <div id="actividadNegocioList"></div>
+                            </div>
+                        </div>
+                        <!-- Otro giro -->
+                        <div class="col" id="otraActividadDiv" hidden="">
+                            <div class="mb-3">
+                                <label class="form-label" for="otraActividadNegocio">Otra actividad</label>
+                                <input type="text" class="form-control" id="otraActividadNegocio" name="otraActividadNegocio" required="">
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
-                        <div class="col-md-12">
+                        <!-- Cantidad de empleados -->
+                        <div class="col">
                             <div class="mb-3">
-                                <label class="form-label" for="principalActividad">Cuál es la principal actividad de tu negocio?</label>
-                                <input type="text" class="form-control" id="principalActividad" name="principalActividad" required="">
+                                <label class="form-label" for="empleadosNegocio">Cantidad de empleados que trabajan en tu negocio</label>
+                                <input type="number" class="form-control" id="cantEmpleadosNegocio" name="cantEmpleadosNegocio" min="0" required="" value="0">
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-            <!-- Análisis actual del estado del negocio -->
-            <h6>Análisis actual del estado del negocio</h6>
+            <!-- Análisis del estado del negocio -->
+            <h6>Análisis del estado del negocio</h6>
             <section> <!-- Quitar hidden -->
                 <div id="mensajeNoTieneNegocio">
                     <div class="alert customize-alert alert-dismissible border-warning text-warning fade show remove-close-icon" role="alert">

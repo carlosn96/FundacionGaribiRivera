@@ -1,6 +1,6 @@
 <div class="card" id="content">
     <div class="card-body">
-        <h4 class="card-title">Linea Base</h4>
+        <h4 class="card-title">Linea Base (inicial)</h4>
         <p class="mb-3 card-subtitle">Información proporcionada</p>
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
@@ -300,7 +300,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="form-label text-end col-md-5">Principal actividad:</label>
+                                    <label class="form-label text-end col-md-5">Actividad:</label>
                                     <div class="col-md-7">
                                         <p><span id="negocio-actividadPrincipal"></span></p>
                                     </div>
