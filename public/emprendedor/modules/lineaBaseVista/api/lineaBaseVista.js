@@ -15,7 +15,7 @@ function ready() {
 
 
 function construirFormulario(lineaBase) {
-print(lineaBase);
+    print(lineaBase);
 
     let construirLista = function (lista) {
         let $lista = $("<ul>", {class: "list-group list-group-flush"});
@@ -28,6 +28,12 @@ print(lineaBase);
                         .append(item.descripcion)
                         );
             });
+        } else {
+            $lista.append(
+                    $("<li>", {class: "list-group-item"})
+                    .append($("<i>", {class: " text-success"}))
+                    .append("Sin información")
+                    );
         }
         return $lista;
     };
@@ -98,6 +104,17 @@ print(lineaBase);
         $('#analisisNegocio-listaEmpleoGanancias').append(construirLista(lineaBase.analisisNegocio.listaEmpleoGanancias));
         $('#analisisNegocio-listaEstrategiaVentas').append(construirLista(lineaBase.analisisNegocio.listaEstrategiaVentas));
 
+
+        $('#administracionIngresos-sueldoMensual').text(lineaBase.administracionIngresos.sueldoMensual);
+        $('#administracionIngresos-ventasMensuales').text(lineaBase.administracionIngresos.montoMensualVentas);
+        $('#administracionIngresos-gastosMensuales').text(lineaBase.administracionIngresos.montoMensualEgresos);
+        $('#administracionIngresos-utilidadesMensuales').text(lineaBase.administracionIngresos.montoMensualUtilidades);
+        $('#administracionIngresos-ahorroMensual').text(lineaBase.administracionIngresos.montoAhorroMensual);
+        $('#administracionIngresos-esNegocioPrincipalFuentePersonal').text(lineaBase.administracionIngresos.esNegocioPrincipalFuentePersonal);
+        $('#administracionIngresos-esNegocioPrincipalFuenteFamiliar').text(lineaBase.administracionIngresos.esNegocioPrincipalFuenteFamiliar);
+        $('#administracionIngresos-habitoAhorro').text(lineaBase.administracionIngresos.habitoAhorro);
+        $('#administracionIngresos-cuentaSistemaAhorro').text(lineaBase.administracionIngresos.cuentaSistemaAhorro);
+        $('#administracionIngresos-detalleSistemaAhorro').text(lineaBase.administracionIngresos.detalleSistemaAhorro);
 
     } else {
         $("#infoNegocio").prop("hidden", true);

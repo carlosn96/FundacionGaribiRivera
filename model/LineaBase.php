@@ -15,6 +15,7 @@ class LineaBase {
     private LineaBaseSocioeconomico $socioeconomico;
     private ?LineaBaseNegocio $negocio;
     private ?LineaBaseAnalisisNegocio $analisisNegocio;
+    private ?LineaBaseAdministracionIngresosNegocio $administracionIngresos;
     private int $id;
     private int $idEtapa;
     private int $idUsuario;
@@ -27,7 +28,8 @@ class LineaBase {
             LineaBaseSocioeconomico $socioeconomico,
             ?LineaBaseNegocio $negocio,
             ?LineaBaseAnalisisNegocio $analisisNegocio,
-            $fechaCreacion="",
+            ?LineaBaseAdministracionIngresosNegocio $administracionIngresos,
+            $fechaCreacion = "",
             $id = 0) {
         $this->preliminar = $preliminar;
         $this->identificacion = $identificacion;
@@ -35,10 +37,27 @@ class LineaBase {
         $this->socioeconomico = $socioeconomico;
         $this->negocio = $negocio;
         $this->analisisNegocio = $analisisNegocio;
+        $this->administracionIngresos = $administracionIngresos;
         $this->id = $id;
         $this->fechaCreacion = $fechaCreacion;
         $this->idUsuario = $idUsuario;
         $this->idEtapa = $idEtapa;
+    }
+
+    public function getAdministracionIngresos(): ?LineaBaseAdministracionIngresosNegocio {
+        return $this->administracionIngresos;
+    }
+
+    public function getFechaCreacion() {
+        return $this->fechaCreacion;
+    }
+
+    public function setAdministracionIngresos(?LineaBaseAdministracionIngresosNegocio $administracionIngresos): void {
+        $this->administracionIngresos = $administracionIngresos;
+    }
+
+    public function setFechaCreacion($fechaCreacion): void {
+        $this->fechaCreacion = $fechaCreacion;
     }
 
     public function getAnalisisNegocio(): ?LineaBaseAnalisisNegocio {
@@ -112,5 +131,4 @@ class LineaBase {
     public function setPreliminar(LineaBasePreliminar $preliminar): void {
         $this->preliminar = $preliminar;
     }
-
 }

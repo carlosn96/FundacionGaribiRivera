@@ -14,13 +14,15 @@ class AdminLineaBase extends Admin {
         $socioeconomico = $this->construirSeccionSocioeconomico($data);
         $negocio = boolval($data["tieneNegocio"]) ? $this->construirSeccionNegocio($data) : null;
         $analisisNegocio = is_null($negocio) ? null : $this->construirSeccionAnalisisNegocio($data);
+        $administracionIngresos = is_null($negocio) ? null : $this->construirSeccionAdministracionIngresosNegocio($data);
         return $this->dao->guardarLineaBase(new LineaBase($data["idEtapa"], $data["idUsuario"],
                                 $preliminar,
                                 $identificacion,
                                 $domicilio,
                                 $socioeconomico,
                                 $negocio,
-                                $analisisNegocio));
+                                $analisisNegocio,
+                                $administracionIngresos));
     }
 
     public function consultarLineaBase($idUsuario) {
@@ -159,6 +161,18 @@ class AdminLineaBase extends Admin {
                 "listaEmpleoGanancias" => $result["listaEmpleoGanancias"],
                 "listaEstrategiaVentas" => $result["listaEstrategiaVentas"]
             ];
+            $lineaBase['administracionIngresos'] = [
+                'sueldoMensual' => $result['sueldoMensual'],
+                'montoMensualVentas' => $result['montoMensualVentas'],
+                'montoMensualEgresos' => $result['montoMensualEgresos'],
+                'montoMensualUtilidades' => $result['montoMensualUtilidades'],
+                'esNegocioPrincipalFuentePersonal' => Util::respuestaBoolToStr($result['esNegocioPrincipalFuentePersonal']),
+                'esNegocioPrincipalFuenteFamiliar' => Util::respuestaBoolToStr($result['esNegocioPrincipalFuenteFamiliar']),
+                'habitoAhorro' => Util::respuestaBoolToStr($result['habitoAhorro']),
+                'cuentaSistemaAhorro' => Util::respuestaBoolToStr($result['cuentaSistemaAhorro']),
+                'detalleSistemaAhorro' => $result['detalleSistemaAhorro'],
+                'montoAhorroMensual' => $result['montoAhorroMensual']
+            ];
         }
         return $lineaBase;
     }
@@ -168,7 +182,6 @@ class AdminLineaBase extends Admin {
     }
 
     public function construirSeccionAnalisisNegocio($data): LineaBaseAnalisisNegocio {
-        $problemasNegocio = $data["problemasNegocio"];
         $registraEntradaSalida = $data["registraEntradaSalida"];
         $asignaSueldo = $data["asignaSueldo"];
         $conoceUtilidades = $data["conoceUtilidades"];
@@ -176,17 +189,17 @@ class AdminLineaBase extends Admin {
         $quienCompetencia = $data["quienCompetencia"] ?? null;
         $clientesNegocio = $data["clientesNegocio"];
         $ventajasNegocio = $data["ventajasNegocio"];
+        $problemasNegocio = $data["problemasNegocio"];
         $estrategiasIncrementarVentas = $data["estrategiasIncrementarVentas"] ?? [];
+        $comoEmpleaGanancias = $data["comoEmpleaGanancias"] ?? [];
         $conoceProductosMayorUtilidad = $data["conoceProductosMayorUtilidad"];
         $porcentajeGanancias = $data["porcentajeGanancias"] ?? null;
         $ahorro = $data["ahorro"];
         $cuantoAhorro = $data["cuantoAhorro"] ?? null;
         $razonesNoAhorro = $data["razonesNoAhorro"] ?? null;
-        $comoEmpleaGanancias = $data["comoEmpleaGanancias"] ?? [];
         $conocePuntoEquilibrio = $data["conocePuntoEquilibrio"];
         $separaGastos = $data["separaGastos"];
         $elaboraPresupuesto = $data["elaboraPresupuesto"];
-
         return new LineaBaseAnalisisNegocio($problemasNegocio, $registraEntradaSalida,
                 $asignaSueldo, $conoceUtilidades, $identificaCompetencia,
                 $quienCompetencia, $clientesNegocio, $ventajasNegocio,
@@ -194,6 +207,25 @@ class AdminLineaBase extends Admin {
                 $porcentajeGanancias, $ahorro, $cuantoAhorro,
                 $razonesNoAhorro, $comoEmpleaGanancias, $conocePuntoEquilibrio,
                 $separaGastos, $elaboraPresupuesto);
+    }
+
+    public function construirSeccionAdministracionIngresosNegocio($data): LineaBaseAdministracionIngresosNegocio {
+        $ventasMensuales = (float) $data['ventasMensuales'];
+        $gastosMensuales = (float) $data['gastosMensuales'];
+        $utilidadesMensuales = (float) $data['utilidadesMensuales'];
+        $sueldoMensual = (float) $data['sueldoMensual'];
+        $esIngresoPrincipalPersonal = boolval($data['esIngresoPrincipalPersonal']);
+        $esIngresoPrincipalFamiliar = boolval($data['esIngresoPrincipalFamiliar']);
+        $tieneHabitoAhorro = boolval($data['tieneHabitoAhorro']);
+        $cuentaConSistemaAhorro = boolval($data['cuentaConSistemaAhorro']);
+        $detallesSistemaAhorro = $data['detallesSistemaAhorro'] ?? "";
+        $objetivosAhorro = $data['objetivosAhorro'] ?? array();
+        $ahorroMensual = (float) ($data['ahorroMensual'] ?? 0);
+        return new LineaBaseAdministracionIngresosNegocio($sueldoMensual,
+                $ventasMensuales, $gastosMensuales, $utilidadesMensuales,
+                $esIngresoPrincipalPersonal, $esIngresoPrincipalFamiliar,
+                $tieneHabitoAhorro, $cuentaConSistemaAhorro, $detallesSistemaAhorro,
+                $objetivosAhorro, $ahorroMensual);
     }
 
     public function construirSeccionNegocio($data): LineaBaseNegocio {
@@ -324,6 +356,11 @@ class AdminLineaBase extends Admin {
     public function recuperarListaGiroNegocio() {
         return $this->extraerInfoCampoEspecifico("linea_base_giro_negocio_tipo",
                         "id_tipo_giro", "descripcion");
+    }
+
+    public function recuperarObjetivosAhorro() {
+        return $this->extraerInfoCampoEspecifico("linea_base_objetivo_ahorros",
+                        "id_objetivo", "descripcion");
     }
 
     public function listarEmprendoresConLineaBase() {

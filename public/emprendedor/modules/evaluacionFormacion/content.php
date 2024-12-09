@@ -90,7 +90,7 @@
             </section>
             <h6>Gestión y optimización del ahorro</h6>
             <section>
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-md-6 col-12 mb-3 mb-md-0">
                         <label class="form-label">¿Tienes el hábito de ahorrar de manera constante y a largo plazo?</label>
                         <div class="form-check">
@@ -130,6 +130,7 @@
                             <span class="input-group-text">.00</span>
                         </div>
                     </div>
+                </div>
             </section>
         </form>
     </div>

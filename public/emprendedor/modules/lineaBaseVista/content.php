@@ -44,6 +44,14 @@
                     <span class="d-none d-md-block ms-2">Negocio</span>
                 </a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link d-flex" data-bs-toggle="tab" href="#administracion" role="tab" aria-selected="false">
+                    <span>
+                        <i class="ti ti-file"></i>
+                    </span>
+                    <span class="d-none d-md-block ms-2">Administración Ingresos</span>
+                </a>
+            </li>
         </ul>
         <!-- Tab panes -->
         <div class="tab-content">
@@ -450,6 +458,92 @@
                     </div>
                 </div>
             </div>
+            <div class="tab-pane p-3" id="administracion" role="tabpanel">  
+                <hr class="m-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">Administración de Ingresos</h5>
+                </div>
+                <hr class="m-0">
+                <div class="card-body">
+                    <!-- Fila 1 -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">Sueldo Mensual:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-sueldoMensual"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">Ventas Mensuales:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-ventasMensuales"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila 2 -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">Gastos Mensuales:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-gastosMensuales"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">Utilidades Mensuales:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-utilidadesMensuales"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila 3 -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">Ahorro Mensual:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-ahorroMensual"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">¿Negocio principal fuente personal?:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-esNegocioPrincipalFuentePersonal"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila 4 -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">¿Negocio principal fuente familiar?:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-esNegocioPrincipalFuenteFamiliar"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label text-end col-md-5">¿Tiene hábito de ahorro?:</label>
+                                <div class="col-md-7">
+                                    <p><span id="administracionIngresos-habitoAhorro"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>

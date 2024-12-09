@@ -20,6 +20,7 @@ class LineaBaseAPI extends API {
                         "medioConocimiento" => $admin->recuperarListaMedioConocimientoFund(),
                         "estrategiasIncrementarVentas" => $admin->recuperarListaEstrategiasIncrementarVentas(),
                         "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
+                        "objetivosAhorro" => $admin->recuperarObjetivosAhorro()
                     ],
                     "radio" => [
                         "tiempoCapacitacion" => $admin->recuperarListaTiempoCapacitacion(),

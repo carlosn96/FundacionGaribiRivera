@@ -7,7 +7,7 @@ class LineaBaseDAO extends DAO {
     private const BUSCAR_PARROQUIA = "CALL buscar_comunidad_parroquial(?)";
     private const EXISTE_LINEA_BASE = "SELECT EXISTS(SELECT * FROM linea_base "
             . "WHERE id_usuario = ?) existe_linea_base";
-    private const GUARDAR_LINEA_BASE = "CALL guardar_linea_base(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private const GUARDAR_LINEA_BASE = "CALL guardar_linea_base(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private const CONSULTAR_LINEA_BASE = "SELECT * FROM recuperar_linea_base WHERE idUsuario = ?";
     private const CONSULTAR_LISTA_MEDIO_CONOCIMIENTO = "SELECT * FROM recuperar_linea_base_lista_medio_conocimiento WHERE idLineaBase = ?";
     private const CONSULTAR_LISTA_EMPLEO_GANANCIAS = "SELECT * FROM recuperar_linea_base_lista_empleo_ganancias WHERE idLineaBase = ?";
@@ -41,6 +41,7 @@ class LineaBaseDAO extends DAO {
         $prep->agregarEntidad($lineaBase->getSocioeconomico());
         $prep->agregarEntidad($lineaBase->getNegocio());
         $prep->agregarEntidad($lineaBase->getAnalisisNegocio());
+        $prep->agregarEntidad($lineaBase->getAdministracionIngresos());
         // var_dump($prep);
         $e = $prep->ejecutar();
         return $e;

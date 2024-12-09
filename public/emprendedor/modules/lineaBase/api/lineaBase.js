@@ -27,6 +27,7 @@ function ready() {
             configurarSeccionDomicilio();
             configurarSeccionInformacionNegocio();
             configurarSeccionAnalisisNegocio();
+            configurarSeccionAdministracionIngresosNegocio();
             configurarCampoComunidadParroquial();
             desbloquearSeccion($("#contenido"));
         }
@@ -63,7 +64,9 @@ function configurarSeccionAnalisisNegocio() {
         $("#cuantoAhorro").attr("disabled", !tieneAhorro);
         $("#razonesNoAhorroField").prop("hidden", tieneAhorro);
         $("#razonesNoAhorro").attr("disabled", tieneAhorro);
-
+    });
+    $("#noSeComoResponderEstrategias").change(function () {
+        $("#estrategiasIncrementarVentas").prop("hidden", $(this).is(":checked"));
     });
 }
 
@@ -80,8 +83,10 @@ function configurarSeccionInformacionNegocio() {
     $("input[name='tieneNegocio']").change(function () {
         let tieneNegocio = $(this).val() === "1";
         $("#camposTieneNegocio").prop("hidden", !tieneNegocio);
-        $("#mensajeNoTieneNegocio").prop("hidden", tieneNegocio);
+        $("#mensajeNoTieneNegocio1").prop("hidden", tieneNegocio);
+        $("#mensajeNoTieneNegocio2").prop("hidden", tieneNegocio);
         $("#seccionAnalisisNegocio").prop("hidden", !tieneNegocio);
+        $("#seccionAdministracionIngresosNegocio").prop("hidden", !tieneNegocio);
     });
 
     configurarCampoCodigoPostal($("#codigoPostalNegocio"), function (idCodigoPostal, estado, municipio, colonia) {
@@ -89,6 +94,14 @@ function configurarSeccionInformacionNegocio() {
         $("#estadoNegocio").val(estado);
         $("#municipioNegocio").val(municipio);
         $("#coloniaNegocio").val(colonia);
+    });
+}
+
+function configurarSeccionAdministracionIngresosNegocio() {
+    $("input[name='cuentaConSistemaAhorro']").change(function () {
+        let sinSistema = $(this).val() === "0";
+        $("#seccionDetallesSistemaAhorro").prop("hidden", sinSistema);
+        $("#detallesSistemaAhorro").attr("disabled", sinSistema);
     });
 }
 
@@ -266,7 +279,7 @@ function configurarCampoComunidadParroquial() {
         escapeMarkup: function (markup) {
             return markup; // Permite el uso de etiquetas HTML como <strong> en los resultados
         },
-        minimumInputLength: 4, // Establece el número mínimo de caracteres para activar la búsqueda
+        minimumInputLength: 3, // Establece el número mínimo de caracteres para activar la búsqueda
         templateSelection: function (data) {
             // Actualiza el campo oculto con el id_comunidad cuando se selecciona una parroquia
             $("#idComunidad").val(data.idComunidad);

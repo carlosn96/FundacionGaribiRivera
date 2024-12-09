@@ -6,11 +6,6 @@ class AdminEvaluacionFormacion extends Admin {
         parent::__construct(new EvaluacionFormacionDAO());
     }
 
-    public function recuperarObjetivosAhorro() {
-        return $this->extraerInfoCampoEspecifico("evaluacion_formacion_objetivo_ahorros",
-                        "id_objetivo", "descripcion");
-    }
-
     public function guardarEvaluacion($data) {
         return $this->dao->guardar($this->construirEvaluacionFormacion($data));
     }
