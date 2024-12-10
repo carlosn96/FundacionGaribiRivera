@@ -12,6 +12,7 @@ class LineaBaseNegocio {
     private $numExterior;
     private $numInterior;
     private $codigoPostal;
+    private $colonia;
     private $antiguedad;
     private $cantEmpleados;
     private $actividad;
@@ -19,7 +20,7 @@ class LineaBaseNegocio {
     private $giro;
 
     public function __construct($nombre, $telefono, $calle, $calleCruce1, $calleCruce2, $numExterior,
-            $numInterior, $codigoPostal, $antiguedad, $cantEmpleados,
+            $numInterior, $codigoPostal, $colonia,$antiguedad, $cantEmpleados,
             $actividad, $otraActividad, $giroNegocio) {
         $this->nombre = $nombre;
         $this->telefono = $telefono;
@@ -29,6 +30,7 @@ class LineaBaseNegocio {
         $this->numExterior = $numExterior;
         $this->numInterior = $numInterior;
         $this->codigoPostal = $codigoPostal;
+        $this->colonia = $colonia;
         $this->antiguedad = $antiguedad;
         $this->cantEmpleados = $cantEmpleados;
         $this->actividad = $actividad;

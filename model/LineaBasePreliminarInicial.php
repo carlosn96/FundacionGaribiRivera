@@ -1,6 +1,6 @@
 <?php
 
-class LineaBasePreliminar {
+class LineaBasePreliminarInicial {
 
     use Entidad;
 

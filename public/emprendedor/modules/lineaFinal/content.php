@@ -2,7 +2,7 @@
 <div class="card" id="contenido">
     <div class="card-body wizard-content">
         <h4 class="card-title">Ficha de inscripción (Final: al cierre del proyecto o formación)</h4>
-        
+
         <h6 class="lh-base mb-3">
             Este formulario nos será de mucha ayuda para poder conocerte un poco mejor y 
             tener información de primera mano sobre la forma en la que podemos contribuir a tu crecimiento personal y profesional.
@@ -53,6 +53,7 @@
                 </div>
             </section>
 
+            <!-- Información general de negocio -->
             <h6>Información general de negocio</h6>
             <section> 
                 <div class="row justify-content-center">
@@ -60,10 +61,8 @@
                         <div class="mb-3 d-flex flex-column align-items-center">
                             <label class="form-label"><strong>¿Actualmente tienes un negocio?<span class="text-danger">*</span></strong></label>
                             <div class="d-flex flex-wrap gap-6">
-
                                 <input type="radio" class="btn-check" id="tieneNegocioSi" name="tieneNegocio" autocomplete="off" value="1">
                                 <label class="btn btn-outline-warning" for="tieneNegocioSi">Si</label>
-
                                 <input type="radio" class="btn-check" id="tieneNegocioNo" name="tieneNegocio" autocomplete="off" value="0" checked="">
                                 <label class="btn btn-outline-warning" for="tieneNegocioNo">No</label>
                             </div>
@@ -71,7 +70,7 @@
                     </div>
                 </div>
                 <!-- Campos adicionales para "Sí tiene negocio" -->
-                <div  hidden="" id="camposTieneNegocio">
+                <div  id="camposTieneNegocio">
                     <div class="row">
                         <!-- Nombre del negocio -->
                         <div class="col-md-6">
@@ -100,7 +99,16 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="codigoPostalView">
+                            <label class="form-label" for="codigoPostalVal">Código postal:</label>
+                            <div class="input-group">
+                                <input class="form-control" readonly id="codigoPostalVal">
+                                <button class="btn btn-outline-warning" type="button" id="btnEditarCodigoPostal">
+                                    <i class="ti ti-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6" hidden="" id="selectorCodigoPostal">
                             <input name="idCodigoPostalNegocio" id="idCodigoPostalNegocio" hidden="">
                             <label class="form-label" for="codigoPostalNegocio">Código postal:</label>
                             <select class="select2-data-ajax form-control" id="codigoPostalNegocio" name="codigoPostalNegocio" required=""></select>
@@ -193,7 +201,7 @@
                     </div>
                 </div>
             </section>
-            <!-- Análisis del estado del negocio -->
+<!-- Análisis del estado del negocio -->
             <h6>Análisis del estado del negocio</h6>
             <section>
                 <div id="mensajeNoTieneNegocio1">
@@ -265,20 +273,16 @@
                         <label class="form-label" for="problemasNegocio">¿Cuáles consideras que son los principales problemas de tu negocio?</label>
                         <textarea class="form-control" id="problemasNegocio" name="problemasNegocio" required></textarea>
                     </div>
-
                     <div class="mb-4">
                         <label class="form-label">¿Qué estrategias utilizas para incrementar tus ventas?</label>
-                        <!-- Checkbox para "No sé cómo responder" al principio, separado del resto -->
+                        <!-- Checkbox para "No sé cómo responder" -->
                         <div class="form-check mt-3">
                             <input type="checkbox" class="form-check-input" id="noSeComoResponderEstrategias" name="noSeComoResponderEstrategias">
                             <label class="form-check-label text-warning" for="noSeComoResponderEstrategias">No sé cómo responder</label>
                         </div>
-
                         <!-- Contenedor para las otras opciones de checkbox dinámico -->
                         <div id="estrategiasIncrementarVentas" class="mt-3"></div> 
                     </div>
-
-
                     <div class="mb-4">
                         <label class="form-label">¿Cómo empleas las ganancias generadas?</label>
                         <div id="comoEmpleaGanancias"></div><!-- Este div es un grupo de checkbox dinamico-->
@@ -378,7 +382,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="seccionAdministracionIngresosNegocio" hidden="">
+                <div id="seccionAdministracionIngresosNegocio" hidden="" >
                     <div class="row mb-4">
                         <div class="col-md-6 col-12 mb-3 mb-md-0">
                             <label for="ventasMensuales" class="form-label">¿Cuál es el monto mensual de tus <strong>ventas</strong>?</label>
@@ -396,11 +400,8 @@
                                 <span class="input-group-text">.00</span>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="row mb-4">
-
                         <div class="col-md-6 col-12 mb-3">
                             <label for="utilidadesMensuales" class="form-label">¿Cuál es el monto de tus <strong>utilidades</strong> mensuales?</label>
                             <div class="input-group">
@@ -422,7 +423,7 @@
                         <div class="col-md-4 col-12 mb-3">
                             <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>a nivel personal</strong>?</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalSi" value="1" required checked="">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalSi" value="1" required >
                                 <label class="form-check-label" for="ingresoPrincipalSi">Sí</label>
                             </div>
                             <div class="form-check">
@@ -433,7 +434,7 @@
                         <div class="col-md-4 col-12 mb-3">
                             <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>para tu familia</strong>?</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarSi" value="1" required checked="">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarSi" value="1" required >
                                 <label class="form-check-label" for="esIngresoPrincipalFamiliarSi">Sí</label>
                             </div>
                             <div class="form-check">
@@ -444,7 +445,7 @@
                         <div class="col-md-4 col-12 mb-3">
                             <label class="form-label">¿Tienes el hábito de ahorrar de manera constante y a largo plazo?</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tieneHabitoAhorro" id="habitoAhorroSi" value="1" required checked="">
+                                <input class="form-check-input" type="radio" name="tieneHabitoAhorro" id="habitoAhorroSi" value="1" required >
                                 <label class="form-check-label" for="habitoAhorroSi">Sí</label>
                             </div>
                             <div class="form-check">

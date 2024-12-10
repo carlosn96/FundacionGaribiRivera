@@ -7,7 +7,7 @@ class NuevoVisitaSeguimientoAPI extends API {
     function recuperarCamposInformacion() {
         $admin = getAdminVisitaSeguimiento();
         $this->enviarRespuesta([
-            "lineaBase" => getAdminLineaBase()->consultarLineaBase($this->data["emprendedor"]),
+            "lineaBase" => getAdminLineaBase()->consultarLineaBaseInicial($this->data["emprendedor"]),
             "selector" => [
                 "resultadoVisitaSeguimiento" => $admin->recuperarListaResultadoVisitaSeguimiento(),
                 "actividadComplementaria" => $admin->recuperarListaActividadComplementaria(),

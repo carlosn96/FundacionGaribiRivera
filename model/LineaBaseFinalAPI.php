@@ -6,7 +6,7 @@ class LineaBaseFinalAPI extends API {
 
     function guardar() {
         $this->data["idUsuario"] = Sesion::obtenerIDUsuarioActual();
-        $this->enviarResultadoOperacion(getAdminLineaBase()->guardarLineaBase($this->data));
+        $this->enviarResultadoOperacion(getAdminLineaBase()->guardarLineaBaseFinal($this->data));
     }
 
     function recuperarCamposInformacion() {
@@ -15,7 +15,7 @@ class LineaBaseFinalAPI extends API {
         $existeLineaBase = $admin->existeLineaBase($usuario);
         $this->enviarRespuesta([
             "existeLineaBase" => $existeLineaBase,
-            "data" => $existeLineaBase ? $admin->consultarLineaBase($usuario) : [],
+            "data" => $existeLineaBase ? $admin->consultarLineaBaseInicial($usuario) : [],
             "selector" => [
                 "ocupacionActual" => $admin->recuperarListaOcupaciones(),
                 "ingresoMensual" => $admin->recuperarListaRangosIngreso(),

@@ -10,7 +10,7 @@ class LineaBaseAPI extends API {
         $existeLineaBase = $admin->existeLineaBase($usuario);
         $this->enviarRespuesta([
             "existeLineaBase" => $existeLineaBase,
-            "data" => $existeLineaBase ? $admin->consultarLineaBase($usuario) : []
+            "data" => $existeLineaBase ? $admin->consultarLineaBaseInicial($usuario) : []
         ]);
     }
 }

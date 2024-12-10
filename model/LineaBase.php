@@ -9,7 +9,7 @@ class LineaBase {
 
     use Entidad;
 
-    private LineaBasePreliminar $preliminar;
+    private LineaBasePreliminarInicial $preliminar;
     private LineaBaseIdentificacion $identificacion;
     private LineaBaseDomicilio $domicilio;
     private LineaBaseSocioeconomico $socioeconomico;
@@ -22,7 +22,7 @@ class LineaBase {
     private $fechaCreacion;
 
     public function __construct(int $idEtapa, int $idUsuario,
-            LineaBasePreliminar $preliminar,
+            LineaBasePreliminarInicial $preliminar,
             LineaBaseIdentificacion $identificacion,
             LineaBaseDomicilio $domicilio,
             LineaBaseSocioeconomico $socioeconomico,
@@ -124,11 +124,11 @@ class LineaBase {
         $this->id = $id;
     }
 
-    public function getPreliminar(): LineaBasePreliminar {
+    public function getPreliminar(): LineaBasePreliminarInicial {
         return $this->preliminar;
     }
 
-    public function setPreliminar(LineaBasePreliminar $preliminar): void {
+    public function setPreliminar(LineaBasePreliminarInicial $preliminar): void {
         $this->preliminar = $preliminar;
     }
 }

@@ -8,7 +8,7 @@ class AdminLineaBase extends Admin {
 
     public function guardarLineaBase($data) {
         //var_dump($data);
-        $preliminar = $this->construirSeccionPreliminar($data);
+        $preliminar = $this->construirSeccionPreliminarInicial($data);
         $identificacion = $this->construirSeccionIdentificacion($data);
         $domicilio = $this->construirSeccionDomicilio($data);
         $socioeconomico = $this->construirSeccionSocioeconomico($data);
@@ -25,8 +25,19 @@ class AdminLineaBase extends Admin {
                                 $administracionIngresos));
     }
 
-    public function consultarLineaBase($idUsuario) {
-        return $this->agruparLineaBase($this->dao->consultarLineaBase($idUsuario));
+    public function guardarLineaBaseFinal($data) {
+        $socioeconomico = $this->construirSeccionSocioeconomico($data);
+        $preliminar = $this->construirSeccionPreliminarFinal($data);
+        $negocio = boolval($data["tieneNegocio"]) ? $this->construirSeccionNegocio($data) : null;
+        $analisisNegocio = is_null($negocio) ? null : $this->construirSeccionAnalisisNegocio($data);
+        $administracionIngresos = is_null($negocio) ? null : $this->construirSeccionAdministracionIngresosNegocio($data);
+        return $this->dao->guardarLineaBaseFinal(new LineaBaseFinal($preliminar,
+                                $socioeconomico, $negocio, $analisisNegocio,
+                                $administracionIngresos, $data["idEtapa"], $data["idUsuario"]));
+    }
+
+    public function consultarLineaBaseInicial($idUsuario) {
+        return $this->agruparLineaBase($this->dao->consultarLineaBaseInicial($idUsuario));
     }
 
     private function agruparLineaBase($result) {
@@ -43,67 +54,68 @@ class AdminLineaBase extends Admin {
         $lineaBase['fechaCreacion'] = $result['fechaCreacion'];
 
         $lineaBase['preliminar'] = [
-            'listaMedioConoceFundacion' => $result['listaMedioConoceFundacion'],
-            'otroMedioConoceFundacion' => $result['otroMedioConoceFundacion'],
-            'otraRazonRecurreFundacion' => $result['otraRazonRecurreFundacion'],
+            'listaMedioConoceFundacion' => $result['listaMedioConoceFundacion'] ?? "",
+            'otroMedioConoceFundacion' => $result['otroMedioConoceFundacion'] ?? "",
+            'otraRazonRecurreFundacion' => $result['otraRazonRecurreFundacion'] ?? "",
             'razonRecurreFundacion' => [
-                'id' => $result['idRazonRecurreFundacion'],
-                'descripcion' => $result['razonRecurreDescripcion']
+                'id' => $result['idRazonRecurreFundacion'] ?? "",
+                'descripcion' => $result['razonRecurreDescripcion'] ?? ""
             ],
             'solicitaCredito' => [
-                'id' => $result['idSolicitaCredito'],
-                'descripcion' => $result['solicitaCreditoDescripcion'] ? "El crédito lo solicitaría para " . $result['solicitaCreditoDescripcion'] : null
+                'id' => $result['idSolicitaCredito'] ?? "",
+                'descripcion' => $result['solicitaCreditoDescripcion'] ?? 0 ? "El crédito lo solicitaría para " . $result['solicitaCreditoDescripcion'] : null
             ],
             'utilizaCredito' => [
-                'id' => $result['idUtilizaCredito'],
-                'descripcion' => $result['utilizaCreditoDescripcion'] ? "El crédito lo utilizaría para " . $result['utilizaCreditoDescripcion'] : null
+                'id' => $result['idUtilizaCredito'] ?? "",
+                'descripcion' => $result['utilizaCreditoDescripcion'] ?? 0 ? "El crédito lo utilizaría para " . $result['utilizaCreditoDescripcion'] : null
             ],
             'tiempoDedicaCapacitacion' => [
-                'id' => $result['idTiempoDedicaCapacitacion'],
-                'descripcion' => $result['tiempoDedicaCapacitacionDescripcion']
+                'id' => $result['idTiempoDedicaCapacitacion'] ?? "",
+                'descripcion' => $result['tiempoDedicaCapacitacionDescripcion'] ?? ""
             ]
         ];
 
         $lineaBase['identificacion'] = [
-            'genero' => $result['genero'],
-            'edad' => $result['edad'],
+            'genero' => $result['genero'] ?? "",
+            'edad' => $result['edad'] ?? "",
             'estadoCivil' => [
-                'id' => $result['estadoCivil'],
-                'descripcion' => $result['estadoCivilDescripcion']
+                'id' => $result['estadoCivil'] ?? "",
+                'descripcion' => $result['estadoCivilDescripcion'] ?? ""
             ],
             'escolaridad' => [
-                'id' => $result['escolaridad'],
-                'descripcion' => $result['escolaridadDescripcion']
+                'id' => $result['escolaridad'] ?? "",
+                'descripcion' => $result['escolaridadDescripcion'] ?? ""
             ],
             'discapacidad' => $result['discapacidad'] ?? 'No'
         ];
 
         $lineaBase['domicilio'] = [
-            'calle' => $result['domicilioCalle'],
-            'calleCruce1' => $result['domicilioCalleCruce1'],
-            'calleCruce2' => $result['domicilioCalleCruce2'],
-            'numeroExterior' => $result['domicilioNumeroExterior'],
-            'numeroInterior' => $result['domicilioNumeroInterior'] ? "(" . $result['domicilioNumeroInterior'] . ")" : null,
+            'calle' => $result['domicilioCalle'] ?? "",
+            'calleCruce1' => $result['domicilioCalleCruce1'] ?? "",
+            'calleCruce2' => $result['domicilioCalleCruce2'] ?? "",
+            'numeroExterior' => $result['domicilioNumeroExterior'] ?? "",
+            'numeroInterior' => $result['domicilioNumeroInterior'] ?? 0 ? "(" . $result['domicilioNumeroInterior'] . ")" : null,
             'codigoPostal' => [
-                'id' => $result['domicilioIdCodigoPostal'],
-                'codigo' => $result['domicilioCodigoPostal'],
-                'colonia' => $result['domicilioColonia']
+                'id' => $result['domicilioIdCodigoPostal'] ?? "",
+                'codigo' => $result['domicilioCodigoPostal'] ?? "",
+                'colonia' => $result['domicilioColonia'] ?? ""
             ],
+            "colonia" => $result["colonia"] ?? "",
             'municipio' => [
-                'id' => $result['domicilioIdMunicipio'],
-                'nombre' => $result['domicilioMunicipioNombre']
+                'id' => $result['domicilioIdMunicipio'] ?? "",
+                'nombre' => $result['domicilioMunicipioNombre'] ?? ""
             ],
-            'estado' => $result['domicilioEstadoNombre'],
+            'estado' => $result['domicilioEstadoNombre'] ?? "",
             'comunidadParroquial' => [
-                'id' => $result['domicilioIdComunidadParroquial'],
-                'nombre' => $result['domicilioComunidadParroquialNombre'],
-                'decanato' => $result['domicilioDecanatoNombre'],
-                'vicaria' => $result['domicilioVicariaNombre']
+                'id' => $result['domicilioIdComunidadParroquial'] ?? "",
+                'nombre' => $result['domicilioComunidadParroquialNombre'] ?? "",
+                'decanato' => $result['domicilioDecanatoNombre'] ?? "",
+                'vicaria' => $result['domicilioVicariaNombre'] ?? ""
             ]
         ];
 
         $lineaBase['socioeconomico'] = [
-            'cantidadDependientes' => $result['cantidadDependientes'] . " dependiente" . (intval($result['cantidadDependientes']) > 1 ? "s" : ""),
+            'cantidadDependientes' => $result['cantidadDependientes'] ?? 0,
             'ocupacionActual' => [
                 'id' => $result['idOcupacionActual'],
                 'descripcion' => $result['ocupacionDescripcion']
@@ -134,7 +146,7 @@ class AdminLineaBase extends Admin {
                 ],
                 'estado' => $result['negocioEstadoNombre'],
                 'antiguedad' => $result['negocioAntiguedad'],
-                'cantEmpleados' => $result['negocioCantEmpleados'] . " empleado" . (intval($result['negocioCantEmpleados']) > 1 ? "s" : ""),
+                'cantEmpleados' => ["descripcion" => $result['negocioCantEmpleados'] . " empleado" . (intval($result['negocioCantEmpleados']) > 1 ? "s" : ""), "num" => $result['negocioCantEmpleados']],
                 'giro' => [
                     'id' => $result['negocioIdGiro'],
                     'descripcion' => $result['negocioGiro']
@@ -147,17 +159,26 @@ class AdminLineaBase extends Admin {
 
             $lineaBase['analisisNegocio'] = [
                 'problemasNegocio' => $result['negocioProblemas'],
-                'registraEntradaSalida' => Util::respuestaBoolToStr($result['negocioRegistraEntradaSalida']),
-                'asignaSueldo' => Util::respuestaBoolToStr($result['negocioAsignaSueldo']),
-                'conoceUtilidades' => Util::respuestaBoolToStr($result['negocioConoceUtilidades']),
-                'competencia' => boolval($result['negocioIdentificaCompetencia']) ? $result['negocioQuienCompetencia'] : "No identificada",
+                'registraEntradaSalida' => $this->getArrayBool($result['negocioRegistraEntradaSalida']),
+                'asignaSueldo' => $this->getArrayBool($result['negocioAsignaSueldo']),
+                'conoceUtilidades' => $this->getArrayBool($result['negocioConoceUtilidades']),
+                'competencia' => [
+                    'identifica' => $this->getArrayBool($result['negocioIdentificaCompetencia']),
+                    "quien" => boolval($result['negocioIdentificaCompetencia']) ? $result['negocioQuienCompetencia'] : "No identificada"
+                ],
                 'clientesNegocio' => $result['negocioClientes'],
                 'ventajasNegocio' => $result['negocioVentajas'],
-                'porcentajeProductosMayorUtilidad' => $result['negocioConoceProductosMayorUtilidad'] ? $result['negocioPorcentajeGanancias'] . "%" : "No identifica productos con mayor utilidad",
-                'ahorro' => Util::respuestaBoolToStr($result['negocioLlevaAhorro']) . " asigna ahorro: " . (boolval($result['negocioLlevaAhorro']) ? $result['negocioCuantoAhorro'] : $result['negocioRazonesNoAhorro']),
-                'conocePuntoEquilibrio' => Util::respuestaBoolToStr($result['negocioConocePuntoEquilibrio']),
-                'separaGastos' => Util::respuestaBoolToStr($result['negocioSeparaGastos']),
-                'elaboraPresupuesto' => Util::respuestaBoolToStr($result['negocioElaboraPresupuesto']),
+                'conoceProductosMayorUtilidad' => [
+                    "conoce" => $this->getArrayBool($result['negocioConoceProductosMayorUtilidad']),
+                    "porcentaje" => $result['negocioConoceProductosMayorUtilidad'] ? $result['negocioPorcentajeGanancias'] : "No identifica productos con mayor utilidad",
+                ],
+                'ahorro' => [
+                    "asigna" => $this->getArrayBool($result['negocioLlevaAhorro']),
+                    "detalles" => (boolval($result['negocioLlevaAhorro']) ? $result['negocioCuantoAhorro'] : $result['negocioRazonesNoAhorro'])
+                ],
+                'conocePuntoEquilibrio' => $this->getArrayBool($result['negocioConocePuntoEquilibrio']),
+                'separaGastos' => $this->getArrayBool($result['negocioSeparaGastos']),
+                'elaboraPresupuesto' => $this->getArrayBool($result['negocioElaboraPresupuesto']),
                 "listaEmpleoGanancias" => $result["listaEmpleoGanancias"],
                 "listaEstrategiaVentas" => $result["listaEstrategiaVentas"]
             ];
@@ -166,15 +187,25 @@ class AdminLineaBase extends Admin {
                 'montoMensualVentas' => $result['montoMensualVentas'],
                 'montoMensualEgresos' => $result['montoMensualEgresos'],
                 'montoMensualUtilidades' => $result['montoMensualUtilidades'],
-                'esNegocioPrincipalFuentePersonal' => Util::respuestaBoolToStr($result['esNegocioPrincipalFuentePersonal']),
-                'esNegocioPrincipalFuenteFamiliar' => Util::respuestaBoolToStr($result['esNegocioPrincipalFuenteFamiliar']),
-                'habitoAhorro' => Util::respuestaBoolToStr($result['habitoAhorro']),
-                'cuentaSistemaAhorro' => Util::respuestaBoolToStr($result['cuentaSistemaAhorro']),
-                'detalleSistemaAhorro' => $result['detalleSistemaAhorro'],
-                'montoAhorroMensual' => $result['montoAhorroMensual']
+                'esNegocioPrincipalFuentePersonal' => $this->getArrayBool($result['esNegocioPrincipalFuentePersonal']),
+                'esNegocioPrincipalFuenteFamiliar' => $this->getArrayBool($result['esNegocioPrincipalFuenteFamiliar']),
+                'habitoAhorro' => $this->getArrayBool($result['habitoAhorro']),
+                'sistemaAhorro' => [
+                    "cuenta" => $this->getArrayBool($result['cuentaSistemaAhorro']),
+                    'detalle' => $result['detalleSistemaAhorro']
+                ],
+                'montoAhorroMensual' => $result['montoAhorroMensual'],
+                "objetivosAhorro" => $result["objetivosAhorro"]
             ];
         }
         return $lineaBase;
+    }
+
+    private function getArrayBool($res) {
+        return [
+            "res" => Util::respuestaBoolToStr($res),
+            "val" => $res
+        ];
     }
 
     public function existeLineaBase($idUsuario): bool {
@@ -236,18 +267,19 @@ class AdminLineaBase extends Admin {
         $calleCruce1 = $data["calleCruce1Negocio"];
         $calleCruce2 = $data["calleCruce2Negocio"];
         $numExterior = $data["numExteriorNegocio"];
-        $numInterior = empty($data["numInteriorNegocio"]) ? null : $data["numInterior"];
+        $numInterior = empty($data["numInteriorNegocio"]) ? null : $data["numInteriorNegocio"];
         $codigoPostal = $data["idCodigoPostalNegocio"];
+        $colonia = $data["coloniaNegocio"];
         $cantEmpleados = $data["cantEmpleadosNegocio"];
         $giroNegocio = $data["giroNegocio"];
         [$actividad, $otraActividad] = $data["actividadNegocio"] === "Otra" ? [null, $data["otraActividadNegocio"]] : [$data["actividadNegocio"], null];
         return new LineaBaseNegocio($nombre, $telefono, $calle, $calleCruce1,
-                $calleCruce2, $numExterior, $numInterior, $codigoPostal,
+                $calleCruce2, $numExterior, $numInterior, $codigoPostal, $colonia,
                 $antiguedad, $cantEmpleados, $actividad, $otraActividad, $giroNegocio);
     }
 
     public function construirSeccionSocioeconomico($data): LineaBaseSocioeconomico {
-        $cantidadDependientes = $data["cantidadDependientesEconomicos"];
+        $cantidadDependientes = $data["cantidadDependientesEconomicos"] ?? 0;
         $ocupacionActual = $data["ocupacionActual"];
         $ingresoMensual = $data["ingresoMensual"];
         return new LineaBaseSocioeconomico($cantidadDependientes, $ocupacionActual, $ingresoMensual);
@@ -260,9 +292,11 @@ class AdminLineaBase extends Admin {
         $numeroExterior = $data["numExterior"];
         $numeroInterior = empty($data["numInterior"]) ? null : $data["numInterior"];
         $codigoPostal = $data["idCodigoPostal"];
+        $colonia = $data["colonia"];
         $comunidadParroquial = $data["comunidadParroquial"];
         return new LineaBaseDomicilio($calle, $calleCruce1, $calleCruce2,
-                $numeroExterior, $numeroInterior, $codigoPostal, $comunidadParroquial);
+                $numeroExterior, $numeroInterior,
+                $codigoPostal, $colonia, $comunidadParroquial);
     }
 
     public function construirSeccionIdentificacion($data): LineaBaseIdentificacion {
@@ -275,7 +309,7 @@ class AdminLineaBase extends Admin {
                 $escolaridad, $discapacidad);
     }
 
-    public function construirSeccionPreliminar($data): LineaBasePreliminar {
+    public function construirSeccionPreliminarInicial($data): LineaBasePreliminarInicial {
         $medioConoceFundacion = $data["medioConocimiento"] ?? [];
         $otroMedioConoceFundacion = $data["otroMedioConocimiento"][1] ?? null;
         $razonRecurreFundacion = empty($data["razonRecurre"]) ? null : $data["razonRecurre"];
@@ -283,9 +317,15 @@ class AdminLineaBase extends Admin {
         $solicitaCredito = $data["solicitaCredito"] ?? null;
         $utilizaCredito = $data["utilizaCredito"] ?? null;
         $tiempoDedicaCapacitacion = $data["tiempoCapacitacion"];
-        return new LineaBasePreliminar($medioConoceFundacion, $otroMedioConoceFundacion,
+        return new LineaBasePreliminarInicial($medioConoceFundacion, $otroMedioConoceFundacion,
                 $razonRecurreFundacion, $otraRazonRecurreFundacion, $solicitaCredito, $utilizaCredito,
                 $tiempoDedicaCapacitacion);
+    }
+
+    public function construirSeccionPreliminarFinal($data): LineaBasePreliminarFinal {
+        $huboBeneficioPersonal = $data["huboBeneficioPersonal"];
+        $beneficiosObtenidos = $data["beneficiosObtenidos"] ?? null;
+        return new LineaBasePreliminarFinal($huboBeneficioPersonal, $beneficiosObtenidos);
     }
 
     public function recuperarListaMedioConocimientoFund() {

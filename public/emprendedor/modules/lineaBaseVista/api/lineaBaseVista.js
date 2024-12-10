@@ -16,7 +16,6 @@ function ready() {
 
 function construirFormulario(lineaBase) {
     print(lineaBase);
-
     let construirLista = function (lista) {
         let $lista = $("<ul>", {class: "list-group list-group-flush"});
         if (lista.length > 0) {
@@ -104,7 +103,6 @@ function construirFormulario(lineaBase) {
         $('#analisisNegocio-listaEmpleoGanancias').append(construirLista(lineaBase.analisisNegocio.listaEmpleoGanancias));
         $('#analisisNegocio-listaEstrategiaVentas').append(construirLista(lineaBase.analisisNegocio.listaEstrategiaVentas));
 
-
         $('#administracionIngresos-sueldoMensual').text(lineaBase.administracionIngresos.sueldoMensual);
         $('#administracionIngresos-ventasMensuales').text(lineaBase.administracionIngresos.montoMensualVentas);
         $('#administracionIngresos-gastosMensuales').text(lineaBase.administracionIngresos.montoMensualEgresos);
@@ -115,7 +113,17 @@ function construirFormulario(lineaBase) {
         $('#administracionIngresos-habitoAhorro').text(lineaBase.administracionIngresos.habitoAhorro);
         $('#administracionIngresos-cuentaSistemaAhorro').text(lineaBase.administracionIngresos.cuentaSistemaAhorro);
         $('#administracionIngresos-detalleSistemaAhorro').text(lineaBase.administracionIngresos.detalleSistemaAhorro);
-
+        if (lineaBase.administracionIngresos.objetivosAhorro && lineaBase.administracionIngresos.objetivosAhorro.length > 0) {
+                let objetivosHtml = $('<div>', {class: 'row mb-3'})
+                        .append($('<div>', {class: 'col-sm-8 col-md-8 font-weight-bold', text: 'Objetivos de Ahorro:'}))
+                        .append($('<div>', {class: 'col-sm-4 col-md-4'})
+                                .append($('<ul>', {class: 'list-group'})
+                                        .append($.map(lineaBase.administracionIngresos.objetivosAhorro, function (objetivo, index) {
+                                            return $('<li>', {class: 'list-group-item', text: `${index + 1}. ${objetivo.descripcion}`});
+                                        })))
+                                );
+                $("#objetivosAhorro").append(objetivosHtml);
+            }
     } else {
         $("#infoNegocio").prop("hidden", true);
         $("#msgNoNegocio").prop("hidden", false);

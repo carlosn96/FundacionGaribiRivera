@@ -13,10 +13,10 @@ class LineaBaseAdministracionIngresosNegocio {
     private $tieneHabitoAhorro;
     private $cuentaConSistemaAhorro;
     private $detallesSistemaAhorro;
-    private $objetivosAhorro;
+    private array $objetivosAhorro;
     private $ahorroMensual;
 
-    public function __construct($sueldoMensual, $ventasMensuales, $gastosMensuales, $utilidadesMensuales, $esIngresoPrincipalPersonal, $esIngresoPrincipalFamiliar, $tieneHabitoAhorro, $cuentaConSistemaAhorro, $detallesSistemaAhorro, $objetivosAhorro, $ahorroMensual) {
+    public function __construct($sueldoMensual, $ventasMensuales, $gastosMensuales, $utilidadesMensuales, $esIngresoPrincipalPersonal, $esIngresoPrincipalFamiliar, $tieneHabitoAhorro, $cuentaConSistemaAhorro, $detallesSistemaAhorro, array $objetivosAhorro, $ahorroMensual) {
         $this->sueldoMensual = $sueldoMensual;
         $this->ventasMensuales = $ventasMensuales;
         $this->gastosMensuales = $gastosMensuales;
