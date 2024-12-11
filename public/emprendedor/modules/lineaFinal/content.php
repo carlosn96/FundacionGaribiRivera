@@ -111,7 +111,14 @@
                         <div class="col-md-6" hidden="" id="selectorCodigoPostal">
                             <input name="idCodigoPostalNegocio" id="idCodigoPostalNegocio" hidden="">
                             <label class="form-label" for="codigoPostalNegocio">Código postal:</label>
-                            <select class="select2-data-ajax form-control" id="codigoPostalNegocio" name="codigoPostalNegocio" required=""></select>
+                            <div class="input-group">
+                                <div class="flex-grow-1">
+                                    <select class="select2-data-ajax form-control" id="codigoPostalNegocio" name="codigoPostalNegocio" required=""></select>
+                                </div>
+                                <button class="btn btn-outline-danger" type="button" id="btnCancelarEditarCodigoPostal">
+                                    <i class="ti ti-x"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <div class="mb-4">
@@ -201,7 +208,7 @@
                     </div>
                 </div>
             </section>
-<!-- Análisis del estado del negocio -->
+            <!-- Análisis del estado del negocio -->
             <h6>Análisis del estado del negocio</h6>
             <section>
                 <div id="mensajeNoTieneNegocio1">
