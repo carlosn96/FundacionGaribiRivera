@@ -101,10 +101,14 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
 }
 
 function configurarSeccionInformacionNegocio(negocio) {
-    print(negocio);
+    //print(negocio);
     $("#btnEditarCodigoPostal").click(function () {
         $("#codigoPostalView").hide();
         $("#selectorCodigoPostal").removeAttr("hidden").show();
+    });
+    $("#btnCancelarEditarCodigoPostal").click(function () {
+        $("#codigoPostalView").show();
+        $("#selectorCodigoPostal").attr("hidden", true);
     });
     const TEXTO_OTRA_ACTIVIDAD = "Otra";
     let $actividadNegocio = $("#actividadNegocio");
