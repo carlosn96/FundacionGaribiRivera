@@ -61,7 +61,7 @@
                 <span class="hide-menu">Formación</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link warning-hover-bg" href="../evaluacionFormacion/" aria-expanded="false">
+                    <a class="sidebar-link warning-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
                             <iconify-icon icon="solar:chart-line-duotone" class="fs-6"></iconify-icon>
                         </span>
