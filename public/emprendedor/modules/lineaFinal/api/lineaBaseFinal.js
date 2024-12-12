@@ -2,34 +2,42 @@
 const urlAPI = "api/LineaBaseFinalAPI.php";
 
 function ready() {
-
     bloquearSeccion($("#contenido"));
-/*
- * 
- * FALTA CONSIDERAR EL CASO CUANDO NO EXISTE INFORMACIÓN NEGOCIO
- * 
- */
+    /*
+     * 
+     * FALTA CONSIDERAR EL CASO CUANDO NO EXISTE INFORMACIÓN NEGOCIO
+     * 
+     */
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
-        //print(rs.data);
-        let data = rs.data;
-        if (rs.existeLineaBase) {
-            $.each(rs.checkbox, (idx, elementos) => {
-                crearGroupCheckbox($("#" + idx), elementos, idx);
-            });
-            $.each(rs.selector, (idx, elementos) => {
-                crearSelector($("#" + idx + "List"), idx, elementos);
-            });
-            configurarSeccionPreliminar(data);
-            configurarSeccionInformacionNegocio(data.negocio);
-            configurarSeccionAnalisisNegocio(data.analisisNegocio);
-            configurarSeccionAdministracionIngresosNegocio(data.administracionIngresos);
-            desbloquearSeccion($("#contenido"));
+        //print(rs);
+        let {inicial, final} = rs.lineaBase;
+        if (inicial.existeLineaBase) {
+            if (!final.existeLineaBase) {
+                completarCamposFormulario(rs);
+            } else {
+                redireccionar( "../lineaFinalVista");
+            }
         } else {
-            mostrarMensajeInfo("Sin información disponible de la Linea Base incial", false, () => {
+            mostrarMensajeInfo("Sin información disponible de la Linea Base inicial", false, () => {
                 redireccionar("../lineaBase");
             });
         }
     });
+}
+
+function completarCamposFormulario(rs) {
+    let inicial = rs.lineaBase.inicial;
+    $.each(rs.checkbox, (idx, elementos) => {
+        crearGroupCheckbox($("#" + idx), elementos, idx);
+    });
+    $.each(rs.selector, (idx, elementos) => {
+        crearSelector($("#" + idx + "List"), idx, elementos);
+    });
+    configurarSeccionPreliminar(inicial.data);
+    configurarSeccionInformacionNegocio(inicial.data.negocio);
+    configurarSeccionAnalisisNegocio(inicial.data.analisisNegocio);
+    configurarSeccionAdministracionIngresosNegocio(inicial.data.administracionIngresos);
+    desbloquearSeccion($("#contenido"));
 }
 
 function enviarForm() {
@@ -152,14 +160,14 @@ function configurarSeccionInformacionNegocio(negocio) {
         $('#cantEmpleadosNegocio').val(negocio.cantEmpleados.num);
         $('#coloniaNegocio').val(negocio.codigoPostal.colonia);
         $('#giroNegocio').val(negocio.giro.id);
-        if(negocio.actividad.id) {
-             $actividadNegocio.val(negocio.actividad.id);
+        if (negocio.actividad.id) {
+            $actividadNegocio.val(negocio.actividad.id);
         } else {
             $actividadNegocio.val(TEXTO_OTRA_ACTIVIDAD);
             $actividadNegocio.trigger("change");
             $("#otraActividadNegocio").val(negocio.actividad.descripcion);
         }
-        
+
     }
 }
 
@@ -178,7 +186,7 @@ function configurarSeccionAdministracionIngresosNegocio(administracionIngresos) 
     $(`#esIngresoPrincipalFamiliar${administracionIngresos.esNegocioPrincipalFuenteFamiliar.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
     $(`#habitoAhorro${administracionIngresos.habitoAhorro.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
     if (administracionIngresos.sistemaAhorro.cuenta.val === 1) {
-        $("#detallesSistemaAhorro").val(administracionIngresos.sistemaAhorro.detalles);
+        $("#detallesSistemaAhorro").val(administracionIngresos.sistemaAhorro.detalle);
     } else {
         $("#sistemaAhorroNo").prop('checked', true);
         $("input[name='cuentaConSistemaAhorro']").trigger("change");
@@ -192,12 +200,13 @@ function configurarSeccionAdministracionIngresosNegocio(administracionIngresos) 
 }
 
 function configurarSeccionPreliminar(data) {
+    print(data);
     $('input[name="huboBeneficioPersonal"]').change(function () {
         $('#beneficiosObtenidos').prop('disabled', !($(this).val() === '1'));
     });
     let etapa = data.etapa;
     $("#etapaFormacion").val(etapa.nombre);
-    $("#idEtapa").val(etapa.idEtapa);
+    $("#idLineaBaseInicial").val(data.idLineaBase);
     $("#ocupacionActual").val(data.socioeconomico.ocupacionActual.id);
     $("#ingresoMensual").val(data.socioeconomico.ingresoMensual.id);
 }

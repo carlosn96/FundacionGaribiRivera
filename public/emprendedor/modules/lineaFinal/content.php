@@ -12,10 +12,10 @@
             <!-- Información Preliminar -->
             <h6>Información Preliminar</h6>
             <section>
+                <input class="form-control" name="idLineaBaseInicial" id="idLineaBaseInicial" hidden="">
                 <div class="mb-4">
                     <label for="etapaFormacion" class="form-label">Etapa en la que participas</label>
                     <input class="form-control" name="etapaFormacion" id="etapaFormacion" readonly="">
-                    <input class="form-control" name="idEtapa" id="idEtapa" hidden="">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">¿Consideras que hubo algún beneficio a nivel personal después de la formación o acompañamiento?</label>

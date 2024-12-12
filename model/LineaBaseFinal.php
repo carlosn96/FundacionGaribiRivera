@@ -15,7 +15,7 @@ class LineaBaseFinal {
     private ?LineaBaseAnalisisNegocio $analisisNegocio;
     private ?LineaBaseAdministracionIngresosNegocio $administracionIngresos;
     private int $id;
-    private int $idEtapa;
+    private int $idLineaBaseInicial;
     private int $idUsuario;
     private $fechaCreacion;
 
@@ -23,14 +23,14 @@ class LineaBaseFinal {
             LineaBaseSocioeconomico $socioeconomico, ?LineaBaseNegocio $negocio,
             ?LineaBaseAnalisisNegocio $analisisNegocio,
             ?LineaBaseAdministracionIngresosNegocio $administracionIngresos,
-            int $idEtapa, int $idUsuario, $fechaCreacion = "", int $id = 0) {
+            int $idLineaBaseInicial, int $idUsuario, $fechaCreacion, int $id = 0) {
         $this->preliminar = $preliminar;
         $this->socioeconomico = $socioeconomico;
         $this->negocio = $negocio;
         $this->analisisNegocio = $analisisNegocio;
         $this->administracionIngresos = $administracionIngresos;
         $this->id = $id;
-        $this->idEtapa = $idEtapa;
+        $this->idLineaBaseInicial = $idLineaBaseInicial;
         $this->idUsuario = $idUsuario;
         $this->fechaCreacion = $fechaCreacion;
     }
@@ -59,8 +59,8 @@ class LineaBaseFinal {
         return $this->id;
     }
 
-    public function getIdEtapa(): int {
-        return $this->idEtapa;
+    public function getIdLineaBaseInicial(): int {
+        return $this->idLineaBaseInicial;
     }
 
     public function getIdUsuario(): int {
@@ -95,8 +95,8 @@ class LineaBaseFinal {
         $this->id = $id;
     }
 
-    public function setIdEtapa(int $idEtapa): void {
-        $this->idEtapa = $idEtapa;
+    public function setIdLineaBaseInicial(int $idLineaBaseInicial): void {
+        $this->idLineaBaseInicial = $idLineaBaseInicial;
     }
 
     public function setIdUsuario(int $idUsuario): void {
