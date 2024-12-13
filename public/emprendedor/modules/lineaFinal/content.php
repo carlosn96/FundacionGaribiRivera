@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <!-- Campos adicionales para "Sí tiene negocio" -->
-                <div  id="camposTieneNegocio">
+                <div  id="camposTieneNegocio" hidden="">
                     <div class="row">
                         <!-- Nombre del negocio -->
                         <div class="col-md-6">

@@ -5,13 +5,7 @@ include_once '../../../../../loader.php';
 class LineaBaseAPI extends API {
 
     function consultarLineaBase() {
-        $admin = getAdminLineaBase();
-        $usuario = Sesion::obtenerIDUsuarioActual();
-        $existeLineaBase = $admin->existeLineaBase($usuario);
-        $this->enviarRespuesta([
-            "existeLineaBase" => $existeLineaBase,
-            "data" => $existeLineaBase ? $admin->consultarLineaBaseInicial($usuario) : []
-        ]);
+        $this->enviarRespuesta(getAdminLineaBase()->getLineaBase(Sesion::obtenerIDUsuarioActual())["inicial"]);
     }
 }
 

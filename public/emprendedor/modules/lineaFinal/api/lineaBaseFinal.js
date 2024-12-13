@@ -3,11 +3,6 @@ const urlAPI = "api/LineaBaseFinalAPI.php";
 
 function ready() {
     bloquearSeccion($("#contenido"));
-    /*
-     * 
-     * FALTA CONSIDERAR EL CASO CUANDO NO EXISTE INFORMACIÓN NEGOCIO
-     * 
-     */
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
         //print(rs);
         let {inicial, final} = rs.lineaBase;
@@ -15,7 +10,7 @@ function ready() {
             if (!final.existeLineaBase) {
                 completarCamposFormulario(rs);
             } else {
-                redireccionar( "../lineaFinalVista");
+                redireccionar("../lineaFinalVista");
             }
         } else {
             mostrarMensajeInfo("Sin información disponible de la Linea Base inicial", false, () => {
@@ -26,17 +21,17 @@ function ready() {
 }
 
 function completarCamposFormulario(rs) {
-    let inicial = rs.lineaBase.inicial;
+    let inicial = rs.lineaBase.inicial.data;
     $.each(rs.checkbox, (idx, elementos) => {
         crearGroupCheckbox($("#" + idx), elementos, idx);
     });
     $.each(rs.selector, (idx, elementos) => {
         crearSelector($("#" + idx + "List"), idx, elementos);
     });
-    configurarSeccionPreliminar(inicial.data);
-    configurarSeccionInformacionNegocio(inicial.data.negocio);
-    configurarSeccionAnalisisNegocio(inicial.data.analisisNegocio);
-    configurarSeccionAdministracionIngresosNegocio(inicial.data.administracionIngresos);
+    configurarSeccionPreliminar(inicial);
+    configurarSeccionInformacionNegocio(inicial.negocio);
+    configurarSeccionAnalisisNegocio(inicial.analisisNegocio);
+    configurarSeccionAdministracionIngresosNegocio(inicial.administracionIngresos);
     desbloquearSeccion($("#contenido"));
 }
 
@@ -67,45 +62,48 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
         $("#estrategiasIncrementarVentas").prop("hidden", $(this).is(":checked"));
     });
 
-    //Asignacion de valores
-    $(`#registros${analisisNegocio.registraEntradaSalida.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#sueldo${analisisNegocio.asignaSueldo.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#utilidad${analisisNegocio.conoceUtilidades.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    if (analisisNegocio.competencia.identifica.val === 1) {
-        $(`#competenciaSi`).prop('checked', true);
-        $("#competenciaField").prop("hidden", false);
-        $("#quienCompetencia").val(analisisNegocio.competencia.quien);
-    }
-    $("#clientesNegocio").val(analisisNegocio.clientesNegocio);
-    $("#ventajasNegocio").val(analisisNegocio.ventajasNegocio);
-    $("#problemasNegocio").val(analisisNegocio.problemasNegocio);
+    if (analisisNegocio !== undefined) {
+        //Asignacion de valores
+        $(`#registros${analisisNegocio.registraEntradaSalida.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#sueldo${analisisNegocio.asignaSueldo.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#utilidad${analisisNegocio.conoceUtilidades.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        if (analisisNegocio.competencia.identifica.val === 1) {
+            $(`#competenciaSi`).prop('checked', true);
+            $("#competenciaField").prop("hidden", false);
+            $("#quienCompetencia").val(analisisNegocio.competencia.quien);
+        }
+        $("#clientesNegocio").val(analisisNegocio.clientesNegocio);
+        $("#ventajasNegocio").val(analisisNegocio.ventajasNegocio);
+        $("#problemasNegocio").val(analisisNegocio.problemasNegocio);
 
-    if (analisisNegocio.listaEstrategiaVentas.length !== 0) {
-        analisisNegocio.listaEstrategiaVentas.forEach(item => {
-            $(`#estrategiasIncrementarVentas${item.idEstrategia}`).prop('checked', true);
+        if (analisisNegocio.listaEstrategiaVentas.length !== 0) {
+            analisisNegocio.listaEstrategiaVentas.forEach(item => {
+                $(`#estrategiasIncrementarVentas${item.idEstrategia}`).prop('checked', true);
+            });
+        } else {
+            $(`#noSeComoResponderEstrategias`).prop('checked', true);
+        }
+        analisisNegocio.listaEmpleoGanancias.forEach(item => {
+            $('#comoEmpleaGanancias' + item.idEmpleoGanancia).prop('checked', true);
         });
-    } else {
-        $(`#noSeComoResponderEstrategias`).prop('checked', true);
+        if (analisisNegocio.conoceProductosMayorUtilidad.conoce.val === 1) {
+            $(`#conoceProductosMayorUtilidadSi`).prop('checked', true);
+            $("#utilidadProductosField").prop("hidden", false);
+            $("#porcentajeGanancias").val(analisisNegocio.conoceProductosMayorUtilidad.porcentaje);
+        }
+        if (analisisNegocio.ahorro.asigna.val === 1) {
+            $(`#ahorroSi`).prop('checked', true);
+            $("#cuantoAhorroField").prop("hidden", false);
+            $("#cuantoAhorro").val(analisisNegocio.ahorro.detalles);
+            $("#razonesNoAhorroField").prop("hidden", true);
+        } else {
+            $("#razonesNoAhorro").val(analisisNegocio.ahorro.detalles);
+        }
+        $(`#conocePuntoEquilibrio${analisisNegocio.conoceUtilidades.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#separaGastos${analisisNegocio.separaGastos.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#elaboraPresupuesto${analisisNegocio.elaboraPresupuesto.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+
     }
-    analisisNegocio.listaEmpleoGanancias.forEach(item => {
-        $('#comoEmpleaGanancias' + item.idEmpleoGanancia).prop('checked', true);
-    });
-    if (analisisNegocio.conoceProductosMayorUtilidad.conoce.val === 1) {
-        $(`#conoceProductosMayorUtilidadSi`).prop('checked', true);
-        $("#utilidadProductosField").prop("hidden", false);
-        $("#porcentajeGanancias").val(analisisNegocio.conoceProductosMayorUtilidad.porcentaje);
-    }
-    if (analisisNegocio.ahorro.asigna.val === 1) {
-        $(`#ahorroSi`).prop('checked', true);
-        $("#cuantoAhorroField").prop("hidden", false);
-        $("#cuantoAhorro").val(analisisNegocio.ahorro.detalles);
-        $("#razonesNoAhorroField").prop("hidden", true);
-    } else {
-        $("#razonesNoAhorro").val(analisisNegocio.ahorro.detalles);
-    }
-    $(`#conocePuntoEquilibrio${analisisNegocio.conoceUtilidades.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#separaGastos${analisisNegocio.separaGastos.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#elaboraPresupuesto${analisisNegocio.elaboraPresupuesto.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
 }
 
 function configurarSeccionInformacionNegocio(negocio) {
@@ -126,7 +124,6 @@ function configurarSeccionInformacionNegocio(negocio) {
             $("#otraActividadDiv").prop("hidden", $('#actividadNegocio option:selected').text() !== TEXTO_OTRA_ACTIVIDAD);
         });
     }
-    // Handle the "tieneNegocio" input changes
     $("input[name='tieneNegocio']").change(function () {
         let tieneNegocio = $(this).val() === "1";
         $("#camposTieneNegocio").prop("hidden", !tieneNegocio);
@@ -167,7 +164,6 @@ function configurarSeccionInformacionNegocio(negocio) {
             $actividadNegocio.trigger("change");
             $("#otraActividadNegocio").val(negocio.actividad.descripcion);
         }
-
     }
 }
 
@@ -178,29 +174,31 @@ function configurarSeccionAdministracionIngresosNegocio(administracionIngresos) 
         $("#seccionDetallesSistemaAhorro").prop("hidden", sinSistema);
         $("#detallesSistemaAhorro").attr("disabled", sinSistema);
     });
-    $("#ventasMensuales").val(administracionIngresos.montoMensualVentas);
-    $("#gastosMensuales").val(administracionIngresos.montoMensualEgresos);
-    $("#utilidadesMensuales").val(administracionIngresos.montoMensualUtilidades);
-    $("#sueldoMensual").val(administracionIngresos.sueldoMensual);
-    $(`#ingresoPrincipal${administracionIngresos.esNegocioPrincipalFuentePersonal.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#esIngresoPrincipalFamiliar${administracionIngresos.esNegocioPrincipalFuenteFamiliar.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    $(`#habitoAhorro${administracionIngresos.habitoAhorro.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-    if (administracionIngresos.sistemaAhorro.cuenta.val === 1) {
-        $("#detallesSistemaAhorro").val(administracionIngresos.sistemaAhorro.detalle);
-    } else {
-        $("#sistemaAhorroNo").prop('checked', true);
-        $("input[name='cuentaConSistemaAhorro']").trigger("change");
+    if (administracionIngresos !== undefined) {
+        $("#ventasMensuales").val(administracionIngresos.montoMensualVentas);
+        $("#gastosMensuales").val(administracionIngresos.montoMensualEgresos);
+        $("#utilidadesMensuales").val(administracionIngresos.montoMensualUtilidades);
+        $("#sueldoMensual").val(administracionIngresos.sueldoMensual);
+        $(`#ingresoPrincipal${administracionIngresos.esNegocioPrincipalFuentePersonal.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#esIngresoPrincipalFamiliar${administracionIngresos.esNegocioPrincipalFuenteFamiliar.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        $(`#habitoAhorro${administracionIngresos.habitoAhorro.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
+        if (administracionIngresos.sistemaAhorro.cuenta.val === 1) {
+            $("#detallesSistemaAhorro").val(administracionIngresos.sistemaAhorro.detalle);
+        } else {
+            $("#sistemaAhorroNo").prop('checked', true);
+            $("input[name='cuentaConSistemaAhorro']").trigger("change");
+        }
+        if (administracionIngresos.objetivosAhorro.length !== 0) {
+            administracionIngresos.objetivosAhorro.forEach(item => {
+                $(`#objetivosAhorro${item.id_objetivo}`).prop('checked', true);
+            });
+        }
+        $("#ahorroMensual").val(administracionIngresos.montoAhorroMensual);
     }
-    if (administracionIngresos.objetivosAhorro.length !== 0) {
-        administracionIngresos.objetivosAhorro.forEach(item => {
-            $(`#objetivosAhorro${item.id_objetivo}`).prop('checked', true);
-        });
-    }
-    $("#ahorroMensual").val(administracionIngresos.montoAhorroMensual);
 }
 
 function configurarSeccionPreliminar(data) {
-    print(data);
+    //print(data);
     $('input[name="huboBeneficioPersonal"]').change(function () {
         $('#beneficiosObtenidos').prop('disabled', !($(this).val() === '1'));
     });

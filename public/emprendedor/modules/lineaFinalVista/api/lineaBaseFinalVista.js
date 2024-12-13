@@ -29,23 +29,33 @@ function completarCamposFormulario(data) {
     // Asignar datos socioeconómicos
     $("#ocupacionActual").text(socioeconomico.ocupacionActual.descripcion);
     $("#ingresoMensual").text(socioeconomico.ingresoMensual.descripcion);
+    if (negocio) {
+        // Asignar datos del negocio
+        $("#nombreNegocio").text(negocio.nombre);
+        $("#telefonoNegocio").text(negocio.telefono);
+        $("#direccionNegocio").text(direccionNegocio);
+        $("#giroNegocio").text(negocio.giro.descripcion);
+        $("#actividadNegocio").text(negocio.actividad.descripcion);
 
-    // Asignar datos del negocio
-    $("#nombreNegocio").text(negocio.nombre);
-    $("#telefonoNegocio").text(negocio.telefono);
-    $("#direccionNegocio").text(direccionNegocio);
-    $("#giroNegocio").text(negocio.giro.descripcion);
-    $("#actividadNegocio").text(negocio.actividad.descripcion);
+        // Asignar datos del análisis del negocio
+        $("#problemasNegocio").text(analisisNegocio.problemasNegocio);
+        $("#clientesNegocio").text(analisisNegocio.clientesNegocio);
+        $("#ventajasNegocio").text(analisisNegocio.ventajasNegocio);
 
-    // Asignar datos del análisis del negocio
-    $("#problemasNegocio").text(analisisNegocio.problemasNegocio);
-    $("#clientesNegocio").text(analisisNegocio.clientesNegocio);
-    $("#ventajasNegocio").text(analisisNegocio.ventajasNegocio);
+        // Asignar datos de administración de ingresos
+        $("#ventasMensuales").text(administracionIngresos.montoMensualVentas);
+        $("#gastosMensuales").text(administracionIngresos.montoMensualEgresos);
+        $("#utilidadesMensuales").text(administracionIngresos.montoMensualUtilidades);
+        $("#sueldoMensual").text(administracionIngresos.sueldoMensual);
+    } else {
+        $("#infoNegocio").html(crearAlertaNoNegocio());
+        $("#analisisNegocio").html(crearAlertaNoNegocio());
+    }
+}
 
-    // Asignar datos de administración de ingresos
-    $("#ventasMensuales").text(administracionIngresos.montoMensualVentas);
-    $("#gastosMensuales").text(administracionIngresos.montoMensualEgresos);
-    $("#utilidadesMensuales").text(administracionIngresos.montoMensualUtilidades);
-    $("#sueldoMensual").text(administracionIngresos.sueldoMensual);
-
+function crearAlertaNoNegocio() {
+    return $("<div>", {
+        class: "alert alert-warning text-warning alert-dismissible fade show",
+        role: "alert"
+    }).append($("<strong>").text("Sin información del negocio"));
 }

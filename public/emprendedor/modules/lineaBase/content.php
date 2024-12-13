@@ -207,10 +207,8 @@
                         <div class="mb-3 d-flex flex-column align-items-center">
                             <label class="form-label"><strong>¿Actualmente tienes un negocio?<span class="text-danger">*</span></strong></label>
                             <div class="d-flex flex-wrap gap-6">
-
                                 <input type="radio" class="btn-check" id="tieneNegocioSi" name="tieneNegocio" autocomplete="off" value="1">
                                 <label class="btn btn-outline-warning" for="tieneNegocioSi">Si</label>
-
                                 <input type="radio" class="btn-check" id="tieneNegocioNo" name="tieneNegocio" autocomplete="off" value="0" checked="">
                                 <label class="btn btn-outline-warning" for="tieneNegocioNo">No</label>
                             </div>

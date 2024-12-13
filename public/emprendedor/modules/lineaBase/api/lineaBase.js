@@ -2,9 +2,7 @@
 const urlAPI = "api/LineaBaseAPI.php";
 
 function ready() {
-
     bloquearSeccion($("#contenido"));
-
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
         print(rs);
         if (rs.existeLineaBase) {
@@ -35,13 +33,6 @@ function ready() {
 }
 
 function enviarForm() {
-    //seccion Información preliminar
-    /*if (isArrayEmpty(recuperarListadoInputsValue("input[name='medioConocimiento[]']:checked")) && 
-     isArrayEmpty(recuperarListadoInputsValue("input[name='otroMedioConocimiento[]']:checked"))) {
-     mostrarMensajeAdvertencia("Selecciona al menos un elemento de la pregunta '¿Cómo te enteresaste de la Fundación?'", false);
-     } else {
-     crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()}, print, ()=>{}, "text");
-     }*/
     crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
 }
 
@@ -88,7 +79,6 @@ function configurarSeccionInformacionNegocio() {
         $("#seccionAnalisisNegocio").prop("hidden", !tieneNegocio);
         $("#seccionAdministracionIngresosNegocio").prop("hidden", !tieneNegocio);
     });
-
     configurarCampoCodigoPostal($("#codigoPostalNegocio"), function (idCodigoPostal, estado, municipio, colonia) {
         $("#idCodigoPostalNegocio").val(idCodigoPostal);
         $("#estadoNegocio").val(estado);

@@ -127,6 +127,5 @@ function construirFormulario(lineaBase) {
     } else {
         $("#infoNegocio").prop("hidden", true);
         $("#msgNoNegocio").prop("hidden", false);
-
     }
 }

@@ -15,8 +15,11 @@ class LineaBaseDAO extends DAO {
     private const CONSULTAR_LINEA_BASE_FINAL = "SELECT * FROM recuperar_linea_base_final WHERE idUsuario = ?";
     private const CONSULTAR_LISTA_MEDIO_CONOCIMIENTO = "SELECT * FROM recuperar_linea_base_lista_medio_conocimiento WHERE idLineaBase = ?";
     private const CONSULTAR_LISTA_EMPLEO_GANANCIAS = "SELECT * FROM recuperar_linea_base_lista_empleo_ganancias WHERE idLineaBase = ?";
-    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_linea_base_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
-    private const LISTAR_OBJETIVOS_AHORRO = "SELECT * FROM listar_objetivos_ahorro WHERE id_linea_base = ?";
+    private const CONSULTAR_LISTA_EMPLEO_GANANCIAS_FINAL = "SELECT * FROM recuperar_linea_base_lista_empleo_ganancias WHERE idLineaBase = ?";
+    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_linea_base_final_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
+    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
+    private const LISTAR_OBJETIVOS_AHORRO = "SELECT * FROM recuperar_linea_base_lista_objetivos_ahorro WHERE id_linea_base = ?";
+    private const LISTAR_OBJETIVOS_AHORRO_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_objetivos_ahorro WHERE id_linea_base = ?";
 
     public function listarEmprendedoresLineaBase() {
         $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE);
@@ -107,13 +110,10 @@ class LineaBaseDAO extends DAO {
 
     private function consultarLineaBaseFinal($idUsuario) {
         $lb = $this->selectPorId(self::CONSULTAR_LINEA_BASE_FINAL, $idUsuario);
-        
-        /*
-        $id = $lb["idLineaBase"];
-        $lb["listaMedioConoceFundacion"] = $this->selectAllPorId(self::CONSULTAR_LISTA_MEDIO_CONOCIMIENTO, $id);
-        $lb["listaEmpleoGanancias"] = $this->selectAllPorId(self::CONSULTAR_LISTA_EMPLEO_GANANCIAS, $id);
-        $lb["listaEstrategiaVentas"] = $this->selectAllPorId(self::CONSULTAR_LISTA_ESTRATEGIAS_VENTAS, $id);
-        $lb["objetivosAhorro"] = $this->selectAllPorId(self::LISTAR_OBJETIVOS_AHORRO, $id);*/
+        $id = $lb["idLineaBaseFinal"];
+        $lb["listaEmpleoGanancias"] = $this->selectAllPorId(self::CONSULTAR_LISTA_EMPLEO_GANANCIAS_FINAL, $id);
+        $lb["listaEstrategiaVentas"] = $this->selectAllPorId(self::CONSULTAR_LISTA_ESTRATEGIAS_VENTAS_FINAL, $id);
+        $lb["objetivosAhorro"] = $this->selectAllPorId(self::LISTAR_OBJETIVOS_AHORRO_FINAL, $id);
         return $lb;
     }
 

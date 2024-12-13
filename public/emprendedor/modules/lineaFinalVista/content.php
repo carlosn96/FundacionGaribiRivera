@@ -31,32 +31,33 @@
 
             <!-- Datos Socioeconómicos -->
             <div class="tab-pane fade" id="socioeconomico" role="tabpanel" aria-labelledby="socioeconomico-tab">
-                <h4 class="mt-4">Datos Socioeconómicos</h4>
                 <p><strong>Ocupación actual:</strong> <span id="ocupacionActual"></span></p>
                 <p><strong>Ingreso mensual:</strong> <span id="ingresoMensual"></span></p>
             </div>
 
             <!-- Información del Negocio -->
             <div class="tab-pane fade" id="negocio" role="tabpanel" aria-labelledby="negocio-tab">
-                <h4 class="mt-4">Información del Negocio</h4>
-                <p><strong>Nombre:</strong> <span id="nombreNegocio"></span></p>
-                <p><strong>Teléfono:</strong> <span id="telefonoNegocio"></span></p>
-                <p><strong>Dirección:</strong> <span id="direccionNegocio"></span></p>
-                <p><strong>Giro:</strong> <span id="giroNegocio"></span></p>
-                <p><strong>Actividad:</strong> <span id="actividadNegocio"></span></p>
+                <div id="infoNegocio">
+                    <p><strong>Nombre:</strong> <span id="nombreNegocio"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="telefonoNegocio"></span></p>
+                    <p><strong>Dirección:</strong> <span id="direccionNegocio"></span></p>
+                    <p><strong>Giro:</strong> <span id="giroNegocio"></span></p>
+                    <p><strong>Actividad:</strong> <span id="actividadNegocio"></span></p>
+                </div>
             </div>
 
             <!-- Análisis del Negocio -->
             <div class="tab-pane fade" id="analisis" role="tabpanel" aria-labelledby="analisis-tab">
-                <h4 class="mt-4">Análisis del Negocio</h4>
-                <p><strong>Problemas:</strong> <span id="problemasNegocio"></span></p>
-                <p><strong>Clientes:</strong> <span id="clientesNegocio"></span></p>
-                <p><strong>Ventajas:</strong> <span id="ventajasNegocio"></span></p>
+                <div id="analisisNegocio">
+                    <h4 class="mt-4">Análisis del Negocio</h4>
+                    <p><strong>Problemas:</strong> <span id="problemasNegocio"></span></p>
+                    <p><strong>Clientes:</strong> <span id="clientesNegocio"></span></p>
+                    <p><strong>Ventajas:</strong> <span id="ventajasNegocio"></span></p>
+                </div>
             </div>
 
             <!-- Administración de Ingresos -->
             <div class="tab-pane fade" id="ingresos" role="tabpanel" aria-labelledby="ingresos-tab">
-                <h4 class="mt-4">Administración de Ingresos</h4>
                 <p><strong>Ventas Mensuales:</strong> $<span id="ventasMensuales"></span></p>
                 <p><strong>Gastos Mensuales:</strong> $<span id="gastosMensuales"></span></p>
                 <p><strong>Utilidades Mensuales:</strong> $<span id="utilidadesMensuales"></span></p>
