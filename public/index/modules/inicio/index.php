@@ -30,7 +30,7 @@
                                     <form id="loginForm">
                                         <div class="mb-3">
                                             <label for="correo" class="form-label">Correo electrónico:</label>
-                                            <input value="joannescaroluscopias@gmail.com" type="email" class="form-control" id="correo" name="correo" required>
+                                            <input value="carlos_n96@hotmail.com" type="email" class="form-control" id="correo" name="correo" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="contrasena" class="form-label">Contraseña:</label>

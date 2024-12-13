@@ -121,7 +121,7 @@ define("ES_VALOR_ERROR", true);
 define("NO_ES_VALOR_ERROR", !ES_VALOR_ERROR);
 
 spl_autoload_register(function ($clase) {
-    $directorios = ["admin", "dao", "dao/util", "model", "controller", "libs"];
+    $directorios = ["admin", "dao", "dao/util", "model", "model/impacto", "controller", "libs"];
     foreach ($directorios as $directorio) {
         if (buscar(ROOT_APP . $directorio, $clase)) {
             return;
@@ -171,4 +171,8 @@ function getAdminUsuario(): AdminUsuario {
 
 function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento {
     return AdminFactory::getAdminVisitaSeguimiento();
+}
+
+function getAdminImpacto(): AdminImpacto {
+    return AdminFactory::getAdminImpacto();
 }

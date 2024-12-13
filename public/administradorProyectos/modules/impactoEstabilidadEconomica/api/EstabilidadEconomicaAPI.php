@@ -2,18 +2,13 @@
 
 include_once '../../../../../loader.php';
 
-class SeguimientoCasoAPI extends API {
+class EstabilidadEconomicaAPI extends API {
 
-    function recuperarEmprendedores() {
-        $this->enviarRespuesta(getAdminLineaBase()->listarEmprendoresConLineaBase());
-    }
-
-    function recuperarSeguimientoCaso() {
-        $this->enviarRespuesta(["seguimientoCaso" => getAdminEmprendedor()->recuperarSeguimientoCaso($this->data["idLineaBase"])]);
-    }
-    function eliminarSeguimientoCaso() {
-        $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarSeguimientoCaso($this->data["id"]));
+    function recuperarSecciones() {
+        $this->enviarRespuesta([
+            "secciones" => getAdminImpacto()->getImpactos()
+        ]);
     }
 }
 
-Util::iniciarAPI(SeguimientoCasoAPI::class);
+Util::iniciarAPI(EstabilidadEconomicaAPI::class);

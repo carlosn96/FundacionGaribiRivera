@@ -1,7 +1,15 @@
-const urlAPI = "api/ImpactoCalidaVidaAPI.php";
+const urlAPI = "api/EstabilidadEconomicaAPI.php";
 
 function ready() {
+    completarParametrosConfiguracion();
 
+    crearPeticion(urlAPI, {case: "recuperarSecciones"}, (res) => {
+        print(res);
+    });
+
+}
+
+function completarParametrosConfiguracion() {
     let currentYear = new Date().getFullYear();
     let startYear = 2020;
     let endYear = currentYear;
@@ -12,16 +20,12 @@ function ready() {
         $('#añoInicio').append(new Option(year, year));
         $('#añoFinal').append(new Option(year, year));
     }
-
-
     $('#añoInicio').val(startYear);
     $('#añoFinal').val(endYear);
-
     // Validar que el año final no sea menor que el año de inicio
     $('#añoInicio, #añoFinal').change(function () {
         let añoInicio = parseInt($('#añoInicio').val());
         let añoFinal = parseInt($('#añoFinal').val());
-
         // Verificar si el año de inicio es mayor que el año final
         if (añoInicio > añoFinal) {
             alert('El año de inicio no puede ser mayor que el año final.');
@@ -33,15 +37,11 @@ function ready() {
                 $('#añoFinal').val(añoInicio);
             }
         }
-
         // Actualizar los valores en la narrativa
         $('#anioInicioNarrativa').text(añoInicio);
         $('#anioFinalNarrativa').text(añoFinal);
-
     });
 }
-
-
 
 function updateImpacto(section) {
     const obtenido = parseFloat(document.getElementById(`obtenido${section}`).innerText.replace('%', ''));
