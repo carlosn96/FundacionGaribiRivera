@@ -67,22 +67,14 @@
                     </a>
                 </li>
                 <li class="nav-small-cap">
-                    <span class="hide-menu">Cálculo de impacto</span>
+                    <span class="hide-menu">Impacto</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../impactoEstabilidadEconomica/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactos/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Estabilidad economica</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../impactoCalidadVida/" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="game-icons:life-bar" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Calidad de vida</span>
+                        <span class="hide-menu ps-1">Medición de Impactos</span>
                     </a>
                 </li>
             </ul>
