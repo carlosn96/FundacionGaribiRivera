@@ -51,4 +51,8 @@ abstract class API {
     function getData($key) {
         return $this->data[$key] ?? "";
     }
+    
+    function getUsuarioActual() {
+        return  Sesion::obtenerIDUsuarioActual();
+    }
 }

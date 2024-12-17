@@ -7,7 +7,11 @@ class AdminImpacto extends Admin {
         parent::__construct(new ImpactoDAO());
     }
     
-    public function getMedicionImpacto() {
-        return $this->dao->getMedicionImpacto();
+    public function getMedicionImpacto($usuario) {
+        return $this->dao->getMedicionImpacto($usuario);
+    }
+    
+    public function actualizarConfiguracionAnios($inicio, $fin, $usuario) {
+        return $this->dao->actualizarConfiguracionAnios($inicio, $fin, $usuario);
     }
 }

@@ -1,6 +1,6 @@
-const urlAPI = "api/EstabilidadEconomicaAPI.php";
+const urlAPI = "api/MedicionImpactosAPI.php";
 function ready() {
-    crearPeticion(urlAPI, {case: "recuperarSecciones"}, (res) => {
+    crearPeticion(urlAPI, {case: "consultarMedicionImpactos"}, (res) => {
         print(res);
         generarImpactoHTML(res);
         completarParametrosConfiguracion();
@@ -10,27 +10,19 @@ function ready() {
 function generarImpactoHTML(data) {
     // Limpia el contenedor principal antes de generar las nuevas tarjetas.
     $("#impacto-container").empty();
-
     // Crear las tabs principales dinámicamente según los datos
     const mainTabs = $("<ul>", {class: "nav nav-tabs", id: "mainTabs", role: "tablist"});
     const mainTabsContent = $("<div>", {class: "tab-content mt-3", id: "mainTabsContent"});
-
     // Tab IMPACTOS
     mainTabs.append(
-            $("<li>", {class: "nav-item", role: "presentation"}).append(
-            $("<button>", {
-                class: "nav-link active",
-                id: "impactos-tab",
-                "data-bs-toggle": "tab",
-                "data-bs-target": "#impactos",
-                type: "button",
-                role: "tab",
-                "aria-controls": "impactos",
-                "aria-selected": "true",
-                text: "Impactos"
-            })
-            )
-            );
+            $("<li>", {class: "nav-item", role: "presentation"}).append
+            ($("<button>",
+                    {class: "nav-link active", id: "impactos-tab", "data-bs-toggle": "tab",
+                        "data-bs-target": "#impactos", type: "button", role: "tab",
+                        "aria-controls": "impactos", "aria-selected": "true",
+                        text: "Medición"
+                    })
+                    ));
 
     // Tab PARÁMETROS DE CONFIGURACIÓN
     mainTabs.append(
@@ -63,7 +55,6 @@ function generarImpactoHTML(data) {
 
     data.impactos.forEach((impacto, index) => {
         const subTabId = `impacto-${index}`;
-
         // Subtab navigation
         impactoSubTabs.append(
                 $("<li>", {class: "nav-item", role: "presentation"}).append(
@@ -115,7 +106,6 @@ function generarImpactoHTML(data) {
                     )
                     );
         });
-
         table.append(tbody);
         subTabContent.append(
                 $("<h5>", {text: "Cálculos ponderados para obtener el impacto."}),
@@ -131,68 +121,58 @@ function generarImpactoHTML(data) {
 
         impactoSubTabsContent.append(subTabContent);
     });
-
     // Agregar los subtabs de impactos al tab IMPACTOS
     impactosTabContent.append(impactoSubTabs, impactoSubTabsContent);
     mainTabsContent.append(impactosTabContent);
-    print(data.fechas.inicio);
     // Crear el contenido de Parámetros de Configuración
-    // Crear el contenido de Parámetros de Configuración
-// Crear el contenido de Parámetros de Configuración
-mainTabsContent.append(
-    $("<div>", {
-        class: "tab-pane fade",
-        id: "configuracion",
-        role: "tabpanel",
-        "aria-labelledby": "configuracion-tab"
-    }).append(
-        $("<p>", { text: "Ajuste los parámetros de configuración según sea necesario para calcular el impacto." }),
-        
-        // Año de Inicio
-        $("<div>", { class: "mb-3" }).append(
-            $("<label>", { for: "añoInicio", class: "form-label", text: "Año de Inicio" }),
+    mainTabsContent.append(
+            $("<div>", {
+                class: "tab-pane fade",
+                id: "configuracion",
+                role: "tabpanel",
+                "aria-labelledby": "configuracion-tab"
+            }).append(
+            $("<p>", {text: "Ajuste los parámetros de configuración según sea necesario para calcular el impacto."}),
+            // Año de Inicio
+            $("<div>", {class: "mb-3"}).append(
+            $("<label>", {for : "añoInicio", class: "form-label", text: "Año de Inicio"}),
             $("<select>", {
                 class: "form-select",
                 id: "añoInicio"
             }).append(
-                // Llenar opciones de años basados en el rango de años en data.fechas
-                ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
-                    const yearValue = data.fechas.inicio + yearOffset;
-                    return $("<option>", {
-                        value: yearValue,
-                        text: yearValue,
-                        selected: data.fechas.inicioSelected
-                    });
-                })
+            // Llenar opciones de años basados en el rango de años en data.fechas
+            ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
+        const yearValue = data.fechas.inicio + yearOffset;
+        return $("<option>", {
+            value: yearValue,
+            text: yearValue
+        });
+    })
             )
-        ),
-
-        // Año Final
-        $("<div>", { class: "mb-3" }).append(
-            $("<label>", { for: "añoFinal", class: "form-label", text: "Año Final" }),
+            ),
+            // Año Final
+            $("<div>", {class: "mb-3"}).append(
+            $("<label>", {for : "añoFinal", class: "form-label", text: "Año Final"}),
             $("<select>", {
                 class: "form-select",
                 id: "añoFinal"
             }).append(
-                // Llenar opciones de años basados en el rango de años en data.fechas
-                ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
-                    const yearValue = data.fechas.inicio + yearOffset;
-                    return $("<option>", {
-                        value: yearValue,
-                        text: yearValue,
-                        selected: data.fechas.finSelected
-                    });
-                })
+            // Llenar opciones de años basados en el rango de años en data.fechas
+            ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
+        const yearValue = data.fechas.inicio + yearOffset;
+        return $("<option>", {
+            value: yearValue,
+            text: yearValue
+        });
+    })
             )
-        )
-    )
-);
-
-
-
+            )
+            )
+            );
     // Agregar las tabs principales y su contenido al contenedor
     $("#impacto-container").append(mainTabs, mainTabsContent);
-    
+    $('#añoInicio').val(data.fechas.inicioSelected);
+    $('#añoFinal').val(data.fechas.finSelected);
 }
 
 
@@ -202,16 +182,19 @@ function completarParametrosConfiguracion() {
         let añoInicio = parseInt($('#añoInicio').val());
         let añoFinal = parseInt($('#añoFinal').val());
         if (añoInicio > añoFinal) {
-            alert('El año de inicio no puede ser mayor que el año final.');
+            mostrarMensajeAdvertencia('El año de inicio no puede ser mayor que el año final.', false);
             if ($('#añoInicio').val() !== añoInicio) {
                 $('#añoInicio').val(añoFinal);
             } else {
                 $('#añoFinal').val(añoInicio);
             }
+        } else {
+            let data = {anioInicio: añoInicio, anioFin: añoFinal};
+            crearPeticion(urlAPI, {case: "actualizarConfiguracionAnios", data: $.param(data)}, (res) => {
+                if (!res.es_valor_error) {
+                    refresh();
+                }
+            });
         }
-
-        /*/ Actualizar los valores en la narrativa después de la validación
-        $('#anioInicioNarrativa').text($('#añoInicio').val());
-        $('#anioFinalNarrativa').text($('#añoFinal').val());*/
     });
 }
