@@ -79,23 +79,29 @@ class ImpactoDAO extends DAO {
     public function getMedicionImpacto(): array {
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica();
         $calidadVida = $this->recuperarCalidadVida();
-
         $sumaPromediosEstabilidad = array_sum(array_column($estabilidadEconomica, 'promedio'));
-
         $calidadVida[] = (new Seccion("Estabilidad económica", 50, [], $sumaPromediosEstabilidad))->toSeccionArray();
 
         return [
-            [
-                "nombre" => "Estabilidad económica",
-                "data" => $estabilidadEconomica,
-                "narrativa"=>"Descripción narrativa para Impacto A.",
-                "narrativaNotas"=> "Notas adicionales."
+            "impactos" => [
+                [
+                    "nombre" => "Estabilidad económica",
+                    "data" => $estabilidadEconomica,
+                    "narrativa" => "Descripción narrativa para Impacto A.",
+                    "narrativaNotas" => "Notas adicionales."
+                ],
+                [
+                    "data" => $calidadVida,
+                    "nombre" => "Calidad de vida",
+                    "narrativa" => "Descripción narrativa para Impacto B.",
+                    "narrativaNotas" => "Notas adicionales."
+                ]
             ],
-            [
-                "data" => $calidadVida,
-                "nombre" => "Calidad de vida",
-                "narrativa"=>"Descripción narrativa para Impacto B.",
-                "narrativaNotas"=> "Notas adicionales."
+            "fechas" => [
+                "inicio" => 2020,
+                "fin" => 2024,
+                "inicioSelected"=>2020,
+                "finSelected"=>2023
             ]
         ];
     }
