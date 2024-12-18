@@ -1,16 +1,21 @@
 <?php
 
 include_once '../../loader.php';
+include './usuarios.php';
 
 class GenericInsert extends DAO {
 
-    function agregarUsuario($nombre, $apellidos, $correo, $celular) {
+    function agregarUsuario($tupla) {
+        $nombre = $tupla["nombre"];
+        $apellidos = $tupla["apellidos"];
+        $correo = $tupla["correo"];
+        $celular = $tupla["celular"];
+
         return getAdminUsuario()->insertarUsuario($nombre, $apellidos, $correo,
-                        $numero_celular, "123",
+                        $celular, "123",
                         TipoUsuario::EMPRENDEDOR) ? $this->obtenerIdAutogenerado() : 0;
     }
-    
-    
+
     function insertarLineaBaseInicial($data) {
         $data["idEtapa"] = 23;
         $nombre = $data["nombre"];
@@ -22,3 +27,12 @@ class GenericInsert extends DAO {
         getAdminLineaBase()->guardarLineaBase($data);
     }
 }
+/*
+$genericInsert = new GenericInsert;
+
+foreach ($usuarios as $tupla) {
+    echo $tupla["nombre"] . " " . ($genericInsert->agregarUsuario($tupla) ? "insertado con exito" : " error ") . "<br>";
+}*/
+
+
+var_dump($usuarios);

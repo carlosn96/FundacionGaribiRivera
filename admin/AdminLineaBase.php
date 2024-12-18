@@ -59,17 +59,17 @@ class AdminLineaBase extends Admin {
         $comoEmpleaGanancias = $data["comoEmpleaGanancias"] ?? [];
         $conoceProductosMayorUtilidad = intval($data["conoceProductosMayorUtilidad"]);
         $ahorro = intval($data["ahorro"]);
-        $cuantoAhorro = $data["cuantoAhorro"] ?? null;
+        $cuantoAhorro = floatval($data["cuantoAhorro"] ?? 0);
         $razonesNoAhorro = $data["razonesNoAhorro"] ?? null;
         $conocePuntoEquilibrio = intval($data["conocePuntoEquilibrio"]);
         $separaGastos = intval($data["separaGastos"]);
         $elaboraPresupuesto = intval($data["elaboraPresupuesto"]);
-        return new LineaBaseAnalisisNegocio($registraEntradaSalida, $asignaSueldo,
-                $conoceUtilidades, $identificaCompetencia, $quienCompetencia,
-                $clientesNegocio, $ventajasNegocio, $problemasNegocio,
-                $estrategiasIncrementarVentas, $comoEmpleaGanancias,
-                $conoceProductosMayorUtilidad, $ahorro, $cuantoAhorro, $razonesNoAhorro,
-                $conocePuntoEquilibrio, $separaGastos, $elaboraPresupuesto);
+        return new LineaBaseAnalisisNegocio($registraEntradaSalida, $asignaSueldo, 
+                $conoceUtilidades, $identificaCompetencia, $quienCompetencia, 
+                $clientesNegocio, $ventajasNegocio, $problemasNegocio, 
+                $estrategiasIncrementarVentas, $comoEmpleaGanancias, $conoceProductosMayorUtilidad, 
+                $ahorro, $cuantoAhorro, $razonesNoAhorro, $conocePuntoEquilibrio, 
+                $separaGastos, $elaboraPresupuesto);
     }
 
     public function construirSeccionAdministracionIngresosNegocio($data): LineaBaseAdministracionIngresosNegocio {
