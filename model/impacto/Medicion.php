@@ -40,7 +40,7 @@ class Medicion {
         if ($this->inicial == 0) {
             $this->variacionPorcentual = null;
         } else {
-            $this->variacionPorcentual = (($this->final - $this->inicial) / $this->inicial) * 100;
+            $this->variacionPorcentual = round((($this->final - $this->inicial) / $this->inicial) * 100, 2);
         }
     }
 }

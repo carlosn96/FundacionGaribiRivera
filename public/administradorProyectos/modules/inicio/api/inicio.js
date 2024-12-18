@@ -5,7 +5,7 @@ function ready() {
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
         var data = [];
         $.each(res, (i, emprendedor) => {
-            print(emprendedor.numero_celular.trim());
+            //print(emprendedor.numero_celular.trim());
             data.push({
                 "Nombre": emprendedor.nombre + " " + emprendedor.apellidos,
                 "Teléfono": $("<a>", {

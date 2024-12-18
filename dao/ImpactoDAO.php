@@ -11,7 +11,6 @@ class ImpactoDAO extends DAO {
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
     private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL recuperar_impacto_estabilidad_economica(?)";
     private const RECUPERAR_IMPACTO_CALIDAD_VIDA = "CALL recuperar_impacto_calidad_vida(?)";
-    
     private const SECCIONES_IMPACTO = [
         'estabilidadEconomica' => [
             self::ESTABILIDAD_ECONOMICA_1 => [
@@ -126,25 +125,36 @@ class ImpactoDAO extends DAO {
     public function getMedicionImpacto($usuario): array {
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
         $calidadVida = $this->recuperarCalidadVida($usuario);
-        $sumaPromediosEstabilidad = array_sum(array_column($estabilidadEconomica, 'promedio'));
+        $sumaPromediosEstabilidad = array_sum(array_column($estabilidadEconomica, 'contribucionImpacto'));
         $calidadVida[] = (new Seccion("Estabilidad económica", 50, [], $sumaPromediosEstabilidad))->toSeccionArray();
+        $fechas = $this->getAniosLineaBase($usuario);
         return [
+            "fechas" => $fechas,
             "impactos" => [
                 [
                     "nombre" => "Estabilidad económica",
                     "data" => $estabilidadEconomica,
-                    "narrativa" => "Descripción narrativa para Impacto A.",
-                    "narrativaNotas" => "Notas adicionales."
+                    "narrativa" =>
+                    $this->getNarrativa("estabilizar la economia",
+                            100, $sumaPromediosEstabilidad, $fechas["inicioSelected"], $fechas["finSelected"])
                 ],
                 [
                     "data" => $calidadVida,
                     "nombre" => "Calidad de vida",
-                    "narrativa" => "Descripción narrativa para Impacto B.",
-                    "narrativaNotas" => "Notas adicionales."
+                    "narrativa" =>
+                    $this->getNarrativa("mejorar la calidad de vida",
+                            100, array_sum(array_column($calidadVida, 'contribucionImpacto')),
+                            $fechas["inicioSelected"], $fechas["finSelected"])
                 ]
-            ],
-            "fechas" => $this->getAniosLineaBase($usuario)
+            ]
         ];
+    }
+
+    private function getNarrativa($tipoImpacto, $cantFamilias, $porcentaje, $anioInicio, $anioFin) {
+        return "Contribuimos a $tipoImpacto de $cantFamilias familias catalogadas 
+        como poblaciones vulnerables con un cambio porcentual del ↑ $porcentaje% entre $anioInicio-$anioFin 
+        a través de los proyectos de intervención social que amplían el acceso a la formación 
+        y el impulso de créditos transparentes y deuda sana.";
     }
 
     private function getAniosLineaBase($usuario) {

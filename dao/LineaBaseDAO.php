@@ -66,7 +66,7 @@ class LineaBaseDAO extends DAO {
         $prep->agregarEntidad($lineaBase->getAnalisisNegocio());
         $prep->agregarEntidad($lineaBase->getAdministracionIngresos());
         $e = $prep->ejecutar();
-        var_dump($this->getError());
+        //var_dump($this->getError());
         return $e;
     }
 
