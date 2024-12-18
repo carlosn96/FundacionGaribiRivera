@@ -2,9 +2,17 @@ const urlAPI = "api/MedicionImpactosAPI.php";
 function ready() {
     crearPeticion(urlAPI, {case: "consultarMedicionImpactos"}, (res) => {
         print(res);
-        generarImpactoHTML(res);
-        completarParametrosConfiguracion();
+        if (res.fechas.fin) {
+            generarImpactoHTML(res);
+            completarParametrosConfiguracion();
+        } else {
+            mostrarMensajeNoHayInformacion();
+        }
     });
+}
+
+function mostrarMensajeNoHayInformacion() {
+    $("#msgImpacto").prop("hidden", false);
 }
 
 function generarImpactoHTML(data) {
