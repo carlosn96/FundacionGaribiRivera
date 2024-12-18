@@ -102,34 +102,21 @@ function generarImpactoHTML(data) {
 
         // Añadir las filas a la tabla
         const tbody = $("<tbody>");
+        let totalImpacto = 0;  // Variable para acumular la suma de la contribución al impacto
         impacto.data.forEach((seccion, i) => {
-            tbody.append(
-                    $("<tr>").append(
-                    $("<td>", {text: seccion.titulo}),
-                    $("<td>", {text: seccion.obtenido}),
-                    $("<td>").append(
-                    $("<span>", {text: `${seccion.peso}%`})
-                    ),
-                    $("<td>", {text: (seccion.obtenido * (seccion.peso / 100)).toFixed(2)})
-                    )
-                    );
+            const contribucionImpacto = seccion.contribucionImpacto;
+            totalImpacto += parseFloat(contribucionImpacto);
+            tbody.append($("<tr>").append($("<td>", {text: seccion.titulo}),
+                    $("<td>", {text: `${seccion.obtenido}%`}),
+                    $("<td>").append($("<span>", {text: `${seccion.peso}%`})),$("<td>", {text: `${contribucionImpacto}%`})));
         });
+        tbody.append($("<tr>").append($("<td>", {text: "Total", colspan: 3}),$("<td>", {text: `${totalImpacto.toFixed(2)}%`})));
         table.append(tbody);
-        subTabContent.append(
-                $("<h5>", {text: "Cálculos ponderados para obtener el impacto."}),
-                table
-                );
-
-        // Agregar la narrativa abajo de la tabla
-        subTabContent.append(
-                $("<h6>", {text: "Narrativa:"}),
-                $("<p>", {text: impacto.narrativa}),
-                $("<small>", {class: "text-muted", text: impacto.narrativaNotas})
-                );
-
+        subTabContent.append( $("<h5>", {text: "Cálculos ponderados para obtener el impacto."}),table );
+        subTabContent.append($("<h6>", {text: "Narrativa:"}),$("<p>", {text: impacto.narrativa}));
         impactoSubTabsContent.append(subTabContent);
     });
-    // Agregar los subtabs de impactos al tab IMPACTOS
+    
     impactosTabContent.append(impactoSubTabs, impactoSubTabsContent);
     mainTabsContent.append(impactosTabContent);
     // Crear el contenido de Parámetros de Configuración
