@@ -246,4 +246,8 @@ class AdminLineaBase extends Admin {
     public function buscarParroquia($parroquia) {
         return $this->dao->buscarParroquia($parroquia);
     }
+    
+    public function actualizarEtapaEnLineaBase($idLineaBase, $idEtapa) {
+        return $this->dao->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa);
+    }
 }

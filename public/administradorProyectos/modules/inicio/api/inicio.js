@@ -5,18 +5,16 @@ function ready() {
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
         var data = [];
         $.each(res, (i, emprendedor) => {
-            //print(emprendedor.numero_celular.trim());
+            //print(emprendedor);
             data.push({
                 "Nombre": emprendedor.nombre + " " + emprendedor.apellidos,
                 "Teléfono": $("<a>", {
                     href: "https://wa.me/" + emprendedor.numero_celular.replace(/[\s\(\)-]/g, '').trim(),
-                    target: "_blank",
-                }).append(
-                        $("<i>", {
-                            class: "ti ti-brand-whatsapp fs-4 pe-2 text-success"
-                        })
-                        ).append(" " + emprendedor.numero_celular),
+                    target: "_blank"
+                }).append($("<i>", {class: "ti ti-brand-whatsapp fs-4 pe-2 text-success"}))
+                        .append(" " + emprendedor.numero_celular),
                 "Correo": emprendedor.correo_electronico,
+                "Etapa":"",
                 "Acciones": crearBotonesAccion(emprendedor.id)
             });
         });
@@ -44,5 +42,5 @@ function crearBotonesAccion(id) {
 }
 
 function verFichaInscripcion(id) {
-   print(id);
+    print(id);
 }

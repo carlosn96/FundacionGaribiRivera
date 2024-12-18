@@ -88,7 +88,7 @@ class LineaBaseDAO extends DAO {
         $prep->agregarInt($idUsuario);
         return $prep->ejecutarConsulta()["existe_linea_base"];
     }
-    
+
     private function recuperarLineaBase($usuario, $tipoLineaBase) {
         switch ($tipoLineaBase["nombre"]) {
             case self::LINEA_BASE_INICIAL["nombre"]:
@@ -283,5 +283,12 @@ class LineaBaseDAO extends DAO {
             "res" => Util::respuestaBoolToStr($res),
             "val" => $res
         ];
+    }
+
+    public function actualizarEtapaEnLineaBase($idLineaBase, $idEtapa) {
+        $prep = $this->prepararInstruccion("UPDATE linea_base SET id_etapa = ? WHERE id_linea_base = ?");
+        $prep->agregarInt($idEtapa);
+        $prep->agregarInt($idLineaBase);
+        return $prep->ejecutar();
     }
 }

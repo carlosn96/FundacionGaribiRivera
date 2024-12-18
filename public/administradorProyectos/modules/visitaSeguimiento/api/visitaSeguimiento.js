@@ -23,7 +23,7 @@ function ready() {
 
 
 function crearVisitaSeguimiento(boton) {
-    redireccionar("../visitaSeguimientoNuevo/?idEmprendedor=" + boton.value);
+    //redireccionar("../visitaSeguimientoNuevo/?idEmprendedor=" + boton.value);
 }
 
 function crearFormAdmVisitasSeguimiento(lista) {

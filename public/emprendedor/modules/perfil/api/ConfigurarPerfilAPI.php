@@ -5,14 +5,14 @@ include_once '../../../../../loader.php';
 class ConfigurarPerfilAPI extends API {
 
     function recuperarInfoUsuario() {
-        $this->enviarRespuesta($this->getUsuarioActual());
+        $this->enviarRespuesta($this->getUsuario());
     }
 
     function actualizarImagen() {
         $imgData = $this->data["img"];
         $imgData = str_replace('data:image/png;base64,', '', $imgData);
         $imgData = file_get_contents(str_replace(' ', '+', $imgData));
-        $usuario = $this->getUsuarioActual();
+        $usuario = $this->getUsuario();
         if (($resultado = (new AdminUsuario)->actualizarFotoPerfil($usuario, $imgData))) {
             $usuario['fotografia'] = Util::binToBase64($imgData);
             Sesion::setUsuarioActual($usuario);
@@ -21,7 +21,7 @@ class ConfigurarPerfilAPI extends API {
     }
 
     function actualizarContrasenia() {
-        $usuario = $this->getUsuarioActual();
+        $usuario = $this->getUsuario();
         $this->enviarResultadoOperacion(
                 (new AdminUsuario())->cambiarContrasena($usuario["correo_electronico"],
                         $this->data["newPassword"]
@@ -49,7 +49,7 @@ class ConfigurarPerfilAPI extends API {
       } */
 
     function actualizarCampo() {
-        $usuario = $this->getUsuarioActual();
+        $usuario = $this->getUsuario();
         if (($esResCorrecto = (new AdminUsuario)->actualizarInfoPersonal($this->data, $usuario["id"]))) {
             foreach ($this->data as $key => $value) {
                 $usuario[$key] = $value;
@@ -59,7 +59,7 @@ class ConfigurarPerfilAPI extends API {
         return $this->enviarResultadoOperacion($esResCorrecto);
     }
 
-    private function getUsuarioActual() {
+    private function getUsuario() {
         return Sesion::obtenerUsuarioActual();
     }
 

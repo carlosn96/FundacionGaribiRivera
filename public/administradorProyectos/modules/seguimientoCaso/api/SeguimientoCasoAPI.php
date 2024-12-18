@@ -5,7 +5,16 @@ include_once '../../../../../loader.php';
 class SeguimientoCasoAPI extends API {
 
     function recuperarEmprendedores() {
-        $this->enviarRespuesta(getAdminLineaBase()->listarEmprendoresConLineaBase());
+        $this->enviarRespuesta([
+            "emprendedores"=>getAdminLineaBase()->listarEmprendoresConLineaBase(),
+            "etapas"=> getAdminEtapaFormacion()->listarEtapasFormacion()
+        ]);
+    }
+    
+    function actualizarEtapa() {
+        $idLineaBase = $this->getData("id");
+        $idEtapa = $this->getData("val");
+        $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
     }
 
     function recuperarSeguimientoCaso() {

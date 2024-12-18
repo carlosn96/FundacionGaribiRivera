@@ -52,7 +52,7 @@ abstract class API {
         return $this->data[$key] ?? "";
     }
     
-    function getUsuarioActual() {
+    protected function getUsuarioActual() {
         return  Sesion::obtenerIDUsuarioActual();
     }
 }

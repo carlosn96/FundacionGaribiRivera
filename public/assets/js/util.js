@@ -207,36 +207,37 @@ function deshabilitarHabilitarInput(input) {
 }
 
 function crearDataTable(idTabla, buttons) {
-    //$(idTabla).dataTable().clear().draw();
-    var tabla;
     if ($.fn.dataTable.isDataTable(idTabla)) {
-        tabla = $(idTabla).DataTable().destroy();
+        $(idTabla).DataTable().clear().destroy();
     }
-    tabla = $(idTabla).DataTable({
+    const tabla = $(idTabla).DataTable({
         dom: "Bfrtip",
-        buttons: buttons,
-        retrieve: true,
+        buttons: Array.isArray(buttons) ? buttons : [],
         responsive: true,
         order: [[0, "asc"]],
-        scrollY: "200px",
-        paging: false,
+        scrollY: "auto",
+        paging: true,
         language: {
+            "paginate": {
+                "previous": "Anterior",
+                "next": "Siguiente"
+            },
+            "sInfoThousands": ",",
             "sProcessing": "Procesando...",
             "sLengthMenu": "Mostrar _MENU_ registros",
             "sZeroRecords": "No se encontraron resultados",
-            "sEmptyTable": "Nigun dato disponible en esta tabla",
-            "sInfo": "Mostrando registros del _START_ al _END_ \n de un total de _TOTAL_ registros",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
             "sInfoEmpty": "Sin registros",
             "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sInfoPostFix": "",
             "sSearch": "Filtrar:",
-            "searchPlaceholder": "",
-            "sInfoThousands": ",",
+            "searchPlaceholder": "Buscar en la tabla...",
             "sLoadingRecords": "Cargando..."
         }
     });
     return tabla;
 }
+
 
 function calcuarEdad(fechaNacimiento) {
     return parseInt((new Date() - new Date(fechaNacimiento)) /
@@ -465,25 +466,22 @@ function boolToString(valor) {
 }
 
 function construirTabla(data, tableClass, container, tableID) {
-    const $tabla = $('<table>', {class: `table ${tableClass}`, id: tableID});
-    // Crear el encabezado de la tabla
-    const $thead = $('<thead>').append($('<tr>'));
-    for (const key in data[0]) {
-        $thead.find('tr').append($('<th>', {text: key}));
-    }
-    $tabla.append($thead);
-    // Crear el cuerpo de la tabla
-    const $tbody = $('<tbody>');
-    data.forEach(item => {
-        const $tr = $('<tr>');
-        for (const key in item) {
-            $tr.append($('<td>', {html: item[key]}));
-        }
-        $tbody.append($tr);
+    const $tabla = $('<table>', {
+        class: `table ${tableClass}`,
+        id: tableID
     });
-    $tabla.append($tbody);
-    // Colocar la tabla en el contenedor
-    $(`#${container}`).append($tabla);
+    const keys = Object.keys(data[0]);
+    const $thead = $('<thead>').append(
+            $('<tr>').append(keys.map(key => $('<th>', {text: key})))
+            );
+
+    const $tbody = $('<tbody>').append(
+            data.map(item => $('<tr>').append(
+                        keys.map(key => $('<td>', {html: item[key]}))
+                        ))
+            );
+    $tabla.append($thead, $tbody);
+    $(`#${container}`).empty().append($tabla);
 }
 
 function construirTablaDataTable(data, tableClass, container, tableID, botones = ["copy", "csv", "excel", "pdf", "print"]) {
