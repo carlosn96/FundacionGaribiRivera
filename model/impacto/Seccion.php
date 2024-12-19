@@ -10,7 +10,7 @@ class Seccion {
     private float $obtenido;
     private float $contribucionImpacto;
 
-    public function __construct(string $titulo, float $peso, array $cuestionario, float $obtenido=0) {
+    public function __construct(string $titulo, float $peso, array $cuestionario, float $obtenido = 0) {
         $this->titulo = $titulo;
         $this->cuestionario = $cuestionario;
         $this->peso = $peso;
@@ -19,7 +19,7 @@ class Seccion {
         } else {
             $this->setPromedio();
         }
-        $this->contribucionImpacto = $this->obtenido * ($this->peso/100);
+        $this->contribucionImpacto = $this->obtenido * ($this->peso / 100);
     }
 
     private function setPromedio() {
