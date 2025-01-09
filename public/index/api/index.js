@@ -11,7 +11,7 @@ $(document).ready(function () {
 
 
 function revisarSesion() {
-    crearPeticion(getRootUrl() + "/controller/RevisorSesion.php", {
+    crearPeticion(getRootUrl() + "controller/RevisorSesion.php", {
         case: "verificar_sesion"
     }, function (res) {
         let rs = JSON.parse(res);
