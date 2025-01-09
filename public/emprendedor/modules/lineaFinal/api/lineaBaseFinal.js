@@ -28,6 +28,10 @@ function completarCamposFormulario(rs) {
     $.each(rs.selector, (idx, elementos) => {
         crearSelector($("#" + idx + "List"), idx, elementos);
     });
+    $.each(rs.radio, (idx, elementos) => {
+        crearGroupRadio($("#" + idx), elementos, idx);
+    });
+    $("#objetivosAhorro").attr("required", false);
     configurarSeccionPreliminar(inicial);
     configurarSeccionInformacionNegocio(inicial.negocio);
     configurarSeccionAnalisisNegocio(inicial.analisisNegocio);
@@ -75,6 +79,8 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
         $("#clientesNegocio").val(analisisNegocio.clientesNegocio);
         $("#ventajasNegocio").val(analisisNegocio.ventajasNegocio);
         $("#problemasNegocio").val(analisisNegocio.problemasNegocio);
+
+        print(analisisNegocio.listaEstrategiaVentas);
 
         if (analisisNegocio.listaEstrategiaVentas.length !== 0) {
             analisisNegocio.listaEstrategiaVentas.forEach(item => {

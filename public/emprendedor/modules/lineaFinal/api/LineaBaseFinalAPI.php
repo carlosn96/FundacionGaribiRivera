@@ -20,10 +20,12 @@ class LineaBaseFinalAPI extends API {
                 "actividadNegocio" => $admin->recuperarListaActividadNegocio(),
             ],
             "checkbox" => [
-                "estrategiasIncrementarVentas" => $admin->recuperarListaEstrategiasIncrementarVentas(),
+                "estrategiasIncrementarVentas" => $admin->recuperarListaEstrategiasIncrementarVentas()
+            ],
+            "radio" => [
                 "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
                 "objetivosAhorro" => $admin->recuperarObjetivosAhorro()
-            ],
+            ]
         ]);
     }
 

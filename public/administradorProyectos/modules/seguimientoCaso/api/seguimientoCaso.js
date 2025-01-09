@@ -1,94 +1,157 @@
 const urlAPI = "api/SeguimientoCasoAPI.php";
+
+// Función que se ejecuta cuando la página está lista
 function ready() {
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
         if (res.emprendedores.length) {
-            var dataTabla = [];
-            $.each(res.emprendedores, (i, emprendedor) => {
-                dataTabla.push({
-                    "No.": emprendedor.idLineaBase,
+            const dataTabla = res.emprendedores.map(emprendedor => ({
                     "Etapa": generarListaEtapas(emprendedor.idEtapa, res.etapas, emprendedor.idLineaBase),
-                    "Nombre": emprendedor.nombre,
-                    "Apellidos": emprendedor.apellidos,
-                    "Correo electrónico": emprendedor.correo
-                });
-            });
-
-            //print(dataTabla);
-            var $tabla = construirTablaDataTable(dataTabla, "table-bordered text-nowrap", "tablaEmprendedoresContenedor", "tablaEmprendedores", "");
-            $("#tablaEmprendedores tbody").on("click", "select", function (event) {
-                event.stopPropagation();
-            });
-            $("#tablaEmprendedores tbody").on("change", "select", function () {
-                const $select = $(this); // El selector que disparó el evento
-                const selectedValue = $select.val(); // Obtener el valor seleccionado
-                const id = $select.attr("data-id-linea-base");
-                crearPeticion(urlAPI, {case: "actualizarEtapa", data: $.param({id: id, val: selectedValue})}, (res) => {
-                    let mensaje = res.es_valor_error ? "Error: No se pudo actualizar la etapa." : "Etapa actualizada correctamente.";
-                    const $alert = $(`
-        <div class="alert ${res.es_valor_error ? 'alert-danger' : 'alert-info'} alert-dismissible fade show" role="alert">
-            <strong>${res.es_valor_error ? 'Error -' : 'Info -'}</strong> ${mensaje}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `);
-                    $('#contenedorDeAlertas').append($alert);
-                    setTimeout(() => {
-                        $alert.alert('close');
-                    }, 5000); // 5 segundos
-                });
-            });
-            $("#tablaEmprendedores tbody").on("click", "tr", function () {
-                var $areaTabla = $("#tablaEmprendedores");
-                $areaTabla.block({
-                    message: '<i class="ti ti-refresh text-warning fs-5"></i>',
-                    overlayCSS: {
-                        backgroundColor: "#000",
-                        opacity: 0.5,
-                        cursor: "wait"
-                    },
-                    css: {
-                        border: 0,
-                        padding: 0,
-                        backgroundColor: "transparent"
-                    }
-                });
-                const data = $tabla.row(this).data();
-                const [idLineaBase, titulo, nombre, apellido, email] = data;
-
-                //print(idLineaBase);
-                crearPeticion(urlAPI, {case: "recuperarSeguimientoCaso", data: `idLineaBase=${idLineaBase}`}, (rs) => {
-                    //print(rs);
-                    const emprendedor = encodeURIComponent(JSON.stringify(data));
-                    const $btnSeguimiento = $("#btnDarSeguimiento");
-                    const $btnEliminarSeguimiento = $("#btnEliminarSeguimiento");
-                    const seguimientoExistente = Array.isArray(rs.seguimientoCaso);
-                    const textBtn = seguimientoExistente ? "Hacer" : "Ver";
-                    const icon = seguimientoExistente ? "ti-plus" : "ti-file-export";
-                    const rsEncoded = seguimientoExistente ? '' : encodeURIComponent(JSON.stringify(rs));
-                    const urlBtn = seguimientoExistente
-                            ? `../seguimientoCasoNuevo/?emprendedor=${emprendedor}`
-                            : `../seguimientoCasoVista/?sc=12&emprendedor=${emprendedor}`;
-                    //
-                    $btnSeguimiento.attr("data-bs-original-title", `${textBtn} seguimiento de caso`);
-                    $btnSeguimiento.attr("href", urlBtn);
-                    $btnSeguimiento.html(`<span class="ti ${icon}"></span>`);
-                    $btnEliminarSeguimiento.prop("hidden", seguimientoExistente);
-                    $btnEliminarSeguimiento.attr("href", `javascript:eliminarSeguimientoCaso(${rs.seguimientoCaso.idSeguimientoCaso})`);
-                    $('#cardModalEmprendedorContent').html(`<p class="card-text">${email}</p>`);
-                    $("#nombreEmprendedor").text(`${nombre} ${apellido}`);
-                    $("#modalEmprendedor").modal('show');
-                    $areaTabla.unblock();
-                });
-            });
+                    "Nombre": `${emprendedor.nombre} ${emprendedor.apellidos}`,
+                    "Correo electrónico": emprendedor.correo,
+                    "Linea base": crearBotonesLineaBase(emprendedor),
+                    "Seguimiento de caso": crearBotonSeguimiento(emprendedor)
+                }));
+            construirTablaDataTable(dataTabla, "table-hover table-bordered", "tablaEmprendedoresContenedor", "tablaEmprendedores", "");
         }
     });
 }
 
+function crearBotonesLineaBase(emprendedor) {
+    return $('<div>', { class: 'btn-group', role: 'group', 'aria-label': 'Botones Linea Base' }).append(
+        // Botón para "Inicial"
+        $('<div>', { class: 'btn-group' }).append(
+            $('<button>', {
+                type: 'button',
+                class: 'btn btn-sm btn-outline-success dropdown-toggle',
+                'data-bs-toggle': 'dropdown',
+                'aria-expanded': 'false',
+                text: 'Inicial'
+            }),
+            $('<ul>', { class: 'dropdown-menu' }).append(
+                $('<li>').append(
+                    $('<a>', {
+                        class: 'dropdown-item',
+                        href: '#',
+                        click: function (e) {
+                            e.preventDefault();
+                            lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
+                        }
+                    }).append(
+                        $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver' }),
+                        'Ver'
+                    )
+                ),
+                $('<li>').append(
+                    $('<a>', {
+                        class: 'dropdown-item',
+                        href: '#',
+                        click: function (e) {
+                            e.preventDefault();
+                            lineaBaseAction('inicial', 'Modificar', emprendedor.idUsuario);
+                        }
+                    }).append(
+                        $('<i>', { class: 'ti ti-edit me-2', title: 'Modificar' }),
+                        'Modificar'
+                    )
+                )
+            )
+        ),
+        // Botón para "Final"
+        $('<div>', { class: 'btn-group' }).append(
+            $('<button>', {
+                type: 'button',
+                class: 'btn btn-sm btn-outline-success dropdown-toggle',
+                'data-bs-toggle': 'dropdown',
+                'aria-expanded': 'false',
+                text: 'Final'
+            }),
+            $('<ul>', { class: 'dropdown-menu' }).append(
+                $('<li>').append(
+                    $('<a>', {
+                        class: 'dropdown-item',
+                        href: '#',
+                        click: function (e) {
+                            e.preventDefault();
+                            lineaBaseAction('final', 'Ver', emprendedor.idUsuario);
+                        }
+                    }).append(
+                        $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver' }),
+                        'Ver'
+                    )
+                ),
+                $('<li>').append(
+                    $('<a>', {
+                        class: 'dropdown-item',
+                        href: '#',
+                        click: function (e) {
+                            e.preventDefault();
+                            lineaBaseAction('final', 'Modificar', emprendedor.idUsuario);
+                        }
+                    }).append(
+                        $('<i>', { class: 'ti ti-edit me-2', title: 'Modificar' }),
+                        'Modificar'
+                    )
+                )
+            )
+        )
+    );
+}
+
+function lineaBaseAction(tipo, action, id) {
+    const data = {
+        idUsuario: id,
+        tipo: tipo
+    };
+    crearPeticion(urlAPI, {case: 'lineaBaseAction', data: $.param(data)}, (rs) => {
+        if (rs.success) {
+            redireccionar("../lineaBase"+action);
+        } else {
+            mostrarMensajeError("Intenta más tarde: "+rs.msg);
+        }
+    });
+}
+
+function crearBotonSeguimiento(emprendedor) {
+    var $boton = $('<button>', {
+        class: 'btn btn-sm btn-outline-primary',
+        'data-bs-toggle': 'modal',
+        'data-bs-target': '#modalEmprendedor',
+        click: function () {
+            cargarSeguimientoCaso(emprendedor.idLineaBase, emprendedor.nombre, emprendedor.correo);
+        }
+    }).text('Seguimiento');
+
+    return $boton;
+}
+
+function cargarSeguimientoCaso(idLineaBase, nombre, correo) {
+    crearPeticion(urlAPI, {case: "recuperarSeguimientoCaso", data: `idLineaBase=${idLineaBase}`}, (rs) => {
+        const emprendedor = encodeURIComponent(JSON.stringify([idLineaBase, nombre, correo]));
+        const $btnSeguimiento = $("#btnDarSeguimiento");
+        const $btnEliminarSeguimiento = $("#btnEliminarSeguimiento");
+        const seguimientoExistente = Array.isArray(rs.seguimientoCaso);
+        const textBtn = seguimientoExistente ? "Hacer" : "Ver";
+        const icon = seguimientoExistente ? "ti-plus" : "ti-file-export";
+        const rsEncoded = seguimientoExistente ? '' : encodeURIComponent(JSON.stringify(rs));
+        const urlBtn = seguimientoExistente
+                ? `../seguimientoCasoNuevo/?emprendedor=${emprendedor}`
+                : `../seguimientoCasoVista/?sc=12&emprendedor=${emprendedor}`;
+        $btnSeguimiento.attr("data-bs-original-title", `${textBtn} seguimiento de caso`);
+        $btnSeguimiento.attr("href", urlBtn);
+        $btnSeguimiento.html(`<span class="ti ${icon}"></span>`);
+        $btnEliminarSeguimiento.prop("hidden", seguimientoExistente);
+        $btnEliminarSeguimiento.attr("href", `javascript:eliminarSeguimientoCaso(${rs.seguimientoCaso.idSeguimientoCaso})`);
+        $('#cardModalEmprendedorContent').html(`<p class="card-text">${correo}</p>`);
+        $("#nombreEmprendedor").text(nombre);
+        $("#modalEmprendedor").modal('show');
+    });
+}
 
 function eliminarSeguimientoCaso(id) {
     alertaEliminar({
-        mensajeAlerta: "Se elimininará el seguimiento de caso",
+        mensajeAlerta: "Se eliminará el seguimiento de caso",
         url: urlAPI,
-        data: {"case": "eliminarSeguimientoCaso", "data": "id=" + id}
+        data: {"case": "eliminarSeguimientoCaso", "data": `id=${id}`}
     });
 }
 
@@ -100,14 +163,12 @@ function generarListaEtapas(etapa, listaEtapas, idLineaBase) {
     });
     listaEtapas.forEach(val => {
         const $option = $('<option>', {
-            value: val.idEtapa, // Asignar idEtapa como valor
-            text: val.nombre     // Mostrar el nombre como texto
+            value: val.idEtapa,
+            text: val.nombre
         });
-        if (val.idEtapa === etapa) {
+        if (val.idEtapa === etapa)
             $option.prop('selected', true);
-        }
         $selector.append($option);
     });
-
     return $selector;
 }

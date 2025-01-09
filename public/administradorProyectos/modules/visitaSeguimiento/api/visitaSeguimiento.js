@@ -13,10 +13,18 @@ function ready() {
             });
         });
 
-        construirTablaDataTable(data,
+        if(data.length !== 0) {
+            construirTablaDataTable(data,
                 "table table-borderless align-middle text-nowrap mb-1",
                 "container",
-                "tablaEmprendedores");
+                "tablaEmprendedores", "");
+        } else {
+            const $tablaVacia = $('<table>', {class: "table table-bordered align-middle text-nowrap mb-1", id: "tablaEmprendedores"});
+            const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Nombre"})).append($('<th>', {text: "Nuevo"})).append($('<th>', {text: "Consultar"})));
+            $tablaVacia.append($thead);
+            $("#container").empty().append($tablaVacia);
+            crearDataTable("#tablaEmprendedores");
+        }
     });
 
 }
@@ -29,13 +37,11 @@ function crearVisitaSeguimiento(boton) {
 function crearFormAdmVisitasSeguimiento(lista) {
     // Crear el formulario con su acción
     var $form = $("<form>", {action: "../trabajoSocialVisitaSeguimiento/function/consultaVisitaSeguimiento.php"});
-
-    var $row = $("<div>", {class: "row g-2"});
+    var $row = $("<div>", {class: "row g-3"});  // Aumentamos el espacio entre las filas
     var $col = $("<div>", {class: "col-12"});
-    // Crear el grupo de entrada
-    var $inputGroup = $("<div>", {class: "input-group"})
-            .append(crearSelector(null, "visitaSeguimiento", lista))
-            .append($("<div>", {class: "input-group-append"})
+    var $inputGroup = $("<div>", {class: "d-flex align-items-center gap-3"})  // Usamos flexbox para una distribución armoniosa
+            .append(crearSelector(null, "visitaSeguimiento", lista)) // Selector
+            .append($("<div>", {class: "btn-group"})  // Agrupamos los botones en un "btn-group"
                     .append($("<button>", {
                         type: "submit",
                         class: "btn btn-outline-warning",

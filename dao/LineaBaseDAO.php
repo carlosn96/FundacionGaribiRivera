@@ -6,6 +6,7 @@ class LineaBaseDAO extends DAO {
     private const LINEA_BASE_FINAL = ["nombre" => "final", "tabla" => "linea_base_final"];
     private const TIPOS_LINEA_BASE = [self::LINEA_BASE_INICIAL, self::LINEA_BASE_FINAL];
     private const LISTAR_EMPRENDEDOR_LINEA_BASE = "SELECT * FROM listar_emprendedor_con_linea_base";
+    private const LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL = "SELECT * FROM listar_emprendedor_con_linea_base_inicial_final";
     private const BUSCAR_CP = "CALL buscar_codigo_postal(?)";
     private const BUSCAR_PARROQUIA = "CALL buscar_comunidad_parroquial(?)";
     private const EXISTE_LINEA_BASE = "SELECT EXISTS(SELECT * FROM TIPO_LINEA_BASE WHERE id_usuario = ?) existe_linea_base";
@@ -16,7 +17,7 @@ class LineaBaseDAO extends DAO {
     private const CONSULTAR_LISTA_MEDIO_CONOCIMIENTO = "SELECT * FROM recuperar_linea_base_lista_medio_conocimiento WHERE idLineaBase = ?";
     private const CONSULTAR_LISTA_EMPLEO_GANANCIAS = "SELECT * FROM recuperar_linea_base_lista_empleo_ganancias WHERE idLineaBase = ?";
     private const CONSULTAR_LISTA_EMPLEO_GANANCIAS_FINAL = "SELECT * FROM recuperar_linea_base_lista_empleo_ganancias WHERE idLineaBase = ?";
-    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_linea_base_final_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
+    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_linea_base_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
     private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_estrategias_incrementar_ventas WHERE idLineaBase = ?";
     private const LISTAR_OBJETIVOS_AHORRO = "SELECT * FROM recuperar_linea_base_lista_objetivos_ahorro WHERE id_linea_base = ?";
     private const LISTAR_OBJETIVOS_AHORRO_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_objetivos_ahorro WHERE id_linea_base = ?";
@@ -24,6 +25,23 @@ class LineaBaseDAO extends DAO {
     public function listarEmprendedoresLineaBase() {
         $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    public function listarEmprendedoresLineaBaseInicialFinal() {
+        $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL);
+        return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    public function listarEmprendedoresParaImpactos($idUsuario) {
+        $instruccion = "SELECT lista_registros_filtrados FROM linea_base_impacto_configuracion WHERE id_usuario = ?";
+        $prep = $this->prepararInstruccion($instruccion);
+        $prep->agregarInt($idUsuario);
+        $idLineasBaseFiltrados = json_decode($prep->ejecutarConsulta()["lista_registros_filtrados"] ?? "") ?? [];
+        $emprendedoresLineaBase = $this->listarEmprendedoresLineaBaseInicialFinal();
+        foreach ($emprendedoresLineaBase as &$emprendedor) {
+            $emprendedor['enLineaBase'] = empty($idLineasBaseFiltrados) || in_array($emprendedor['idLineaBase'], $idLineasBaseFiltrados);
+        }
+        return $emprendedoresLineaBase;
     }
 
     public function buscarCodigoPostal($cp) {
@@ -76,7 +94,7 @@ class LineaBaseDAO extends DAO {
             $existeLineaBase = $this->existeLineaBase($usuario, $tipoLineaBase["tabla"]);
             $lineasBase[$tipoLineaBase["nombre"]] = [
                 "existeLineaBase" => $existeLineaBase,
-                "data" => $existeLineaBase ? $this->agruparLineaBase($this->recuperarLineaBase($usuario, $tipoLineaBase)) : []
+                "data" => $existeLineaBase ? $this->agruparLineaBase($this->recuperarLineaBase($usuario, $tipoLineaBase), $tipoLineaBase["nombre"]) : []
             ];
         }
         return $lineasBase;
@@ -117,7 +135,7 @@ class LineaBaseDAO extends DAO {
         return $lb;
     }
 
-    private function agruparLineaBase($result) {
+    private function agruparLineaBase($result, $tipo) {
         $lineaBase = [];
         $lineaBase['idLineaBase'] = $result['idLineaBase'];
         $lineaBase['idUsuario'] = $result['idUsuario'];
@@ -130,66 +148,73 @@ class LineaBaseDAO extends DAO {
         ];
         $lineaBase['fechaCreacion'] = $result['fechaCreacion'];
 
-        $lineaBase['preliminar'] = [
-            'listaMedioConoceFundacion' => $result['listaMedioConoceFundacion'] ?? "",
-            'otroMedioConoceFundacion' => $result['otroMedioConoceFundacion'] ?? "",
-            'otraRazonRecurreFundacion' => $result['otraRazonRecurreFundacion'] ?? "",
-            'razonRecurreFundacion' => [
-                'id' => $result['idRazonRecurreFundacion'] ?? "",
-                'descripcion' => $result['razonRecurreDescripcion'] ?? ""
-            ],
-            'solicitaCredito' => [
-                'id' => $result['idSolicitaCredito'] ?? "",
-                'descripcion' => $result['solicitaCreditoDescripcion'] ?? 0 ? "El crédito lo solicitaría para " . $result['solicitaCreditoDescripcion'] : null
-            ],
-            'utilizaCredito' => [
-                'id' => $result['idUtilizaCredito'] ?? "",
-                'descripcion' => $result['utilizaCreditoDescripcion'] ?? 0 ? "El crédito lo utilizaría para " . $result['utilizaCreditoDescripcion'] : null
-            ],
-            'tiempoDedicaCapacitacion' => [
-                'id' => $result['idTiempoDedicaCapacitacion'] ?? "",
-                'descripcion' => $result['tiempoDedicaCapacitacionDescripcion'] ?? ""
-            ]
-        ];
+        if ($tipo === self::LINEA_BASE_INICIAL["nombre"]) {
+            $lineaBase['preliminar'] = [
+                'listaMedioConoceFundacion' => $result['listaMedioConoceFundacion'] ?? "",
+                'otroMedioConoceFundacion' => $result['otroMedioConoceFundacion'] ?? "",
+                'otraRazonRecurreFundacion' => $result['otraRazonRecurreFundacion'] ?? "",
+                'razonRecurreFundacion' => [
+                    'id' => $result['idRazonRecurreFundacion'] ?? "",
+                    'descripcion' => $result['razonRecurreDescripcion'] ?? ""
+                ],
+                'solicitaCredito' => [
+                    'id' => $result['idSolicitaCredito'] ?? "",
+                    'descripcion' => $result['solicitaCreditoDescripcion'] ?? 0 ? "El crédito lo solicitaría para " . $result['solicitaCreditoDescripcion'] : null
+                ],
+                'utilizaCredito' => [
+                    'id' => $result['idUtilizaCredito'] ?? "",
+                    'descripcion' => $result['utilizaCreditoDescripcion'] ?? 0 ? "El crédito lo utilizaría para " . $result['utilizaCreditoDescripcion'] : null
+                ],
+                'tiempoDedicaCapacitacion' => [
+                    'id' => $result['idTiempoDedicaCapacitacion'] ?? "",
+                    'descripcion' => $result['tiempoDedicaCapacitacionDescripcion'] ?? ""
+                ]
+            ];
+            $lineaBase['identificacion'] = [
+                'genero' => $result['genero'] ?? "",
+                'edad' => $result['edad'] ?? "",
+                'estadoCivil' => [
+                    'id' => $result['estadoCivil'] ?? "",
+                    'descripcion' => $result['estadoCivilDescripcion'] ?? ""
+                ],
+                'escolaridad' => [
+                    'id' => $result['escolaridad'] ?? "",
+                    'descripcion' => $result['escolaridadDescripcion'] ?? ""
+                ],
+                'discapacidad' => $result['discapacidad'] ?? 'No'
+            ];
+            $lineaBase['domicilio'] = [
+                'calle' => $result['domicilioCalle'] ?? "",
+                'calleCruce1' => $result['domicilioCalleCruce1'] ?? "",
+                'calleCruce2' => $result['domicilioCalleCruce2'] ?? "",
+                'numeroExterior' => $result['domicilioNumeroExterior'] ?? "",
+                'numeroInterior' => $result['domicilioNumeroInterior'] ?? 0 ? $result['domicilioNumeroInterior'] : null,
+                'codigoPostal' => [
+                    'id' => $result['domicilioIdCodigoPostal'] ?? "",
+                    'codigo' => $result['domicilioCodigoPostal'] ?? "",
+                    'colonia' => $result['domicilioColonia'] ?? ""
+                ],
+                "colonia" => $result["colonia"] ?? "",
+                'municipio' => [
+                    'id' => $result['domicilioIdMunicipio'] ?? "",
+                    'nombre' => $result['domicilioMunicipioNombre'] ?? ""
+                ],
+                'estado' => $result['domicilioEstadoNombre'] ?? "",
+                'comunidadParroquial' => [
+                    'id' => $result['domicilioIdComunidadParroquial'] ?? "",
+                    'nombre' => $result['domicilioComunidadParroquialNombre'] ?? "",
+                    'decanato' => $result['domicilioDecanatoNombre'] ?? "",
+                    'vicaria' => $result['domicilioVicariaNombre'] ?? ""
+                ]
+            ];
+        } else {
+            $lineaBase['preliminar'] = [
+                "huboBeneficiosPersonal" => $this->getArrayBool($result["huboBeneficioPersonal"]),
+                "beneficios" => $result["beneficios"]
+            ];
+        }
 
-        $lineaBase['identificacion'] = [
-            'genero' => $result['genero'] ?? "",
-            'edad' => $result['edad'] ?? "",
-            'estadoCivil' => [
-                'id' => $result['estadoCivil'] ?? "",
-                'descripcion' => $result['estadoCivilDescripcion'] ?? ""
-            ],
-            'escolaridad' => [
-                'id' => $result['escolaridad'] ?? "",
-                'descripcion' => $result['escolaridadDescripcion'] ?? ""
-            ],
-            'discapacidad' => $result['discapacidad'] ?? 'No'
-        ];
 
-        $lineaBase['domicilio'] = [
-            'calle' => $result['domicilioCalle'] ?? "",
-            'calleCruce1' => $result['domicilioCalleCruce1'] ?? "",
-            'calleCruce2' => $result['domicilioCalleCruce2'] ?? "",
-            'numeroExterior' => $result['domicilioNumeroExterior'] ?? "",
-            'numeroInterior' => $result['domicilioNumeroInterior'] ?? 0 ? "(" . $result['domicilioNumeroInterior'] . ")" : null,
-            'codigoPostal' => [
-                'id' => $result['domicilioIdCodigoPostal'] ?? "",
-                'codigo' => $result['domicilioCodigoPostal'] ?? "",
-                'colonia' => $result['domicilioColonia'] ?? ""
-            ],
-            "colonia" => $result["colonia"] ?? "",
-            'municipio' => [
-                'id' => $result['domicilioIdMunicipio'] ?? "",
-                'nombre' => $result['domicilioMunicipioNombre'] ?? ""
-            ],
-            'estado' => $result['domicilioEstadoNombre'] ?? "",
-            'comunidadParroquial' => [
-                'id' => $result['domicilioIdComunidadParroquial'] ?? "",
-                'nombre' => $result['domicilioComunidadParroquialNombre'] ?? "",
-                'decanato' => $result['domicilioDecanatoNombre'] ?? "",
-                'vicaria' => $result['domicilioVicariaNombre'] ?? ""
-            ]
-        ];
 
         $lineaBase['socioeconomico'] = [
             'cantidadDependientes' => $result['cantidadDependientes'] ?? 0,
@@ -210,8 +235,7 @@ class LineaBaseDAO extends DAO {
                 'calleCruce1' => $result['negocioCalleCruce1'],
                 'calleCruce2' => $result['negocioCalleCruce2'],
                 'numExterior' => $result['negocioNumExterior'],
-                'numInterior' => $result['negocioNumInterior'],
-                'numeroInterior' => $result['negocioNumInterior'] ? "(" . $result['negocioNumInterior'] . ")" : null,
+                'numInterior' => $result['negocioNumInterior'] ? $result['negocioNumInterior'] : null,
                 'codigoPostal' => [
                     'id' => $result['negocioIdCodigoPostal'],
                     'codigo' => $result['negocioCodigoPostal'],
@@ -259,6 +283,7 @@ class LineaBaseDAO extends DAO {
                 "listaEmpleoGanancias" => $result["listaEmpleoGanancias"],
                 "listaEstrategiaVentas" => $result["listaEstrategiaVentas"]
             ];
+
             $lineaBase['administracionIngresos'] = [
                 'sueldoMensual' => $result['sueldoMensual'],
                 'montoMensualVentas' => $result['montoMensualVentas'],
@@ -290,5 +315,39 @@ class LineaBaseDAO extends DAO {
         $prep->agregarInt($idEtapa);
         $prep->agregarInt($idLineaBase);
         return $prep->ejecutar();
+    }
+
+    public function actualizarParametrosImpacto($params, $tipo, $idUsuario): bool {
+        $tabla = "";
+        foreach (self::TIPOS_LINEA_BASE as $tipoLineaBase) {
+            if ($tipoLineaBase["nombre"] === $tipo) {
+                $tabla = $tipoLineaBase["tabla"];
+                break;
+            }
+        }
+        $nombreIdLineaBase = "id_$tabla";
+        $idLineaBase = $this->extraerIdTupla($nombreIdLineaBase, "id_usuario", $idUsuario, $tabla);
+        foreach ($params as $columna => $valor) {
+            switch ($columna) {
+                case "id_rango_ingreso_mensual":
+                    $tablaActualizar = $tabla . "_seccion_socioeconomico";
+                    break;
+                case 'monto_mensual_ventas':
+                case 'monto_mensual_utilidades':
+                case 'sueldo_mensual':
+                case 'monto_ahorro_mensual':
+                    $tablaActualizar = $tabla . "_seccion_administracion_ingresos";
+                    break;
+                default:
+                    break;
+            }
+            if (!$this->ejecutarInstruccion("UPDATE $tablaActualizar SET $columna = $valor WHERE $nombreIdLineaBase = $idLineaBase")) {
+                return false;
+            } else {
+                $fechaActual = Util::obtenerFechaActual("Y-m-d");
+                $this->ejecutarInstruccion("UPDATE $tabla SET fecha_creacion = '$fechaActual' WHERE $nombreIdLineaBase = $idLineaBase");
+            }
+        }
+        return true;
     }
 }

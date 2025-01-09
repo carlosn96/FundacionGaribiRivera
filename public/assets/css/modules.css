@@ -8,8 +8,7 @@
     font-style: normal;
     font-weight: 400;
     src: url(../fonts/tabler-icons/fonts/tabler-icons.eot);
-    src: url(../fonts/tabler-icons/fonts/tabler-icons.eot?#iefix)
-        format("embedded-opentype"),
+    src: url(../fonts/tabler-icons/fonts/tabler-icons.eot?#iefix) format("embedded-opentype"),
         url(../fonts/tabler-icons/fonts/tabler-icons.woff2) format("woff2"),
         url(../fonts/tabler-icons/fonts/tabler-icons.woff) format("woff"),
         url(../fonts/tabler-icons/fonts/tabler-icons.ttf) format("truetype"),

@@ -1,8 +1,6 @@
 <?php
 
 class Util {
-    
-    
 
     public static function redirigir($url, $permanent = false) {
         echo $url;
@@ -63,8 +61,8 @@ class Util {
         return base64_encode($fileContents);
     }
 
-    public static function obtenerFechaActual() {
-        return date("Ymd");
+    public static function obtenerFechaActual($format = "Ymd") {
+        return date($format);
     }
 
     public static function respuestaBoolToStr(bool $respuesta) {
@@ -89,7 +87,6 @@ define('DB_HOST', '193.203.166.72');
 define('DB_USER', 'u775111066_pruebas');
 define('DB_PASS', 'Pruebas2024');
 define('DB_NAME', 'u775111066_pruebas');
-
 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
 define("DIR_FOTOGRAFIAS", ROOT_APP . "public" . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");

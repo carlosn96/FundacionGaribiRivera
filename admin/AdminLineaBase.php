@@ -5,7 +5,7 @@ class AdminLineaBase extends Admin {
     public function __construct() {
         parent::__construct(new LineaBaseDAO());
     }
-    
+
     public function getLineaBase($usuario) {
         return $this->dao->getLineaBase($usuario);
     }
@@ -56,19 +56,20 @@ class AdminLineaBase extends Admin {
         $ventajasNegocio = $data["ventajasNegocio"];
         $problemasNegocio = $data["problemasNegocio"];
         $estrategiasIncrementarVentas = $data["estrategiasIncrementarVentas"] ?? [];
-        $comoEmpleaGanancias = $data["comoEmpleaGanancias"] ?? [];
+        $comoEmpleaGanancias = [$data["comoEmpleaGanancias"]];
         $conoceProductosMayorUtilidad = intval($data["conoceProductosMayorUtilidad"]);
+        $porcentajeGanancias = boolval($conoceProductosMayorUtilidad) ? $data["porcentajeGanancias"] : null;
         $ahorro = intval($data["ahorro"]);
         $cuantoAhorro = floatval($data["cuantoAhorro"] ?? 0);
         $razonesNoAhorro = $data["razonesNoAhorro"] ?? null;
         $conocePuntoEquilibrio = intval($data["conocePuntoEquilibrio"]);
         $separaGastos = intval($data["separaGastos"]);
         $elaboraPresupuesto = intval($data["elaboraPresupuesto"]);
-        return new LineaBaseAnalisisNegocio($registraEntradaSalida, $asignaSueldo, 
-                $conoceUtilidades, $identificaCompetencia, $quienCompetencia, 
-                $clientesNegocio, $ventajasNegocio, $problemasNegocio, 
-                $estrategiasIncrementarVentas, $comoEmpleaGanancias, $conoceProductosMayorUtilidad, 
-                $ahorro, $cuantoAhorro, $razonesNoAhorro, $conocePuntoEquilibrio, 
+        return new LineaBaseAnalisisNegocio($registraEntradaSalida, $asignaSueldo,
+                $conoceUtilidades, $identificaCompetencia, $quienCompetencia,
+                $clientesNegocio, $ventajasNegocio, $problemasNegocio,
+                $estrategiasIncrementarVentas, $comoEmpleaGanancias, $conoceProductosMayorUtilidad, $porcentajeGanancias,
+                $ahorro, $cuantoAhorro, $razonesNoAhorro, $conocePuntoEquilibrio,
                 $separaGastos, $elaboraPresupuesto);
     }
 
@@ -82,7 +83,7 @@ class AdminLineaBase extends Admin {
         $tieneHabitoAhorro = intval($data['tieneHabitoAhorro']);
         $cuentaConSistemaAhorro = intval($data['cuentaConSistemaAhorro']);
         $detallesSistemaAhorro = $data['detallesSistemaAhorro'] ?? "";
-        $objetivosAhorro = $data['objetivosAhorro'] ?? array();
+        $objetivosAhorro = [$data['objetivosAhorro']];
         $ahorroMensual = (float) ($data['ahorroMensual'] ?? 0);
         return new LineaBaseAdministracionIngresosNegocio($sueldoMensual,
                 $ventasMensuales, $gastosMensuales, $utilidadesMensuales,
@@ -239,6 +240,10 @@ class AdminLineaBase extends Admin {
         return $this->dao->listarEmprendedoresLineaBase();
     }
 
+    public function listarEmprendedoresParaImpactos($idUsuario) {
+        return $this->dao->listarEmprendedoresParaImpactos($idUsuario);
+    }
+
     public function buscarCodigoPostal($cp) {
         return $this->dao->buscarCodigoPostal($cp);
     }
@@ -246,8 +251,12 @@ class AdminLineaBase extends Admin {
     public function buscarParroquia($parroquia) {
         return $this->dao->buscarParroquia($parroquia);
     }
-    
+
     public function actualizarEtapaEnLineaBase($idLineaBase, $idEtapa) {
         return $this->dao->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa);
+    }
+    
+    public function actualizarParametrosImpacto($params, $tipo, $id) : bool {
+        return $this->dao->actualizarParametrosImpacto($params, $tipo, $id);
     }
 }

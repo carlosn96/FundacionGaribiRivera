@@ -37,11 +37,6 @@ class Medicion {
     }
 
     private function setVariacionPorcentual() {
-        
-        if ($this->inicial == 0) {
-            $this->variacionPorcentual = 0;
-        } else {
-            $this->variacionPorcentual = round((($this->final - $this->inicial) / $this->inicial) * 100, 2);
-        }
+        $this->variacionPorcentual = ($this->inicial == 0) ? 0 : round((($this->final - $this->inicial) / $this->inicial) * 100, 2);
     }
 }

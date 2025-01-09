@@ -4,6 +4,7 @@ class UsuarioDAO extends DAO {
 
     private const NOMBRE_TABLA = "usuario";
     private const BUSCAR_USUARIO_CORREO = "SELECT * FROM " . self::NOMBRE_TABLA . " WHERE correo_electronico = ?";
+    private const BUSCAR_USUARIO_ID = "SELECT * FROM " . self::NOMBRE_TABLA . " WHERE id = ?";
     private const ACTUALIZAR_CONTRASENA = "UPDATE " . self::NOMBRE_TABLA . " SET contrasena = ? WHERE correo_electronico = ?";
     private const INSERTAR_USUARIO = "INSERT INTO " . self::NOMBRE_TABLA . " "
             . "(nombre, apellidos, correo_electronico, numero_celular, contrasena, tipo_usuario, fotografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -28,6 +29,14 @@ class UsuarioDAO extends DAO {
     public function buscarUsuarioPorCorreo($correo) {
         $result = $this->consultarUsuarioCorreo($correo);
         return count($result) > 0 ? $result : false;
+    }
+
+    public function buscarUsuarioPorID($id) {
+        if (($consulta = $this->selectPorId(self::BUSCAR_USUARIO_ID, $id))) {
+            $consulta["fotografia"] = base64_encode($consulta["fotografia"]);
+            $consulta["tipo_usuario"] = TipoUsuario::get($consulta["tipo_usuario"]);
+        }
+        return $consulta;
     }
 
     public function cambiarContrasena($correo, $contrasena) {
@@ -75,5 +84,4 @@ class UsuarioDAO extends DAO {
         }
         return [];
     }
-
 }

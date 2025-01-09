@@ -13,6 +13,9 @@ class AdminUsuario extends Admin {
     public function buscarUsuarioPorCorreo($correo) {
         return $this->dao->buscarUsuarioPorCorreo($correo);
     }
+    public function buscarUsuarioPorID($id) {
+        return $this->dao->buscarUsuarioPorID($id);
+    }
 
     public function insertarUsuario($nombre, $apellidos, $correo, $numero_celular, $contrasena, $id_tipo_usuario) {
         $fotografia = file_get_contents(Util::obtenerFotografiaRand());

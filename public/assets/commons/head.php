@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="../../../assets/libs/sweetalert2/dist/sweetalert2.min.css">
 <!-- Core Css -->
 <link rel="stylesheet" href="../../../assets/css/modules.css" />
+<link rel="stylesheet" href="../../../assets/fonts/tabler-icons/tabler-icons.css" />
 <!-- jvectormap  -->
 <link rel="stylesheet" href="../../../assets/libs/jvectormap/jquery-jvectormap.css">
 <link rel="stylesheet" href="../../../assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css">

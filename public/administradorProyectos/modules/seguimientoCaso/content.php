@@ -1,12 +1,15 @@
 <div class="card">
-    <div class="card-body wizard-content">
+    <div class="card-body">
         <h4 class="card-title">Seguimiento de caso</h4>
-        <p class="card-subtitle mb-3"> Listado de emprendedores con linea base completa</p>
-        <div id="tablaEmprendedoresContenedor" class="table-responsive"></div>
+        <p class="card-subtitle mb-3">Listado de emprendedores con línea base completa</p>
+        <div id="tablaEmprendedoresContenedor" class="table-responsive">
+        </div>
+        <!-- Contenedor para las alertas (fijas en la esquina superior derecha) -->
         <div id="contenedorDeAlertas" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
         </div>
     </div>
 </div>
+
 
 
 <div class="modal fade" id="modalEmprendedor" tabindex="-1" aria-labelledby="modalEmprendedorLabel" aria-hidden="true">

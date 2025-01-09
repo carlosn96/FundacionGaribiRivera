@@ -17,6 +17,7 @@ class LineaBaseAnalisisNegocio {
     private $conoceProductosMayorUtilidad;
     private $ahorro;
     private ?float $cuantoAhorro;
+    private ?float $porcentajeGanancias;
     private ?string $razonesNoAhorro;
     private $conocePuntoEquilibrio;
     private $separaGastos;
@@ -26,8 +27,8 @@ class LineaBaseAnalisisNegocio {
             $conoceUtilidades, $identificaCompetencia, ?string $quienCompetencia,
             string $clientesNegocio, string $ventajasNegocio,
             string $problemasNegocio, array $estrategiasIncrementarVentas,
-            array $comoEmpleaGanancias, $conoceProductosMayorUtilidad, $ahorro,
-            ?float $cuantoAhorro, ?string $razonesNoAhorro, $conocePuntoEquilibrio,
+            array $comoEmpleaGanancias, int $conoceProductosMayorUtilidad, ?float $porcentajeGanancias,
+            $ahorro, ?float $cuantoAhorro, ?string $razonesNoAhorro, $conocePuntoEquilibrio,
             $separaGastos, $elaboraPresupuesto) {
         $this->registraEntradaSalida = $registraEntradaSalida;
         $this->asignaSueldo = $asignaSueldo;
@@ -40,6 +41,7 @@ class LineaBaseAnalisisNegocio {
         $this->estrategiasIncrementarVentas = $estrategiasIncrementarVentas;
         $this->comoEmpleaGanancias = $comoEmpleaGanancias;
         $this->conoceProductosMayorUtilidad = $conoceProductosMayorUtilidad;
+        $this->porcentajeGanancias = $porcentajeGanancias;
         $this->ahorro = $ahorro;
         $this->cuantoAhorro = $cuantoAhorro;
         $this->razonesNoAhorro = $razonesNoAhorro;

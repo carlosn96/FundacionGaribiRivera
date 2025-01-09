@@ -2,13 +2,13 @@ window.usuario = {};
 $(document).ready(function () {
     print("Validando sesión ...");
     crearPeticion("../../../../controller/RevisorSesion.php", {"case": "verificarSesion"}, function (res) {
-        //print(res);
-        // print(window.location.pathname);
+        print(res);
+        const usuario = res.usuario;
         const inicioSesionPath = res.root;
         const isSesionActiva = res.sesionActiva;
-        const urlUsuario = res.url;
+        const urlUsuario = usuario ? res.usuario.tipo_usuario.url : null;
         const currentPath = window.location.pathname;
-        window.usuario = res.usuario;
+        window.usuario = usuario;
         //print(window.usuario);
         $(document).trigger('usuarioInicializado');
         if (currentPath.endsWith("index/modules/inicio/")) {// En la página de inicio de sesión

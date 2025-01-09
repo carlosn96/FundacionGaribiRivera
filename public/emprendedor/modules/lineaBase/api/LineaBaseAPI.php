@@ -20,10 +20,10 @@ class LineaBaseAPI extends API {
                     "checkbox" => [
                         "medioConocimiento" => $admin->recuperarListaMedioConocimientoFund(),
                         "estrategiasIncrementarVentas" => $admin->recuperarListaEstrategiasIncrementarVentas(),
-                        "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
-                        "objetivosAhorro" => $admin->recuperarObjetivosAhorro()
+                        
                     ],
                     "radio" => [
+                        "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
                         "tiempoCapacitacion" => $admin->recuperarListaTiempoCapacitacion(),
                         "razonRecurre" => $admin->recuperarListaRazonRecurreFund(),
                         "solicitaCredito" => $admin->recuperarListaSolicitaCredito(),
@@ -31,6 +31,7 @@ class LineaBaseAPI extends API {
                         "cantidadDependientesEconomicos" => $this->getCantidadDependientesEconomicos(),
                         "ocupacionActual" => $admin->recuperarListaOcupaciones(),
                         "ingresoMensual" => $admin->recuperarListaRangosIngreso(),
+                        "objetivosAhorro" => $admin->recuperarObjetivosAhorro()
                     ],
                     "selector" => [
                         "estadoCivil" => $admin->recuperarListaEstadoCivil(),

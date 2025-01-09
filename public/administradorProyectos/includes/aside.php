@@ -27,7 +27,7 @@
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
                             <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Dashboard</span>
+                        <span class="hide-menu ps-1">Inicio</span>
                     </a>
                 </li>
                 <!-- ============================= -->
@@ -58,14 +58,14 @@
                         <span class="hide-menu ps-1">Seguimiento de caso</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../visitaSeguimiento/" aria-expanded="false">
+<!--                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="solar:clipboard-check-broken" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Visita de seguimiento</span>
                     </a>
-                </li>
+                </li>-->
                 <li class="nav-small-cap">
                     <span class="hide-menu">Impacto</span>
                 </li>

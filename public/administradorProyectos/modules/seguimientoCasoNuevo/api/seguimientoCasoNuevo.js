@@ -4,8 +4,7 @@ function ready() {
     $(document).ready(() => {
         let res = extraerParametrosURL(window.location).emprendedor;
         if (res) {
-            let emprendedor = JSON.parse(res);
-            recuperarCamposFormulario(emprendedor);
+            recuperarCamposFormulario(JSON.parse(res));
             ajustarEventos();
         } else {
             redireccionar("../seguimientoCaso/");
@@ -15,10 +14,9 @@ function ready() {
 
 function recuperarCamposFormulario(emprendedor) {
     crearPeticion(urlAPI, {case: "listarTiposEtapasFormacion"}, (res) => {
-        print(res);
         crearSelectorMultiple($("#etapasFormacionCursadas"), "etapasFormacionCursadas", res);
     });
-    $("#tituloCard").append(emprendedor[2] + " " + emprendedor[3]);
+    $("#tituloCard").append(emprendedor[1]);
     $("#idLineaBase").val(emprendedor[0]);
 }
 

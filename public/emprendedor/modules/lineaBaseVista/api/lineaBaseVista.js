@@ -15,7 +15,7 @@ function ready() {
 
 
 function construirFormulario(lineaBase) {
-    print(lineaBase);
+    //print(lineaBase);
     let construirLista = function (lista) {
         let $lista = $("<ul>", {class: "list-group list-group-flush"});
         if (lista.length > 0) {
@@ -102,6 +102,7 @@ function construirFormulario(lineaBase) {
 
         $('#analisisNegocio-listaEmpleoGanancias').append(construirLista(lineaBase.analisisNegocio.listaEmpleoGanancias));
         $('#analisisNegocio-listaEstrategiaVentas').append(construirLista(lineaBase.analisisNegocio.listaEstrategiaVentas));
+        print(lineaBase.analisisNegocio.listaEstrategiaVentas);
 
         $('#administracionIngresos-sueldoMensual').text(lineaBase.administracionIngresos.sueldoMensual);
         $('#administracionIngresos-ventasMensuales').text(lineaBase.administracionIngresos.montoMensualVentas);

@@ -7,7 +7,6 @@ class Sesion {
     }
 
     public static function iniciarSesionNueva($usuario) {
-        // Generar un token único
         self::setToken(bin2hex(random_bytes(16))); // Genera un token de 32 caracteres hexadecimal
         self::setUsuarioActual($usuario);
     }
@@ -17,31 +16,29 @@ class Sesion {
         $_SESSION['token']["code"] = $token;
         // Establecer el tiempo de expiración (20 minutos en el futuro)
         date_default_timezone_set('America/Mexico_City');
-        $_SESSION['token']['tiempoExpiracion'] = date(strtotime('+20 minute'));
+        $_SESSION['token']['tiempoExpiracion'] = date(strtotime('+35 minute'));
     }
 
     public static function getToken() {
-        return $_SESSION['token'] ?? null;
+        return isset($_SESSION) ? $_SESSION['token'] ?? null : null;
     }
 
     public static function cerrar() {
-        unset($_SESSION);
-        session_destroy();
+        $_SESSION = [];
+        //session_destroy();
     }
 
     public static function esActiva(): bool {
         $token = self::getToken();
-        if (($esActiva = isset($token))) {
-            if ($token["tiempoExpiracion"] < time()) {
-                self::cerrar();
-                return false;
-            }
+        if (!isset($token) || $token["tiempoExpiracion"] < time()) {
+            self::cerrar();
+            return false; // El token ha expirado, la sesión no está activa
         }
-        return $esActiva;
+        return true;
     }
 
     public static function obtenerUsuarioActual() {
-        return $_SESSION["usuario"] ?? null;
+        return isset($_SESSION) ? $_SESSION["usuario"] ?? null : null;
     }
 
     public static function setInfoTemporal($key, $val) {
@@ -72,25 +69,5 @@ class Sesion {
 
     public function actualizar($usuario) {
         self::setUsuarioActual($usuario);
-    }
-
-    /* private static function verificarURLSesion($usuario) {
-      switch (is_null($usuario) ? "" : $usuario["id_tipo_usuario"]) {
-      case TipoUsuario::EMPRENDEDOR:
-      $url = self::EMPRENDEDOR;
-      break;
-      case TipoUsuario::ADMINISTRADOR:
-      $url = self::ADMINISTRACION;
-      break;
-      default:
-      $url = "";
-      }
-      return $url;
-      } */
-
-    public static function info(): array {
-        $info["usuario"] = ($usuario = self::obtenerUsuarioActual());
-        //$info["url"] = self::verificarURLSesion($usuario);
-        return $info;
     }
 }

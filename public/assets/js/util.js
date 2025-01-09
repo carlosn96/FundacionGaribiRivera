@@ -215,8 +215,8 @@ function crearDataTable(idTabla, buttons) {
         buttons: Array.isArray(buttons) ? buttons : [],
         responsive: true,
         order: [[0, "asc"]],
-        scrollY: "auto",
-        paging: true,
+        scrollY: "200px",
+        paging: false,
         language: {
             "paginate": {
                 "previous": "Anterior",
@@ -363,8 +363,7 @@ function crearSelector($container, name, arrayObjetos, required = true) {
         $container.append($selector);
     } else {
         return $selector;
-}
-
+    }
 }
 
 function crearSelectorMultiple(container, name, arrayObjetos, required = true) {
@@ -480,9 +479,30 @@ function construirTabla(data, tableClass, container, tableID) {
                         keys.map(key => $('<td>', {html: item[key]}))
                         ))
             );
-    $tabla.append($thead, $tbody);
+    const $tfoot = $('<tfoot>').append(
+            $('<tr>').append(keys.map(key => $('<th>', {text: key})))
+            );
+    $tabla.append($thead, $tbody, $tfoot);
     $(`#${container}`).empty().append($tabla);
 }
+/*
+function construirTabla(data, tableClass, container, tableID) {
+    const $tabla = $('<table>', {class: `table ${tableClass}`, id: tableID});
+    if (Array.isArray(data) && data.length === 0) {
+        const keys = Object.keys(data[0]);
+        const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
+        const $tbody = $('<tbody>').append($('<tr>').append(keys.map(() => $('<td>').text(''))));
+        $tabla.append($thead, $tbody);
+    } else {
+        const keys = Object.keys(data[0]);
+        const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
+        const $tbody = $('<tbody>').append(data.map(item => $('<tr>').append(keys.map(key => $('<td>', {html: item[key]})))));
+        $tabla.append($thead, $tbody);
+    }
+    $(`#${container}`).empty().append($tabla);
+}*/
+
+
 
 function construirTablaDataTable(data, tableClass, container, tableID, botones = ["copy", "csv", "excel", "pdf", "print"]) {
     construirTabla(data, tableClass, container, tableID);

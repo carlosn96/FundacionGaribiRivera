@@ -5,8 +5,11 @@ include_once '../../../../../loader.php';
 class MedicionImpactosAPI extends API {
 
     function consultarMedicionImpactos() {
-
-        $this->enviarRespuesta(getAdminImpacto()->getMedicionImpacto($this->getUsuarioActual()));
+        $idUsuario = $this->getUsuarioActual();
+        $this->enviarRespuesta([
+            "impactos" => getAdminImpacto()->getMedicionImpacto($idUsuario),
+            "emprendedores" => getAdminLineaBase()->listarEmprendedoresParaImpactos($idUsuario),
+        ]);
     }
 
     function actualizarConfiguracionAnios() {
@@ -17,6 +20,19 @@ class MedicionImpactosAPI extends API {
                         $fin,
                         $this->getUsuarioActual()));
     }
+
+    function actualizarFiltroEmprendedores() {
+        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionListaEmprendedores($this->data["seleccionados"]??[], $this->getUsuarioActual()));
+    }
+    
+    function recuperarVistaGeneral() {
+        $this->enviarRespuesta($this->getVistaGeneral($this->getData("tipo")));
+    }
+    
+    private function getVistaGeneral($tipo) {
+        return getAdminImpacto()->recuperarVistaGeneral($tipo);
+    }
+    
 }
 
 Util::iniciarAPI(MedicionImpactosAPI::class);
