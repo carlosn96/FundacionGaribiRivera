@@ -24,6 +24,11 @@ class ConfigUsuarioDAO extends DAO {
         $id_usuario = $this->extraer_id_tupla("id_usuario", "id_coordinador", $id_coord, "coordinador");
         return $this->actualizar_config_usuario($id_usuario, id_ciclo_escolar: $id_ciclo_escolar, id_carrera_actual: $id_carrera, id_plantel_actual: $id_plantel);
     }
+    
+    public function guardar_configuracion_ciclo_escolar($id_coord, $id_ciclo_escolar) {
+        $id_usuario = $this->extraer_id_tupla("id_usuario", "id_coordinador", $id_coord, "coordinador");
+        return $this->actualizar_config_usuario($id_usuario, id_ciclo_escolar: $id_ciclo_escolar);
+    }
 
     public function recuperar_configuracion_carrera_plantel($id_coord) {
         $id_usuario = $this->extraer_id_tupla("id_usuario", "id_coordinador", $id_coord, "coordinador");

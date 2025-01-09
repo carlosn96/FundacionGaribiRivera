@@ -31,18 +31,33 @@
                                         <a href="../docentes/agregarDocente.php" class="btn btn-outline-primary m-1 flex-grow-1"><i class="ti ti-plus"></i> Nuevo docente</a>
                                         <a href="../docentes" class="btn btn-outline-primary m-1 flex-grow-1"><i class="ti ti-list-search"></i> Ver docentes</a>
                                         <a href="../agenda/" class="btn btn-outline-primary m-1 flex-grow-1"><i class="ti ti-calendar-event"></i> Agenda</a>
+                                        <a href="../horario/" class="btn btn-outline-primary m-1 flex-grow-1"><i class="ti ti-clock"></i> Horarios</a>
+                                        <a href="../grupos/" class="btn btn-outline-primary m-1 flex-grow-1"><i class="ti ti-users"></i> Grupos</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="graficaAvanceSupervisiones">
+                    <div class="row">
                         <div class="col-12">
                             <!-- Yearly Breakup -->
-                            <div class="card overflow-hidden mt-3">
+                            <div class="card border-top border-primary overflow-hidden mt-3">
                                 <div class="card-body p-4">
-                                    <h5 class="card-title mb-3 fw-semibold">Avance de Supervisiones</h5>
-                                    <div class="row align-items-center">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
+                                        <!-- Título -->
+                                        <h5 class="card-title fw-semibold mb-2 mb-md-0">Avance de Supervisiones</h5>
+
+                                        <!-- Selector Ciclo Escolar -->
+                                        <div class="form-group mb-0">
+                                            <label for="cicloEscolar" class="form-label">Ciclo Escolar</label>
+                                            <select id="cicloEscolar" class="form-select">
+                                                <!-- Opciones del ciclo escolar (se agregarían dinámicamente) -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Información de Supervisiones -->
+                                    <div class="row align-items-center" id="graficaAvanceSupervisiones" hidden>
                                         <div class="col-md-6 mb-3 mb-md-0">
                                             <div class="d-flex justify-content-center">
                                                 <div id="grade"></div>
@@ -61,11 +76,17 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Mensaje cuando no hay supervisiones agendadas -->
+                                    <div class="alert alert-info mt-4" role="alert" id="mensajeNoSupervision" hidden>
+                                        <h5 class="alert-heading">No se han agendado supervisiones</h5>
+                                        <hr>
+                                        <p>Actualmente no se han agendado supervisiones en el ciclo escolar seleccionado. Por favor, verifique si los datos han sido correctamente ingresados.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-lg-4 col-md-6 col-sm-12 d-flex align-items-stretch">
                             <div class="card w-100 mt-3">

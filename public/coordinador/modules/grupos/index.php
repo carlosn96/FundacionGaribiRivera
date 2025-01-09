@@ -49,7 +49,7 @@
                                     <div class="d-md-flex align-items-center">
                                         <div class="mt-3 mt-md-0 ms-auto">
                                             <button type="submit" class="btn btn-primary hstack gap-2">
-                                                <i class="bi bi-check-circle me-2 fs-4"></i>
+                                                <i class="ti ti-check me-2 fs-4"></i>
                                                 Crear Grupo
                                             </button>
                                         </div>

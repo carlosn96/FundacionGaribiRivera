@@ -139,15 +139,16 @@ class SupervisionDAO extends DAO {
         return $result[0] ?? [];
     }
 
-    public function obtener_agenda_general($id_coordinador, $fecha) {
+    public function obtener_agenda_general($id_coordinador, $fecha, $ciclo) {
         $prep = new PreparedStatmentArgs();
         $prep->add("i", $id_coordinador);
-        if (empty($fecha)) {
-            $fechaInstruccion = "";
-        } else {
-            $fechaInstruccion = " AND fecha = ?";
+        $fechaInstruccion = "";
+        if (!empty($fecha)) {
+            $fechaInstruccion = " AND fecha = ? ";
             $prep->add("s", $fecha);
         }
+        $fechaInstruccion .= " AND id_ciclo_escolar = ?";
+        $prep->add("i", $ciclo);
         return $this->ejecutar_instruccion_prep_result(str_replace("[WHERE]", $fechaInstruccion, self::RECUPERAR_AGENDA_GENERAL_POR_COORDINADOR), $prep);
     }
 

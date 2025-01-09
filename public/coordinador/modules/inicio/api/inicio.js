@@ -3,31 +3,11 @@ const urlAPI = "api/InicioAPI.php";
 function ready() {
     $(document).ready(function () {
         crearPeticion(urlAPI, {"case": "recuperar_agenda"}, function (res) {
-            let today = getFechaActual();
-            $("#fechaTimeLine").val(today);
-            construirGraficaAvance(res);
-            res.forEach(function (docente) {
-                let $tr = $("<tr>");
-                let statusClass = docente.status === "Realizada" ? "primary" : "danger";
-                $("<td>").html(
-                        `<div class="d-flex align-items-center">
-                            <div>
-                                <h6 class="mb-1 fw-bolder">${docente.nombre_docente}</h6>
-                                <p class="fs-3 mb-0">Plantel ${docente.plantel}</p>
-                            </div>
-                        </div>`
-                        ).appendTo($tr);
-                $("<td>").text(`${docente.carrera}`).appendTo($tr);
-                $("<td>").text(`${docente.dia_semana}, ${docente.fecha}, ${docente.hora_inicio.slice(0, 5)} - ${docente.hora_fin.slice(0, 5)}`).appendTo($tr);
-                $("<td>").html(
-                        `<span class="badge bg-light-${statusClass} rounded-pill text-${statusClass} px-3 py-2 fs-3">
-                                ${docente.status}
-                                </span>`
-                        ).appendTo($tr);
-                $("#bodyAgendaSupervision").append($tr);
-            });
-            crearDataTable("#tablaAgenda");
-            crearTimeLineSupervisiones(res.filter(docente => docente.fecha === today));
+            print(res);
+            const agenda = res.agenda;
+            $("#fechaTimeLine").val(getFechaActual());
+            construirSelectorCiclos(res.ciclos, res.ciclo_actual);
+            construirDasboard(agenda);
         }, "json");
 
         $("#fechaTimeLine").change(function () {
@@ -41,6 +21,49 @@ function ready() {
             }
         });
     });
+}
+
+function construirDasboard(agenda) {
+    construirGraficaAvance(agenda);
+    agenda.forEach(function (docente) {
+        let $tr = $("<tr>");
+        let statusClass = docente.status === "Realizada" ? "primary" : "danger";
+        $("<td>").html(
+                `<div class="d-flex align-items-center">
+                            <div>
+                                <h6 class="mb-1 fw-bolder">${docente.nombre_docente}</h6>
+                                <p class="fs-3 mb-0">Plantel ${docente.plantel}</p>
+                            </div>
+                        </div>`
+                ).appendTo($tr);
+        $("<td>").text(`${docente.carrera}`).appendTo($tr);
+        $("<td>").text(`${docente.dia_semana}, ${docente.fecha}, ${docente.hora_inicio.slice(0, 5)} - ${docente.hora_fin.slice(0, 5)}`).appendTo($tr);
+        $("<td>").html(
+                `<span class="badge bg-light-${statusClass} rounded-pill text-${statusClass} px-3 py-2 fs-3">
+                                ${docente.status}
+                                </span>`
+                ).appendTo($tr);
+        $("#bodyAgendaSupervision").append($tr);
+    });
+    crearDataTable("#tablaAgenda");
+    const today = getFechaActual();
+    crearTimeLineSupervisiones(agenda.filter(docente => docente.fecha === today));
+}
+
+function construirSelectorCiclos(lista, actual) {
+    const $selector = $("#cicloEscolar");
+    lista.forEach((ciclo) => {
+        crearOpcionSelector($selector, ciclo.id_ciclo_escolar, ciclo.ciclo_escolar);
+    });
+    $selector.val(actual);
+    $selector.on("change", function () {
+        crearPeticion(urlAPI, {case: "recuperar_agenda_ciclo_escolar", data: "ciclo=" + $(this).val()}, (rs) => {
+            if (!rs.es_valor_error) {
+                refresh();
+            }
+        }, "json");
+    });
+
 }
 
 function updateDate(days) {
@@ -81,9 +104,13 @@ function crearTimeLineSupervisiones(listaSupervisiones) {
 }
 
 function construirGraficaAvance(listaSupervisiones) {
-    if (Object.values(listaSupervisiones).length > 0) {
+    let existenSupervisiones = Object.values(listaSupervisiones).length > 0;
+    (existenSupervisiones ? $("#graficaAvanceSupervisiones") : $("#mensajeNoSupervision")).prop("hidden", false);
+
+    if (existenSupervisiones) {
         let supervisadas = listaSupervisiones.filter(supervision => supervision.status === "Realizada").length;
         let noSupervisadas = listaSupervisiones.filter(supervision => supervision.status === "Sin realizarse").length;
+        // Configuración de la gráfica
         var grade = {
             series: [supervisadas, noSupervisadas],
             labels: ["Supervisiones realizadas", "Supervisiones sin realizarse"],
@@ -97,7 +124,6 @@ function construirGraficaAvance(listaSupervisiones) {
             legend: {
                 show: false
             },
-
             plotOptions: {
                 pie: {
                     donut: {
@@ -108,8 +134,5 @@ function construirGraficaAvance(listaSupervisiones) {
         };
         var chart = new ApexCharts(document.querySelector("#grade"), grade);
         chart.render();
-    } else {
-        $("#graficaAvanceSupervisiones").prop("hidden", true);
     }
-
 }

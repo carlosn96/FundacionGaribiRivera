@@ -81,8 +81,8 @@ class AdminSupervision {
         return $this->dao->agendar_supervision($id_horario, $fecha);
     }
 
-    public function obtener_agenda_general($id_coordinador, $fecha) {
-        return $this->dao->obtener_agenda_general($id_coordinador, $fecha);
+    public function obtener_agenda_general($id_coordinador, $fecha, $ciclo) {
+        return $this->dao->obtener_agenda_general($id_coordinador, $fecha, $ciclo);
     }
 
     public function recuperar_agenda_por_fecha($fecha, $id_coordinador, $id_plantel, $id_carrera) {

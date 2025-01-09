@@ -58,8 +58,9 @@ class DAO {
     }
 
     protected function extraer_id_tupla($nombreID, $campoBusqueda, $valorCampoBusqueda, $tabla) {
-        return $this->ejecutar_instruccion("SELECT $nombreID FROM $tabla WHERE $campoBusqueda = $valorCampoBusqueda")
-                        ->fetch_row()[0];
+        $rset = $this->ejecutar_instruccion("SELECT $nombreID FROM $tabla WHERE $campoBusqueda = $valorCampoBusqueda")
+                        ->fetch_row();
+        return $rset ? $rset[0] : 0;
     }
 
     protected function recuperar_count_all($tabla, $where = null) {
