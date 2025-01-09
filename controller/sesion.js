@@ -1,7 +1,7 @@
 var usuario;
 $(document).ready(function () {
     let root = getRootUrl();
-    crearPeticion(root + "/controller/RevisorSesion.php", {
+    crearPeticion(root + "controller/RevisorSesion.php", {
         case: "verificar_sesion"
     }, function (res) {
         //print(res);
