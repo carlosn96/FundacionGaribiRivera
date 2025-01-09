@@ -26,10 +26,10 @@
                             <?php
                             include_once '../../includes/selectorCarrera.php';
                             ?>
-                            <div class="card">
-                                <div class="card-body">
+                            <div class="card body" hidden="">
+                                <div class="card-body" >
 
-                                    <ul class="nav nav-tabs">
+                                    <ul class="nav nav-tabs" >
                                         <li class="nav-item">
                                             <a class="nav-link active" aria-current="page" data-bs-toggle="tab" href="#horario">Horario</a>
                                         </li>
@@ -46,7 +46,7 @@
                                                         <input value="grupo" type="radio" class="btn-check" name="tipoHorario" id="profesor" autocomplete="off" checked>
                                                         <label class="btn btn-outline-primary" for="profesor">Horario por grupo</label>
                                                         <input value="profesor" type="radio" class="btn-check" name="tipoHorario" id="grupo" autocomplete="off">
-                                                        <label class="btn btn-outline-primary" for="grupo">Horario por profesor</label>
+                                                        <label class="btn btn-outline-primary button" for="grupo">Horario por profesor</label>
                                                     </div>
                                                 </div>
                                                 <div id="tabla" class="row">

@@ -48,8 +48,8 @@ class AdminPlantel {
         return new Plantel($tupla["nombre"], $tupla["director"], $tupla["id_plantel"]);
     }
 
-    public function guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel) {
-        return $this->dao->guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel);
+    public function guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel, $id_ciclo_escolar) {
+        return $this->dao->guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel, $id_ciclo_escolar);
     }
 
     public function recuperar_configuracion_carrera_plantel($id_coord) {

@@ -3,6 +3,7 @@
 class DocenteDAO extends DAO {
 
     private const ACTUALIZAR_DOCENTE = "CALL actualizar_docente(?, ?, ?, ?, ?)";
+    private const INSERTAR_NUEVO = "INSERT INTO docente (nombre, apellidos, correo_electronico, perfil_profesional) VALUES (?, ?, ?, ?)";
 
     public function guardar_docente_materias(Docente $docente, $id_carrera, $id_plantel) {
         $materias_json = json_encode($docente->array()["materias"]);
@@ -19,30 +20,39 @@ class DocenteDAO extends DAO {
         return $stmt->execute();
     }
 
-    public function obtener_horario($tipo, $id, $carrera, $plantel) {
-        $campo = ($tipo === "Grupo") ? 'grupo' : 'id_docente';
-        $instruccion = "SELECT * FROM consultar_horario WHERE $campo = ? AND id_carrera = ? AND id_plantel = ?";
+    public function obtener_horario($tipo, $id, $carrera, $plantel, $ciclo) {
+        $campo = ($tipo === "Grupo") ? 'id_grupo' : 'id_docente';
+        $instruccion = "SELECT * FROM consultar_horario WHERE $campo = ? AND id_carrera = ? AND id_plantel = ? AND id_ciclo_escolar = ?";
         $args = new PreparedStatmentArgs;
         $args->add('s', $id);
         $args->add('i', $carrera);
         $args->add('i', $plantel);
+        $args->add('i', $ciclo);
         return $this->ejecutar_instruccion_prep_result($instruccion, $args);
     }
 
-    public function consultar_disponibilidad($dia, $hora, $carrera, $plantel) {
+    public function consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo) {
         $where_hora = empty($hora) ? "" : "AND hora_inicio = '$hora'";
         $instruccion = "SELECT * FROM consultar_horario WHERE dia_semana = '$dia' "
-                . " $where_hora AND id_carrera = $carrera AND id_plantel = $plantel";
-        
+                . " $where_hora AND id_carrera = $carrera AND id_plantel = $plantel"
+                . " AND id_ciclo_escolar = $ciclo";
         return ($rs = $this->ejecutar_instruccion($instruccion)->fetch_all(MYSQLI_ASSOC)) ? $rs : [];
     }
 
-    public function obtener_docentes_materias($id_carrera, $id_plantel) {
-        return $this->listar_docente_materias_horarios(" id_carrera = $id_carrera AND id_plantel = $id_plantel");
+    public function obtener_docentes_materias($id_carrera, $id_plantel, $ciclo_escolar) {
+        return $this->listar_docente_materias_horarios(" id_carrera = $id_carrera AND id_plantel = $id_plantel AND id_ciclo_escolar = $ciclo_escolar");
     }
 
-    public function obtener_materias($id_docente) {
-        return $this->listar_docente_materias_horarios(" id_docente = $id_docente");
+    public function obtener_materias($docente, $carrera, $plantel, $ciclo) {
+        return $this->listar_docente_materias_horarios(" id_carrera = $carrera AND id_plantel = $plantel AND id_ciclo_escolar = $ciclo AND id_docente = $docente");
+    }
+
+    public function agregar_materia($docente, Materia $materia) {
+        $prep = new PreparedStatmentArgs;
+        $prep->add("i", $docente);
+        $prep->add("s", json_encode($materia->to_array()));
+        $instruccion = "CALL guardar_materia(?, ?)";
+        return $this->ejecutar_instruccion_preparada($instruccion, $prep);
     }
 
     public function obtener_info_agenda($id_agenda) {
@@ -79,6 +89,8 @@ class DocenteDAO extends DAO {
                     'horarios' => []
                 ];
             }
+            $docentes[$docenteKey]['materias'][$materiaKey]["ciclo_escolar"] = $row["ciclo_escolar"];
+            $docentes[$docenteKey]['materias'][$materiaKey]["carrera"] = $row["carrera"];
             $docentes[$docenteKey]['materias'][$materiaKey]["plantel"] = $row["nombre_plantel"];
             $docentes[$docenteKey]['materias'][$materiaKey]["grupo"] = $row["grupo_materia"];
             $docentes[$docenteKey]['materias'][$materiaKey]["id"] = $row["id_materia"];
@@ -117,5 +129,35 @@ class DocenteDAO extends DAO {
         $prep->add("s", $docente->get_correo_electronico());
         $prep->add("s", $docente->get_perfil_profesional());
         return $this->ejecutar_instruccion_preparada(self::ACTUALIZAR_DOCENTE, $prep);
+    }
+
+    public function guardar_docente(Docente $docente) {
+        $prep = new PreparedStatmentArgs();
+        $prep->add("s", $docente->get_nombre());
+        $prep->add("s", $docente->get_apellidos());
+        $prep->add("s", $docente->get_correo_electronico());
+        $prep->add("s", $docente->get_perfil_profesional());
+        return $this->ejecutar_instruccion_preparada(self::INSERTAR_NUEVO, $prep);
+    }
+
+    public function existe_docente($nombre, $apellido, $correo): bool {
+        $sql = "SELECT 1 FROM docente 
+            WHERE LOWER(correo_electronico) = LOWER(?) 
+            OR (LOWER(nombre) LIKE LOWER(?) AND LOWER(apellidos) LIKE LOWER(?))";
+        $prep = new PreparedStatmentArgs;
+        $prep->add("s", $correo);
+        $prep->add("s", $nombre);
+        $prep->add("s", $apellido);
+        $result = $this->ejecutar_instruccion_preparada($sql, $prep, true);
+        return $result->get_result()->num_rows > 0;
+    }
+    
+    public function listar_todos_docentes($where = "") {
+        $instruccion = "SELECT * FROM docente $where";
+        return $this->ejecutar_instruccion($instruccion)->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function recuperar_docente($id) {
+        return $this->listar_docente_materias_horarios(" id_docente = $id");
     }
 }

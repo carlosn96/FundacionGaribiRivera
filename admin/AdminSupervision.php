@@ -170,7 +170,7 @@ class AdminSupervision {
         return $this->dao->recuperar_id_agenda_por_id_supervision($id_supervision);
     }
 
-    function recuperar_supervisiones($plantel, $carrera) {
-        return $this->dao->recuperar_supervisiones($plantel, $carrera);
+    function recuperar_supervisiones($plantel, $carrera, $ciclo) {
+        return $this->dao->recuperar_supervisiones($plantel, $carrera, $ciclo);
     }
 }

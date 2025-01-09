@@ -25,6 +25,10 @@ class MateriaDAO extends DAO {
         return $this->eliminar_por_id("materia_horarios", "id_horario", $id);
     }
 
+    public function eliminar_materia($id) {
+        return $this->eliminar_por_id("materia", "id_materia", $id);
+    }
+
     public function actualizar_horario($form) {
         $args = new PreparedStatmentArgs();
         $args->add("s", $form["dia_semana"]);
@@ -43,11 +47,12 @@ class MateriaDAO extends DAO {
         return $this->ejecutar_instruccion_preparada(self::AGREGAR_HORARIO, $args);
     }
 
-    function listar_grupos($carrera, $plantel) {
-        $instruccion = "SELECT * FROM listar_grupos WHERE carrera=? AND plantel=?";
+    function listar_grupos($carrera, $plantel, $ciclo) {
+        $instruccion = "SELECT * FROM listar_grupos WHERE carrera=? AND plantel=? AND ciclo = ?";
         $args = new PreparedStatmentArgs();
         $args->add("i", $carrera);
         $args->add("i", $plantel);
+        $args->add("i", $ciclo);
         return $this->ejecutar_instruccion_prep_result($instruccion, $args);
     }
 }

@@ -38,7 +38,7 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <h2 class="card-title text-center mb-2">Lista de profesores por carrera</h2>
+                                    <h2 class="card-title text-center mb-2">Lista de docentes con carga asignada por carrera</h2>
                                     <h3 class="card-subtitle mb-4 text-muted text-center" id="carreraPlantel"></h3>
                                     <div class="mb-4">
                                         <input type="text" class="form-control form-control-lg" id="searchInput" placeholder="Buscar profesor, materia, perfil..." onkeyup="filtrarProfesores()">

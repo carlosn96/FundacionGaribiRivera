@@ -40,8 +40,8 @@ WHERE carrera_plantel.id_carrera = $id_carrera")->fetch_all(MYSQLI_ASSOC);
         return $this->eliminar_por_id("carrera_" . self::NOMBRE_TABLA, "id_carrera", $carrera->get_id_carrera());
     }
 
-    public function guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel) {
-        return (new ConfigUsuarioDAO)->guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel);
+    public function guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel, $ciclo) {
+        return (new ConfigUsuarioDAO)->guardar_configuracion_carrera_plantel($id_coord, $id_carrera, $id_plantel, $ciclo);
     }
 
     public function recuperar_configuracion_carrera_plantel($id_coord) {

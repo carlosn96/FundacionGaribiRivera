@@ -7,7 +7,6 @@ function ready() {
     });
 }
 
-
 function ajustarEventos() {
     const $searchInput = $('#searchInput');
     const $profesorList = $('#profesor-list'); //contenedor de tarjetas
@@ -39,16 +38,29 @@ function construirListaProfesores() {
     $('#searchInput').val("");
     let carrera = $("#selectorCarrera").find('option:selected');
     let plantel = $("#selectorPlantel").find('option:selected');
-    $("#carreraPlantel").text(`${carrera.text()} en el Plantel ${plantel.text()}`);
+    let cicloEscolar = $("#selectorCicloEscolar").find('option:selected');
+    const data = {
+        carrera: carrera.val(),
+        plantel: plantel.val(),
+        ciclo: cicloEscolar.val()
+    };
+    $("#carreraPlantel").text(`${carrera.text()} en el Plantel ${plantel.text()} (${cicloEscolar.text()})`);
     crearPeticion(urlAPI, {
         case: "recuperar_docentes",
-        data: `id_carrera=${carrera.val()}&id_plantel=${plantel.val()}`
+        data: $.param(data)
     }, function (res) {
+        //print(res);
         let profesorContent = $("#profesor-list");
         let listaDocentes = JSON.parse(res);
         profesorContent.empty();
         if (Object.keys(listaDocentes).length > 0) {
             $.each(listaDocentes, function (docente, val) {
+                const editMateriasJSON = {
+                    docente: val.id_docente,
+                    carrera: carrera.val(),
+                    plantel: plantel.val(),
+                    ciclo: cicloEscolar.val()
+                };
                 const materias = Object.entries(val.materias).map(([materia, info]) => {
                     const horarios = info.horarios.map(horario => `
                 <li class="list-group-item">
@@ -85,7 +97,7 @@ function construirListaProfesores() {
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="javascript:mostrarModalActualizarDocente(${JSON.stringify(val).replace(/"/g, '&quot;')})">Información personal</a></li>
-                                    <li><a class="dropdown-item" href="javascript:editarMaterias(${JSON.stringify(val.id_docente).replace(/"/g, '&quot;')})">Materias</a></li>
+                                    <li><a class="dropdown-item" href="javascript:editarMaterias(${JSON.stringify(editMateriasJSON).replace(/"/g, '&quot;')})">Materias</a></li>
                                 </ul>
                             </div>
                             <button class="btn btn-danger btn-sm" onclick="eliminarDocente(${val.id_docente})">Eliminar</button>
@@ -106,6 +118,7 @@ function construirListaProfesores() {
             $("#profesor-list").append(`
         <div class="alert alert-info text-center" role="alert">
             No se han agregado docentes para la carrera ${carrera.text()} en plantel ${plantel.text()}
+        <p>Ciclo escolar ${cicloEscolar.text()}</p>
         </div>`);
         }
 
@@ -134,6 +147,6 @@ function mostrarModalActualizarDocente(docente) {
 }
 
 
-function editarMaterias(idDocente) {
-    redireccionar("editarMaterias.php?docente=" + idDocente);
+function editarMaterias(data) {
+    redireccionar("editarMaterias.php?" + $.param(data));
 }

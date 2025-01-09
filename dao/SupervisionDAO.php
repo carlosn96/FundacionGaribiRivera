@@ -167,11 +167,12 @@ class SupervisionDAO extends DAO {
         return $this->ejecutar_instruccion($instruccion);
     }
 
-    public function recuperar_supervisiones($plantel, $carrera) {
-        $sql = "SELECT * FROM consultar_informe WHERE id_plantel = ? AND id_carrera = ?";
+    public function recuperar_supervisiones($plantel, $carrera, $ciclo) {
+        $sql = "SELECT * FROM consultar_informe WHERE id_plantel = ? AND id_carrera = ? AND ciclo_escolar = ?";
         $args = new PreparedStatmentArgs;
         $args->add("i", $plantel);
         $args->add("i", $carrera);
+        $args->add("i", $ciclo);
         return $this->ejecutar_instruccion_prep_result($sql, $args);
     }
 }

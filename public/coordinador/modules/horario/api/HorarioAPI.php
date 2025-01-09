@@ -11,19 +11,20 @@ class HorarioAPI extends API {
         $tipo = $this->data["tipoHorario"];
         $carrera = $this->data["carrera"];
         $plantel = $this->data["plantel"];
+        $cicloEscolar = $this->data["cicloEscolar"];
         $this->enviar_respuesta([
-            "tabla_horario" => $this->recuperar_listado_grupo_docente($tipo, $carrera, $plantel),
-            "docentes" => (new AdminDocente)->obtener_docentes_materias($carrera, $plantel)
+            "tabla_horario" => $this->recuperar_listado_grupo_docente($tipo, $carrera, $plantel, $cicloEscolar),
+            "docentes" => (new AdminDocente)->obtener_docentes_materias($carrera, $plantel, $cicloEscolar)
         ]);
     }
 
-    private function recuperar_listado_grupo_docente($tipo, $carrera, $plantel) {
+    private function recuperar_listado_grupo_docente($tipo, $carrera, $plantel, $ciclo) {
         switch ($tipo) {
             case "grupo":
                 $lista = [
                     self::GRUPO => array_map(function ($grupo) {
-                        return ["text" => $grupo['grupo'], "id" => $grupo['grupo']];
-                    }, (new AdminMateria())->listar_grupos($carrera, $plantel))
+                        return ["text" => $grupo['grupo'], "id" => $grupo['id_grupo']];
+                    }, (new AdminMateria())->listar_grupos($carrera, $plantel, $ciclo))
                 ];
                 break;
             case "profesor":
@@ -33,7 +34,7 @@ class HorarioAPI extends API {
                     "text" => $docente["nombre"] . " " . $docente["apellidos"],
                     "id" => $docente['id_docente']
                         ];
-                    }, array_values((new AdminDocente())->obtener_docentes_materias($carrera, $plantel)))
+                    }, array_values((new AdminDocente())->obtener_docentes_materias($carrera, $plantel, $ciclo)))
                 ];
                 break;
         }
@@ -41,18 +42,25 @@ class HorarioAPI extends API {
     }
 
     function recuperar_horario() {
-        $carrera = $this->data["carrera"];
-        $plantel = $this->data["plantel"];
-        $id = $this->data["id"];
-        $tipo = $this->data["tipo"];
-        $rs = (new AdminDocente())->obtener_horario($tipo, $id, $carrera, $plantel);
-        $horario = [
-            "tipo" => $tipo,
-            "id" => $id,
-            "horario" => $rs
-        ];
-        $horario["docente"] = $tipo === self::DOCENTE ? $rs[0]["docente"] : null;
-        Sesion::setInfoTemporal("horario", $horario);
+        try {
+            $carrera = $this->data["carrera"];
+            $plantel = $this->data["plantel"];
+            $ciclo = $this->data["ciclo"];
+            //$id = $this->data["idGrupo"];
+            $id = $this->data["id"];
+            $tipo = $this->data["tipo"];
+            $rs = (new AdminDocente())->obtener_horario($tipo, $id, $carrera, $plantel, $ciclo);
+            $horario = [
+                "tipo" => $tipo,
+                "id" => $id,
+                "horario" => $rs,
+                $tipo => $rs[0][strtolower($tipo)]
+            ];
+            Sesion::setInfoTemporal("horario", $horario);
+            $this->enviar_respuesta(OPERACION_COMPLETA);
+        } catch (Exception $e) {
+            $this->enviar_respuesta(Util::enum($e->getMessage(), true));
+        }
     }
 
     function consultar_disponibilidad() {
@@ -60,8 +68,9 @@ class HorarioAPI extends API {
         $hora = $this->data["hora"];
         $carrera = $this->data["carrera"];
         $plantel = $this->data["plantel"];
+        $ciclo = $this->data["ciclo"];
         $this->enviar_respuesta(
-                (new AdminDocente())->consultar_disponibilidad($dia, $hora, $carrera, $plantel)
+                (new AdminDocente())->consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo)
         );
     }
 }

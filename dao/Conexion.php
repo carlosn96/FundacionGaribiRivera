@@ -1,7 +1,12 @@
 <?php
 
 class Conexion {
-    private const SERVIDOR = "154.56.47.204";
+//    private const SERVIDOR = "154.56.47.204";
+//    private const USUARIO = "u487588057_developer";
+//    private const CONTRASENIA = "D3v3lop3r1996";
+//    private const BD = "u487588057_supervision_dp";
+//    private const SERVIDOR = "154.56.47.204";
+    private const SERVIDOR = "srv1102.hstgr.io";
     private const USUARIO = "u487588057_supervision";
     private const CONTRASENIA = "Ch@rly1996";
     private const BD = "u487588057_sup_docente";

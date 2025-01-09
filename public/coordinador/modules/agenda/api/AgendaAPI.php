@@ -11,7 +11,10 @@ class AgendaAPI extends API {
     }
 
     public function recuperar_docentes() {
-        return (new AdminDocente())->obtener_docentes_materias($this->data["id_carrera"], $this->data["id_plantel"]);
+        $carrera = $this->data["id_carrera"];
+        $plantel = $this->data["id_plantel"];
+        $ciclo = $this->data["id_ciclo"];
+        return (new AdminDocente())->obtener_docentes_materias($carrera, $plantel, $ciclo);
     }
 
     public function recuperar_agenda() {

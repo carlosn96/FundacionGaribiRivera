@@ -34,6 +34,18 @@
                             </li>
                             <li class="sidebar-item">
                                 <a
+                                    class="sidebar-link sidebar-link success-hover-bg"
+                                    href="../ciclosEscolares/"
+                                    aria-expanded="false"
+                                    >
+                                    <span class="aside-icon p-2 bg-light-success rounded-3">
+                                        <i class="ti ti-article fs-7 text-success"></i>
+                                    </span>
+                                    <span class="hide-menu ms-2 ps-1">Ciclos escolares</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a
                                     class="sidebar-link sidebar-link warning-hover-bg"
                                     href="../planteles/"
                                     aria-expanded="false"

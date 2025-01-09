@@ -3,11 +3,13 @@
     <?php
     include_once '../../../../loader.php';
     include_once '../../includes/head.php';
+    
     $info = Sesion::getInfoTemporal("horario");
-
+    
     $horario = $info["horario"];
-
-    $bloques_horarios = [
+     
+    //Horario matutino escolarizado
+    $bloques_horarios = [ //Esto no funciona con modalidades semiescolarizadas, nocturno, ni sabatinas
         '07:00 - 08:00',
         '08:00 - 09:00',
         '09:00 - 10:00',
@@ -22,17 +24,16 @@
     foreach ($horario as $materia) {
         $inicio = strtotime($materia['hora_inicio']);
         $fin = strtotime($materia['hora_fin']);
-
         foreach ($bloques_horarios as $bloque) {
             list($inicio_bloque, $fin_bloque) = explode(' - ', $bloque);
             $inicio_bloque = strtotime($inicio_bloque);
             $fin_bloque = strtotime($fin_bloque);
-
             if ($inicio < $fin_bloque && $fin > $inicio_bloque) {
                 $horario_materias[$bloque][$materia['dia_semana']][] = $materia;
             }
         }
     }
+    //Dias de la semana escolarizado
     $dias_semana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
     ?>
     <body>
@@ -55,7 +56,7 @@
                     <div class="row">
                         <div class="col-12">
                             <h2 class="mb-1 text-center text-primary">Horario de <?= htmlspecialchars($info["tipo"]) ?></h2>
-                            <h4 class="mb-4 text-center text-danger"><?= isset($info["docente"]) ? htmlspecialchars($info["docente"]) : htmlspecialchars($info["id"]) ?></h4>
+                            <h4 class="mb-4 text-center text-danger"><?= isset($info["docente"]) ? htmlspecialchars($info["docente"]) : htmlspecialchars($info[$info["tipo"]]) ?></h4>
                         </div>
                     </div>
                     <div class="row justify-content-center">
@@ -81,9 +82,7 @@
                                                             <small class="text-muted">
                                                                 <?= htmlspecialchars($info["tipo"] === 'Docente' ? $materia['grupo'] : $materia['docente']); ?>
                                                             </small><br>
-                                                            <?php if ($info["tipo"] === 'DOCENTE'): ?>
-                                                                <div class="text-muted"><?= htmlspecialchars($materia['grupo']); ?></div>
-                                                            <?php endif; ?>
+                                                            
                                                         <?php endforeach; ?>
                                                     <?php else: ?>
                                                         <div class="text-muted"></div>

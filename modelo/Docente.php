@@ -11,17 +11,15 @@ class Docente {
     private $correo_electronico;
     private $perfil_profesional;
     private $materias;
-    private $id_coordinador;
 
     public function __construct($nombre, $apellidos, $correo_electronico,
-            $perfil_profesional, $materias, $id_coordinador, $id_docente = "") {
+            $perfil_profesional, $materias = array(), $id_docente = "") {
         $this->id_docente = $id_docente;
         $this->nombre = $nombre;
         $this->apellidos = $apellidos;
         $this->materias = $materias;
         $this->correo_electronico = $correo_electronico;
         $this->perfil_profesional = $perfil_profesional;
-        $this->id_coordinador = $id_coordinador;
     }
 
     public function get_id_docente() {

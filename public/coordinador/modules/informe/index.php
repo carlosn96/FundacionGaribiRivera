@@ -26,25 +26,12 @@
                             <?php
                             include_once '../../includes/selectorCarrera.php';
                             ?>
-                            <div class="card">
-                                <div class="card-body">
+                            
                                     <div class="text-center mb-4">
                                         <h2 class="card-title">Informe de Supervisión</h2>
                                     </div>
-                                    <table class="table table-striped table-hover" id="supervisionTable">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Docente</th>
-                                                <th>Comentarios</th>
-                                                <th>Fecha</th>
-                                                <th>Resultado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                    <div id="container"></div>
+                                
                         </div>
                     </div>
                 </div>

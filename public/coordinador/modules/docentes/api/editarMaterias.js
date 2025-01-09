@@ -1,9 +1,13 @@
 var urlAPI = "api/DocenteAPI.php";
-
+var materiasDocente = [];
 function ready() {
-    var idDocente = Number($("#id_docente").val());
-    if (idDocente) {
-        recuperarMaterias(idDocente);
+    var docente = $("#docente").val();
+    var carrera = $("#carrera").val();
+    var plantel = $("#plantel").val();
+    var ciclo = $("#ciclo").val();
+    const data = {docente:docente, carrera:carrera, plantel:plantel, ciclo:ciclo};
+    if (docente && carrera && plantel && ciclo) {
+        crearListaMaterias(data);
         $(document).on('click', '.btn-eliminar-horario', function () {
             const horarioId = $(this).data('horario-id');
             $(`#horario_${horarioId}`).remove();
@@ -14,22 +18,19 @@ function ready() {
 }
 
 
-
-function recuperarMaterias(idDocente) {
-
-    crearPeticion(urlAPI, {case: "recuperar_materias", data: "idDocente=" + idDocente}, function (docente) {
-        print(Object.keys(docente)[0]);
+function crearListaMaterias(data) {
+    crearPeticion(urlAPI, {case: "recuperar_materias", data: $.param(data)}, function (docente) {
+        
         $("#nombreProfesor").append(Object.keys(docente)[0]);
         Object.keys(docente).forEach(function (docenteNombre) {
             const datosDocente = docente[docenteNombre];
             let accordionsHtml = '';
-
+            materiasDocente = datosDocente.materias;
             // Iterar sobre las materias del docente
             Object.keys(datosDocente.materias).forEach(function (materiaNombre, index) {
                 let materia = datosDocente.materias[materiaNombre];
                 let idMateria = materia.id;
                 let horariosHtml = '';
-
                 materia.horarios.forEach(function (horario, hIndex) {
                     horariosHtml += `
             <div class="input-group mb-2" id="horario_${horario.id_horario}">
@@ -56,12 +57,12 @@ function recuperarMaterias(idDocente) {
                 <div class="accordion-item">
     <h2 class="accordion-header" id="heading${index}">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
-            ${materiaNombre} (${materia.total_horas} horas)
+                ${materiaNombre} (${materia.total_horas} horas)
         </button>
-        
     </h2>
     <div id="collapse${index}" class="accordion-collapse collapse" aria-labelledby="heading${index}" data-bs-parent="#accordionExample">
         <div class="accordion-body">
+            
             <input hidden type="text" class="form-control" id="idMateria${index}" value="${idMateria}" required>
             
             <div class="input-group mb-3">
@@ -81,17 +82,20 @@ function recuperarMaterias(idDocente) {
                 <i class="ti ti-plus"></i>
             </button>
 
-<label class="form-label">Horarios</label>
+        <label class="form-label">Horarios</label>
             <div id="horarios_${index}">
                 ${horariosHtml}
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-grid gap-2 col-6 mx-auto mb-3">
+                <button onclick="eliminarMateria(${idMateria})" class="btn btn-outline-danger" type="button"><i class="ti ti-trash fs-3"></i></button>
             </div>
         </div>
     </div>
 </div>
         `;
-
             });
-
             $("#materias-list").html(`
     <div class="accordion" id="accordionExample">
         ${accordionsHtml}
@@ -134,12 +138,12 @@ function agregarHorario(data) {
 }
 
 
-function agregarMateria() {
-
-}
-
 function eliminarMateria(id) {
-    print(id);
+    alertaEliminar({
+        mensajeAlerta: "La materia ya no estará disponible",
+        url: urlAPI,
+        data: {"case": "eliminar_materia", "data": "id=" + id}
+    });
 }
 
 function eliminarHorario(id) {
@@ -191,4 +195,3 @@ function enviarPeticion(caso, input, id) {
             val: $("#" + input).val()
         })});
 }
-

@@ -37,7 +37,10 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
-                                            <input hidden="" id="id_docente" value="<?= $_GET["docente"] ?? "" ?>">
+                                            <input hidden="" id="docente" value="<?= $_GET["docente"] ?? "" ?>">
+                                            <input hidden="" id="carrera" value="<?= $_GET["carrera"] ?? "" ?>">
+                                            <input hidden="" id="plantel" value="<?= $_GET["plantel"] ?? "" ?>">
+                                            <input hidden="" id="ciclo" value="<?= $_GET["ciclo"] ?? "" ?>">
                                             <h2 class="card-title text-center mb-2">Lista de materias</h2>
                                         </div>
                                     </div>
@@ -46,14 +49,14 @@
                                             <h3 class="card-subtitle mb-4 text-muted text-center" id="nombreProfesor">Docente: </h3>
                                         </div>
                                     </div>
-
-                                    <div id="materias-list" class="row">
-                                        
+                                    
+                                    <div id="materias-list" class="row mt-10">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

@@ -7,19 +7,35 @@ class AdminDocente {
     public function __construct() {
         $this->dao = new DocenteDAO;
     }
+    
+    public function existe_docente($nombre, $apellidos, $correo) : bool {
+        return $this->dao->existe_docente($nombre, $apellidos, $correo);
+    }
+    
+    public function listar_todos_docentes() {
+        return $this->dao->listar_todos_docentes();
+    }
+    
+    public function guardar_docente($form) {
+        $nombre = $form["nombre"];
+        $apellidos = $form["apellidos"];
+        $correo_electronico = $form["correo_electronico"];
+        $perfil_profesional = $form["perfil_profesional"];
+        return $this->dao->guardar_docente(new Docente($nombre, $apellidos, $correo_electronico, $perfil_profesional));
+    }
 
     public function guardar_docente_materias($formulario) {
         return $this->dao->guardar_docente_materias($this->construir_docente($formulario),
-                        $formulario["id_carrera"],
-                        $formulario["id_plantel"]);
+                        $formulario["carrera"],
+                        $formulario["plantel"]);
     }
 
     public function obtener_agenda_general($id_coordinador) {
         return $this->dao->obtener_agenda_general($id_coordinador);
     }
 
-    public function obtener_docentes_materias($id_carrera, $id_plantel) {
-        return $this->dao->obtener_docentes_materias($id_carrera, $id_plantel);
+    public function obtener_docentes_materias($id_carrera, $id_plantel, $ciclo_escolar) {
+        return $this->dao->obtener_docentes_materias($id_carrera, $id_plantel, $ciclo_escolar);
     }
 
     private function construir_docente($formulario): Docente {
@@ -32,6 +48,10 @@ class AdminDocente {
         $id_docente = $formulario["id_docente"] ?? "";
         return new Docente($nombre, $apellidos, $correo_electronico,
                 $perfil_profesional, $materias, $id_coordinador, $id_docente);
+    }
+    
+    public function recuperar_docente($id) {
+        return $this->dao->recuperar_docente($id);
     }
 
     private function construir_materias($materias, $carrera) {
@@ -67,15 +87,19 @@ class AdminDocente {
         return $this->dao->actualizar($this->construir_docente($formulario));
     }
 
-    public function recuperar_materias($id_docente) {
-        return $this->dao->obtener_materias($id_docente);
+    public function agregar_materia($docente, $materia) {
+        return $this->dao->agregar_materia($docente, $materia);
     }
 
-    public function obtener_horario($tipo, $id, $carrera, $plantel) {
-        return $this->dao->obtener_horario($tipo, $id, $carrera, $plantel);
+    public function recuperar_materias($docente, $carrera, $plantel, $ciclo) {
+        return $this->dao->obtener_materias($docente, $carrera, $plantel, $ciclo);
     }
-    
-    public function consultar_disponibilidad($dia, $hora, $carrera, $plantel) {
-        return $this->dao->consultar_disponibilidad($dia, $hora, $carrera, $plantel);
+
+    public function obtener_horario($tipo, $id, $carrera, $plantel, $ciclo) {
+        return $this->dao->obtener_horario($tipo, $id, $carrera, $plantel, $ciclo);
+    }
+
+    public function consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo) {
+        return $this->dao->consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo);
     }
 }

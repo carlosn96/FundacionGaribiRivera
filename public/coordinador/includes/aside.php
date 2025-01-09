@@ -31,15 +31,41 @@
                 <li class="sidebar-item">
                     <a
                         class="sidebar-link sidebar-link primary-hover-bg"
-                        href="../docentes/"
+                        href="../grupos/"
                         aria-expanded="false"
                         >
+                        <span class="aside-icon p-2 bg-light-primary rounded-3">
+                            <i class="ti ti-user-cog fs-7 text-primary"></i>
+                        </span>
+                        <span class="hide-menu ms-2 ps-1">Grupos</span>
+                    </a>
+                </li>
+
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" 
+                       href="javascript:void(0)" aria-expanded="false">
                         <span class="aside-icon p-2 bg-light-primary rounded-3">
                             <i class="ti ti-users fs-7 text-primary"></i>
                         </span>
                         <span class="hide-menu ms-2 ps-1">Docentes</span>
                     </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a href="../docentes/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Por ciclo</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="../docentes/agregarDocente.php" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu"> Listado general </span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
                 <li class="sidebar-item">
                     <a
                         class="sidebar-link sidebar-link primary-hover-bg"

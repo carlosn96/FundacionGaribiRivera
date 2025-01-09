@@ -1,29 +1,47 @@
-<div class="row">
-    <div class="col">
-        <div class="card">
+<div class="row g-3">
+    <!-- Carrera -->
+    <div class="col-12 col-md-4">
+        <div class="card border-start border-primary">
             <div class="card-body">
-                <div class="card-title fw-semibold mb-4">
-                    Seleccionar carrera
-                    <select class="form-select" id="selectorCarrera" name="carrera" required onchange="recuperarPlanteles()">
-                        <!-- Opciones de la carrera -->
-                    </select>
+                <div class="card-title fw-semibold mb-3">
+                    Carrera
                 </div>
+                <select class="form-select" id="selectorCarrera" name="carrera" required onchange="recuperarPlanteles()">
+                    <!-- Opciones de carrera se llenarán dinámicamente -->
+                </select>
             </div>
         </div>
     </div>
-    <div class="col">
-        <div class="card">
+
+    <!-- Plantel -->
+    <div class="col-12 col-md-4">
+        <div class="card border-start border-primary">
             <div class="card-body">
-                <div class="card-title fw-semibold mb-4">
-                    Seleccionar plantel
-                    <select class="form-select" id="selectorPlantel" name="plantel" required>
-                        <!-- Opciones del plantel -->
-                    </select>
+                <div class="card-title fw-semibold mb-3">
+                    Plantel
                 </div>
+                <select class="form-select" id="selectorPlantel" name="plantel" required>
+                    <!-- Opciones del plantel se llenarán dinámicamente -->
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ciclo Escolar -->
+    <div class="col-12 col-md-4">
+        <div class="card border-start border-primary">
+            <div class="card-body">
+                <div class="card-title fw-semibold mb-3">
+                    Ciclo escolar
+                </div>
+                <select class="form-select" id="selectorCicloEscolar" name="cicloEscolar" required>
+                    <!-- Opciones del ciclo escolar se llenarán dinámicamente -->
+                </select>
             </div>
         </div>
     </div>
 </div>
+
 <script>
     let carrerasPlantelesAPI = "../../includes/CarrerasPlantelesAPI.php";
     let plantelActual;
@@ -33,19 +51,29 @@
             let lista = JSON.parse(res);
             let idPlantel;
             lista.carreras.forEach(function (carrera) {
-                crearOpcionSelector(selectorCarrera, carrera.id_carrera, carrera.nombre);
+                crearOpcionSelector(selectorCarrera, carrera.id_carrera, carrera.tipo + " " + carrera.nombre);
             });
-            //print(res);
+            lista.ciclos_escolares.forEach(function (ciclo) {
+                crearOpcionSelector($("#selectorCicloEscolar"), ciclo.id_ciclo_escolar, ciclo.ciclo_escolar);
+            });
             if ((idPlantel = lista.carrera_plantel_actual.id_plantel_actual) === null) {
                 selectorCarrera.first();
+                $("#selectorCicloEscolar").first();
             } else {
                 plantelActual = idPlantel;
                 selectorCarrera.val(lista.carrera_plantel_actual.id_carrera_actual);
+                $("#selectorCicloEscolar").val(lista.carrera_plantel_actual.id_ciclo_escolar_actual);
             }
             selectorCarrera.trigger("change");
-            $("#selectorPlantel").change(() => {
-                let data = "id_carrera=" + selectorCarrera.val() + "&id_plantel=" + $("#selectorPlantel").val();
-                crearPeticion(carrerasPlantelesAPI, {case: "guardar_configuracion_plantel", data: data}, ()=>{});
+            $("#selectorPlantel, #selectorCicloEscolar").change(() => {
+                //print(data);
+                const data = $.param({
+                    id_carrera: selectorCarrera.val(),
+                    id_plantel: $("#selectorPlantel").val(),
+                    ciclo_escolar: $("#selectorCicloEscolar").val()
+                });
+                crearPeticion(carrerasPlantelesAPI, {case: "guardar_configuracion_plantel", data: data}, () => {
+                });
                 fnChange();
             });
         });
@@ -72,6 +100,5 @@
             selectorPlantel.trigger("change");
         });
     }
-
 </script>
 

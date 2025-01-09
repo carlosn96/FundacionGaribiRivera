@@ -52,8 +52,12 @@ class AdminMateria {
         return $this->dao->eliminar_horario($id);
     }
 
-    function listar_grupos($carrera, $plantel) {
-        return $this->dao->listar_grupos($carrera, $plantel);
+    function eliminar_materia($id) {
+        return $this->dao->eliminar_materia($id);
+    }
+
+    function listar_grupos($carrera, $plantel, $ciclo) {
+        return $this->dao->listar_grupos($carrera, $plantel, $ciclo);
     }
 
 }

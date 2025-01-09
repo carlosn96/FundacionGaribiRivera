@@ -8,6 +8,8 @@ class Materia {
     private $nombre;
     private array $horario;
     private $carrera;
+    private $plantel;
+    private $ciclo;
     private $grupo;
 
     public function __construct($nombre, $carrera, $grupo, $horario = array(), $id_materia = "") {
@@ -16,6 +18,22 @@ class Materia {
         $this->horario = $horario;
         $this->carrera = $carrera;
         $this->grupo = $grupo;
+    }
+
+    public function get_plantel() {
+        return $this->plantel;
+    }
+
+    public function get_ciclo() {
+        return $this->ciclo;
+    }
+
+    public function set_plantel($plantel): void {
+        $this->plantel = $plantel;
+    }
+
+    public function set_ciclo($ciclo): void {
+        $this->ciclo = $ciclo;
     }
 
     public function get_grupo() {

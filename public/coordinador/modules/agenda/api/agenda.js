@@ -11,13 +11,14 @@ function ready() {
         recuperarCarreras(function () {
             var carrera = $("#selectorCarrera").find('option:selected');
             var plantel = $("#selectorPlantel").find('option:selected');
+            var ciclo = $("#selectorCicloEscolar").find('option:selected');
             $("#nombreCarrera").html(carrera.text());
             const data = {
                 case: "recuperar_agenda",
-                data: "id_carrera=" + carrera.val() + "&id_plantel=" + plantel.val()
+                data: $.param({id_carrera: carrera.val(), id_plantel: plantel.val(), id_ciclo: ciclo.val()})
             };
             crearPeticion(urlAPI, data, function (rs) {
-                print(rs);
+                //print(rs);
                 let calendario = $('#calendar');
                 calendario.empty();
                 calendario.removeClass();
@@ -25,7 +26,7 @@ function ready() {
                 if (Object.values(rs.supervisiones).length > 0) {
                     iniciarCalendario(crearListaProfesores(rs.supervisiones), rs.eventos);
                 } else {
-                    let carreraPlantel = carrera.text() + " del Plantel " + plantel.text();
+                    let carreraPlantel = carrera.text() + " del Plantel " + plantel.text() + " (Ciclo escolar " + ciclo.text() + ")";
                     let url = "<a href = '../docentes/agregarDocente.php'> esta ventana </a>";
                     let msg = "<p>No existen profesores en <strong>" + carreraPlantel + "</strong>. Dirigirse a " + url + " para agregar docente</p>";
                     insertarAlerta(calendario, msg, "warning");

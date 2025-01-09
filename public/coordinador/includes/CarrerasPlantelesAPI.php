@@ -5,9 +5,11 @@ include_once '../../../loader.php';
 class CarrerasPlantelesAPI extends API {
 
     function recuperar_carreras_coordinador() {
-        $this->enviar_respuesta(
-                ["carreras" => (new AdminCarrera())->recuperar_listado_detallado_por_id($this->obtener_id_coordinador_actual()),
-                    "carrera_plantel_actual" => $this->obtener_configuracion_plantel_actual()]
+        $this->enviar_respuesta([
+            "carreras" => (new AdminCarrera())->recuperar_listado_detallado_por_id($this->obtener_id_coordinador_actual()),
+            "carrera_plantel_actual" => $this->obtener_configuracion_plantel_actual(),
+            "ciclos_escolares" => (new AdminCicloEscolar)->recuperar_listado()
+                ]
         );
     }
 
@@ -19,7 +21,11 @@ class CarrerasPlantelesAPI extends API {
         $id_coordinador = $this->obtener_id_coordinador_actual();
         $id_plantel = $this->data["id_plantel"];
         $id_carrera = $this->data["id_carrera"];
-        $this->enviar_resultado_operacion((new AdminPlantel())->guardar_configuracion_carrera_plantel($id_coordinador, $id_carrera, $id_plantel));
+        $id_ciclo_escolar = $this->data["ciclo_escolar"];
+        $this->enviar_resultado_operacion(
+                (new AdminPlantel())->guardar_configuracion_carrera_plantel(
+                        $id_coordinador, $id_carrera, $id_plantel, $id_ciclo_escolar)
+        );
     }
 
     private function obtener_configuracion_plantel_actual() {
