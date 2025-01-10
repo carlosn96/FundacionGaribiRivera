@@ -10,7 +10,7 @@ function ready() {
             if (!final.existeLineaBase) {
                 completarCamposFormulario(rs);
             } else {
-                redireccionar("../lineaFinalVista");
+                redireccionar("../lineaBaseVista");
             }
         } else {
             mostrarMensajeInfo("Sin información disponible de la Linea Base inicial", false, () => {

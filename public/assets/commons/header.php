@@ -32,43 +32,43 @@
                 <!-- ------------------------------- -->
                 <!-- start Messages cart Dropdown -->
                 <!-- ------------------------------- -->
-                <li class="nav-item dropdown nav-icon-hover-bg rounded-circle">
-                    <a class="nav-link position-relative" href="javascript:void(0)" id="drop3" aria-expanded="false">
-                        <iconify-icon icon="solar:chat-dots-line-duotone" class="fs-6"></iconify-icon>
-                        <div class="pulse">
-                            <span class="heartbit border-warning"></span>
-                            <span class="point text-bg-warning"></span>
-                        </div>
-                    </a>
-                    <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop3">
-                        <!--  Messages -->
-                        <div class="d-flex align-items-center py-3 px-7">
-                            <h3 class="mb-0 fs-5">Mensajes</h3>
-                            <span class="badge bg-success ms-3">1 nuevo</span>
-                        </div>
-
-                        <div class="message-body" data-simplebar>
-                            <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
-                                <span class="flex-shrink-0">
-                                    <img src="../../../assets/images/profile/user-2.jpg" alt="user" width="45" class="rounded-circle" />
-                                </span>
-                                <div class="w-100 ps-3">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <h5 class="mb-0 fs-3 fw-normal">
-                                            Roman Joined the Team!
-                                        </h5>
-                                        <span class="fs-2 text-nowrap d-block text-muted">9:08 AM</span>
-                                    </div>
-                                    <span class="fs-2 d-block mt-1 text-muted">Congratulate him</span>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="py-6 px-7 mb-1">
-                            <button class="btn btn-warning w-100">
-                                Ver todos los mensajes
-                            </button>
-                        </div>
-                    </div>
+<!--                <li class="nav-item dropdown nav-icon-hover-bg rounded-circle">
+                                           <a class="nav-link position-relative" href="javascript:void(0)" id="drop3" aria-expanded="false">
+                                            <iconify-icon icon="solar:chat-dots-line-duotone" class="fs-6"></iconify-icon>
+                                            <div class="pulse">
+                                                <span class="heartbit border-warning"></span>
+                                                <span class="point text-bg-warning"></span>
+                                            </div>
+                                        </a>
+                                     <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop3">
+                                              Messages 
+                                            <div class="d-flex align-items-center py-3 px-7">
+                                                <h3 class="mb-0 fs-5">Mensajes</h3>
+                                                <span class="badge bg-success ms-3">1 nuevo</span>
+                                            </div>
+                    
+                                            <div class="message-body" data-simplebar>
+                                                <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                    <span class="flex-shrink-0">
+                                                        <img src="../../../assets/images/profile/user-2.jpg" alt="user" width="45" class="rounded-circle" />
+                                                    </span>
+                                                    <div class="w-100 ps-3">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <h5 class="mb-0 fs-3 fw-normal">
+                                                                Roman Joined the Team!
+                                                            </h5>
+                                                            <span class="fs-2 text-nowrap d-block text-muted">9:08 AM</span>
+                                                        </div>
+                                                        <span class="fs-2 d-block mt-1 text-muted">Congratulate him</span>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="py-6 px-7 mb-1">
+                                                <button class="btn btn-warning w-100">
+                                                    Ver todos los mensajes
+                                                </button>
+                                            </div>
+                                        </div>-->
                 </li>
                 <!-- ------------------------------- -->
                 <!-- end Messages cart Dropdown -->

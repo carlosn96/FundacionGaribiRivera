@@ -5,7 +5,15 @@ include_once '../../../../../loader.php';
 class LineaBaseAPI extends API {
 
     function consultarLineaBase() {
-        $this->enviarRespuesta(getAdminLineaBase()->getLineaBase(Sesion::obtenerIDUsuarioActual())["inicial"]);
+        if (empty($tipo = Sesion::getInfoTemporal("tipo"))) {
+            $this->enviarRespuesta($tipo);
+        } else {
+            $this->enviarRespuesta([
+                "emprendedor" => Sesion::obtenerUsuarioActual(),
+                "tipo" => $tipo,
+                "lineaBase" => Sesion::getInfoTemporal("lineaBase")[$tipo],
+            ]);
+        }
     }
 }
 

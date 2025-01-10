@@ -70,7 +70,7 @@ function renderizarSecciones(sections) {
                                 <p><strong>Información actualizada a la fecha: </strong> <span id="fechaCreacion"></span></p>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
+                        <button type="button" disabled class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
                             <i class="ti ti-download fs-4 me-2"></i>Imprimir línea base
                         </button>
                     </div>

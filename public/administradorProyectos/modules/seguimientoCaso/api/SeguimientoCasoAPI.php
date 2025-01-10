@@ -25,6 +25,10 @@ class SeguimientoCasoAPI extends API {
         $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarSeguimientoCaso($this->data["id"]));
     }
 
+    function eliminarLineaBase() {
+        $this->enviarResultadoOperacion(getAdminLineaBase()->eliminarLineaBase($this->data["tipo"], $this->data["usuario"]));
+    }
+
     function lineaBaseAction() {
         try {
             Sesion::setInfoTemporal("idUsuario", $this->getData("idUsuario"));

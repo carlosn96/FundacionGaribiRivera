@@ -63,14 +63,6 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
-                            <iconify-icon icon="solar:chart-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Evaluación de la formación</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link warning-hover-bg" href="#" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-warning-subtle rounded-1">
                             <iconify-icon icon="solar:square-academic-cap-line-duotone" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Talleres de capacitación</span>

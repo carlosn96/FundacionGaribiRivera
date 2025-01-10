@@ -100,6 +100,10 @@ class LineaBaseDAO extends DAO {
         return $lineasBase;
     }
 
+    public function eliminarLineaBase($tipo, $usuario) {
+        return $this->eliminarPorId("linea_base".($tipo === "_final" ? $tipo : ""), "id_usuario", $usuario);
+    }
+
     private function existeLineaBase($idUsuario, $tipoLineaBase): bool {
         $sql = str_replace("TIPO_LINEA_BASE", $tipoLineaBase, self::EXISTE_LINEA_BASE);
         $prep = $this->prepararInstruccion($sql);

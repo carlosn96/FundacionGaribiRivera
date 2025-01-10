@@ -11,8 +11,11 @@ class LineaBaseFinalAPI extends API {
 
     function recuperarCamposInformacion() {
         $admin = getAdminLineaBase();
+        $lineaBase = $admin->getLineaBase(Sesion::obtenerIDUsuarioActual());
+        Sesion::setInfoTemporal("lineaBase", $lineaBase);
+        Sesion::setInfoTemporal("tipo", "final");
         $this->enviarRespuesta([
-            "lineaBase" => $admin->getLineaBase(Sesion::obtenerIDUsuarioActual()),
+            "lineaBase" => $lineaBase,
             "selector" => [
                 "ocupacionActual" => $admin->recuperarListaOcupaciones(),
                 "ingresoMensual" => $admin->recuperarListaRangosIngreso(),

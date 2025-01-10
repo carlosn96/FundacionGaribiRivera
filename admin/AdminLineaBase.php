@@ -9,6 +9,10 @@ class AdminLineaBase extends Admin {
     public function getLineaBase($usuario) {
         return $this->dao->getLineaBase($usuario);
     }
+    
+    function eliminarLineaBase($tipo, $usuario) {
+        return $this->dao->eliminarLineaBase($tipo, $usuario);
+    }
 
     public function guardarLineaBase($data) {
         //var_dump($data);

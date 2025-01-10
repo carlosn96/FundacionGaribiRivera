@@ -17,9 +17,9 @@ function ready() {
 }
 
 function crearBotonesLineaBase(emprendedor) {
-    return $('<div>', { class: 'btn-group', role: 'group', 'aria-label': 'Botones Linea Base' }).append(
-        // Botón para "Inicial"
-        $('<div>', { class: 'btn-group' }).append(
+    return $('<div>', {class: 'btn-group', role: 'group', 'aria-label': 'Botones Linea Base'}).append(
+            // Botón para "Inicial"
+            $('<div>', {class: 'btn-group'}).append(
             $('<button>', {
                 type: 'button',
                 class: 'btn btn-sm btn-outline-success dropdown-toggle',
@@ -27,37 +27,50 @@ function crearBotonesLineaBase(emprendedor) {
                 'aria-expanded': 'false',
                 text: 'Inicial'
             }),
-            $('<ul>', { class: 'dropdown-menu' }).append(
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item',
-                        href: '#',
-                        click: function (e) {
-                            e.preventDefault();
-                            lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
-                        }
-                    }).append(
-                        $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver' }),
-                        'Ver'
-                    )
-                ),
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item',
-                        href: '#',
-                        click: function (e) {
-                            e.preventDefault();
-                            lineaBaseAction('inicial', 'Modificar', emprendedor.idUsuario);
-                        }
-                    }).append(
-                        $('<i>', { class: 'ti ti-edit me-2', title: 'Modificar' }),
-                        'Modificar'
-                    )
-                )
+            $('<ul>', {class: 'dropdown-menu'}).append(
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-file-search me-2', title: 'Ver'}),
+            'Ver'
             )
-        ),
-        // Botón para "Final"
-        $('<div>', { class: 'btn-group' }).append(
+            ),
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    lineaBaseAction('inicial', 'Modificar', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-edit me-2', title: 'Modificar'}),
+            'Modificar'
+            )
+            ),
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    eliminarlineaBase('inicial', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-trash me-2', title: 'Eliminar'}),
+            'Eliminar'
+            )
+            )
+            )
+            ),
+            // Botón para "Final"
+            $('<div>', {class: 'btn-group'}).append(
             $('<button>', {
                 type: 'button',
                 class: 'btn btn-sm btn-outline-success dropdown-toggle',
@@ -65,36 +78,49 @@ function crearBotonesLineaBase(emprendedor) {
                 'aria-expanded': 'false',
                 text: 'Final'
             }),
-            $('<ul>', { class: 'dropdown-menu' }).append(
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item',
-                        href: '#',
-                        click: function (e) {
-                            e.preventDefault();
-                            lineaBaseAction('final', 'Ver', emprendedor.idUsuario);
-                        }
-                    }).append(
-                        $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver' }),
-                        'Ver'
-                    )
-                ),
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item',
-                        href: '#',
-                        click: function (e) {
-                            e.preventDefault();
-                            lineaBaseAction('final', 'Modificar', emprendedor.idUsuario);
-                        }
-                    }).append(
-                        $('<i>', { class: 'ti ti-edit me-2', title: 'Modificar' }),
-                        'Modificar'
-                    )
-                )
+            $('<ul>', {class: 'dropdown-menu'}).append(
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    lineaBaseAction('final', 'Ver', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-file-search me-2', title: 'Ver'}),
+            'Ver'
             )
-        )
-    );
+            ),
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    lineaBaseAction('final', 'Modificar', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-edit me-2', title: 'Modificar'}),
+            'Modificar'
+            )
+            ),
+            $('<li>').append(
+            $('<a>', {
+                class: 'dropdown-item',
+                href: '#',
+                click: function (e) {
+                    e.preventDefault();
+                    eliminarlineaBase('final', emprendedor.idUsuario);
+                }
+            }).append(
+            $('<i>', {class: 'ti ti-trash me-2', title: 'Eliminar'}),
+            'Eliminar'
+            )
+            )
+            )
+            )
+            );
 }
 
 function lineaBaseAction(tipo, action, id) {
@@ -104,9 +130,9 @@ function lineaBaseAction(tipo, action, id) {
     };
     crearPeticion(urlAPI, {case: 'lineaBaseAction', data: $.param(data)}, (rs) => {
         if (rs.success) {
-            redireccionar("../lineaBase"+action);
+            redireccionar("../lineaBase" + action);
         } else {
-            mostrarMensajeError("Intenta más tarde: "+rs.msg);
+            mostrarMensajeError("Intenta más tarde: " + rs.msg);
         }
     });
 }
@@ -171,4 +197,13 @@ function generarListaEtapas(etapa, listaEtapas, idLineaBase) {
         $selector.append($option);
     });
     return $selector;
+}
+
+
+function eliminarlineaBase(tipo, idUsuario) {
+    alertaEliminar({
+        mensajeAlerta: "La información de la linea base " + tipo + " ya no estará disponible",
+        url: urlAPI,
+        data: {case: "eliminarLineaBase", data: $.param({tipo: tipo, usuario: idUsuario})}
+    });
 }

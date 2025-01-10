@@ -12,7 +12,9 @@ class LineaBaseAPI extends API {
     function recuperarCamposInformacion() {
         $admin = getAdminLineaBase();
         $lineaBase = $admin->getLineaBase(Sesion::obtenerIDUsuarioActual());
-        $existeLineaBase = $lineaBase["inicial"]["existeLineaBase"];
+        $existeLineaBase = $lineaBase[$tipo = "inicial"]["existeLineaBase"];
+        Sesion::setInfoTemporal("lineaBase", $lineaBase);
+        Sesion::setInfoTemporal("tipo", $tipo);
         $this->enviarRespuesta(
                 !$existeLineaBase ?
                         [
