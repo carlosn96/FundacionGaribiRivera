@@ -316,10 +316,9 @@ mainTabsContent.append(
         role: "tabpanel",
         "aria-labelledby": "vista-general-tab"
     }).append(
-        // Card para el selector y la tabla
-        $("<div>", { class: "card mb-4" }).append(
+        
             $("<div>", { class: "card-body" }).append(
-                // Selector con botones "Inicial" y "Final"
+               
                 $("<div>", { class: "mb-3" }).append(
                     // Aseguramos que el label ocupe su propia línea
                     $("<label>", {
@@ -339,14 +338,14 @@ mainTabsContent.append(
                             id: "btnInicial",
                             "data-tipo": "inicial",
                             click: recuperarVistaImpacto
-                        }).text("Inicial"),
+                        }).text("Inicial").prepend($("<i>", {class: "ti ti-download fs-4 me-2"})),
                         $("<button>", {
                             type: "button",
                             class: "btn btn-outline-primary",
                             id: "btnFinal",
                             "data-tipo": "final",
                             click: recuperarVistaImpacto
-                        }).text("Final")
+                        }).text("Final").prepend($("<i>", {class: "ti ti-download fs-4 me-2"}))
                     )
                 ),
                 // Añadir un contenedor para el spinner
@@ -357,15 +356,13 @@ mainTabsContent.append(
                 }).append(
                     $("<div>", { 
                         id: "loadingSpinner",
-                        class: "spinner-border text-primary",
+                        class: "spinner-border text-warning",
                         role: "status",
                         style: "display: inline-block;"
-                    }).append(
-                        $("<span>", { class: "visually-hidden" }).text("Cargando...")
-                    )
+                    })
                 )
             )
-        )
+        
     )
 );
 

@@ -2,16 +2,18 @@ const urlAPI = "api/LineaBaseVerAPI.php";
 
 function ready() {
     crearPeticion(urlAPI, {case: 'recuperarInfoLineaBase'}, (res) => {
+        const emprendedor = res.emprendedor;
         $("#tipoLineaBase").text(res.tipo);
         if (res.existeLineaBase) {
             const data = res.data;
-            const emprendedor = res.emprendedor;
-            print(res.tipo);
             $("#content").append(res.tipo === 'inicial' ? crearLineaBaseInicial(data) : crearLineaBaseFinal(data));
-            $("#fechaCreacion").text(data.fechaCreacion);
-            $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
-            $("#perfilEmprendedor").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
+            $("#fechaCreacion").html("<strong>Información actualizada a la fecha: </strong> <span>"+data.fechaCreacion+"</span>");
+        } else {
+            $("#content").append(renderizarSecciones([construirSeccionNoLineaBase()]));
         }
+
+        $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
+        $("#perfilEmprendedor").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
     });
 }
 
@@ -67,7 +69,7 @@ function renderizarSecciones(sections) {
                                     <h4 class="me-7 mb-0 fs-7" id="nombreEmprendedor"></h4>
                                 </div>
                                 <p class="fs-4 mb-1">Emprendedor</p>
-                                <p><strong>Información actualizada a la fecha: </strong> <span id="fechaCreacion"></span></p>
+                                <p id="fechaCreacion"></p>
                             </div>
                         </div>
                         <button type="button" disabled class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
@@ -168,7 +170,7 @@ function construirSeccionIdentificacion(identificacion) {
 }
 
 function construirSeccionPreliminarFinal(preliminar) {
-        return {
+    return {
         icon: 'ti ti-home-2',
         title: 'Preliminar',
         content: `
@@ -707,15 +709,23 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
 
 
 function construirSeccionNoInfoNegocio() {
+    return construirSeccionNoInfo("Negocio", "Información del negocio no disponible", "Se ha indicado que no cuenta con un negocio.");
+}
+
+function construirSeccionNoLineaBase() {
+    return construirSeccionNoInfo("Sin información", "Línea base no disponible", "");
+}
+
+function construirSeccionNoInfo(titulo, mensaje, subtitulo) {
     const content = `
         <div class="alert alert-warning text-primary role="alert">
-            <h5 class="text-dark mb-3"><strong>Información del negocio no disponible</strong></h5>
-            <p class="text-muted">Se ha indicado que no cuenta con un negocio.</p>
+            <h5 class="text-dark mb-3"><strong>${mensaje}</strong></h5>
+            <p class="text-muted">${subtitulo}</p>
         </div>
     `;
     return {
         icon: 'ti ti-alert-circle',
-        title: 'Negocio',
+        title: titulo,
         content: content
     };
 }

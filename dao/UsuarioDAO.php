@@ -9,7 +9,7 @@ class UsuarioDAO extends DAO {
     private const INSERTAR_USUARIO = "INSERT INTO " . self::NOMBRE_TABLA . " "
             . "(nombre, apellidos, correo_electronico, numero_celular, contrasena, tipo_usuario, fotografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private const ACTUALIZAR_FOTO_PERFIL = "UPDATE " . self::NOMBRE_TABLA . " SET fotografia = ? WHERE id = ?";
-    private const LISTAR_EMPRENDEDORES = "SELECT * FROM listar_emprendedores";
+
 
     private function consultarUsuarioCorreo($correo) {
         $prep = $this->prepararInstruccion(self::BUSCAR_USUARIO_CORREO);
@@ -77,11 +77,5 @@ class UsuarioDAO extends DAO {
         return $this->ejecutarInstruccion($sql);
     }
 
-    public function listarEmprendedores() {
 
-        if (($consulta = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDORES))) {
-            return $consulta->fetch_all(MYSQLI_ASSOC);
-        }
-        return [];
-    }
 }

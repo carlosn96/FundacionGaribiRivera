@@ -27,8 +27,12 @@ class AdminEtapaFormacion extends Admin {
     }
 
     public function listarEtapasFormacion() {
+        return $this->listarEtapasFormacionPorAnio(null);
+    }
+
+    public function listarEtapasFormacionPorAnio($anio) {
         $etapas = [];
-        foreach ($this->dao->listarEtapasFormacion() as $data) {
+        foreach ($this->dao->listarEtapasFormacion($anio) as $data) {
             $etapas[] = $this->construirEtapa($data)->toArray();
         }
         return $etapas;
@@ -54,5 +58,4 @@ class AdminEtapaFormacion extends Admin {
         }
         return $etapa;
     }
-
 }

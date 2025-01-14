@@ -126,6 +126,19 @@ function crearBotonMenuDesplegable(title, enlaces, color) {
             "</div>";
 }
 
+/**
+ * @deprecated Esta función está obsoleta y no debe usarse.
+ * Se recomienda utilizar una versión mejorada de la función que usa plantillas literales
+ * y evita concatenación de cadenas. Además, se recomienda usar atributos `data-` para almacenar datos.
+ * 
+ * @param {string} title - El texto del título del botón.
+ * @param {string} clase - La clase CSS para el botón.
+ * @param {string} icono - La clase del ícono que se mostrará en el botón.
+ * @param {string} value - El valor del botón.
+ * @param {string} id - El ID del botón.
+ * @param {string|function} action - La acción a realizar cuando se hace clic en el botón.
+ * @returns {string} El HTML del botón creado.
+ */
 function crearBoton(title, clase, icono, value, id, action) {
     return "<button type='button' " +
             "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
@@ -262,6 +275,22 @@ function getFechaActual(sp = "-") {
     return (yyyy + sp + mm + sp + dd);
 }
 
+function getFormatDate(fecha, format = "YYYY-MM-DD, HH:mm") {
+    const date = new Date(fecha);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return format
+            .replace('YYYY', year)
+            .replace('MM', month)
+            .replace('DD', day)
+            .replace('HH', hours)
+            .replace('mm', minutes);  // Asegura que 'MM' sea para los minutos
+}
+
 function getFechaHoraActual() {
     return getFechaActual() + "T" + (new Date().toLocaleTimeString());
 }
@@ -363,7 +392,7 @@ function crearSelector($container, name, arrayObjetos, required = true) {
         $container.append($selector);
     } else {
         return $selector;
-    }
+}
 }
 
 function crearSelectorMultiple(container, name, arrayObjetos, required = true) {
@@ -486,21 +515,21 @@ function construirTabla(data, tableClass, container, tableID) {
     $(`#${container}`).empty().append($tabla);
 }
 /*
-function construirTabla(data, tableClass, container, tableID) {
-    const $tabla = $('<table>', {class: `table ${tableClass}`, id: tableID});
-    if (Array.isArray(data) && data.length === 0) {
-        const keys = Object.keys(data[0]);
-        const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
-        const $tbody = $('<tbody>').append($('<tr>').append(keys.map(() => $('<td>').text(''))));
-        $tabla.append($thead, $tbody);
-    } else {
-        const keys = Object.keys(data[0]);
-        const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
-        const $tbody = $('<tbody>').append(data.map(item => $('<tr>').append(keys.map(key => $('<td>', {html: item[key]})))));
-        $tabla.append($thead, $tbody);
-    }
-    $(`#${container}`).empty().append($tabla);
-}*/
+ function construirTabla(data, tableClass, container, tableID) {
+ const $tabla = $('<table>', {class: `table ${tableClass}`, id: tableID});
+ if (Array.isArray(data) && data.length === 0) {
+ const keys = Object.keys(data[0]);
+ const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
+ const $tbody = $('<tbody>').append($('<tr>').append(keys.map(() => $('<td>').text(''))));
+ $tabla.append($thead, $tbody);
+ } else {
+ const keys = Object.keys(data[0]);
+ const $thead = $('<thead>').append($('<tr>').append(keys.map(key => $('<th>', {text: key}))));
+ const $tbody = $('<tbody>').append(data.map(item => $('<tr>').append(keys.map(key => $('<td>', {html: item[key]})))));
+ $tabla.append($thead, $tbody);
+ }
+ $(`#${container}`).empty().append($tabla);
+ }*/
 
 
 
@@ -536,4 +565,19 @@ function bloquearSeccion($seccion) {
 
 function desbloquearSeccion($seccion) {
     $seccion.unblock();
+}
+
+
+const boostrapColors = [
+    "primary",
+    "success",
+    "info",
+    "secondary",
+    "warning",
+    "danger"
+];
+
+function getRandomBoostrapColor() {
+    const rnd = Math.floor(Math.random() * boostrapColors.length);
+    return boostrapColors[rnd];
 }

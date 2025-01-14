@@ -1,8 +1,8 @@
 window.usuario = {};
 $(document).ready(function () {
-    print("Validando sesión ...");
+    //print("Validando sesión ...");
     crearPeticion("../../../../controller/RevisorSesion.php", {"case": "verificarSesion"}, function (res) {
-        print(res);
+        //print(res);
         const usuario = res.usuario;
         const inicioSesionPath = res.root;
         const isSesionActiva = res.sesionActiva;
@@ -25,6 +25,13 @@ $(document).ready(function () {
     });
 
     ready();
+    
+    $(document).ajaxStop(function() {
+        var preloader = document.querySelector(".preloader");
+        if (preloader) {
+            preloader.style.display = "none";
+        }
+    });
 });
 
 function cerrarSesion() {

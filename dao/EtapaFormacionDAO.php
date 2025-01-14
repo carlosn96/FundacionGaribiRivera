@@ -7,13 +7,14 @@ class EtapaFormacionDAO extends DAO {
     private const LISTAR_ETAPAS_FORMACION = "SELECT * FROM " . self::VISTA;
     private const LISTAR_TIPOS_ETAPAS_FORMACION = "SELECT * FROM " . self::TABLA . "_tipo";
     private const OBTENER_ETAPA_ACTUAL = self::LISTAR_ETAPAS_FORMACION . " WHERE esActual = 1";
-    private const INSERTAR_ETAPA = "CALL guardar_etapa_formacion(?,?,?,?,?, ?)";
+    private const INSERTAR_ETAPA = "CALL guardar_etapa_formacion(?,?,?,?,?)";
     private const ACTUALIZAR_ETAPA = "UPDATE " . self::TABLA . " SET nombre = ?, fecha_inicio = ?, fecha_fin = ?, clave_acceso = ?, id_tipo=? WHERE id_etapa = ?";
     private const ELIMINAR_ETAPA = "CALL eliminar_etapa_formacion(?)";
     private const ACTUALIZAR_ETAPA_ACTUAL = "CALL actualizar_etapa_actual(?)";
 
-    public function listarEtapasFormacion() {
-        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION);
+    public function listarEtapasFormacion($anio) {
+        $where = empty($anio) || is_null($anio) ? "" : " WHERE fechaInicio BETWEEN $anio AND $anio";
+        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION. $where);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
@@ -34,7 +35,7 @@ class EtapaFormacionDAO extends DAO {
         $prep->agregarString($etapa->getFechaFin());
         $prep->agregarInt($etapa->getTipo());
         $prep->agregarString($etapa->getClaveAcceso());
-        $prep->agregarJSON($etapa->getTalleres());
+        
         return $prep->ejecutar();
     }
 

@@ -65,7 +65,7 @@
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
                             <iconify-icon icon="solar:square-academic-cap-line-duotone" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Talleres de capacitación</span>
+                        <span class="hide-menu ps-1">Mis Talleres</span>
                     </a>
                 </li>
                 <li class="nav-small-cap">

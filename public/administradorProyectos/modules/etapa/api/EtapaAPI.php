@@ -7,10 +7,14 @@ class EtapaAPI extends API {
     function recuperarCampos() {
         $admEtapa = getAdminEtapaFormacion();
         $this->enviarRespuesta([
-            "etapas" => $admEtapa->listarEtapasFormacion(),
-            "talleres" => getAdminTaller()->listarNombreTalleres(),
-            "tiposEtapa" => $admEtapa->listarTiposEtapasFormacion()
+            "etapas" => ($etapas = $admEtapa->listarEtapasFormacion()),
+            "tiposEtapa" => $admEtapa->listarTiposEtapasFormacion(),
+            "aniosEtapas" => $this->filtrarAnios($etapas)
         ]);
+    }
+    
+    function filtrarEtapasPorAnio() {
+        $this->enviarRespuesta(getAdminEtapaFormacion()->listarEtapasFormacionPorAnio($this->getData("anio")));
     }
 
     function agregarEtapa() {
@@ -20,14 +24,20 @@ class EtapaAPI extends API {
     function eliminar() {
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->eliminarEtapa($this->data["id"]));
     }
-    
+
     function actualizarEtapa() {
         $this->data["tipo"] = $this->data["tipoModal"];
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->actualizarEtapa($this->data));
     }
-    
+
     function actualizarEtapaActual() {
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->actualizarEtapaActual($this->data["id"]));
+    }
+
+    private function filtrarAnios($etapas) {
+        return array_values(array_unique(array_map(function ($item) {
+            return date('Y', strtotime($item['fechaInicio']));
+        }, $etapas)));
     }
 }
 

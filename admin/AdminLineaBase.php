@@ -9,7 +9,7 @@ class AdminLineaBase extends Admin {
     public function getLineaBase($usuario) {
         return $this->dao->getLineaBase($usuario);
     }
-    
+
     function eliminarLineaBase($tipo, $usuario) {
         return $this->dao->eliminarLineaBase($tipo, $usuario);
     }
@@ -240,8 +240,8 @@ class AdminLineaBase extends Admin {
                         "id_objetivo", "descripcion");
     }
 
-    public function listarEmprendoresConLineaBase() {
-        return $this->dao->listarEmprendedoresLineaBase();
+    public function listarEmprendoresConLineaBase($etapa = null) {
+        return $this->dao->listarEmprendedoresLineaBase($etapa);
     }
 
     public function listarEmprendedoresParaImpactos($idUsuario) {
@@ -259,8 +259,8 @@ class AdminLineaBase extends Admin {
     public function actualizarEtapaEnLineaBase($idLineaBase, $idEtapa) {
         return $this->dao->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa);
     }
-    
-    public function actualizarParametrosImpacto($params, $tipo, $id) : bool {
+
+    public function actualizarParametrosImpacto($params, $tipo, $id): bool {
         return $this->dao->actualizarParametrosImpacto($params, $tipo, $id);
     }
 }

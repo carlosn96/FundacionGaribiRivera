@@ -1,23 +1,57 @@
 const urlAPI = "api/SeguimientoCasoAPI.php";
 
-// Función que se ejecuta cuando la página está lista
 function ready() {
-    crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (res) {
-        if (res.emprendedores.length) {
-            const dataTabla = res.emprendedores.map(emprendedor => ({
-                    "Etapa": generarListaEtapas(emprendedor.idEtapa, res.etapas, emprendedor.idLineaBase),
-                    "Nombre": `${emprendedor.nombre} ${emprendedor.apellidos}`,
-                    "Correo electrónico": emprendedor.correo,
-                    "Linea base": crearBotonesLineaBase(emprendedor),
-                    "Seguimiento de caso": crearBotonSeguimiento(emprendedor)
-                }));
-            construirTablaDataTable(dataTabla, "table-hover table-bordered", "tablaEmprendedoresContenedor", "tablaEmprendedores", "");
-        }
+    crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (data) {
+        construirSelectorEtapas(data.etapas);
+        construirTablaEmprendedores(data);
+    });
+
+    $("#filterForm").submit(function (e) {
+        e.preventDefault();
+        const $boton = $("#botonAplicarFiltro");
+        const textoOriginal = $boton.text();
+        $boton.prop('disabled', true).text('Cargando...');
+        const $spinner = $('<span class="spinner-grow spinner-grow-sm me-2" role="status"></span>');
+        $boton.prepend($spinner);
+        crearPeticion(urlAPI, {case: "filtrarEmprendedores", data: $(this).serialize()}, function (data) {
+            construirTablaEmprendedores(data);
+            $boton.prop('disabled', false).text(textoOriginal);
+            $spinner.remove();
+        });
     });
 }
 
+function construirTablaEmprendedores(data) {
+    const dataTabla = data.emprendedores.map(emprendedor => ({
+            "Etapa": generarListaEtapas(emprendedor.idEtapa, data.etapas, emprendedor.idLineaBase),
+            "Nombre": `${emprendedor.nombre} ${emprendedor.apellidos}`,
+            "Correo electrónico": emprendedor.correo,
+            "Linea base": crearBotonesLineaBase(emprendedor),
+            "Seguimiento de caso": crearBotonSeguimiento(emprendedor)
+        }));
+    if (dataTabla.length !== 0) {
+        construirTablaDataTable(dataTabla, "table-hover table-bordered", "tablaEmprendedoresContenedor", "tablaEmprendedores", "");
+    } else {
+        const $tablaVacia = $('<table>', {class: "table table-bordered align-middle text-nowrap mb-1", id: "tablaEmprendedores"});
+        const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Etapa"})).append($('<th>', {text: "Nombre"})).append($('<th>', {text: "Correo electrónico"})));
+        $tablaVacia.append($thead);
+        $("#tablaEmprendedoresContenedor").empty().append($tablaVacia);
+        crearDataTable("#tablaEmprendedores");
+    }
+}
+
+function construirSelectorEtapas(etapas) {
+    const $selector = crearSelector(null, "etapa", etapas);
+    $("#selector").prepend($selector);
+    $selector.val(etapas.estapaSeleccionada);
+}
+
 function crearBotonesLineaBase(emprendedor) {
-    return $('<div>', {class: 'btn-group', role: 'group', 'aria-label': 'Botones Linea Base'}).append(
+    return $('<div>', {
+        class: 'btn-group',
+        role: 'group',
+        'aria-label': 'Botones Linea Base'
+    }).append(
             // Botón para "Inicial"
             $('<div>', {class: 'btn-group'}).append(
             $('<button>', {
@@ -123,6 +157,7 @@ function crearBotonesLineaBase(emprendedor) {
             );
 }
 
+
 function lineaBaseAction(tipo, action, id) {
     const data = {
         idUsuario: id,
@@ -196,6 +231,19 @@ function generarListaEtapas(etapa, listaEtapas, idLineaBase) {
             $option.prop('selected', true);
         $selector.append($option);
     });
+
+    $selector.change(function () {
+        const data = $.param({
+            etapa: $(this).val(),
+            lineaBase: $(this).data("id-linea-base")
+        });
+        crearPeticion(urlAPI, {case: "actualizarEtapa", data: data}, (res) => {
+            if (res.es_valor_error === false) {
+                refresh();
+            }
+        });
+    });
+
     return $selector;
 }
 

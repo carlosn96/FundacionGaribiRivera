@@ -22,8 +22,9 @@ class LineaBaseDAO extends DAO {
     private const LISTAR_OBJETIVOS_AHORRO = "SELECT * FROM recuperar_linea_base_lista_objetivos_ahorro WHERE id_linea_base = ?";
     private const LISTAR_OBJETIVOS_AHORRO_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_objetivos_ahorro WHERE id_linea_base = ?";
 
-    public function listarEmprendedoresLineaBase() {
-        $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE);
+    public function listarEmprendedoresLineaBase($etapa = null) {
+        $where = is_null($etapa) ? "" : " WHERE idEtapa = $etapa";
+        $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE . $where);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
@@ -101,7 +102,7 @@ class LineaBaseDAO extends DAO {
     }
 
     public function eliminarLineaBase($tipo, $usuario) {
-        return $this->eliminarPorId("linea_base".($tipo === "_final" ? $tipo : ""), "id_usuario", $usuario);
+        return $this->eliminarPorId("linea_base" . ($tipo === "final" ? "_$tipo" : ""), "id_usuario", $usuario);
     }
 
     private function existeLineaBase($idUsuario, $tipoLineaBase): bool {

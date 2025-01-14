@@ -39,8 +39,6 @@ class AdminUsuario extends Admin {
         return $this->dao->actualizarInfoPersonal($data, $usuario);
     }
 
-    public function listarEmprendedores() {
-        return $this->dao->listarEmprendedores();
-    }
+
 
 }

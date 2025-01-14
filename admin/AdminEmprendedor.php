@@ -1,13 +1,18 @@
 <?php
 
 class AdminEmprendedor extends Admin {
-
+    
+    
     public function __construct() {
         parent::__construct(new EmprendedorDAO());
     }
 
     public function listar() {
         return $this->dao->listar();
+    }
+    
+    public function listarPorEtapa($idEtapa) {
+        return $this->dao->listarPorEtapa($idEtapa);
     }
 
     public function guardarSeguimientoCaso($data) {

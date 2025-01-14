@@ -11,9 +11,17 @@ class SeguimientoCasoAPI extends API {
         ]);
     }
 
+    function filtrarEmprendedores() {
+        $etapa = $this->getData("etapa");
+        $this->enviarRespuesta([
+            "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase($etapa),
+            "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
+        ]);
+    }
+
     function actualizarEtapa() {
-        $idLineaBase = $this->getData("id");
-        $idEtapa = $this->getData("val");
+        $idLineaBase = $this->getData("lineaBase");
+        $idEtapa = $this->getData("etapa");
         $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
     }
 

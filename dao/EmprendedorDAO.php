@@ -8,6 +8,8 @@ class EmprendedorDAO extends DAO {
     private const INSERTAR_FOTOGRAFIAS_CASO = "INSERT INTO seguimiento_caso_lista_fotografias_caso VALUES (?,?)";
     private const GUARDAR_SEGUIMIENTO_CASO = "CALL guardar_seguimiento_caso(?, ?, ?, ?, ?)";
     private const RECUPERAR_SEGUIMIENTO_CASO = "SELECT * FROM recuperar_seguimiento_caso WHERE idLineaBase = ?";
+    private const LISTAR_EMPRENDEDORES = "listar_emprendedores";
+    private const LISTAR_EMPRENDEDORES_ETAPA = "listar_emprendedores_por_etapa";
 
     public function guardarSeguimientoCaso(SeguimientoCaso $seguimiento) {
         $prep = $this->prepararInstruccion(self::GUARDAR_SEGUIMIENTO_CASO);
@@ -34,6 +36,16 @@ class EmprendedorDAO extends DAO {
     }
 
     public function listar() {
-        return getAdminUsuario()->listarEmprendedores();
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES);
+    }
+
+    public function listarPorEtapa($idEtapa) {
+        $etapa = $idEtapa === '-' ? " IS NULL " : "= $idEtapa";
+        $where = " WHERE id_etapa $etapa";
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES_ETAPA . $where);
+    }
+
+    private function listarEmprendedores($tabla, $where = "") {
+        return $this->selectPorCamposEspecificos("*", $tabla, $where, true);
     }
 }

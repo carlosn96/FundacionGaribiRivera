@@ -1,15 +1,20 @@
-<div class="card">
-    <div class="card-body">
+<div class="card shadow-sm border-1">
+    <div class="card-header bg-white">
         <h4 class="card-title">Seguimiento de caso</h4>
         <p class="card-subtitle mb-3">Listado de emprendedores con línea base completa</p>
+        <form id="filterForm">
+            <label for="etapasFilter" class="mb-0 me-2">Filtrar por etapas:</label>
+            <div class="input-group" id="selector">
+                <button id="botonAplicarFiltro" type="submit" class="btn btn-outline-primary">Aplicar Filtro</button>
+                <button type="submit" class="btn btn-outline-danger" onclick="refresh()">Quitar Filtro</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
         <div id="tablaEmprendedoresContenedor" class="table-responsive">
-        </div>
-        <!-- Contenedor para las alertas (fijas en la esquina superior derecha) -->
-        <div id="contenedorDeAlertas" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
         </div>
     </div>
 </div>
-
 
 
 <div class="modal fade" id="modalEmprendedor" tabindex="-1" aria-labelledby="modalEmprendedorLabel" aria-hidden="true">

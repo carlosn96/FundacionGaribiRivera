@@ -7,44 +7,49 @@ class AdminTaller extends Admin {
     public function __construct() {
         parent::__construct(new TallerDAO());
     }
-    
-    public function listarNombreTalleres() {
-        return $this->dao->listarNombreTalleres();
-        
-    }
 
     public function listarDetallesTalleres($tipoTaller = "") {
-        return $this->crearArrayTalleres($this->dao->listarTalleres($tipoTaller));
-    }
-
-    private function crearArrayTalleres($listaResultado) {
         $lista = array();
-        foreach ($listaResultado as $fila) {
-            $taller = $this->construirTaller($fila)->toArray();
-            array_push($lista, $taller += ["existeExamen" => boolval($this->recuperarCuestionarioExamen($fila["id_taller"]))]);
+        foreach ($this->dao->listarTalleres($tipoTaller) as $taller) {
+            $lista[] = $this->construirTaller($taller)->toArray();
         }
         return $lista;
     }
 
-    private function construirTaller($rs) {
-        //$rs = count($res) ? $res[0] : null;
-        $taller = new Taller($rs["nombre_taller"], $this->construirInstructor($rs),
-                map($rs["descripcion"], $rs["id_tipo_taller"]), $rs["fechaHoraInicio"], $rs["fechaHoraFin"],
-                $rs["observaciones"], map($rs["modo"], $rs["id_modo_imparticion"]),
-                $rs["evaluacion_habilitada"], $rs["id_taller"]);
-        $taller->establecerTotalInscritos($this->dao->obtenerTotalInscritosPorTaller($taller->obtenerID()));
-        return $taller;
+    private function construirTaller($rs): Taller {
+        $nombre = $rs["nombreTaller"];
+        $tipoTaller = isset($rs["tipoTallerDescripcion"]) ? Util::map($rs["idTipoTaller"], $rs["tipoTallerDescripcion"]) : $rs["tipoTaller"];
+        $evaluacionHabilitada = $rs["evaluacionHabilitada"] ?? 0;
+        $observaciones = $rs["observaciones"];
+        $instructor = isset($rs["nombreInstructor"]) ? $this->construirInstructor($rs) : $rs["instructor"];
+        $id = $rs["id"] ?? 0;
+        return new Taller($nombre, $tipoTaller, $evaluacionHabilitada, $observaciones, $instructor, $id);
+        //$taller->establecerTotalInscritos($this->dao->obtenerTotalInscritosPorTaller($taller->obtenerID()));
+        //return $taller;
     }
 
-    private function construirInstructor($rs) {
-        $id = $rs["id_instructor"];
-        $nombre = $rs["nombre_instructor"];
-        $apellidoPaterno = $rs["apellido_paterno"];
-        $apellidoMaterno = $rs["apellido_materno"];
-        $correoElectronico = $rs["correo_electronico"];
-        $telefono = $rs["telefono"];
-        $foto = obtenerFotografiaBin($rs["fotografia"], true);
-        return new InstructorTaller($id, $nombre, $apellidoPaterno, $apellidoMaterno, $correoElectronico, $telefono, $foto);
+    public function listarInstructores() {
+        $rs = $this->dao->listarInstructores();
+        $lista = array();
+        foreach ($rs as $instructor) {
+            array_push($lista, $this->construirInstructor($instructor)->toArray());
+        }
+        return $lista;
+    }
+
+    private function construirInstructor($rs): InstructorTaller {
+        $id = $rs["idInstructor"] ?? 0;
+        $nombre = $rs["nombreInstructor"];
+        $apellidoPaterno = $rs["apellidoPaterno"];
+        $apellidoMaterno = $rs["apellidoMaterno"];
+        $correoElectronico = $rs["correoInstructor"];
+        $telefono = $rs["telefonoInstructor"];
+        $foto = Util::binToBase64($rs["fotografiaInstructor"]);
+        return new InstructorTaller($nombre, $apellidoPaterno, $apellidoMaterno, $correoElectronico, $telefono, $foto, $id);
+    }
+
+    public function listarNombreTalleres() {
+        return $this->dao->listarNombreTalleres();
     }
 
     public function consultarPonderacionesEvaluacionContenido() {
@@ -71,22 +76,8 @@ class AdminTaller extends Admin {
         return $this->dao->guardarInstructor($nombre, $apellidoP, $apellidoM, $correo, $telefono, $fotografia);
     }
 
-    public function listarInstructores($filtrarTodo = true) {
-        $rs = $this->dao->listarInstructores($filtrarTodo);
-        $lista = array();
-        foreach ($rs as $instructor) {
-            array_push($lista, $this->construirInstructor($instructor)->toArray());
-        }
-        return $lista;
-    }
-
     public function obtenerTipoTalleres() {
-        $rs = $this->dao->listarTiposTaller();
-        $lista = array();
-        foreach ($rs as $tipo) {
-            array_push($lista, map($tipo["descripcion"], $tipo["id_tipo"]));
-        }
-        return $lista;
+        return getAdminEtapaFormacion()->listarTiposEtapasFormacion();
     }
 
     public function eliminarInstructor($id) {
@@ -94,15 +85,15 @@ class AdminTaller extends Admin {
     }
 
     public function recuperarInstructor($id) {
-        return $this->construirInstructor($this->dao->obtenerInstructor($id));
+        return $this->construirInstructor($this->dao->obtenerInstructorPorId($id))->toArray();
     }
 
     public function actualizarInstructor($instructor) {
         return $this->dao->actualizarInstructor($instructor);
     }
 
-    public function agregarTaller($nombre, $instructor, $tipo, $fechaHoraInicio, $fechaHoraFin, $observaciones, $modoImparticion) {
-        return $this->dao->agregarTaller(new Taller($nombre, $instructor, $tipo, $fechaHoraInicio, $fechaHoraFin, $observaciones, $modoImparticion));
+    public function agregarTaller(Taller $taller) {
+        return $this->dao->agregarTaller($taller);
     }
 
     public function eliminarTaller($id) {
@@ -121,7 +112,14 @@ class AdminTaller extends Admin {
         return $this->dao->listarTalleresPorEtapa($claveAcceso);
     }
 
-    public function actualizarTaller($taller) {
+    public function actualizarTaller(array $formData) {
+        $id = $formData['idTaller'];
+        $nombre = $formData['nombreTaller'];
+        $tipoTaller = $formData['tipoTaller'];
+        $observaciones = $formData['observaciones'];
+        $instructorId = $formData['instructor'];
+        $evaluacionHabilitada = $formData['evaluacionHabilitada'] ?? 0;
+        $taller = new Taller($nombre, $tipoTaller, $evaluacionHabilitada, $observaciones, $instructorId, $id);
         return $this->dao->actualizarTaller($taller);
     }
 
@@ -237,5 +235,4 @@ class AdminTaller extends Admin {
     public function eliminarCuestionarioExamen($idTaller) {
         return $this->dao->eliminarCuestionarioExamen($idTaller);
     }
-
 }
