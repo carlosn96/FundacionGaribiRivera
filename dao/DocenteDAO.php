@@ -62,9 +62,12 @@ class DocenteDAO extends DAO {
     private function listar_docente_materias_horarios($where) {
         $rs = $this->ejecutar_instruccion("SELECT * FROM listar_docente_materias_horarios WHERE $where");
         $docentes = array();
+
         foreach ($rs->fetch_all(MYSQLI_ASSOC) as $row) {
             $docenteKey = $row['nombre_docente'] . ' ' . $row['apellido_docente'];
             $materiaKey = $row['nombre_materia'];
+
+            // Si el docente no está en el array, inicializamos su estructura
             if (!isset($docentes[$docenteKey])) {
                 $docentes[$docenteKey] = [
                     'id_docente' => $row['id_docente'],
@@ -72,45 +75,58 @@ class DocenteDAO extends DAO {
                     'apellidos' => $row['apellido_docente'],
                     'correo_electronico' => $row['correo_electronico'],
                     'perfil_profesional' => $row['perfil_profesional'],
-                    'materias' => [],
-                    'es_profesor_agendado' => $row['es_profesor_agendado'] == 1 ? true : false,
+                    'materias' => [], // Inicializamos materias como un array vacío
+                    'es_profesor_agendado' => $row['es_profesor_agendado'] === 1 ? true : false,
                     'id_agenda' => $row['id_agenda'],
                     'fecha_agenda' => $row['fecha'],
                     'supervision_hecha' => boolval($row['supervision_hecha']),
                 ];
             } else {
+                // Si ya existe el docente, actualizamos el estado de es_profesor_agendado
                 if ($row['es_profesor_agendado'] == 1) {
                     $docentes[$docenteKey]['es_profesor_agendado'] = true;
                 }
             }
 
-            if (!isset($docentes[$docenteKey]['materias'][$materiaKey])) {
-                $docentes[$docenteKey]['materias'][$materiaKey] = [
-                    'horarios' => []
+            // Si el docente tiene materias, agregamos la información de la materia
+            if (!empty($row['nombre_materia'])) {
+                if (!isset($docentes[$docenteKey]['materias'][$materiaKey])) {
+                    $docentes[$docenteKey]['materias'][$materiaKey] = [
+                        'horarios' => []
+                    ];
+                }
+
+                // Rellenamos los detalles de la materia
+                $docentes[$docenteKey]['materias'][$materiaKey]["ciclo_escolar"] = $row["ciclo_escolar"];
+                $docentes[$docenteKey]['materias'][$materiaKey]["carrera"] = $row["carrera"];
+                $docentes[$docenteKey]['materias'][$materiaKey]["plantel"] = $row["nombre_plantel"];
+                $docentes[$docenteKey]['materias'][$materiaKey]["grupo"] = $row["grupo_materia"];
+                $docentes[$docenteKey]['materias'][$materiaKey]["id"] = $row["id_materia"];
+                $docentes[$docenteKey]['materias'][$materiaKey]["total_horas"] = $row["total_horas"];
+
+                // Agregar el horario al array de horarios de la materia
+                $horario = [
+                    'es_horario_agendado' => $row['es_horario_agendado'] == 1 ? true : false,
+                    'id_horario' => $row['id_horario'],
+                    'dia_semana' => $row['dia_semana'],
+                    'hora_inicio' => date('H:i', strtotime($row['hora_inicio'])),
+                    'hora_fin' => date('H:i', strtotime($row['hora_fin']))
                 ];
+
+                $docentes[$docenteKey]['materias'][$materiaKey]['horarios'][] = $horario;
+
+                // Si el horario es agendado, actualizar la fecha_agenda si es_profesor_agendado es true
+                if ($row['es_profesor_agendado'] == 1 && $row['es_horario_agendado'] == 1) {
+                    $fechaAgenda = new DateTime($row['fecha']);
+                    $docentes[$docenteKey]['fecha_agenda'] = $fechaAgenda->format('Y-m-d');
+                }
             }
-            $docentes[$docenteKey]['materias'][$materiaKey]["ciclo_escolar"] = $row["ciclo_escolar"];
-            $docentes[$docenteKey]['materias'][$materiaKey]["carrera"] = $row["carrera"];
-            $docentes[$docenteKey]['materias'][$materiaKey]["plantel"] = $row["nombre_plantel"];
-            $docentes[$docenteKey]['materias'][$materiaKey]["grupo"] = $row["grupo_materia"];
-            $docentes[$docenteKey]['materias'][$materiaKey]["id"] = $row["id_materia"];
-            $docentes[$docenteKey]['materias'][$materiaKey]["total_horas"] = $row["total_horas"];
+        }
 
-            // Agregar el horario al array de horarios de la materia
-            $horario = [
-                'es_horario_agendado' => $row['es_horario_agendado'] == 1 ? true : false,
-                'id_horario' => $row['id_horario'],
-                'dia_semana' => $row['dia_semana'],
-                'hora_inicio' => date('H:i', strtotime($row['hora_inicio'])),
-                'hora_fin' => date('H:i', strtotime($row['hora_fin']))
-            ];
-
-            $docentes[$docenteKey]['materias'][$materiaKey]['horarios'][] = $horario;
-
-            // Si el horario es agendado, actualizar la fecha_agenda si es_profesor_agendado es true
-            if ($row['es_profesor_agendado'] == 1 && $row['es_horario_agendado'] == 1) {
-                $fechaAgenda = new DateTime($row['fecha']);
-                $docentes[$docenteKey]['fecha_agenda'] = $fechaAgenda->format('Y-m-d');
+        // Si el docente no tiene materias, dejamos el array de materias vacío
+        foreach ($docentes as &$docente) {
+            if (empty($docente['materias'])) {
+                $docente['materias'] = []; // Aseguramos que 'materias' sea un array vacío si no tiene materias
             }
         }
 
@@ -151,12 +167,12 @@ class DocenteDAO extends DAO {
         $result = $this->ejecutar_instruccion_preparada($sql, $prep, true);
         return $result->get_result()->num_rows > 0;
     }
-    
+
     public function listar_todos_docentes($where = "") {
         $instruccion = "SELECT * FROM docente $where";
         return $this->ejecutar_instruccion($instruccion)->fetch_all(MYSQLI_ASSOC);
     }
-    
+
     public function recuperar_docente($id) {
         return $this->listar_docente_materias_horarios(" id_docente = $id");
     }

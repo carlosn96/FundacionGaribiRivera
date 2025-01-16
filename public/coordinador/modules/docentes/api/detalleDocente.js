@@ -3,6 +3,7 @@ const urlAPI = "api/DocenteAPI.php";
 
 function ready() {
     crearPeticion(urlAPI, {case: "recuperar_detalles_docente"}, (rs) => {
+        print(rs);
         const key = Object.keys(rs);
         const docente = rs[key];
         $("#perfil").text(docente.perfil_profesional);
