@@ -3,9 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Workspace/web/SupervisionDocente/public/registroVerificarCorreo/index.html</file>
-            <file>file:/C:/Workspace/web/SupervisionDocente/public/assets/js/util.js</file>
-            <file>file:/C:/Workspace/web/SupervisionDocente/public/registroVerificarCorreo/api/registroVerificarCorreo.js</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/public/coordinador/modules/agenda/index.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/dao/Conexion.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/public/coordinador/modules/agenda/api/AgendaAPI.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/admin/AdminDocente.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/dao/SupervisionDAO.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/admin/AdminSupervision.php</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/public/coordinador/modules/agenda/api/agenda.js</file>
+            <file>file:/C:/Workspace/web/SupervisionDocente/dao/DocenteDAO.php</file>
         </group>
     </open-files>
 </project-private>

@@ -1,13 +1,9 @@
-
-
 let chart;
 let rubroContablesContainer;
 let rubroNoContablesContainer;
 
 function ready() {
-    $(document).ready(function () {
-        recuperarInfoAgenda();
-    });
+    recuperarInfoAgenda();
 }
 
 function generarComentarios(model) {
@@ -41,12 +37,13 @@ function recuperarInfoAgenda() {
     if (idAgenda) {
         crearPeticion("api/SupervisionAPI.php", {case: "obtener_info_agenda", data: "id_agenda=" + idAgenda}, function (res) {
             //print(res);
-            if ((Array.isArray(res) && res.length === 0) || !(typeof res === 'object' && res !== null)) {
+            const agenda = res.agenda;
+            if ((Array.isArray(agenda) && agenda.length === 0) || !(typeof agenda === 'object' && agenda !== null)) {
                 redirigir();
             } else {
                 $("#fechaHoraSupervision").val(getFechaHoraActual());
-                const profesor = Object.keys(res)[0];
-                const info = res[profesor];
+                const profesor = Object.keys(agenda)[0];
+                const info = agenda[profesor];
                 const correo = info.correo_electronico;
                 const perfil = info.perfil_profesional;
                 const materias = Object.keys(info.materias);
@@ -88,7 +85,7 @@ function recuperarInfoAgenda() {
                 if (info.supervision_hecha) {
                     redireccionar("../supervision_preview?id_agenda=" + idAgenda);
                 } else {
-                    recuperarCriteriosSupervision();
+                    recuperarCriteriosSupervision(res.criterios);
                 }
             }
         }, "json");
@@ -98,30 +95,26 @@ function recuperarInfoAgenda() {
 }
 
 
-function recuperarCriteriosSupervision() {
-    crearPeticion("api/SupervisionAPI.php", {case: "recuperar_criterios_por_rubro"}, res => {
-        let rs = JSON.parse(res);
-        let contables = rs.contable;
-        let noContables = rs.no_contable;
-        if (contables.length > 0 && noContables.length > 0) {
-            const $containerContables = $('#containerContables');
-            const $btnsNavegacionContables = $("#btnsNavegacionContables");
-            const $containerNoContables = $('#containerNoContables');
-            const $btnsNavegacionNoContables = $("#btnsNavegacionNoContables");
-            rubroContablesContainer = new RubrosContainer(contables, $containerContables, $btnsNavegacionContables, "contable", "primary", actualizarGrafica);
-            rubroNoContablesContainer = new RubrosContainer(noContables, $containerNoContables, $btnsNavegacionNoContables, "no_contable", "info");
-            crearGrafica();
-            actualizarGrafica();
-        } else {
-            alert("Sin información disponible");
-        }
-    });
+function recuperarCriteriosSupervision(criterios) {
+    let contables = criterios.contable;
+    let noContables = criterios.no_contable;
+    if (contables.length > 0 && noContables.length > 0) {
+        const $containerContables = $('#containerContables');
+        const $btnsNavegacionContables = $("#btnsNavegacionContables");
+        const $containerNoContables = $('#containerNoContables');
+        const $btnsNavegacionNoContables = $("#btnsNavegacionNoContables");
+        rubroContablesContainer = new RubrosContainer(contables, $containerContables, $btnsNavegacionContables, "contable", "primary", actualizarGrafica);
+        rubroNoContablesContainer = new RubrosContainer(noContables, $containerNoContables, $btnsNavegacionNoContables, "no_contable", "info");
+        crearGrafica();
+        actualizarGrafica();
+    } else {
+        alert("Sin información disponible");
+    }
 }
 
 function abrirModalEnviarSupervision() {
     const modalBody = $('#modalEnviarSupervisionBodyContent');
     modalBody.empty();
-
     // Añade la fecha y hora
     modalBody.append($("<div>", {class: "mb-3",
         html: `<div class="input-group input-group-lg">
@@ -129,10 +122,8 @@ function abrirModalEnviarSupervision() {
                     <input readonly type="datetime-local" class="form-control" value="${$("#fechaHoraSupervision").val()}">
                 </div>
             </div>`}));
-
     // Contenedor para la tabla de rubros contables con borde
     const contablesContainer = $('<div>', {class: 'border p-3 mb-3 rounded'});
-
     // Añade la puntuación por categoría
     $.each(rubroContablesContainer.getPuntuacionCategoria(), function (key, value) {
         let element = $('<div>', {class: 'mb-3'});
@@ -144,13 +135,10 @@ function abrirModalEnviarSupervision() {
         `);
         contablesContainer.append(element);
     });
-
     modalBody.append(contablesContainer);
-
     // Añade los rubros y criterios cumplidos de rubros no contables
     const supervision = rubroNoContablesContainer.getSupervision();
     const listGroup = $('<ol>', {class: 'list-group list-group-numbered mb-3'}); // Añade un margen inferior a la lista
-
     supervision.forEach(rubro => {
         const listItem = $('<li>', {class: 'list-group-item d-flex justify-content-between align-items-start'});
         const contentDiv = $('<div>', {class: 'ms-2 me-auto'});
@@ -169,9 +157,7 @@ function abrirModalEnviarSupervision() {
         }
         listGroup.append(listItem);
     });
-
     modalBody.append(listGroup);
-
     // Añade el tema de la clase con un margen superior
     modalBody.append($("<div>", {class: "row mb-3 mt-4",
         html: `
@@ -180,8 +166,6 @@ function abrirModalEnviarSupervision() {
                 <input readonly value="${$("#temaClase").val()}" class="form-control form-control-sm" id="temaClaseModal">
             </div>`
     }));
-
-    // Añade los comentarios de la clase y ajusta su altura
     const conclusiones = $("#conclusionesArea").val();
     const conclusionesHeight = conclusiones.split('\n').length * 20; // Ajusta según la longitud del contenido
     modalBody.append($("<div>", {class: "form-floating",
@@ -189,26 +173,7 @@ function abrirModalEnviarSupervision() {
             <textarea readonly class="form-control" id="conclusionesClase" style="height: ${conclusionesHeight}px">${conclusiones}</textarea>
             <label for="conclusionesClase">Comentarios de clase</label>
         `}));
-
     $("#modalEnviarSupervision").modal("show");
-}
-
-function chartZoom() {
-    // Initialize and show the modal
-    const chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
-    chartModal.show();
-
-    // Clone the chart's existing options
-    const modalChartOptions = $.extend(true, {}, chart.w.config);  // Clone the current chart configuration
-
-    // Render the chart in the modal
-    const modalChart = new ApexCharts(document.querySelector("#chartInModal"), modalChartOptions);
-    modalChart.render();
-
-    // Clean up the chart in the modal when the modal is closed
-    $('#chartModal').on('hidden.bs.modal', function () {
-        modalChart.destroy();
-    });
 }
 
 function crearGrafica() {
@@ -323,7 +288,7 @@ function crearGrafica() {
 
 function actualizarGrafica() {
     let valores = Object.values(rubroContablesContainer.puntuacionPorCategoria);
-    print(valores);
+    //print(valores);
     chart.updateOptions({
         series: [{
                 data: valores
@@ -347,7 +312,7 @@ class RubrosContainer {
         if (this.totalSteps > 0) {
             this.#crearBotones($btnContainer);
             this.#renderRubros();
-    }
+        }
     }
 
     #crearBotones($btnContainer) {

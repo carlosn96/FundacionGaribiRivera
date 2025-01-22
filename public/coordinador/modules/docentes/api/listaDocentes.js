@@ -135,14 +135,12 @@ function eliminarDocente(id) {
 }
 
 function mostrarModalActualizarDocente(docente) {
-    print(docente);
+    //print(docente);
     $("#nombre").val(docente.nombre);
     $("#apellidos").val(docente.apellidos);
     $("#correo_electronico").val(docente.correo_electronico);
     $("#perfil_profesional").val(docente.perfil_profesional);
     $("#id_docente").val(docente.id_docente);
-
-    // Mostrar el modal
     $("#updateDocenteModal").modal("show");
 }
 

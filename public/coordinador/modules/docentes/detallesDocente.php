@@ -26,7 +26,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="text-center">
-                                        <img src="../../../assets/images/profile/user<?=rand(1,5)?>.jpg" width="110" class="rounded-3 mb-3" >
+                                        <img src="../../../assets/images/profile/user<?= rand(1, 5) ?>.jpg" width="110" class="rounded-3 mb-3" >
                                         <h5 class="mb-1" id="nombre"></h5>
                                         <span class="badge bg-primary-subtle text-primary fw-light rounded-pill">Docente</span>
                                     </div>
@@ -41,7 +41,7 @@
                                                 <p class="fw-normal text-dark mb-0">
                                                     Perfil profesional:
                                                     <span class="fw-light ms-1" alt="Perfil de usuario" id="perfil"></span>
-                                                    
+
                                                 </p>
                                             </li>
 
@@ -118,36 +118,55 @@
                                             <div class="mb-4 border-bottom pb-3">
                                                 <h4 class="card-title mb-0">Asignación de materias</h4>
                                             </div>
-
                                             <div class="d-grid w-100 mt-4 pt-2">
                                                 <form id="materiaForm" class="container my-4">
-                                                    <?php
-                                                    include_once '../../includes/selectorCarrera.php';
-                                                    ?>
+
+                                                    <!-- Sección: Selector de Carrera -->
+                                                    <?php include_once '../../includes/selectorCarrera.php'; ?>
+
                                                     <input id="id_docente" hidden="">
+
+                                                    <!-- Sección: Nombre de la Materia -->
                                                     <div class="mb-3">
                                                         <label for="nombreMateria" class="form-label">Nombre de la Materia</label>
                                                         <input type="text" class="form-control" id="nombreMateria" required>
                                                     </div>
 
+                                                    <!-- Sección: Selección de Grupo -->
                                                     <div class="mb-3">
                                                         <label for="grupoMateria" class="form-label">Grupo</label>
                                                         <select required class="form-control" id="grupoMateria">
+                                                            <!-- Opciones del grupo -->
                                                         </select>
                                                     </div>
 
+                                                    <!-- Sección: Mensaje de error en caso de no haber grupo -->
                                                     <div class="mb-3" id="mensajeNoGrupo" style="display:none;">
                                                         <div class="alert alert-danger" role="alert">
                                                             <strong>Atención:</strong> No hay grupos para el filtro seleccionado.
                                                         </div>
                                                     </div>
 
+                                                    <!-- Sección: Horarios -->
                                                     <div class="mb-3">
-                                                        <label for="horarioMateria" class="form-label">Horario</label>
+                                                        <label for="horarioMateria" class="form-label fw-bold">Horario</label>
                                                         <div id="horarioContainer">
+                                                            <!-- Encabezados de las columnas -->
+                                                            <div class="row mb-2">
+                                                                <div class="col-12 col-md-4">
+                                                                    <label class="form-label">Día</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-3">
+                                                                    <label class="form-label">Hora de inicio</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-3">
+                                                                    <label class="form-label">Hora de fin</label>
+                                                                </div>
+                                                            </div>
+
                                                             <!-- Horario inicial -->
-                                                            <div class="horario-item row align-items-center mb-2">
-                                                                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                                                            <div class="horario-item row align-items-center mb-3">
+                                                                <div class="col-12 col-md-4 mb-2 mb-md-0">
                                                                     <select class="form-select" name="diaSemana[]" required>
                                                                         <option value="Lunes">Lunes</option>
                                                                         <option value="Martes">Martes</option>
@@ -157,29 +176,30 @@
                                                                         <option value="Sábado">Sábado</option>
                                                                     </select>
                                                                 </div>
-                                                                <div class="col-12 col-md-2 mb-2 mb-md-0">
+                                                                <div class="col-12 col-md-3 mb-2 mb-md-0">
                                                                     <input type="time" class="form-control" name="horaInicio[]" required>
                                                                 </div>
-                                                                <div class="col-12 col-md-1 text-center mb-2 mb-md-0">
-                                                                    <span>a</span>
-                                                                </div>
-                                                                <div class="col-12 col-md-2 mb-2 mb-md-0">
+                                                                <div class="col-12 col-md-3 mb-2 mb-md-0">
                                                                     <input type="time" class="form-control" name="horaFin[]" required>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="agregarHorarioBtn"> 
+                                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="agregarHorarioBtn">
                                                             <i class="ti ti-plus fs-5 me-2"></i> Agregar horario
                                                         </button>
                                                     </div>
 
+
+                                                    <!-- Sección: Botón para asignar materia -->
                                                     <div class="d-grid gap-2 mt-3">
                                                         <button type="submit" class="btn btn-primary" id="agregarMateriaBtn">
                                                             <i class="ti ti-check fs-5 me-2"></i> Asignar materia
                                                         </button>
                                                     </div>
+
                                                 </form>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

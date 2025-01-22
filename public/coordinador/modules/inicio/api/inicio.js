@@ -3,7 +3,7 @@ const urlAPI = "api/InicioAPI.php";
 function ready() {
     $(document).ready(function () {
         crearPeticion(urlAPI, {"case": "recuperar_agenda"}, function (res) {
-            print(res);
+            //print(res);
             const agenda = res.agenda;
             $("#fechaTimeLine").val(getFechaActual());
             construirSelectorCiclos(res.ciclos, res.ciclo_actual);

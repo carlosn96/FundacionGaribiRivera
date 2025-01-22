@@ -32,7 +32,7 @@ class DocenteDAO extends DAO {
     }
 
     public function consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo) {
-        $where_hora = empty($hora) ? "" : "AND hora_inicio = '$hora'";
+        $where_hora = empty($hora) ? "" : "AND hora_inicio >= '$hora'";
         $instruccion = "SELECT * FROM consultar_horario WHERE dia_semana = '$dia' "
                 . " $where_hora AND id_carrera = $carrera AND id_plantel = $plantel"
                 . " AND id_ciclo_escolar = $ciclo";
@@ -76,7 +76,7 @@ class DocenteDAO extends DAO {
                     'correo_electronico' => $row['correo_electronico'],
                     'perfil_profesional' => $row['perfil_profesional'],
                     'materias' => [], // Inicializamos materias como un array vacío
-                    'es_profesor_agendado' => $row['es_profesor_agendado'] === 1 ? true : false,
+                    'es_profesor_agendado' => boolval($row['es_profesor_agendado']),
                     'id_agenda' => $row['id_agenda'],
                     'fecha_agenda' => $row['fecha'],
                     'supervision_hecha' => boolval($row['supervision_hecha']),
@@ -106,7 +106,7 @@ class DocenteDAO extends DAO {
 
                 // Agregar el horario al array de horarios de la materia
                 $horario = [
-                    'es_horario_agendado' => $row['es_horario_agendado'] == 1 ? true : false,
+                    'es_horario_agendado' => $row['es_horario_agendado'] == 1,
                     'id_horario' => $row['id_horario'],
                     'dia_semana' => $row['dia_semana'],
                     'hora_inicio' => date('H:i', strtotime($row['hora_inicio'])),

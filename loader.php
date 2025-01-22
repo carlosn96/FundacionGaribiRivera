@@ -97,6 +97,13 @@ class Util {
     public static function convertToMySQLDateTime($dateString) {
         return empty($dateString) ? null : (new DateTime($dateString))->format('Y-m-d H:i:s');
     }
+
+    public static function error_log($message) {
+        if (is_array($message) || is_object($message)) {
+            $message = print_r($message, true);
+        }
+        error_log($message);
+    }
 }
 
 define("NO_API_KEY", Util::enum("No se ha establecido el API KEY", true));

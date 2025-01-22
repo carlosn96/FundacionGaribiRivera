@@ -55,7 +55,7 @@ function construirTabla() {
         tipoHorario: $("input[name=tipoHorario]:checked").val()
     };
     crearPeticion(urlAPI, {case: "obtener_lista_elementos", data: $.param(data)}, function (rs) {
-        //print(rs);
+        print(rs);
         let lista = rs.tabla_horario;
         let tipoElemento = Object.keys(lista)[0];
         const table = $('<table>', {id: "tablaHorario"}).addClass('table table-striped table-responsive');

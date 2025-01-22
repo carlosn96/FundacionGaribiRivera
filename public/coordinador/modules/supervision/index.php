@@ -50,7 +50,7 @@
                 <div class="container-fluid">
                     <!--  Card fecha -->
                     <div class="card">
-                        <input hidden="" id="id_agenda" value="<?= $_GET["id_agenda"] ?? "0" ?>">
+                        <input hidden="" id="id_agenda" value="<?= $_GET["id_agenda"] ?? null ?>">
                         <div class="card-body">
                             <div class="mb-3">
                                 <div class="input-group input-group-lg">
@@ -167,18 +167,16 @@
 
                     <!--  Card enviar Supervision -->
                     <div class="card mt-4">
-                        <div class="card-body position-absolute">
-                            <button type="button" class="btn btn-sm btn-outline-info position-absolute top-0 end-0 mt-2 me-2" onclick="chartZoom()">
-                                <i class="ti ti-zoom-in fs-7"></i>
-                            </button>
-                        </div>
                         <div class="card-body" id="valoracionGlobal">
                         </div>
                     </div>
                     <div class="card mt-4">
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <button class="btn btn-outline-success" onclick="abrirModalEnviarSupervision()" >Enviar supervision</button>
+                                <button class="btn btn-outline-primary" onclick="abrirModalEnviarSupervision()">
+                                    <i class="ti ti-send me-2"></i>
+                                    Guardar supervisión
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -199,25 +197,7 @@
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                     <button type="button" class="btn btn-primary" onclick="guardarSupervision()">
                                         Guardar
-                                        <div class="spinner-border d-none" id="btnGuardarSupervision" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Modal de Chart-->
-                    <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-xl">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div id="chartInModal" style="height: 500px;"></div>
                                 </div>
                             </div>
                         </div>

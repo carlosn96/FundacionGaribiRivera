@@ -7,15 +7,15 @@ class AdminDocente {
     public function __construct() {
         $this->dao = new DocenteDAO;
     }
-    
-    public function existe_docente($nombre, $apellidos, $correo) : bool {
+
+    public function existe_docente($nombre, $apellidos, $correo): bool {
         return $this->dao->existe_docente($nombre, $apellidos, $correo);
     }
-    
+
     public function listar_todos_docentes() {
         return $this->dao->listar_todos_docentes();
     }
-    
+
     public function guardar_docente($form) {
         $nombre = $form["nombre"];
         $apellidos = $form["apellidos"];
@@ -43,13 +43,13 @@ class AdminDocente {
         $apellidos = $formulario["apellidos"];
         $correo_electronico = $formulario["correo_electronico"];
         $perfil_profesional = $formulario["perfil_profesional"];
-        $id_coordinador = $formulario["id_coordinador"] ?? "";
+        //$id_coordinador = $formulario["id_coordinador"] ?? "";
         $materias = $this->construir_materias($formulario["materias"] ?? array(), $formulario["id_carrera"] ?? "");
         $id_docente = $formulario["id_docente"] ?? "";
         return new Docente($nombre, $apellidos, $correo_electronico,
-                $perfil_profesional, $materias, $id_coordinador, $id_docente);
+                $perfil_profesional, $materias, $id_docente);
     }
-    
+
     public function recuperar_docente($id) {
         return $this->dao->recuperar_docente($id);
     }
@@ -101,5 +101,20 @@ class AdminDocente {
 
     public function consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo) {
         return $this->dao->consultar_disponibilidad($dia, $hora, $carrera, $plantel, $ciclo);
+    }
+
+    public function buscar_horario_agendado($docente, $carrera, $plantel, $ciclo) {
+        $materiasDocente = $this->recuperar_materias($docente, $carrera, $plantel, $ciclo);
+        foreach ($materiasDocente as $detalles) {
+            foreach ($detalles['materias'] as $materiaDetalles) {
+                $horarioAgendado = array_filter($materiaDetalles['horarios'], function ($horario) {
+                    return $horario['es_horario_agendado'] == 1;
+                });
+                if (!empty($horarioAgendado)) {
+                    return reset($horarioAgendado)['id_horario'];
+                }
+            }
+        }
+        return -1;
     }
 }

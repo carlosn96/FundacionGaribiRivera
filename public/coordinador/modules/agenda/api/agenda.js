@@ -7,46 +7,57 @@ const tiposEventos = {
 };
 
 function ready() {
-    $(document).ready(function () {
-        recuperarCarreras(function () {
-            var carrera = $("#selectorCarrera").find('option:selected');
-            var plantel = $("#selectorPlantel").find('option:selected');
-            var ciclo = $("#selectorCicloEscolar").find('option:selected');
-            $("#nombreCarrera").html(carrera.text());
-            const data = {
-                case: "recuperar_agenda",
-                data: $.param({id_carrera: carrera.val(), id_plantel: plantel.val(), id_ciclo: ciclo.val()})
-            };
-            crearPeticion(urlAPI, data, function (rs) {
-                //print(rs);
-                let calendario = $('#calendar');
-                calendario.empty();
-                calendario.removeClass();
-                limipiarContenedoresDocentes();
-                if (Object.values(rs.supervisiones).length > 0) {
-                    iniciarCalendario(crearListaProfesores(rs.supervisiones), rs.eventos);
-                } else {
-                    let carreraPlantel = carrera.text() + " del Plantel " + plantel.text() + " (Ciclo escolar " + ciclo.text() + ")";
-                    let url = "<a href = '../docentes/agregarDocente.php'> esta ventana </a>";
-                    let msg = "<p>No existen profesores en <strong>" + carreraPlantel + "</strong>. Dirigirse a " + url + " para agregar docente</p>";
-                    insertarAlerta(calendario, msg, "warning");
-                }
-            }, "json");
-        });
-        $("#agendaSupervisionForm").submit(agendarSupervision);
-        $("#agregarEventoForm").submit(guardarEvento);
-        $('#eventoUnDia').change(function () {
-            $('#fechaHoraFinEvento').prop('disabled', $(this).is(':checked'));
-        });
-        $('#eventoUnDiaEdit').change(function () {
-            const isChecked = $(this).is(':checked');
-            $('#fechaHoraFinEdit').prop('disabled', isChecked);
-            if (isChecked) {
-                enviarPeticionActualizarEvento("fecha_hora_fin", null);
+    recuperarCarreras(function () {
+        var carrera = $("#selectorCarrera").find('option:selected');
+        var plantel = $("#selectorPlantel").find('option:selected');
+        var ciclo = $("#selectorCicloEscolar").find('option:selected');
+        $("#nombreCarrera").html(carrera.text());
+        const data = {
+            case: "recuperar_agenda",
+            data: $.param({id_carrera: carrera.val(), id_plantel: plantel.val(), id_ciclo: ciclo.val()})
+        };
+        crearPeticion(urlAPI, data, function (rs) {
+            //print(rs);
+            let calendario = $('#calendarContent');
+            calendario.empty();
+            calendario.removeClass();
+            limipiarContenedoresDocentes();
+            if (Object.values(rs.supervisiones).length > 0) {
+                iniciarCalendario(crearListaProfesores(rs.supervisiones), rs.eventos);
+            } else {
+                let carreraPlantel = carrera.text() + " del Plantel " + plantel.text() + " (Ciclo escolar " + ciclo.text() + ")";
+                let url = "<a href = '../docentes/agregarDocente.php'> esta ventana </a>";
+                let msg = "<p>No existen profesores en <strong>" + carreraPlantel + "</strong>. Dirigirse a " + url + " para agregar docente</p>";
+                insertarAlerta(calendario, msg, "warning");
+            }
+        }, "json");
+    });
+    $("#agendaSupervisionForm").submit(agendarSupervision);
+    $("#agregarEventoForm").submit(guardarEvento);
+    $('#eventoUnDia').change(function () {
+        $('#fechaHoraFinEvento').prop('disabled', $(this).is(':checked'));
+    });
+    $('#eventoUnDiaEdit').change(function () {
+        const isChecked = $(this).is(':checked');
+        $('#fechaHoraFinEdit').prop('disabled', isChecked);
+        if (isChecked) {
+            enviarPeticionActualizarEvento("fecha_hora_fin", null);
+        }
+    });
+    $("#btnEliminarEvento").click(eliminarEvento);
+    // Función de búsqueda (también actualizada para usar Bootstrap 5.3)
+    $('#searchButton').click(function () {
+        const searchTerm = $('#searchMateria').val().toLowerCase();
+        $('.card').each(function () {
+            const cardTitle = $(this).find('.card-title').text().toLowerCase();
+            if (cardTitle.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
             }
         });
-        $("#btnEliminarEvento").click(eliminarEvento);
     });
+
 }
 
 
@@ -70,7 +81,10 @@ function verCronograma(url) {
 }
 
 function iniciarCalendario(supervisiones, eventos) {
-    calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    calendar = new FullCalendar.Calendar(document.getElementById('calendarContent'), {
+        validRange: {
+            start: new Date()
+        },
         themeSystem: 'bootstrap5',
         headerToolbar: {
             left: 'prev,next,today',
@@ -80,32 +94,6 @@ function iniciarCalendario(supervisiones, eventos) {
         customButtons: {
             exportarCalendar: {
                 text: "Exportar G-Calendar"
-            },
-            botonDescargar: {
-                text: 'Descargar',
-                click: function () {
-                    const palabras = calendar.getCurrentData().viewTitle.split(' ');
-                    const mes = palabras[0];
-                    const año = parseInt(palabras[2]);
-                    let carrera = $("#selectorCarrera").find('option:selected');
-                    let plantel = $("#selectorPlantel").find('option:selected');
-                    crearPeticion(urlAPI, {
-                        case: "recuperar_agenda_por_fecha",
-                        data: "fecha=" + formatDate(new Date(mes + ' 1, ' + año)) + "&id_carrera=" + carrera.val() + "&id_plantel=" + plantel.val()
-                    }, function (res) {
-                        //print(res);
-                        let arr = JSON.parse(res);
-                        if (arr.length > 0) {
-                            redireccionar("api/descargar.php?agenda=" +
-                                    encodeURIComponent(JSON.stringify(arr)) +
-                                    "&mes=" + mes + "&anio=" + año +
-                                    "&plantel=" + $("#selectorPlantel").find('option:selected').text() +
-                                    "&carrera=" + $("#selectorCarrera").find('option:selected').text());
-                        } else {
-                            mostrarMensajeAdvertencia("No hay supervisiones para este mes");
-                        }
-                    });
-                }
             },
             vistaCronograma: {
                 text: "Ver cronograma",
@@ -158,7 +146,6 @@ function iniciarCalendario(supervisiones, eventos) {
             } else {
                 actualizarAgenda(e.event.start, detalles, e.revert);
             }
-
         }
     });
     calendar.render();
@@ -225,10 +212,6 @@ function abrirModalSupervision(info) {
     var status = info.event.extendedProps.status;
     var sup_hecha = info.event.extendedProps.sup_hecha;
     var idAgenda = info.event.extendedProps.idAgenda;
-    var idSupervision = info.event.extendedProps.detalles;
-
-    print(info.event.extendedProps);
-
     // Llenar el modal con la información extraída
     $('#modalDocente').html(nombreDocente);
     $('#modalStart').html(start);
@@ -238,13 +221,13 @@ function abrirModalSupervision(info) {
     $('#modalEstatus').removeClass();
     $('#modalEstatus').addClass("text-" + (sup_hecha ? "success" : "warning"));
     $('#div-num-expediente').attr("hidden", !sup_hecha);
-    $('#expediente').val(idSupervision);
-    $("#btnSupervisarDocente").html(sup_hecha ? "Ver resumen" : "Supervisar docente");
-    $("#btnSupervisarDocente").click(function () {
-        redireccionar("../supervision?id_agenda=" + idAgenda);
-    });
-    $("#btnEliminarSupervision").prop("hidden", !sup_hecha);
-    $("#btnEliminarSupervision").data("id-agenda", idAgenda);
+    $("#btnSupervisarDocente")
+            .html(`<i class="ti ti-list-check me-2"></i> ${sup_hecha ? "Ver resumen" : "Supervisar docente"}`)
+            .click(function () {
+                redireccionar("../supervision?id_agenda=" + idAgenda);
+            });
+    $("#btnEliminarSupervision").prop("hidden", !sup_hecha).data("id-agenda", idAgenda);
+    $("#btnReagendarHorario").prop("hidden", sup_hecha).data("id-docente", info.event.extendedProps.detalles.detalles.id_docente);
     var url = 'https://calendar.google.com/calendar/u/0/r/eventedit?' +
             '&text=Supervisión a ' + encodeURIComponent(nombreDocente) +
             '&dates=' + parsearFecha(info.event.start) + '/' + parsearFecha(info.event.end) +
@@ -293,7 +276,7 @@ function actualizarAgenda(diaActual, detallesEvento, revertir) {
 
 function construirEventosSupervision(supervisiones, eventos) {
     function obtenerHorarioAgendado(detalles) {
-        const materias = detalles.materias || {}; // Asegurarse de que materias existe
+        const materias = detalles.materias || {};
         for (const materia in materias) {
             if (materias.hasOwnProperty(materia)) {
                 const horarios = materias[materia].horarios || [];
@@ -305,21 +288,16 @@ function construirEventosSupervision(supervisiones, eventos) {
         }
         return null;
     }
-
     var listaEventos = [];
-
-    // Procesar las supervisiones
     supervisiones.forEach(function (e) {
         const horarioAgendado = obtenerHorarioAgendado(e.detalles);
         if (!horarioAgendado)
             return;
         const fechaAgenda = new Date(e.detalles.fecha_agenda);
         const supervisionHecha = e.detalles.supervision_hecha;
-
         const color = supervisionHecha ? 'green' : 'red';
         const borderColor = supervisionHecha ? 'darkgreen' : 'darkred';
         const textColor = 'white';
-
         listaEventos.push({
             title: e.nombre,
             start: `${fechaAgenda.toISOString().split('T')[0]}T${horarioAgendado.horario.hora_inicio}:00`,
@@ -380,88 +358,107 @@ function crearListaProfesores(data) {
     return supervisionesAgendadas;
 }
 
+function agregarListaAgendados(nombre, detalles) {
+    const container = $('#listaSinAgendar');
+    const card = $('<div class="card mb-3"></div>');
+    const cardBody = $('<div class="card-body"></div>');
+    const cardTitle = $(`  
+        <h5 class="card-title justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-dark ms-2" onclick="reagendarHorario(${detalles.id_docente})">Reagendar</button>
+            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse${nombre.replace(/\s+/g, '')}" aria-expanded="false" aria-controls="collapse${nombre.replace(/\s+/g, '')}">
+                ${nombre}
+            </button>
+        </h5>
+    `);
+    const materias = Object.keys(detalles.materias);
+    const collapseDiv = $(`  
+        <div id="collapse${nombre.replace(/\s+/g, '')}" class="collapse" data-bs-parent="#listaSinAgendar">
+            <ul class="list-unstyled">
+                ${materias.map(materia => {
+        const infoMateria = detalles.materias[materia];
+        return `  
+                    <li class="mb-3">
+                        <strong>${materia}</strong>
+                        <ul class="list-unstyled">
+                            ${infoMateria.horarios.map(horario => `
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="text-${horario.es_horario_agendado ? "danger" : "primary"}">
+                                            ${horario.dia_semana}: ${horario.hora_inicio} - ${horario.hora_fin}
+                                            ${horario.es_horario_agendado ? "<span class='badge bg-primary ms-2'>Agendado</span>" : ""}
+                                        </h6>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </li>
+                `;
+    }).join('')}
+            </ul>
+        </div>
+    `);
+    cardBody.append(cardTitle, collapseDiv);
+    card.append(cardBody);
+    container.append(card);
+}
+
+
 function agregarListaSinAgendar(nombreProfesor, detalles) {
     const nombre = nombreProfesor.replace(/\s+/g, '');
-    const accordion = $('#listaMateriasContainer');
-    const card = $('<div class="accordion-item"></div>');
-    const header = $(`
-            <h2 class="accordion-header" id="heading${nombre}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${nombre}" aria-expanded="false" aria-controls="collapse${nombre}">
-                    ${nombreProfesor}
-                </button>
-            </h2>
-        `);
-    const collapse = $(`
-            <div id="collapse${nombre}" class="accordion-collapse collapse" aria-labelledby="heading${nombre}" data-bs-parent="#accordionProfesores">
-                <div class="accordion-body">
-                    <ul class="list-group list-group-flush"></ul>
-                </div>
-            </div>
-        `);
-    const listGroup = collapse.find('.list-group');
-    $.each(detalles.materias, function (materia, info) {
-        const listItem = $(`
-        <li class="list-group-item">
-            <strong>${materia}</strong>:
-            <ul>
-                ${info.horarios.map(horario => `
-                    <li>
-                        ${horario.dia_semana}: ${horario.hora_inicio} - ${horario.hora_fin}
-                        <p><button class="btn btn-outline-primary btn-sm ms-2" onclick='agendarMateria("${nombreProfesor}", \`${JSON.stringify(horario).replace(/'/g, "\\'")}\`)'>Agendar</button></p>
-                    </li>`).join('')}
-            </ul>
-        </li>
+    const container = $('#listaMateriasContainer');
+    const card = $('<div class="card mb-4"></div>');
+    const cardBody = $('<div class="card-body"></div>');
+    const cardTitle = $(`  
+        <h5 class="card-title">
+            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse${nombre}" aria-expanded="false" aria-controls="collapse${nombre}">
+                ${nombreProfesor}
+            </button>
+        </h5>
     `);
-        listGroup.append(listItem);
-    });
-
-    card.append(header, collapse);
-    accordion.append(card);
+    const materias = Object.keys(detalles.materias);
+    const collapseDiv = $(`  
+        <div id="collapse${nombre}" class="collapse" data-bs-parent="#listaMateriasContainer">
+            <ul class="list-unstyled">
+                ${materias.map(materia => {
+        const infoMateria = detalles.materias[materia];
+        return `  
+                    <li class="mb-4">
+                        <strong>${materia}</strong>
+                        <ul class="mb-3">
+                            ${infoMateria.horarios.map(horario => `
+                                <li class="d-flex justify-content-between align-items-center mb-3">
+                                    <button class="btn btn-primary btn-sm" onclick='agendarMateria("${nombre}", \`${JSON.stringify(horario).replace(/'/g, "\\'")}\`)'>Agendar</button>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="text-primary"}">
+                                            ${horario.dia_semana}: ${horario.hora_inicio} - ${horario.hora_fin}
+                                        </h6>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </li>
+                `;
+    }).join('')}
+            </ul>
+        </div>
+    `);
+    cardBody.append(cardTitle, collapseDiv);
+    card.append(cardBody);
+    container.append(card);
 }
 
-function agregarListaAgendados(nombre, detalles) {
-    const accordion = $('#listaSinAgendar');
-    const card = $('<div class="accordion-item"></div>');
-    const header = $(`
-            <h2 class="accordion-header" id="heading${nombre.replace(/\s+/g, '')}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${nombre.replace(/\s+/g, '')}" aria-expanded="false" aria-controls="collapse${nombre.replace(/\s+/g, '')}">
-                    ${nombre}
-                </button>
-            </h2>
-        `);
-    const collapse = $(`
-            <div id="collapse${nombre.replace(/\s+/g, '')}" class="accordion-collapse collapse" aria-labelledby="heading${nombre.replace(/\s+/g, '')}" data-bs-parent="#accordionProfesores">
-                <div class="accordion-body">
-                    <ul class="list-group list-group-flush"></ul>
-                </div>
-            </div>
-        `);
-    const listGroup = collapse.find('.list-group');
-    //print(detalles.materias);
-    $.each(detalles.materias, function (materia, info) {
-        const listItem = $(`
-                <li class="list-group-item">
-                    <strong>${materia}</strong>:
-                    <ul>
-                        ${info.horarios.map(horario =>
-                `<li>
-                            <h6 class='text-${horario.es_horario_agendado ? "danger" : ""}'>${horario.dia_semana}: ${horario.hora_inicio} - ${horario.hora_fin}${horario.es_horario_agendado ? " <span class='badge text-bg-primary'>Agendado</span>" : ""}</h6>
-                            ${horario.es_horario_agendado ? `<button class="btn btn-sm btn-outline-dark" type="button" onclick="reagendarHorario(${horario.id_horario})"> Reagendar </button>` : ""}
-                         </li>`).join('')}
-                    </ul>
-                </li>
-            `);
-        listGroup.append(listItem);
-    });
-    card.append(header, collapse);
-    accordion.append(card);
-}
 
-function reagendarHorario(idHorario) {
+function reagendarHorario(idDocente) {
+    const id = idDocente || $("#btnReagendarHorario").data("id-docente");
     alertaEliminar({
-        mensajeAlerta: "Toda la información de esta supervisión se eliminará",
+        mensajeAlerta: "Toda la información de esta supervisión quedará inhabilitada",
         url: urlAPI,
-        data: {"case": "eliminar", "data": "id_horario=" + idHorario}
+        data: {"case": "reagendar_horario", data: $.param({
+                carrera: $("#selectorCarrera").val(),
+                plantel: $("#selectorPlantel").val(),
+                ciclo: $("#selectorCicloEscolar").val(),
+                docente: id
+            })}
     });
 }
 
@@ -538,7 +535,7 @@ function agendarMateria(nombreProfesor, horarioClase) {
 
 function agendarSupervision(e) {
     e.preventDefault();
-    crearPeticion(urlAPI, {case: "agendar_supervision", data: $(this).serialize()});
+    crearPeticion(urlAPI, {case: "agendar_supervision", data: "ciclo=" + $("#selectorCicloEscolar").val() + "&" + $(this).serialize()});
 }
 
 

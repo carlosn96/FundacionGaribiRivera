@@ -6,6 +6,7 @@ class HorarioAPI extends API {
 
     private const GRUPO = "Grupo";
     private const DOCENTE = "Docente";
+    private const MATERIA = "Materia";
 
     function obtener_lista_elementos() {
         $tipo = $this->data["tipoHorario"];
@@ -35,6 +36,18 @@ class HorarioAPI extends API {
                     "id" => $docente['id_docente']
                         ];
                     }, array_values((new AdminDocente())->obtener_docentes_materias($carrera, $plantel, $ciclo)))
+                ];
+                break;
+            case "materia":
+                $lista = [
+                    self::MATERIA => array_map(function ($materia) {
+                        return [
+                    "text" => $materia["nombre"],
+                    "id" => $materia['id_materia']
+                        ];
+                    }, [
+                        ["nombre" => "Materia", "id_materia" => 5]
+                    ])
                 ];
                 break;
         }

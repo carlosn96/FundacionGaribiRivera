@@ -38,8 +38,8 @@ function ready() {
     $('#agregarHorarioBtn').click(function () {
         // Create a new horario-item and append it to #horarioContainer
         var newHorarioItem = `
-            <div class="horario-item row align-items-center mb-2">
-                <div class="col-12 col-md-3 mb-2 mb-md-0">
+            <div class="horario-item row align-items-center mb-3">
+                <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <select class="form-select" name="diaSemana[]" required>
                         <option value="Lunes">Lunes</option>
                         <option value="Martes">Martes</option>
@@ -49,17 +49,16 @@ function ready() {
                         <option value="Sábado">Sábado</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-2 mb-2 mb-md-0">
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
                     <input type="time" class="form-control" name="horaInicio[]" required>
                 </div>
-                <div class="col-12 col-md-1 text-center mb-2 mb-md-0">
-                    <span>a</span>
-                </div>
-                <div class="col-12 col-md-2 mb-2 mb-md-0">
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
                     <input type="time" class="form-control" name="horaFin[]" required>
                 </div>
-                <div class="col-12 col-md-2 text-center mb-2 mb-md-0">
-                    <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-horario"><i class="ti ti-trash"></i></button>
+                <div class="col-12 col-md-1 text-center mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-horario">
+                        <i class="ti ti-trash"></i>
+                    </button>
                 </div>
             </div>`;
         $('#horarioContainer').append(newHorarioItem);

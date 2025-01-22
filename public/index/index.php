@@ -22,26 +22,54 @@
                                             <img src="../assets/images/logos/une-logo.png" width="180" alt="">
                                         </a>
                                     </div>
-                                    <form id="iniciar_sesion_form">
+                                    <form id="iniciar_sesion_form" class="p-4">
+                                        <h2 class="text-center mb-4">Iniciar sesión</h2>
+
                                         <div class="mb-3">
                                             <label for="correo_inicio_sesion" class="form-label">Correo electrónico</label>
-                                            <input value="juancarlos.gonzalez@universidad-une.com" type="email" class="form-control" id="correo_inicio_sesion" name="correo_inicio_sesion">
+                                            <input 
+                                                type="email" 
+                                                class="form-control" 
+                                                id="correo_inicio_sesion" 
+                                                name="correo_inicio_sesion" 
+                                                value="juancarlos.gonzalez@universidad-une.com" 
+                                                placeholder="Ingrese su correo electrónico" 
+                                                required
+                                                >
                                         </div>
-                                        <div class="mb-4">
+
+                                        <div class="mb-3">
                                             <label for="contrasenia_inicio_sesion" class="form-label">Contraseña</label>
-                                            <input value="coordinador2024" type="password" class="form-control" id="contrasenia_inicio_sesion" name="contrasenia_inicio_sesion" required>
+                                            <input 
+                                                type="password" 
+                                                class="form-control" 
+                                                id="contrasenia_inicio_sesion" 
+                                                name="contrasenia_inicio_sesion" 
+                                                value="coordinador2024" 
+                                                placeholder="Ingrese su contraseña" 
+                                                required
+                                                >
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-between mb-4">
+
+                                        <!-- Recordar dispositivo y enlace de contraseña olvidada -->
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="form-check">
-                                                <input class="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked>
-                                                <label class="form-check-label text-dark" for="flexCheckChecked">
+                                                <input 
+                                                    class="form-check-input" 
+                                                    type="checkbox" 
+                                                    value="" 
+                                                    id="flexCheckChecked" 
+                                                    checked
+                                                    >
+                                                <label class="form-check-label" for="flexCheckChecked">
                                                     Recordar este dispositivo
                                                 </label>
                                             </div>
-                                            <a class="text-primary fw-bold" href="#">¿Olvidaste tu contraseña?</a>
+                                            <a href="#" class="text-primary fw-bold small">¿Olvidaste tu contraseña?</a>
                                         </div>
-                                        <button class="btn btn-primary w-100 fs-4 mb-4 rounded-2">
-                                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+
+                                        <button type="submit" class="btn btn-primary w-100 fs-4 mb-4 rounded-2" type="button" id="btnIniciarSesion">
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="" id="spinner"></span>
                                             Iniciar sesión
                                         </button>
                                         <div class="text-center mt-3">

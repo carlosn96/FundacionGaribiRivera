@@ -1,6 +1,7 @@
 <?php
 
 class Conexion {
+
 //    private const SERVIDOR = "154.56.47.204";
 //    private const USUARIO = "u487588057_developer";
 //    private const CONTRASENIA = "D3v3lop3r1996";
@@ -13,22 +14,24 @@ class Conexion {
 
     private $conexion;
     private $conexion_abierta = false;
-    
+
     public function __construct() {
         $this->crear_conexion();
     }
 
-    public function crear_conexion($servidor = self::SERVIDOR, $usuario = self::USUARIO, $contrasenia = self::CONTRASENIA, $bd = self::BD) {
+    public function crear_conexion($servidor = self::SERVIDOR,
+            $usuario = self::USUARIO, $contrasenia = self::CONTRASENIA, $bd = self::BD) {
         if ($this->conexion_abierta) {
             $this->cerrar_conexion();
         }
-        $this->conexion = new mysqli($servidor, $usuario, $contrasenia, $bd);
-        if ($this->conexion->connect_errno) {
-            die("Connection failed: " . $this->conexion->connect_error);
-            exit();
-        } else {
+        try {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            $this->conexion = new mysqli($servidor, $usuario, $contrasenia, $bd);
             $this->conexion->set_charset("utf8");
             $this->conexion_abierta = true;
+        } catch (mysqli_sql_exception $e) {
+            echo json_encode(Util::enum("Error: " . $e->getMessage(), true));
+            exit();
         }
     }
 

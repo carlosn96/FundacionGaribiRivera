@@ -77,8 +77,8 @@ class AdminSupervision {
         return $this->dao->eliminar_criterio($id);
     }
 
-    public function agendar_supervision($id_horario, $fecha) {
-        return $this->dao->agendar_supervision($id_horario, $fecha);
+    public function agendar_supervision($id_horario, $fecha, $ciclo) {
+        return $this->dao->agendar_supervision($id_horario, $fecha, $ciclo);
     }
 
     public function obtener_agenda_general($id_coordinador, $fecha, $ciclo) {

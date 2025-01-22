@@ -86,12 +86,20 @@ class SupervisionDAO extends DAO {
         return $this->eliminar_por_id(self::TABLA_CRITERIO, "id_criterio", $id);
     }
 
-    public function agendar_supervision($id_horario, $fecha) {
-        $arg = new PreparedStatmentArgs();
-        $arg->add("i", $id_horario);
-        $arg->add("s", $fecha);
-        $esOperacionCompleta = $this->ejecutar_instruccion_preparada("CALL agendar_supervision(?, ?)", $arg);
-        return Util::enum($esOperacionCompleta ? "Docente agendado" : "Se encontró un conflicto de horario con otro docente agendado", !$esOperacionCompleta);
+    public function agendar_supervision($id_horario, $fecha, $ciclo) {
+        try {
+            $arg = new PreparedStatmentArgs();
+            $arg->add("i", $id_horario);
+            $arg->add("s", $fecha);
+            $arg->add("i", $ciclo);
+            $esOperacionCompleta = $this->ejecutar_instruccion_preparada("CALL agendar_supervision(?, ?, ?)", $arg);
+            $mensaje = $esOperacionCompleta ? "Docente agendado" : "Se encontró un conflicto de horario con otro docente agendado";
+            $esError = !$esOperacionCompleta;
+        } catch (mysqli_sql_exception $e) {
+            $mensaje = $e->getMessage();
+            $esError = true;
+        }
+        return Util::enum($mensaje, $esError);
     }
 
     public function recuperar_agenda_por_fecha($fecha, $id_coordinador, $id_plantel, $id_carrera) {

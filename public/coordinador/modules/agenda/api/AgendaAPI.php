@@ -7,7 +7,8 @@ class AgendaAPI extends API {
     public function agendar_supervision() {
         return $this->enviar_respuesta((new AdminSupervision())->agendar_supervision(
                                 $this->data["idHorario"],
-                                $this->data["fechaSupervision"]));
+                                $this->data["fechaSupervision"],
+                                $this->data["ciclo"]));
     }
 
     public function recuperar_docentes() {
@@ -44,8 +45,13 @@ class AgendaAPI extends API {
         $this->enviar_respuesta(["agendaVacia" => empty($agenda)]);
     }
 
-    public function eliminar() {
-        $this->enviar_resultado_operacion((new AdminSupervision)->eliminar_horario_agendado($this->data["id_horario"]));
+    public function reagendar_horario() {
+        $carrera = $this->data["carrera"];
+        $plantel = $this->data["plantel"];
+        $ciclo = $this->data["ciclo"];
+        $docente = $this->data["docente"];
+        $id_horario = (new AdminDocente())->buscar_horario_agendado($docente, $carrera, $plantel, $ciclo);
+        $this->enviar_resultado_operacion((new AdminSupervision)->eliminar_horario_agendado($id_horario));
     }
 
     public function actualizar_dia() {

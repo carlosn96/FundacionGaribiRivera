@@ -11,6 +11,8 @@ class AdminMateria {
     public function recuperar_info_materia($id) {
         return $this->construir_materia($this->dao->recuperar_info_materia($id))->to_array();
     }
+    
+    public function recuperar_info_materia_id() {}
 
     private function construir_materia($tupla): Materia {
         // Inicializar las variables
