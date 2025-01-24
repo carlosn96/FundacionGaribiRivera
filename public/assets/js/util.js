@@ -1,10 +1,28 @@
-function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoError = () => {return true; }, fnSuccess = mostrarMensajeResultado) {
+function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoError = () => { return true; }, fnSuccess = mostrarMensajeResultado) {
     $(idFormulario.startsWith('#') ? idFormulario : '#' + idFormulario).submit(function (e) {
         e.preventDefault();
         e.stopPropagation();
         const form = $(this);
+
         if (form[0].checkValidity() && fnValidateNoError()) {
-            crearPeticion(urlAPI, {case: submitCase, data: form.serialize()}, fnSuccess);
+            // Verificamos si el formulario tiene archivos (inputs tipo file)
+            const formData = new FormData();
+            let tieneArchivos = false;
+
+            // Agregar todos los campos del formulario a formData
+            form.find('input, select, textarea').each(function () {
+                if (this.type === 'file' && this.files.length > 0) {
+                    tieneArchivos = true;
+                    for (let i = 0; i < this.files.length; i++) {
+                        formData.append(this.name, this.files[i]);
+                    }
+                } else if (this.type !== 'file') {
+                    formData.append(this.name, this.value);
+                }
+            });
+            formData.append('case', submitCase);
+            formData.append("data", form.serialize());
+            crearPeticion(urlAPI, formData, fnSuccess);
         }
         form.addClass("was-validated");
     });
@@ -275,7 +293,7 @@ function getFechaActual(sp = "-") {
     return (yyyy + sp + mm + sp + dd);
 }
 
-function getFormatDate(fecha, format = "YYYY-MM-DD, HH:mm") {
+function getFormatDate(fecha, format = "DD-MM-YYYY, HH:mm") {
     const date = new Date(fecha);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -288,7 +306,7 @@ function getFormatDate(fecha, format = "YYYY-MM-DD, HH:mm") {
             .replace('MM', month)
             .replace('DD', day)
             .replace('HH', hours)
-            .replace('mm', minutes);  // Asegura que 'MM' sea para los minutos
+            .replace('mm', minutes);
 }
 
 function getFechaHoraActual() {

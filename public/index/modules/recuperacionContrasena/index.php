@@ -22,7 +22,7 @@
                             <div class="row align-items-center justify-content-around pt-6 pb-5">
                                 <div class="col-lg-6 col-xl-5 d-none d-lg-block">
                                     <div class="text-center text-lg-start">
-                                        <img src="../../../assets/images/backgrounds/login-security.png" alt="" class="img-fluid" />
+                                        <img src="../../../assets/images/backgrounds/login-security.png" class="img-fluid" />
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-xl-5">
@@ -32,14 +32,14 @@
                                     </p>
                                     <form method="POST" id="formEnviarCorreo">
                                         <div class="mb-7">
-                                            <label for="correo_electronico" class="form-label text-dark fw-bold">Correo Electrónico</label>
-                                            <input type="email" class="form-control py-2" id="correo_electronico" name="correo_electronico" aria-describedby="emailHelp" required>
+                                            <label for="correo_electronico" class="form-label text-dark fw-bold">Correo electrónico</label>
+                                            <input type="email" class="form-control py-3 px-4 border border-warning rounded-lg shadow-sm" id="correo_electronico" name="correo_electronico" aria-describedby="emailHelp" required>
                                         </div>
                                         <button type="submit"class="btn btn-warning w-100 mb-3 rounded-pill">
                                             Enviar correo de verificación
                                             <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                         </button>
-                                        <a href = '../inicio/' class="btn btn-success w-100 rounded-pill">Cancelar</a>
+                                        <a href = '../inicio/' class="btn  btn-outline-warning w-100 rounded-pill">Cancelar</a>
                                     </form>
                                 </div>
                             </div>

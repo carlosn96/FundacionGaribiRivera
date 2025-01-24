@@ -45,12 +45,26 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../taller/" aria-expanded="false">
+                    <a class="sidebar-link has-arrow success-hover-bg" href="javascript:void(0)" aria-expanded="false">
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
                             <iconify-icon icon="solar:square-academic-cap-line-duotone" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Talleres</span>
                     </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a href="../taller/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Lista de talleres</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="../instructores/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Instructores</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <!-- ============================= -->
                 <!-- Seguimiento -->
@@ -66,14 +80,14 @@
                         <span class="hide-menu ps-1">Seguimiento de caso</span>
                     </a>
                 </li>
-<!--                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:clipboard-check-broken" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Visita de seguimiento</span>
-                    </a>
-                </li>-->
+                <!--                <li class="sidebar-item">
+                                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
+                                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                                            <iconify-icon icon="solar:clipboard-check-broken" class="fs-6"></iconify-icon>
+                                        </span>
+                                        <span class="hide-menu ps-1">Visita de seguimiento</span>
+                                    </a>
+                                </li>-->
                 <li class="nav-small-cap">
                     <span class="hide-menu">Impacto</span>
                 </li>

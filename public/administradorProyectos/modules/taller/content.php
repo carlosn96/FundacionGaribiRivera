@@ -1,7 +1,5 @@
 <div class="course">
     <div class="card">
-
-        <!-- Card Body para mostrar el contenido -->
         <div class="card-body">
             <div class="row d-md-flex justify-content-between mb-4">
                 <div class="mb-4 mb-md-0">
@@ -14,21 +12,38 @@
                         <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                     </form>
                     <div class="ms-auto">
-                        <button class="btn btn-outline-primary" id="btnNuevo" onclick="abrirModalCrearTaller()">
-                            <i class="fas fa-plus me-2"></i> Nuevo
-                        </button>
+                        <!-- Menú desplegable -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownNuevo" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-plus me-2"></i> Nuevo
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownNuevo">
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevoTaller">
+                                        <i class="fas fa-book me-2"></i> Taller
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="../instructores">
+                                        <i class="fas fa-user-plus me-2"></i> Instructor
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="abrirModalCrearTipoTaller()">
+                                        <i class="fas fa-bookmark me-2"></i> Tipo de taller
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-
             </div>
-
             <div class="row" id="talleresContent">
                 <!-- Aquí se mostrarán las tarjetas de los talleres -->
             </div>
         </div>
     </div>
 </div>
-
 
 
 <!-- Modal para Editar Taller -->
@@ -49,7 +64,7 @@
                                 <div class="mb-3" id="selectorInstructores">
                                 </div>
                                 <div class="mb-3">
-                                    <div class="spinner-grow text-primary" role="status" id="spinnerImagenInstructor" hidden>
+                                    <div class="spinner-grow text-warning" role="status" id="spinnerImagenInstructor" hidden>
                                     </div>
                                 </div>
                             </div>
@@ -80,11 +95,11 @@
                                 </div>
                                 <!-- Botones para guardar o cancelar -->
                                 <div class="d-flex justify-content-end gap-2">
-                                    <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal">
-                                        <i class="ti ti-x fs-5 me-2"></i>Cancelar
-                                    </button>
                                     <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center">
                                         <i class="ti ti-check fs-5 me-2"></i>Actualizar
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning px-4 py-2" data-bs-dismiss="modal">
+                                        <i class="ti ti-x fs-5 me-2"></i>Cancelar
                                     </button>
                                 </div>
                             </div>
@@ -122,8 +137,8 @@
                             <textarea class="form-control" id="observacionesTallerCrear" name="observacionesTallerCrear" rows="3" placeholder="Observaciones adicionales sobre el taller"></textarea>
                         </div>
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal"><i class="ti ti-x fs-5 me-2"></i>Cancelar</button>
                             <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center"><i class="ti ti-check fs-5 me-2"></i>Guardar</button>
+                            <button type="button" class="btn btn-outline-warning px-4 py-2" data-bs-dismiss="modal"><i class="ti ti-x fs-5 me-2"></i>Cancelar</button>
                         </div>
                     </div>
                 </form>

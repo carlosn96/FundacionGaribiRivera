@@ -13,12 +13,15 @@ function ready() {
 
 function configurarEventos() {
     $("#instructor").change(function () {
-        const $spinner = $("#spinnerImagenInstructor");
-        $spinner.prop('hidden', false);
-        crearPeticion(urlAPI, {case: "recuperarInstructor", data: $.param({id: $(this).val()})}, (instructor) => {
-            $("#imagenInstructor").attr("src", `data:image/jpeg;base64,${instructor.fotografia}`);
-            $spinner.prop('hidden', true);
-        });
+        const val = $(this).val();
+        if (val) {
+            const $spinner = $("#spinnerImagenInstructor");
+            $spinner.prop('hidden', false);
+            crearPeticion(urlAPI, {case: "recuperarInstructor", data: $.param({id: val})}, (instructor) => {
+                $("#imagenInstructor").attr("src", `data:image/jpeg;base64,${instructor.fotografia}`);
+                $spinner.prop('hidden', true);
+            });
+        }
     });
     $("#evaluacionHabilitada").change(function () {
         const $this = $(this);
@@ -66,9 +69,9 @@ function construirCardsTalleres(talleres) {
                         <h6 class="fs-5 mb-4 pb-2">${taller.nombre}</h6>
                         <div class="d-block d-sm-flex align-items-center justify-content-between">
                             <div class="hstack gap-3">
-                                <img src="data:image/jpeg;base64,${instructor.fotografia}" class="rounded-3" alt="spike-img" width="50" />
+                                <img src="data:image/jpeg;base64,${instructor.fotografia}" class="rounded-3" alt="${instructor.nombreCompleto}" width="50" />
                                 <h6 class="mb-0">
-                                    <a href="#" class="text-decoration-none">${instructor.nombreCompleto}</a>
+                                    <a href="../instructor/?id=${instructor.id}" class="text-decoration-none">${instructor.nombreCompleto}</a>
                                 </h6>
                             </div>
                         </div>
@@ -78,7 +81,7 @@ function construirCardsTalleres(talleres) {
             `;
             $("#talleresContent").append(card);
         });
-    }
+    };
 
     // Mostrar todos los talleres inicialmente
     displayTalleres(talleres);
@@ -108,18 +111,6 @@ function abrirModalEditarTaller(taller) {
     $("#idTaller").val(taller.id);
     $("#modalEditarTaller").modal("show");
 }
-
-function abrirModalCrearTaller() {
-    /*$("#imagenInstructor").attr("src", `data:image/jpeg;base64,${taller.instructor.fotografia}`);
-    $("#observaciones").text(taller.observaciones);
-    $("#instructor").val(taller.instructor.id);
-    $("#nombreTaller").val(taller.nombre);
-    $("#tipoTaller").val(taller.tipoTaller.id);
-    $("#evaluacionHabilitada").prop("checked", taller.evaluacionHabilitada);
-    $("#idTaller").val(taller.id);*/
-    $("#modalNuevoTaller").modal("show");
-}
-
 
 function eliminarTaller(id) {
     alertaEliminar({

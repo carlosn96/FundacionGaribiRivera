@@ -10,3 +10,11 @@
 <script src="../../../assets/libs/iconify/iconify-icon.min.js"></script>
 <script src="../../../assets/libs/sweetalert2/dist/sweetalert2.min.js"></script>
 <script src="../../../assets/js/util.js"></script>
+<script>
+    $(document).ready(function () {
+        var preloader = document.querySelector(".preloader");
+        if (preloader) {
+            preloader.style.display = "none";
+        }
+    });
+</script>

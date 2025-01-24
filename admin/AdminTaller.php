@@ -9,8 +9,16 @@ class AdminTaller extends Admin {
     }
 
     public function listarDetallesTalleres($tipoTaller = "") {
+        return $this->listarTalleres($this->dao->listarTalleres($tipoTaller));
+    }
+
+    public function listarTalleresPorInstructor($idInstructor) {
+        return $this->listarTalleres($this->dao->listarTalleresPorInstructor($idInstructor));
+    }
+
+    private function listarTalleres($talleres) {
         $lista = array();
-        foreach ($this->dao->listarTalleres($tipoTaller) as $taller) {
+        foreach ($talleres as $taller) {
             $lista[] = $this->construirTaller($taller)->toArray();
         }
         return $lista;
@@ -37,15 +45,20 @@ class AdminTaller extends Admin {
         return $lista;
     }
 
-    private function construirInstructor($rs): InstructorTaller {
-        $id = $rs["idInstructor"] ?? 0;
-        $nombre = $rs["nombreInstructor"];
-        $apellidoPaterno = $rs["apellidoPaterno"];
-        $apellidoMaterno = $rs["apellidoMaterno"];
-        $correoElectronico = $rs["correoInstructor"];
-        $telefono = $rs["telefonoInstructor"];
-        $foto = Util::binToBase64($rs["fotografiaInstructor"]);
-        return new InstructorTaller($nombre, $apellidoPaterno, $apellidoMaterno, $correoElectronico, $telefono, $foto, $id);
+    private function construirInstructor($data): InstructorTaller {
+        $id = $data["idInstructor"] ?? 0;
+        $nombre = $data["nombreInstructor"];
+        $apellidoPaterno = $data["apellidoPaterno"];
+        $apellidoMaterno = $data["apellidoMaterno"];
+        $correoElectronico = $data["correoInstructor"];
+        $telefono = $data["telefonoInstructor"];
+        $foto = Util::binToBase64($data["fotografiaInstructor"]);
+        return new InstructorTaller($nombre, $apellidoPaterno, $apellidoMaterno,
+                $correoElectronico, $telefono, $foto, $id);
+    }
+
+    public function guardarInstructor($form) {
+        return $this->dao->guardarInstructor($this->construirInstructor($form));
     }
 
     public function listarNombreTalleres() {
@@ -72,10 +85,6 @@ class AdminTaller extends Admin {
         return $this->dao->existeEvaluacion($idInteresado, $idTaller);
     }
 
-    public function guardarInstructor($nombre, $apellidoP, $apellidoM, $correo, $telefono, $fotografia) {
-        return $this->dao->guardarInstructor($nombre, $apellidoP, $apellidoM, $correo, $telefono, $fotografia);
-    }
-
     public function obtenerTipoTalleres() {
         return getAdminEtapaFormacion()->listarTiposEtapasFormacion();
     }
@@ -85,7 +94,11 @@ class AdminTaller extends Admin {
     }
 
     public function recuperarInstructor($id) {
-        return $this->construirInstructor($this->dao->obtenerInstructorPorId($id))->toArray();
+        if (($res = $this->dao->obtenerInstructorPorId($id))) {
+            return $this->construirInstructor($res)->toArray();
+        } else {
+            return [];
+        }
     }
 
     public function actualizarInstructor($instructor) {

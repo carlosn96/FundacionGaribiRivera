@@ -32,6 +32,7 @@ class CrearCuentaAPI extends API {
         $codigo = Util::getCodigoValidacionCuenta();
         $_SESSION["preregistro"] = $this->data;
         $_SESSION["preregistro"]["codigo"] = $codigo;
+        $_SESSION["preregistro"]["nombreCompleto"] = $this->data["nombre"] . " " . $this->data["apellidos"];
         $this->enviarRespuesta(['success' => AdminMailer::enviarCorreoVerificacionCuenta($this->data["correo"], $codigo)]);
     }
 
@@ -50,13 +51,12 @@ class CrearCuentaAPI extends API {
             $this->enviarRespuesta(['success' => false]);
         }
     }
-    
+
     function reenviarCodigoCrearCuenta() {
         $codigo = $_SESSION["preregistro"]["codigo"];
         $correo = $_SESSION["preregistro"]["correo"];
         $this->enviarRespuesta(['success' => AdminMailer::enviarCorreoVerificacionCuenta($correo, $codigo)]);
     }
-
 }
 
 Util::iniciarAPI("CrearCuentaAPI");

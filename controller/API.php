@@ -55,4 +55,8 @@ abstract class API {
     protected function getUsuarioActual() {
         return  Sesion::obtenerIDUsuarioActual();
     }
+    
+    public static function start() {
+        Util::iniciarAPI(static::class);
+    }
 }

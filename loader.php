@@ -49,10 +49,19 @@ class Util {
         return substr(str_shuffle("0123456789"), 0, 4);
     }
 
-    public static function recuperarArchivosServidor($nombreInputFile) {
+    public static function recuperarArchivosServidor($nombreInputFile, $toBase64 = true) {
         $archivos = [];
-        foreach ($_FILES[$nombreInputFile]['tmp_name'] as $file) {
-            $archivos[] = self::binToBase64(file_get_contents($file));
+        $files = $_FILES[$nombreInputFile] ?? null;
+        if (!$files) {
+            return $archivos;  // Si no hay archivos, devolvemos un arreglo vacío
+        }
+        // Si el archivo es un solo archivo (no un array)
+        $fileTmpNames = is_array($files['tmp_name']) ? $files['tmp_name'] : [$files['tmp_name']];
+        foreach ($fileTmpNames as $file) {
+            if ($file) {
+                $content = file_get_contents($file);
+                $archivos[] = $toBase64 ? self::binToBase64($content) : $content;
+            }
         }
         return $archivos;
     }

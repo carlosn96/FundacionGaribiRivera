@@ -3,20 +3,23 @@ $(document).ready(function () {
     'use strict';
     const urlAPI = 'api/CrearCuentaAPI.php';
 
-    $('#correo').on('change', function () {
-        const correoInput = $(this);
-        console.log(correoInput.val());
-        crearPeticion(urlAPI, {case: "revisarExisteCorreo", data: "correo=" + correoInput.val()}, function (res) {
-            console.log(res);
-            $("#submitBtn").prop("disabled", res.existeCorreo);
-            if (res.existeCorreo) {
-                correoInput.addClass('is-invalid');
-                correoInput.removeClass('is-valid');
-
-            } else {
-                correoInput.removeClass('is-invalid');
-                correoInput.addClass('is-valid');
-            }
+    $("#correo").change(function () {
+        const $input = $(this);
+        const value = $input.val();
+        const $btnEnviar = $("#submitBtn");
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        function actualizarEstado(isValid, isDisabled) {
+            $input.toggleClass('is-invalid', !isValid);
+            $input.toggleClass('is-valid', isValid);
+            $btnEnviar.prop("disabled", isDisabled);
+        }
+        if (!emailRegex.test(value)) {
+            actualizarEstado(false, true);
+            return;
+        }
+        crearPeticion(urlAPI, {case: "revisarExisteCorreo", data: "correo=" + value}, function (res) {
+            const isValid = !res.existeCorreo;
+            actualizarEstado(isValid, !isValid);
         });
     });
 
@@ -29,6 +32,7 @@ $(document).ready(function () {
                 form.addClass('was-validated');
             } else {
                 $('#spinner').removeClass('d-none');
+                $("#submitBtn").prop("disabled", true);
                 crearPeticion(
                         urlAPI,
                         {case: "preregistro", data: form.serialize()},
@@ -37,7 +41,7 @@ $(document).ready(function () {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Se envió un código de verificación al correo ingresado!',
+                                    text: 'Se envió un código de verificación al correo ingresado!',
                                     showConfirmButton: false,
                                     timer: 2000
                                 }).then(function () {
@@ -51,6 +55,7 @@ $(document).ready(function () {
                                     showConfirmButton: false,
                                     timer: 3000
                                 });
+                                $("#submitBtn").prop("disabled", false);
                             }
                         },
                         function (xhr, status, error) {
