@@ -29,12 +29,13 @@ class Sesion {
     }
 
     public static function esActiva(): bool {
-        $token = self::getToken();
+        /*$token = self::getToken();
         if (!isset($token) || $token["tiempoExpiracion"] < time()) {
             self::cerrar();
             return false; // El token ha expirado, la sesión no está activa
         }
-        return true;
+        return true;*/
+        return self::obtenerUsuarioActual() !== null;
     }
 
     public static function obtenerUsuarioActual() {
