@@ -373,7 +373,7 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label">¿Conoces cuál es la utilidad que te deja tu negocio?</label>
+                        <label class="form-label">¿Conoces cuál es la utilidad mensual que te deja tu negocio?</label>
                         <div class="form-check">
                             <input type="radio" class="form-check-input" id="utilidadSi" name="conoceUtilidades" value="1" required>
                             <label class="form-check-label" for="utilidadSi">Sí</label>
