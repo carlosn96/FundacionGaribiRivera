@@ -26,7 +26,7 @@ function ready() {
             configurarSeccionInformacionNegocio();
             configurarSeccionAnalisisNegocio();
             configurarSeccionAdministracionIngresosNegocio();
-            configurarCampoComunidadParroquial();
+            
             desbloquearSeccion($("#contenido"));
         }
     });
@@ -137,41 +137,8 @@ function configurarSeccionDomicilio() {
         $("#municipio").val(municipio);
         $("#colonia").val(colonia);
     });
-    /*$("#vicaria").change(async function () {
-     try {
-     const idVicaria = $(this).val();
-     const listaDecanatos = await cargarDecanatos(idVicaria);
-     const $decanatoList = $("#decanatoList");
-     $decanatoList.empty();
-     crearSelector($decanatoList, "decanato", listaDecanatos);
-     $("#decanato").off("change").on("change", async function () {
-     const idDecanato = $(this).val();
-     const listaComunidadesParroquiales = await cargarComunidadesParroquiales(idDecanato);
-     const $comunidad = $("#comunidadParroquialList");
-     $comunidad.empty();
-     crearSelector($comunidad, "comunidadParroquial", listaComunidadesParroquiales);
-     });
-     } catch (error) {
-     console.error("Error al cargar datos:", error);
-     }
-     });*/
+    configurarCampoComunidadParroquial();
 }
-/*
- function cargarDecanatos(idVicaria) {
- return new Promise((resolve, reject) => {
- crearPeticion(urlAPI, {case: "recuperarListaDecanatos", data: "idVicaria=" + idVicaria}, (lista) => {
- resolve(lista);
- });
- });
- }
- 
- function cargarComunidadesParroquiales(idDecanato) {
- return new Promise((resolve, reject) => {
- crearPeticion(urlAPI, {case: "recuperarListaComunidadParroquial", data: "idDecanato=" + idDecanato}, (lista) => {
- resolve(lista);
- });
- });
- }*/
 
 function configurarCampoCodigoPostal($campoCodigo, fnLlenadoCampos) {
     $campoCodigo.select2({
@@ -242,13 +209,13 @@ function configurarCampoComunidadParroquial() {
             }
         },
         ajax: {
-            url: urlAPI, // Asegúrate de que 'urlAPI' esté correctamente configurado
+            url: urlAPI,
             dataType: "json",
             delay: 250,
             type: 'POST',
             data: function (params) {
                 return {
-                    case: "buscarParroquia", // Aquí se pasa el parámetro para la búsqueda de parroquias
+                    case: "buscarParroquia",
                     data: "parroquia=" + params.term
                 };
             },
@@ -256,10 +223,10 @@ function configurarCampoComunidadParroquial() {
                 return {
                     results: data.map(function (item) {
                         return {
-                            id: item.id_comunidad, // Se usa el id de la comunidad parroquial
-                            text: "<strong>" + item.nombre + "</strong>, " + item.nombre_decanato, // Muestra el nombre y decanato de la parroquia
-                            idComunidad: item.id_comunidad, // Se adjunta el id de la comunidad parroquial
-                            item: item // Guardamos el objeto completo para usarlo después
+                            id: item.id_comunidad,
+                            text: "<strong>" + item.nombre + "</strong>, " + item.nombre_decanato,
+                            idComunidad: item.id_comunidad,
+                            item: item
                         };
                     })
                 };
@@ -267,13 +234,12 @@ function configurarCampoComunidadParroquial() {
             cache: true
         },
         escapeMarkup: function (markup) {
-            return markup; // Permite el uso de etiquetas HTML como <strong> en los resultados
+            return markup;
         },
-        minimumInputLength: 3, // Establece el número mínimo de caracteres para activar la búsqueda
+        minimumInputLength: 3,
         templateSelection: function (data) {
-            // Actualiza el campo oculto con el id_comunidad cuando se selecciona una parroquia
             $("#idComunidad").val(data.idComunidad);
-            return data.text; // Retorna el texto a mostrar en el select2
+            return data.text;
         }
     });
 }
