@@ -45,14 +45,14 @@
                         <span class="hide-menu ps-1">Inicial</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
+<!--                <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaFinal/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="gis:route-end" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Final</span>
                     </a>
-                </li>
+                </li>-->
                 <!-- ============================= -->
                 <!-- Formacion -->
                 <!-- ============================= -->
