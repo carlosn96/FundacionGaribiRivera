@@ -48,6 +48,7 @@ class LineaBaseAPI extends API {
 
     function getCantidadDependientesEconomicos() {
         $opciones = [
+            ["id_cantidad" => "0", "cantidad" => 0],
             ["id_cantidad" => "1", "cantidad" => 1],
             ["id_cantidad" => "2", "cantidad" => 2],
             ["id_cantidad" => "3", "cantidad" => 3],
