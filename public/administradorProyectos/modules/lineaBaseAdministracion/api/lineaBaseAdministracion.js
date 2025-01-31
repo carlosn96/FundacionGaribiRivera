@@ -109,7 +109,7 @@ function crearBotonesLineaBase(emprendedor) {
                 class: 'btn btn-sm btn-outline-success dropdown-toggle',
                 'data-bs-toggle': 'dropdown',
                 'aria-expanded': 'false',
-                text: 'Final'
+                text: 'Seguimiento'
             }),
             $('<ul>', {class: 'dropdown-menu'}).append(
             $('<li>').append(
