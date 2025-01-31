@@ -28,11 +28,6 @@
                                         <i class="fas fa-user-plus me-2"></i> Instructor
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="#" onclick="abrirModalCrearTipoTaller()">
-                                        <i class="fas fa-bookmark me-2"></i> Tipo de taller
-                                    </a>
-                                </li>
                             </ul>
                         </div>
                     </div>
