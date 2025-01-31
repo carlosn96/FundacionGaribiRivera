@@ -73,7 +73,7 @@
                                 <span class="border-start border-success ps-3">Teléfono</span>
                             </label>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
                 <div class="d-md-flex align-items-center">
@@ -97,8 +97,8 @@
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Correo electrónico</th>
-                            <th>Teléfono</th>
+<!--                            <th>Correo electrónico</th>
+                            <th>Teléfono</th>-->
                             <th></th>
                         </tr>
                     </thead>

@@ -17,8 +17,7 @@ function ready() {
                     </div>
                 </div>
             </td>
-            <td>${instructor.correoElectronico}</td>
-            <td>${instructor.telefono}</td>
+
             <td>
                 <div class="dropdown dropstart">
                     <a href="javascript:void(0)" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
