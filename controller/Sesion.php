@@ -2,6 +2,23 @@
 
 class Sesion {
 
+    public static function controlarAccesoUbicacion($ubicacionActual) {
+        if(self::esActiva()) {
+            $usuario = self::obtenerUsuarioActual();
+            $urlUsuario = $usuario["tipo_usuario"]["url"];
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+            $serverName = $_SERVER['SERVER_NAME'];
+            $redirigir = "{$protocol}://{$serverName}/";
+            if (strpos($serverName, 'localhost') !== false || $serverName === '127.0.0.1') {
+                $rootPath = explode('/', trim($_SERVER['REQUEST_URI'], '/'))[0] ?? '';
+                $redirigir .= "{$rootPath}";
+            }
+            if ($ubicacionActual !== $urlUsuario) {
+                Util::redirigir($redirigir . "/public/" . $urlUsuario);
+            }
+        }
+    }
+
     public static function setUsuarioActual($usuario) {
         $_SESSION["usuario"] = $usuario;
     }
@@ -29,12 +46,12 @@ class Sesion {
     }
 
     public static function esActiva(): bool {
-        /*$token = self::getToken();
-        if (!isset($token) || $token["tiempoExpiracion"] < time()) {
-            self::cerrar();
-            return false; // El token ha expirado, la sesión no está activa
-        }
-        return true;*/
+        /* $token = self::getToken();
+          if (!isset($token) || $token["tiempoExpiracion"] < time()) {
+          self::cerrar();
+          return false; // El token ha expirado, la sesión no está activa
+          }
+          return true; */
         return self::obtenerUsuarioActual() !== null;
     }
 
