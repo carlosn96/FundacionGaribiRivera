@@ -71,7 +71,8 @@ class Util {
     }
 
     public static function obtenerFechaActual($format = "Ymd") {
-        return date($format);
+        $date = new DateTime("now", new DateTimeZone("America/Mexico_City"));
+        return $date->format($format);
     }
 
     public static function respuestaBoolToStr(bool $respuesta) {
@@ -99,16 +100,16 @@ class Util {
 }
 
 // Definir variables de base de datos en config.php
-/*define('DB_HOST', '193.203.166.72');
-define('DB_USER', 'u775111066_pruebas');
-define('DB_PASS', 'Pruebas2024');
-define('DB_NAME', 'u775111066_pruebas');
-*/
+/* define('DB_HOST', '193.203.166.72');
+  define('DB_USER', 'u775111066_pruebas');
+  define('DB_PASS', 'Pruebas2024');
+  define('DB_NAME', 'u775111066_pruebas');
+ */
 
-  define('DB_HOST', '193.203.166.72');
-  define('DB_USER', 'u775111066_emprendedores');
-  define('DB_PASS', 'Emprendedores2025');
-  define('DB_NAME', 'u775111066_emprendedores'); 
+define('DB_HOST', '193.203.166.72');
+define('DB_USER', 'u775111066_emprendedores');
+define('DB_PASS', 'Emprendedores2025');
+define('DB_NAME', 'u775111066_emprendedores');
 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
 define("DIR_FOTOGRAFIAS", ROOT_APP . "public" . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");

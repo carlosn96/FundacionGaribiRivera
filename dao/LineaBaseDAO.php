@@ -240,7 +240,7 @@ class LineaBaseDAO extends DAO {
                 'calleCruce1' => $result['negocioCalleCruce1'],
                 'calleCruce2' => $result['negocioCalleCruce2'],
                 'numExterior' => $result['negocioNumExterior'],
-                'numInterior' => $result['negocioNumInterior'] ? $result['negocioNumInterior'] : null,
+                'numInterior' => ($result['negocioNumInterior'] === "null" && is_null($result['negocioNumInterior']))? "" : $result['negocioNumInterior'] ,
                 'codigoPostal' => [
                     'id' => $result['negocioIdCodigoPostal'],
                     'codigo' => $result['negocioCodigoPostal'],
