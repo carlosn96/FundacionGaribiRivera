@@ -3,12 +3,11 @@
 class Util {
 
     public static function redirigir($url, $permanent = false) {
-        echo $url;
         if (headers_sent()) {
-            // echo "<script>window.location = '$url';</script>";
-            //echo "<script type='text/javascript'>window.location.replace('$url');</script>";
+            echo "<script>window.location = '$url';</script>";
+            echo "<script type='text/javascript'>window.location.replace('$url');</script>";
         } else {
-            //header('Location: ' . $url, true, $permanent ? 301 : 302);
+            header('Location: ' . $url, true, $permanent ? 301 : 302);
         }
     }
 
@@ -112,8 +111,8 @@ define('DB_PASS', 'Emprendedores2025');
 define('DB_NAME', 'u775111066_emprendedores');
 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
-define("DIR_FOTOGRAFIAS", ROOT_APP . "public" . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");
-define("INDEX", "FundacionCardenalGaribiRivera2024" . DIRECTORY_SEPARATOR);
+define("ROOT_PUBLIC_APP", ROOT_APP . "public" . DIRECTORY_SEPARATOR);
+define("DIR_FOTOGRAFIAS", ROOT_PUBLIC_APP . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");
 
 define("ERROR_INSERTAR", Util::enum('Ha ocurrido un error al intentar almacenar la información proporcionada. Verifique los datos', true));
 define("REGISTRO_COMPLETO", Util::enum('Registro completo', false));
