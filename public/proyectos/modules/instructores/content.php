@@ -73,7 +73,7 @@
                                 <span class="border-start border-success ps-3">Teléfono</span>
                             </label>
                         </div>
-                    </div>-->
+                    </div>
                 </div>
 
                 <div class="d-md-flex align-items-center">
@@ -89,7 +89,7 @@
 
         </div>
     </div>
-    <div class="card">
+    <div class="card" hidden="">
         <div class="card-body">
             <h4 class="card-title mb-4 pb-2">Instructores</h4>
             <div class="table-responsive pb-4">
@@ -108,4 +108,5 @@
             </div>
         </div>
     </div>
+    <div id="cardsInstructores" class="row"></div>
 </div>
