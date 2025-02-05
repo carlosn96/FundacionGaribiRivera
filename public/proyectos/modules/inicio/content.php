@@ -1,11 +1,32 @@
 <div class="row">
     <div class="col-12">
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title mb-3 fw-semibold">Accesos rápidos</h5>
+                <div class="d-flex flex-wrap">
+                    <a href="../taller" class="btn btn-outline-success m-1 flex-grow-1">
+                        <i class="ti ti-chalkboard"></i> Talleres
+                    </a>
+                    <a href="../lineaBaseAdministracion" class="btn btn-outline-success m-1 flex-grow-1">
+                        <i class="ti ti-users"></i> Emprendedores
+                    </a>
+                    <a href="../etapa/" class="btn btn-outline-success m-1 flex-grow-1">
+                        <i class="ti ti-calendar"></i> Etapas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <h4 class="card-title mb-4">Actividad reciente</h4>
-                
+
                 <div class="position-relative">
-                    <!-- Actividad 1 -->
+                    <!-- 
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div class="d-flex">
                             <div class="p-3 bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center me-4">
@@ -19,7 +40,7 @@
                         <h6 class="mb-0 text-muted">5 mins</h6>
                     </div>
 
-                    <!-- Actividad 2 -->
+                    
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div class="d-flex">
                             <div class="p-3 bg-info-subtle rounded-circle d-flex align-items-center justify-content-center me-4">
@@ -33,7 +54,7 @@
                         <h6 class="mb-0 text-muted">10 mins</h6>
                     </div>
 
-                    <!-- Actividad 3 -->
+                    
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div class="d-flex">
                             <div class="p-3 bg-warning-subtle rounded-circle d-flex align-items-center justify-content-center me-4">
@@ -47,7 +68,7 @@
                         <h6 class="mb-0 text-muted">10 mins</h6>
                     </div>
 
-                    <!-- Actividad 4 -->
+                    
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div class="d-flex">
                             <div class="p-3 bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center me-4">
@@ -61,7 +82,7 @@
                         <h6 class="mb-0 text-muted">20 mins</h6>
                     </div>
 
-                    <!-- Actividad 5 -->
+                    
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex flex-shrink-0">
                             <div class="p-3 bg-success-subtle rounded-circle d-flex align-items-center justify-content-center me-4">
@@ -73,7 +94,7 @@
                             </div>
                         </div>
                         <h6 class="mb-0 text-muted flex-shrink-0">20 mins</h6>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
