@@ -7,6 +7,7 @@ class LineaBaseAdministracionAPI extends API {
     function recuperarEmprendedores() {
         $this->enviarRespuesta([
             "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase(),
+            "emprendedoresNoLineaBase" => getAdminLineaBase()->listarEmprendoresSinLineaBase(),
             "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
         ]);
     }
