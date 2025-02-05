@@ -35,9 +35,13 @@ class AdminFactory {
     public static function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento {
         return self::getOrCreateInstance(AdminVisitaSeguimiento::class);
     }
-    
+
     public static function getAdminImpacto(): AdminImpacto {
         return self::getOrCreateInstance(AdminImpacto::class);
+    }
+
+    public static function getAdminLog(): AdminLog {
+        return self::getOrCreateInstance(AdminLog::class);
     }
 
     private static function getOrCreateInstance(string $class): Admin {
@@ -46,5 +50,4 @@ class AdminFactory {
         }
         return self::$instances[$class];
     }
-
 }
