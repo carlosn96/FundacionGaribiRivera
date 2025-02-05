@@ -13,6 +13,7 @@ class AdminUsuario extends Admin {
     public function buscarUsuarioPorCorreo($correo) {
         return $this->dao->buscarUsuarioPorCorreo($correo);
     }
+
     public function buscarUsuarioPorID($id) {
         return $this->dao->buscarUsuarioPorID($id);
     }
@@ -39,6 +40,24 @@ class AdminUsuario extends Admin {
         return $this->dao->actualizarInfoPersonal($data, $usuario);
     }
 
+    public function listarAsistentes($idActual) {
+        $lista = [];
+        foreach ($this->dao->listarAsistentes($idActual) as $row) {
+            $lista[] = $this->construirAsistente($row);
+        }
+        return $lista;
+    }
 
-
+    private function construirAsistente($form) {
+        $nombre_completo = $form["nombre"] ." ". $form["apellidos"];
+        $telefono = $form["numero_celular"];
+        $contrasenia = "";
+        $tipo_usuario = TipoUsuario::get($form["tipo_usuario"])["rol"];
+        $esVerificado = true;
+        $id = $form["id"];
+        $usuario = new Usuario($nombre_completo, $telefono, $contrasenia,
+                $tipo_usuario, $esVerificado, $id);
+        $usuario->set_fotografia(Util::binToBase64($form["fotografia"]));
+        return $usuario->to_array();
+    }
 }
