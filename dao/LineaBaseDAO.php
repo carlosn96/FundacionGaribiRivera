@@ -6,6 +6,7 @@ class LineaBaseDAO extends DAO {
     private const LINEA_BASE_FINAL = ["nombre" => "final", "tabla" => "linea_base_final"];
     private const TIPOS_LINEA_BASE = [self::LINEA_BASE_INICIAL, self::LINEA_BASE_FINAL];
     private const LISTAR_EMPRENDEDOR_LINEA_BASE = "SELECT * FROM listar_emprendedor_con_linea_base";
+    private const LISTAR_EMPRENDEDOR_SIN_LINEA_BASE = "SELECT * FROM listar_emprendedor_sin_linea_base";
     private const LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL = "SELECT * FROM listar_emprendedor_con_linea_base_inicial_final";
     private const BUSCAR_CP = "CALL buscar_codigo_postal(?)";
     private const BUSCAR_PARROQUIA = "CALL buscar_comunidad_parroquial(?)";
@@ -22,15 +23,23 @@ class LineaBaseDAO extends DAO {
     private const LISTAR_OBJETIVOS_AHORRO = "SELECT * FROM recuperar_linea_base_lista_objetivos_ahorro WHERE id_linea_base = ?";
     private const LISTAR_OBJETIVOS_AHORRO_FINAL = "SELECT * FROM recuperar_linea_base_final_lista_objetivos_ahorro WHERE id_linea_base = ?";
 
-    public function listarEmprendedoresLineaBase($etapa = null) {
-        $where = is_null($etapa) ? "" : " WHERE idEtapa = $etapa";
-        $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE . $where);
+    public function listarEmprendedores($consulta, $params = []) {
+        // Ejecuta la consulta y devuelve los resultados
+        $rs = $this->ejecutarInstruccion($consulta, $params);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
+    public function listarEmprendedoresLineaBase($etapa = null) {
+        $where = is_null($etapa) ? "" : " WHERE idEtapa = $etapa";
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDOR_LINEA_BASE . $where);
+    }
+
+    public function listarEmprendedoresSinLineaBase() {
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDOR_SIN_LINEA_BASE);
+    }
+
     public function listarEmprendedoresLineaBaseInicialFinal() {
-        $rs = $this->ejecutarInstruccion(self::LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL);
-        return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL);
     }
 
     public function listarEmprendedoresParaImpactos($idUsuario) {
@@ -240,7 +249,7 @@ class LineaBaseDAO extends DAO {
                 'calleCruce1' => $result['negocioCalleCruce1'],
                 'calleCruce2' => $result['negocioCalleCruce2'],
                 'numExterior' => $result['negocioNumExterior'],
-                'numInterior' => ($result['negocioNumInterior'] === "null" && is_null($result['negocioNumInterior']))? "" : $result['negocioNumInterior'] ,
+                'numInterior' => ($result['negocioNumInterior'] === "null" && is_null($result['negocioNumInterior'])) ? "" : $result['negocioNumInterior'],
                 'codigoPostal' => [
                     'id' => $result['negocioIdCodigoPostal'],
                     'codigo' => $result['negocioCodigoPostal'],
