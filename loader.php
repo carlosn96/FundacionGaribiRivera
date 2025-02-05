@@ -99,17 +99,17 @@ class Util {
 }
 
 // Definir variables de base de datos en config.php
-/* define('DB_HOST', '193.203.166.72');
-  define('DB_USER', 'u775111066_pruebas');
-  define('DB_PASS', 'Pruebas2024');
-  define('DB_NAME', 'u775111066_pruebas');
- */
+/*define('DB_HOST', '193.203.166.72');
+define('DB_USER', 'u775111066_pruebas');
+define('DB_PASS', 'Pruebas2024');
+define('DB_NAME', 'u775111066_pruebas');
+*/
 
-define('DB_HOST', '193.203.166.72');
-define('DB_USER', 'u775111066_emprendedores');
-define('DB_PASS', 'Emprendedores2025');
-define('DB_NAME', 'u775111066_emprendedores');
-
+  define('DB_HOST', '193.203.166.72');
+  define('DB_USER', 'u775111066_emprendedores');
+  define('DB_PASS', 'Emprendedores2025');
+  define('DB_NAME', 'u775111066_emprendedores');
+ 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
 define("ROOT_PUBLIC_APP", ROOT_APP . "public" . DIRECTORY_SEPARATOR);
 define("DIR_FOTOGRAFIAS", ROOT_PUBLIC_APP . "assets" . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . "profile");
@@ -194,4 +194,8 @@ function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento {
 
 function getAdminImpacto(): AdminImpacto {
     return AdminFactory::getAdminImpacto();
+}
+
+function getAdminLog(): AdminLog {
+    return AdminFactory::getAdminLog();
 }
