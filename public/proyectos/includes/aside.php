@@ -19,13 +19,12 @@
                 <!-- Inicio -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
-
                     <span class="hide-menu">Inicio</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="../inicio/" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-warning-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="mdi:home" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
@@ -67,21 +66,7 @@
                     </ul>
                 </li>
                 <!-- ============================= -->
-                <!-- Seguimiento -->
-                <!-- ============================= -->
-                <li class="nav-small-cap">
-                    <span class="hide-menu">Seguimiento</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../seguimientoCaso/" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:file-text-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Seguimiento de caso</span>
-                    </a>
-                </li>
-                <!-- ============================= -->
-                <!-- Seguimiento -->
+                <!-- Emprendedores -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
                     <span class="hide-menu">Emprendededores</span>
