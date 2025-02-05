@@ -243,6 +243,10 @@ class AdminLineaBase extends Admin {
     public function listarEmprendoresConLineaBase($etapa = null) {
         return $this->dao->listarEmprendedoresLineaBase($etapa);
     }
+    
+    public function listarEmprendoresSinLineaBase() {
+        return $this->dao->listarEmprendedoresSinLineaBase();
+    }
 
     public function listarEmprendedoresParaImpactos($idUsuario) {
         return $this->dao->listarEmprendedoresParaImpactos($idUsuario);
