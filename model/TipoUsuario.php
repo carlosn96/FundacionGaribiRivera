@@ -11,7 +11,7 @@ class TipoUsuario {
         self::EMPRENDEDOR => ["rol" => "Emprendedor", "url" => "emprendedor"],
         self::ADMINISTRADOR_PROYECTOS => ["rol" => "Adm. Proyectos", "url" => "proyectos"],
         self::TRABABAJOR_SOCIAL => ["rol" => "Trabajador Social", "url" => "trabajoSocial"],
-        self::ADMINISTRADOR_GENERAL => ["rol" => "Adm. General", "url" => "administradorGeneral"],
+        self::ADMINISTRADOR_GENERAL => ["rol" => "Adm. General", "url" => "administracionGeneral"],
     ];
 
     public static function get($tipo) {
