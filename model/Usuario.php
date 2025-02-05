@@ -8,6 +8,7 @@ class Usuario {
     private $tipo_usuario;
     private $es_verificado;
     private $id_usuario;
+    private $fotografia;
 
     public function __construct($nombre_completo, $telefono, $contrasenia, $tipo_usuario, $es_verificado = false, $id_usuario = 0) {
         $this->nombre_completo = $nombre_completo;
@@ -17,7 +18,15 @@ class Usuario {
         $this->es_verificado = $es_verificado;
         $this->id_usuario = $id_usuario;
     }
-    
+
+    public function get_fotografia() {
+        return $this->fotografia;
+    }
+
+    public function set_fotografia($fotografia) {
+        $this->fotografia = $fotografia;
+    }
+
     public function get_nombre_completo() {
         return $this->nombre_completo;
     }
@@ -66,9 +75,7 @@ class Usuario {
         $this->id_usuario = $id_usuario;
     }
 
-    
     public function to_array() {
-       return get_object_vars($this);
+        return get_object_vars($this);
     }
-
 }
