@@ -11,7 +11,7 @@
         </div>
 
         <form class="validation-wizard-horizontal wizard-circle needs-validation" id="lineaBaseForm">
-            <input id="idEmprendedor" name="idEmprendedor" hidden="">
+            <input id="idUsuario" name="idUsuario" hidden="">
             <!-- Información Preliminar -->
             <h6>Información Preliminar</h6>
             <section>
@@ -223,6 +223,66 @@
                     </div>
                 </div>
                 <div id="seccionAnalisisNegocio" hidden="" >
+                    <div class="row mb-4">
+                        <div class="col-md-6 col-12 mb-3 mb-md-0">
+                            <label for="ventasMensuales" class="form-label">¿Cuál es el monto mensual de tus <strong>ventas</strong>?</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="ventasMensuales" name="ventasMensuales" min="0" value="0" required>
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12 mb-3 mb-md-0">
+                            <label for="gastosMensuales" class="form-label">¿Cuál es el monto mensual de tus<strong> gastos/egresos</strong>?</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="gastosMensuales" name="gastosMensuales" min="0" value="0" required>
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 col-12 mb-3">
+                            <label for="utilidadesMensuales" class="form-label">¿Cuál es el monto de tus <strong>utilidades</strong> mensuales?</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="utilidadesMensuales" name="utilidadesMensuales" required value="0">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12 mb-3">
+                            <label for="sueldoMensual" class="form-label">¿Cuál es tu <strong>sueldo mensual</strong>?</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="sueldoMensual" name="sueldoMensual" min="0" value="0" required>
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 col-12 mb-3">
+                            <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>a nivel personal</strong>?</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalSi" value="1" required >
+                                <label class="form-check-label" for="ingresoPrincipalSi">Sí</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalNo" value="0" required>
+                                <label class="form-check-label" for="ingresoPrincipalNo">No</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12 mb-3">
+                            <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>para tu familia</strong>?</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarSi" value="1" required >
+                                <label class="form-check-label" for="esIngresoPrincipalFamiliarSi">Sí</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarNo" value="0" required>
+                                <label class="form-check-label" for="esIngresoPrincipalFamiliarNo">No</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-4">
                         <label class="form-label">¿Llevas registros de entradas y salidas de dinero?</label>
                         <div class="form-check">
@@ -377,77 +437,20 @@
                     </div>
                 </div>
             </section>
-            <h6>Administración de ingresos de tu negocio</h6>
+            <h6>Administración de ingresos</h6>
             <section>
-                <div id="mensajeNoTieneNegocio2">
-                    <div class="alert customize-alert alert-dismissible border-warning text-warning fade show remove-close-icon" role="alert">
-                        <div class="d-flex align-items-center  me-3 me-md-0">
-                            <i class="ti ti-info-circle fs-5 me-2 text-warning"></i>
-                            Se ha indicado que actualmente no existe un negocio
-                        </div>
-                    </div>
-                </div>
-                <div id="seccionAdministracionIngresosNegocio" hidden="" >
-                    <div class="row mb-4">
-                        <div class="col-md-6 col-12 mb-3 mb-md-0">
-                            <label for="ventasMensuales" class="form-label">¿Cuál es el monto mensual de tus <strong>ventas</strong>?</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="ventasMensuales" name="ventasMensuales" min="0" value="0" required>
-                                <span class="input-group-text">.00</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12 mb-3 mb-md-0">
-                            <label for="gastosMensuales" class="form-label">¿Cuál es el monto mensual de tus<strong> gastos/egresos</strong>?</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="gastosMensuales" name="gastosMensuales" min="0" value="0" required>
-                                <span class="input-group-text">.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-6 col-12 mb-3">
-                            <label for="utilidadesMensuales" class="form-label">¿Cuál es el monto de tus <strong>utilidades</strong> mensuales?</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="utilidadesMensuales" name="utilidadesMensuales" required value="0">
-                                <span class="input-group-text">.00</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12 mb-3">
-                            <label for="sueldoMensual" class="form-label">¿Cuál es tu <strong>sueldo mensual</strong>?</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="sueldoMensual" name="sueldoMensual" min="0" value="0" required>
-                                <span class="input-group-text">.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-4 col-12 mb-3">
-                            <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>a nivel personal</strong>?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalSi" value="1" required >
-                                <label class="form-check-label" for="ingresoPrincipalSi">Sí</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalPersonal" id="ingresoPrincipalNo" value="0" required>
-                                <label class="form-check-label" for="ingresoPrincipalNo">No</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-12 mb-3">
-                            <label class="form-label">¿Es tu negocio la principal fuente de ingresos <strong>para tu familia</strong>?</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarSi" value="1" required >
-                                <label class="form-check-label" for="esIngresoPrincipalFamiliarSi">Sí</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="esIngresoPrincipalFamiliar" id="esIngresoPrincipalFamiliarNo" value="0" required>
-                                <label class="form-check-label" for="esIngresoPrincipalFamiliarNo">No</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-12 mb-3">
+                <!--                <div id="mensajeNoTieneNegocio2">
+                                    <div class="alert customize-alert alert-dismissible border-warning text-warning fade show remove-close-icon" role="alert">
+                                        <div class="d-flex align-items-center  me-3 me-md-0">
+                                            <i class="ti ti-info-circle fs-5 me-2 text-warning"></i>
+                                            Se ha indicado que actualmente no existe un negocio
+                                        </div>
+                                    </div>
+                                </div>-->
+                <!--                <div id="seccionAdministracionIngresosNegocio" hidden="" >-->
+                <div id="seccionAdministracionIngresosNegocio">
+                    <div class="row mb-3">
+                        <div class="col-12">
                             <label class="form-label">¿Tienes el hábito de ahorrar de manera constante y a largo plazo?</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tieneHabitoAhorro" id="habitoAhorroSi" value="1" required >
@@ -489,6 +492,25 @@
                             <span class="input-group-text">.00</span>
                         </div>
                     </div>
+                </div>
+            </section>
+            <h6>Generalidades del caso</h6>
+            <section>
+                <div class="mb-4 row align-items-center">
+                    <label class="form-label col-sm-3 col-form-label">Etapas de formación cursadas</label>
+                    <div class="col-sm-9" id="etapasFormacionCursadas">
+                        <!-- Aquí puedes agregar dinámicamente las etapas de formación cursadas -->
+                    </div>
+                </div>
+                <div class="mb-4 row align-items-center">
+                    <label for="observacionesGenerales" class="form-label col-sm-3 col-form-label">Observaciones generales</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="observacionesGenerales" name="observacionesGenerales" rows="3" required=""></textarea>
+                    </div>
+                </div>
+                <div class="mb-4 row align-items-center">
+                    <label for="fotografiasCaso" class="form-label col-sm-3 col-form-label">Fotografías del caso</label>
+                    <input type="file" id="fotografiasCaso" name="fotografiasCaso" accept=".png, .jpg, .jpeg">
                 </div>
             </section>
         </form>
