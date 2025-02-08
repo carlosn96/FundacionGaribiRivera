@@ -29,6 +29,7 @@ function crearLineaBaseFinal(data) {
     } else {
         sections.push(construirSeccionNoInfoNegocio());
     }
+    sections.push(construirSeccionGeneralidades(data.generalidades));
     return renderizarSecciones(sections);
 }
 
@@ -317,7 +318,6 @@ function construirSeccionDomicilio(domicilio) {
 }
 
 
-
 function construirSeccionSocioeconomico(socioeconomico) {
     return {
         icon: 'ti ti-wallet',
@@ -512,7 +512,7 @@ function construirSeccionAnalisisNegocio(analisisNegocio) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-dollar-sign"></i>
+                    <i class="ti ti-brand-cashapp"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Asigna Sueldo</h6>
@@ -521,10 +521,10 @@ function construirSeccionAnalisisNegocio(analisisNegocio) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-money"></i>
+                    <i class="ti ti-coins"></i>
                 </div>
                 <div class="ms-6">
-                    <h6 class="mb-1">Conoce Utilidades</h6>
+                    <h6 class="mb-1">Conoce las utilidades del negocio</h6>
                     <p class="mb-0">${analisisNegocio.conoceUtilidades.res}</p>
                 </div>
             </div>
@@ -575,7 +575,7 @@ function construirSeccionAnalisisNegocio(analisisNegocio) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-piggy-bank"></i>
+                    <i class="ti ti-moneybag"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Ahorro Mensual</h6>
@@ -584,7 +584,7 @@ function construirSeccionAnalisisNegocio(analisisNegocio) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bar-chart"></i>
+                    <i class="ti ti-chart-bar"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Punto de Equilibrio</h6>
@@ -648,7 +648,7 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-currency-yen"></i>
+                    <i class="ti ti-basket-dollar"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Monto Mensual Utilidades</h6>
@@ -675,7 +675,7 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-save"></i>
+                    <i class="ti ti-lock-dollar"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Hábito de Ahorro</h6>
@@ -684,7 +684,7 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
             </div>
             <div class="d-flex align-items-center mb-9">
                 <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bank"></i>
+                    <i class="ti ti-building-bank"></i>
                 </div>
                 <div class="ms-6">
                     <h6 class="mb-1">Sistema de Ahorro</h6>
@@ -704,6 +704,56 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
     };
 }
 
+function construirSeccionGeneralidades(generalidades) {
+    return {
+        icon: 'ti ti-message-question',
+        title: 'Generalidades',
+        content: `
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-danger-subtle text-danger fs-14 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="ti ti-building"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-1">Etapas de formación cursadas</h6>
+                    <p class="mb-0">${generalidades.etapasFormacion.join(", ")}</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-info-subtle text-info fs-14 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="ti ti-message-2"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-1">Observaciones Generales</h6>
+                    <p class="mb-0">${generalidades.observacionesGenerales}</p>
+                </div>
+            </div>
+
+            <h5 class="card-title mb-4">Fotografías de Caso</h5>
+
+            <!-- Card con el carrusel de imágenes -->
+            <div class="card mb-4 mx-auto" style="width: 18rem;">
+                <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        ${generalidades.fotografiasCaso.map((itm, idx) => `
+                            <div class="carousel-item ${idx === 0 ? "active" : ""}">
+                                <img src="data:image/jpeg;base64, ${itm}" class="d-block w-100 img-fluid" alt="fotografía de caso">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <a class="carousel-control-prev" href="#controls" role="button" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </a>
+                    <a class="carousel-control-next" href="#controls" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </a>
+                </div>
+            </div>
+        `
+    };
+}
 
 function construirSeccionNoInfoNegocio() {
     return construirSeccionNoInfo("Negocio", "Información del negocio no disponible", "Se ha indicado que no cuenta con un negocio.");
