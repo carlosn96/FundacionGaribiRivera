@@ -1,8 +1,7 @@
 <?php
 
 class AdminEmprendedor extends Admin {
-    
-    
+
     public function __construct() {
         parent::__construct(new EmprendedorDAO());
     }
@@ -10,7 +9,7 @@ class AdminEmprendedor extends Admin {
     public function listar() {
         return $this->dao->listar();
     }
-    
+
     public function listarPorEtapa($idEtapa) {
         return $this->dao->listarPorEtapa($idEtapa);
     }
@@ -31,8 +30,8 @@ class AdminEmprendedor extends Admin {
     }
 
     private function construirSeguimientoCaso($data): SeguimientoCaso {
-        $idLineaBase = $data["idLineaBase"];
-        $numeroCaso = $data["numeroCaso"];
+        $idLineaBase = $data["idLineaBase"] ?? $data["idLineaBaseInicial"];
+        $numeroCaso = $data["numeroCaso"] ?? 0;
         $etapasFormacion = $data["etapasFormacionCursadas"];
         $observacionesGenerales = $data["observacionesGenerales"];
         $fotografiasCaso = $data["fotografiasCaso"];

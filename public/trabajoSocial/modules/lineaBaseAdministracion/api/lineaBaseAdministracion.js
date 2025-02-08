@@ -96,8 +96,8 @@ function crearMenuSeguimiento(emprendedor) {
                         lineaBaseAction('Modificar', emprendedor.idUsuario);
                     }
                 }).append(
-                    $('<i>', { class: 'fs-4 ti ti-edit' }),
-                    'Editar'
+                    $('<i>', { class: 'fs-4 ti ti-plus' }),
+                    'Realizar seguimiento'
                 )
             )
         )

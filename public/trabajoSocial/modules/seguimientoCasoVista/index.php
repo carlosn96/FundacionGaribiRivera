@@ -1,7 +1,7 @@
 <?php
 
-include_once '../../includes/proyectosTemplate.php';
+include_once '../../includes/trabajoSocialTemplate.php';
 
-renderizarPlantillaProyectos(__DIR__, [
+renderizarPlantillaTrabajoSocial(__DIR__, [
     'api/seguimientoCasoVista.js'
 ]);

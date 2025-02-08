@@ -22,8 +22,9 @@ function ready() {
 }
 
 function recuperarInfoSeguimientoCaso(emprendedor) {
-    const [idLineaBase, etapa, nombre, apellidos, correo] = emprendedor;
-    $("#nombre").text(`${nombre} ${apellidos}`);
+    print(emprendedor);
+    const [idLineaBase, nombre, correo] = emprendedor;
+    $("#nombre").text(`${nombre}`);
     $("#correo").text(correo);
     crearPeticion(urlAPI, {case: "recuperarSeguimientoCaso", data: `idLineaBase=${idLineaBase}`}, (rs) => {
         const $btnSeguimiento = $("#btnDarSeguimiento");

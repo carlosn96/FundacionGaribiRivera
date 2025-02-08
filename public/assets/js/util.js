@@ -6,26 +6,28 @@ function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoErr
 
         if (form[0].checkValidity() && fnValidateNoError()) {
             // Verificamos si el formulario tiene archivos (inputs tipo file)
-            const formData = new FormData();
-            let tieneArchivos = false;
-
-            // Agregar todos los campos del formulario a formData
-            form.find('input, select, textarea').each(function () {
-                if (this.type === 'file' && this.files.length > 0) {
-                    tieneArchivos = true;
-                    for (let i = 0; i < this.files.length; i++) {
-                        formData.append(this.name, this.files[i]);
-                    }
-                } else if (this.type !== 'file') {
-                    formData.append(this.name, this.value);
-                }
-            });
+            const formData = crearFormData(form);
             formData.append('case', submitCase);
-            formData.append("data", form.serialize());
             crearPeticion(urlAPI, formData, fnSuccess);
         }
         form.addClass("was-validated");
     });
+}
+
+function crearFormData(form) {
+    const formData = new FormData();
+    // Agregar todos los campos del formulario a formData
+    form.find('input, select, textarea').each(function () {
+        if (this.type === 'file' && this.files.length > 0) {
+            for (let i = 0; i < this.files.length; i++) {
+                formData.append(this.name, this.files[i]);
+            }
+        } else if (this.type !== 'file') {
+            formData.append(this.name, this.value);
+        }
+    });
+    formData.append("data", form.serialize());
+    return formData;
 }
 
 function crearPeticion(url, data, fnSuccess = mostrarMensajeResultado, fnError = procesarRespuestaError, dataType = "json", contentType = 'application/x-www-form-urlencoded') {
