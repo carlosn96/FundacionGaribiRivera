@@ -5,9 +5,12 @@ include_once '../../../../../loader.php';
 class LineaBaseFinalAPI extends API {
 
     function guardar() {
+        $nombreInputFile = "fotografiasCaso";
+        $this->data[$nombreInputFile] = Util::recuperarArchivosServidor($nombreInputFile);
+        getAdminLineaBase()->guardarLineaBaseFinal($this->data);
+        getAdminEmprendedor()->guardarSeguimientoCaso($this->data);
         Sesion::setInfoTemporal("tipoLineaBase", "final");
-        $this->data["idUsuario"] = $this->data["idEmprendedor"];
-        $this->enviarResultadoOperacion(getAdminLineaBase()->guardarLineaBaseFinal($this->data));
+        //$this->enviarResultadoOperacion();
     }
 
     function recuperarCamposInformacion() {
@@ -28,7 +31,8 @@ class LineaBaseFinalAPI extends API {
             "radio" => [
                 "comoEmpleaGanancias" => $admin->recuperarListaEmpleaGanancias(),
                 "objetivosAhorro" => $admin->recuperarObjetivosAhorro()
-            ]
+            ],
+            "etapasDisponibles" => getAdminEtapaFormacion()->listarTiposEtapasFormacion()
         ]);
     }
 

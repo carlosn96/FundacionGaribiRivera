@@ -21,14 +21,14 @@ function ready() {
 }
 
 function completarInfoEmprendedor(emprendedor) {
-    $("#idEmprendedor").val(emprendedor.id);
-    $("#fotografiaEmprendedor").prop("src", "data:image/jpeg;base64,"+emprendedor.fotografia);
-    $("#nombreEmprendedor").text(emprendedor.nombre+" "+emprendedor.apellidos);
+    $("#idUsuario").val(emprendedor.id);
+    $("#fotografiaEmprendedor").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
+    $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
 }
 
 function completarCamposFormulario(rs) {
     let inicial = rs.lineaBase.inicial.data;
-    $("#fechaLineaBase").append(" "+inicial.fechaCreacion);
+    $("#fechaLineaBase").append(" " + inicial.fechaCreacion);
     $.each(rs.checkbox, (idx, elementos) => {
         crearGroupCheckbox($("#" + idx), elementos, idx);
     });
@@ -43,11 +43,17 @@ function completarCamposFormulario(rs) {
     configurarSeccionInformacionNegocio(inicial.negocio);
     configurarSeccionAnalisisNegocio(inicial.analisisNegocio);
     configurarSeccionAdministracionIngresosNegocio(inicial.administracionIngresos);
+    crearSelectorMultiple($("#etapasFormacionCursadas"), "etapasFormacionCursadas", rs.etapasDisponibles);
     desbloquearSeccion($("#contenido"));
 }
 
 function enviarForm() {
-    crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
+    const formData = crearFormData($("#lineaBaseForm"));
+    formData.append("case", "guardar");
+    print(formData);
+    //crear un FormData con los elementos de #lineaBaseForm, incluyendo archivos. Agrega el key case=guardar
+    //crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
+    crearPeticion(urlAPI, formData, print);
 }
 
 function configurarSeccionAnalisisNegocio(analisisNegocio) {
@@ -141,9 +147,9 @@ function configurarSeccionInformacionNegocio(negocio) {
         let tieneNegocio = $(this).val() === "1";
         $("#camposTieneNegocio").prop("hidden", !tieneNegocio);
         $("#mensajeNoTieneNegocio1").prop("hidden", tieneNegocio);
-        $("#mensajeNoTieneNegocio2").prop("hidden", tieneNegocio);
+        //$("#mensajeNoTieneNegocio2").prop("hidden", tieneNegocio);
         $("#seccionAnalisisNegocio").prop("hidden", !tieneNegocio);
-        $("#seccionAdministracionIngresosNegocio").prop("hidden", !tieneNegocio);
+        //$("#seccionAdministracionIngresosNegocio").prop("hidden", !tieneNegocio);
     });
     // Configure the "codigoPostal" field with Select2 and handle additional fields
     configurarCampoCodigoPostal($("#codigoPostalNegocio"), function (idCodigoPostal, estado, municipio, colonia) {
