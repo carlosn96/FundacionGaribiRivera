@@ -21,7 +21,7 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="../inicio/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-warning-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                            <iconify-icon icon="solar:home-outline" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
@@ -38,17 +38,17 @@
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="solar:clipboard-check-broken" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Línea Base </span>
+                        <span class="hide-menu ps-1">Seguimiento de caso </span>
                     </a>
                 </li>
-                <li class="sidebar-item">
+<!--                <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../seguimientoCaso/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="solar:file-text-line-duotone" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Seguimiento de caso</span>
                     </a>
-                </li>
+                </li>-->
                 <!-- ============================= -->
                 <!-- Socioeconomico -->
                 <!-- ============================= -->
