@@ -760,7 +760,7 @@ function construirSeccionNoInfoNegocio() {
 }
 
 function construirSeccionNoLineaBase() {
-    return construirSeccionNoInfo("Sin información", "Línea base no disponible", "");
+    return construirSeccionNoInfo("Sin información", "Seguimiento no disponible", "");
 }
 
 function construirSeccionNoInfo(titulo, mensaje, subtitulo) {
