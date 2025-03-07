@@ -7,10 +7,10 @@ class LineaBaseFinalAPI extends API {
     function guardar() {
         $nombreInputFile = "fotografiasCaso";
         $this->data[$nombreInputFile] = Util::recuperarArchivosServidor($nombreInputFile);
-        getAdminLineaBase()->guardarLineaBaseFinal($this->data);
+        $operacionCompleta = getAdminLineaBase()->guardarLineaBaseFinal($this->data) &&
         getAdminEmprendedor()->guardarSeguimientoCaso($this->data);
         Sesion::setInfoTemporal("tipoLineaBase", "final");
-        //$this->enviarResultadoOperacion();
+        $this->enviarResultadoOperacion($operacionCompleta);
     }
 
     function recuperarCamposInformacion() {
