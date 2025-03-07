@@ -7,7 +7,7 @@ function ready() {
         if (res.existeLineaBase) {
             const data = res.data;
             $("#content").append(res.tipo === 'inicial' ? crearLineaBaseInicial(data) : crearLineaBaseFinal(data));
-            $("#fechaCreacion").html("<strong>Información actualizada a la fecha: </strong> <span>"+data.fechaCreacion+"</span>");
+            $("#fechaCreacion").html("<strong>Información actualizada a la fecha: </strong> <span>" + data.fechaCreacion + "</span>");
         } else {
             $("#content").append(renderizarSecciones([construirSeccionNoLineaBase()]));
         }
@@ -705,6 +705,16 @@ function construirSeccionAdministracionIngresos(administracionIngresos) {
 }
 
 function construirSeccionGeneralidades(generalidades) {
+    const etapas = generalidades.etapasFormacion && generalidades.etapasFormacion.length > 0
+            ? generalidades.etapasFormacion
+            : ["No se han registrado etapas de formación"];
+
+    const observaciones = generalidades.observacionesGenerales || "No hay observaciones generales disponibles.";
+
+    const fotografias = generalidades.fotografiasCaso && generalidades.fotografiasCaso.length > 0
+            ? generalidades.fotografiasCaso
+            : [];
+
     return {
         icon: 'ti ti-message-question',
         title: 'Generalidades',
@@ -715,7 +725,7 @@ function construirSeccionGeneralidades(generalidades) {
                 </div>
                 <div class="ms-3">
                     <h6 class="mb-1">Etapas de formación cursadas</h6>
-                    <p class="mb-0">${generalidades.etapasFormacion.join(", ")}</p>
+                    <p class="mb-0">${etapas.join(", ")}</p>
                 </div>
             </div>
 
@@ -725,32 +735,36 @@ function construirSeccionGeneralidades(generalidades) {
                 </div>
                 <div class="ms-3">
                     <h6 class="mb-1">Observaciones Generales</h6>
-                    <p class="mb-0">${generalidades.observacionesGenerales}</p>
+                    <p class="mb-0">${observaciones}</p>
                 </div>
             </div>
 
             <h5 class="card-title mb-4">Fotografías de Caso</h5>
 
             <!-- Card con el carrusel de imágenes -->
-            <div class="card mb-4 mx-auto" style="width: 18rem;">
-                <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        ${generalidades.fotografiasCaso.map((itm, idx) => `
-                            <div class="carousel-item ${idx === 0 ? "active" : ""}">
-                                <img src="data:image/jpeg;base64, ${itm}" class="d-block w-100 img-fluid" alt="fotografía de caso">
-                            </div>
-                        `).join('')}
+            ${fotografias.length > 0 ? `
+                <div class="card mb-4 mx-auto" style="width: 18rem;">
+                    <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            ${fotografias.map((itm, idx) => `
+                                <div class="carousel-item ${idx === 0 ? "active" : ""}">
+                                    <img src="data:image/jpeg;base64, ${itm}" class="d-block w-100 img-fluid" alt="fotografía de caso">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <a class="carousel-control-prev" href="#controls" role="button" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </a>
+                        <a class="carousel-control-next" href="#controls" role="button" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </a>
                     </div>
-                    <a class="carousel-control-prev" href="#controls" role="button" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </a>
-                    <a class="carousel-control-next" href="#controls" role="button" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>
-                    </a>
                 </div>
-            </div>
+            ` : `
+                <p>No hay fotografías disponibles.</p>
+            `}
         `
     };
 }
