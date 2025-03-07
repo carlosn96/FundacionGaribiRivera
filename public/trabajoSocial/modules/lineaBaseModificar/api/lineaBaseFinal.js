@@ -50,10 +50,10 @@ function completarCamposFormulario(rs) {
 function enviarForm() {
     const formData = crearFormData($("#lineaBaseForm"));
     formData.append("case", "guardar");
-    print(formData);
+    //print(formData);
     //crear un FormData con los elementos de #lineaBaseForm, incluyendo archivos. Agrega el key case=guardar
     //crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
-    crearPeticion(urlAPI, formData, print);
+    crearPeticion(urlAPI, formData);
 }
 
 function configurarSeccionAnalisisNegocio(analisisNegocio) {
@@ -121,7 +121,6 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
         $(`#conocePuntoEquilibrio${analisisNegocio.conoceUtilidades.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
         $(`#separaGastos${analisisNegocio.separaGastos.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
         $(`#elaboraPresupuesto${analisisNegocio.elaboraPresupuesto.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
-
     }
 }
 
