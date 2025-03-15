@@ -22,7 +22,7 @@ class AdminEmprendedor extends Admin {
         $data = $this->dao->recuperarSeguimientoCaso($idLineaBase);
         $segCaso = [];
         if ($data) {
-            $data["fotografiasCaso"] = explode(",", $data["fotografiasCaso"]);
+            $data["fotografiasCaso"] = json_decode($data["fotografiasCaso"]);
             $data["etapasFormacionCursadas"] = explode(",", $data["etapasFormacionCursadas"]);
             $segCaso = $this->construirSeguimientoCaso($data)->toArray();
         }
@@ -32,7 +32,7 @@ class AdminEmprendedor extends Admin {
     private function construirSeguimientoCaso($data): SeguimientoCaso {
         $idLineaBase = $data["idLineaBase"] ?? $data["idLineaBaseInicial"];
         $numeroCaso = $data["numeroCaso"] ?? 0;
-        $etapasFormacion = $data["etapasFormacionCursadas"];
+        $etapasFormacion = $data["etapasFormacionCursadas"] ?? [];
         $observacionesGenerales = $data["observacionesGenerales"];
         $fotografiasCaso = $data["fotografiasCaso"];
         $idSeguimientoCaso = $data["idSeguimiento"] ?? 0;
@@ -46,5 +46,9 @@ class AdminEmprendedor extends Admin {
 
     public function eliminarEmprendedor($id) {
         return $this->dao->eliminarEmprendedor($id);
+    }
+
+    public function eliminarImagenSeguimientoCaso($idImagen) {
+        return $this->dao->eliminarImagenSeguimientoCaso($idImagen);
     }
 }
