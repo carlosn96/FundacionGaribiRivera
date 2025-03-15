@@ -6,7 +6,7 @@ class EmprendedorDAO extends DAO {
     private const VISTA_LISTADO_EMPRENDEDORES = "lista_emprendedores";
     private const INSERTAR_NUEVO = "INSERT INTO " . self::NOMBRE_TABLA_EMPRENDEDOR . " (id_usuario) VALUES(?)";
     private const INSERTAR_FOTOGRAFIAS_CASO = "INSERT INTO seguimiento_caso_lista_fotografias_caso VALUES (?,?)";
-    private const GUARDAR_SEGUIMIENTO_CASO = "CALL guardar_seguimiento_caso(?, ?, ?, ?, ?)";
+    private const GUARDAR_SEGUIMIENTO_CASO = "CALL guardar_seguimiento_caso(?, ?, ?)";
     private const RECUPERAR_SEGUIMIENTO_CASO = "SELECT * FROM recuperar_seguimiento_caso WHERE idLineaBase = ?";
     private const LISTAR_EMPRENDEDORES = "listar_emprendedores";
     private const LISTAR_EMPRENDEDORES_ETAPA = "listar_emprendedores_por_etapa";
@@ -14,9 +14,9 @@ class EmprendedorDAO extends DAO {
     public function guardarSeguimientoCaso(SeguimientoCaso $seguimiento) {
         $prep = $this->prepararInstruccion(self::GUARDAR_SEGUIMIENTO_CASO);
         $prep->agregarInt($seguimiento->getIdLineaBase());
-        $prep->agregarString($seguimiento->getNumeroCaso());
+        //$prep->agregarString($seguimiento->getNumeroCaso()); //Campo sin utilidad
         $prep->agregarString($seguimiento->getObservacionesGenerales());
-        $prep->agregarJSON($seguimiento->getEtapasFormacion());
+        //$prep->agregarJSON($seguimiento->getEtapasFormacion()); //Campo sin utilidad
         $prep->agregarJSON($seguimiento->getFotografiasCaso());
         return $prep->ejecutar();
     }
@@ -29,6 +29,10 @@ class EmprendedorDAO extends DAO {
 
     public function eliminarSeguimientoCaso($id) {
         return $this->eliminarPorId("seguimiento_caso", "id_seguimiento", $id);
+    }
+
+    public function eliminarImagenSeguimientoCaso($idImagen) {
+        return $this->eliminarPorId("seguimiento_caso_lista_fotografias_caso", "id_fotografia", $idImagen);
     }
 
     public function eliminarEmprendedor($id) {
