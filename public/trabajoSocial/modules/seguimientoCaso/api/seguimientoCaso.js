@@ -1,90 +1,112 @@
 const urlAPI = "api/SeguimientoCasoAPI.php";
+const seguimientoCasoForm = "seguimientoCasoForm";
 
 function ready() {
-    crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (data) {
-        construirSelectorEtapas(data.etapas);
-        construirTablaEmprendedores(data);
-    });
+    let get = extraerParametrosURL(window.location);
+    if (get.lineaBase && get.emprendedor) {
+        $("#idLineaBase").val(get.lineaBase);
+        crearPeticion(urlAPI, {case: "recuperarInfoEmprendedor", data: $.param(get)}, (res) => {
+            const seguimientoCaso = res.seguimientoCaso;
+            $("#idSeguimientoCaso").val(seguimientoCaso.idSeguimientoCaso);
+            $("#observacionesGenerales").val(seguimientoCaso.observacionesGenerales);
+            if (seguimientoCaso.fotografiasCaso && seguimientoCaso.fotografiasCaso.length > 0) {
+                crearCarousel(seguimientoCaso.fotografiasCaso);
+            } else {
+                $("#fotografiasAgregadas").prop("hidden", true);
+            }
 
-    $("#filterForm").submit(function (e) {
-        e.preventDefault();
-        const $boton = $("#botonAplicarFiltro");
-        const textoOriginal = $boton.text();
-        $boton.prop('disabled', true).text('Cargando...');
-        const $spinner = $('<span class="spinner-grow spinner-grow-sm me-2" role="status"></span>');
-        $boton.prepend($spinner);
-        crearPeticion(urlAPI, {case: "filtrarEmprendedores", data: $(this).serialize()}, function (data) {
-            construirTablaEmprendedores(data);
-            $boton.prop('disabled', false).text(textoOriginal);
-            $spinner.remove();
+            generarCardEmprendedor(res.emprendedor);
         });
-    });
-}
-
-function construirTablaEmprendedores(data) {
-    const dataTabla = data.emprendedores.map(emprendedor => ({
-            "Etapa": emprendedor.etapa,
-            "Nombre": `<a href="#" class="text-primary text-decoration-none hover-underline">${emprendedor.nombre} ${emprendedor.apellidos}</a>`,
-            "Seguimiento de caso": crearBotonSeguimiento(emprendedor)
-        }));
-    if (dataTabla.length !== 0) {
-        construirTablaDataTable(dataTabla, "table-hover table-bordered", "tablaEmprendedoresContenedor", "tablaEmprendedores", "");
+        ajustarEventos();
     } else {
-        const $tablaVacia = $('<table>', {class: "table table-bordered align-middle text-nowrap mb-1", id: "tablaEmprendedores"});
-        const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Etapa"})).append($('<th>', {text: "Nombre"})).append($('<th>', {text: "Correo electrónico"})));
-        $tablaVacia.append($thead);
-        $("#tablaEmprendedoresContenedor").empty().append($tablaVacia);
-        crearDataTable("#tablaEmprendedores");
+        redireccionar("../lineaBaseAdministracion");
     }
 }
 
-function construirSelectorEtapas(etapas) {
-    const $selector = crearSelector(null, "etapa", etapas);
-    $("#selector").prepend($selector);
-    $selector.val(etapas.estapaSeleccionada);
+function crearCarousel(fotografiasCaso) {
+
+    fotografiasCaso.forEach((itm, idx) => {
+        const img = `
+            <div class="carousel-item ${idx === 0 ? "active" : ""}">
+                <img src="data:image/jpeg;base64, ${itm.value}" class="d-block w-100" alt="spike-img" data-id="${itm.id}">
+            </div>
+        `;
+        $("#items").append(img);
+    });
+
 }
 
-
-function crearBotonSeguimiento(emprendedor) {
-    var $boton = $('<button>', {
-        class: 'btn btn-sm btn-outline-primary',
-        'data-bs-toggle': 'modal',
-        'data-bs-target': '#modalEmprendedor',
-        click: function () {
-            cargarSeguimientoCaso(emprendedor.idLineaBase, emprendedor.nombre, emprendedor.correo);
+function eliminarImagen() {
+    const $activeItem = $('.carousel-item.active');
+    if ($activeItem.length > 0) {
+        const imageId = $activeItem.find('img').data('id');
+        crearPeticion(urlAPI, {case: "eliminarImagen", data: $.param({id: imageId})});
+        //$activeItem.remove();
+        if ($('.carousel-item').length === 0) {
+            console.log("No quedan imágenes en el carrusel.");
         }
-    }).text('Seguimiento');
-
-    return $boton;
+    }
 }
 
-function cargarSeguimientoCaso(idLineaBase, nombre, correo) {
-    crearPeticion(urlAPI, {case: "recuperarSeguimientoCaso", data: `idLineaBase=${idLineaBase}`}, (rs) => {
-        const emprendedor = encodeURIComponent(JSON.stringify([idLineaBase, nombre, correo]));
-        const $btnSeguimiento = $("#btnDarSeguimiento");
-        const $btnEliminarSeguimiento = $("#btnEliminarSeguimiento");
-        const seguimientoExistente = Array.isArray(rs.seguimientoCaso);
-        const textBtn = seguimientoExistente ? "Hacer" : "Ver";
-        const icon = seguimientoExistente ? "ti-plus" : "ti-file-export";
-        const rsEncoded = seguimientoExistente ? '' : encodeURIComponent(JSON.stringify(rs));
-        const urlBtn = seguimientoExistente
-                ? `../seguimientoCasoNuevo/?emprendedor=${emprendedor}`
-                : `../seguimientoCasoVista/?sc=12&emprendedor=${emprendedor}`;
-        $btnSeguimiento.attr("data-bs-original-title", `${textBtn} seguimiento de caso`);
-        $btnSeguimiento.attr("href", urlBtn);
-        $btnSeguimiento.html(`<span class="ti ${icon}"></span>`);
-        $btnEliminarSeguimiento.prop("hidden", seguimientoExistente);
-        $btnEliminarSeguimiento.attr("href", `javascript:eliminarSeguimientoCaso(${rs.seguimientoCaso.idSeguimientoCaso})`);
-        $('#cardModalEmprendedorContent').html(`<p class="card-text">${correo}</p>`);
-        $("#nombreEmprendedor").text(nombre);
-        $("#modalEmprendedor").modal('show');
+function generarCardEmprendedor(emprendedor) {
+    const cardHTML = `
+        <div class="card w-100 border position-relative overflow-hidden shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center">
+                    <img src="data:image/jpeg;base64,${emprendedor.fotografia}" alt="${emprendedor.nombre} ${emprendedor.apellidos}" class="img-fluid rounded-circle" width="120" height="120">
+                    <h4 class="card-title">${emprendedor.nombre} ${emprendedor.apellidos}</h4>    
+                    <div class="mt-4">
+                    <p class="card-text">
+                        <strong>Correo electrónico:</strong> ${emprendedor.correo_electronico}<br>
+                        <strong>Celular:</strong> ${emprendedor.numero_celular}
+                    </p>
+                </div>
+                </div>
+            </div>
+        </div>
+    `;
+    $('#emprendedor').append(cardHTML);
+}
+
+
+
+function ajustarEventos() {
+    //Ajustar Dropzone
+    Dropzone.autoDiscover = false;
+    const myDropzone = Dropzone.forElement("#fotografiasCasoForm");
+    myDropzone.options.addRemoveLinks = true;
+    myDropzone.options.dictRemoveFile = "Eliminar archivo";
+    myDropzone.options.acceptedFiles = ".png, .jpg, .jpeg";
+    //Formulario caso nuevo
+    $("#" + seguimientoCasoForm).submit(guardarSeguimientoCaso);
+    $("#guardarSeguimientoCasoBtn").click(() => {
+        $("#" + seguimientoCasoForm).submit();
     });
 }
 
-function eliminarSeguimientoCaso(id) {
-    alertaEliminar({
-        mensajeAlerta: "Se eliminará el seguimiento de caso",
-        url: urlAPI,
-        data: {"case": "eliminarSeguimientoCaso", "data": `id=${id}`}
+function guardarSeguimientoCaso(e) {
+    e.preventDefault();
+    const formData = new FormData();
+    const dropzoneFiles = Dropzone.forElement("#fotografiasCasoForm").getAcceptedFiles();
+    $("#seguimientoCasoForm input[required], #seguimientoCasoForm textarea[required]").each(function () {
+        let fn = $(this).val().trim() === '' ? "addClass" : "removeClass";
+        $(this)[fn]("is-invalid");
     });
+    if ($("#" + seguimientoCasoForm).find('.is-invalid').length > 0) {
+        mostrarMensajeAdvertencia('Por favor, completa todos los campos requeridos.', false);
+    } else {
+        const dropzoneFiles = Dropzone.forElement("#fotografiasCasoForm").getAcceptedFiles();
+        dropzoneFiles.forEach((file, index) => {
+            formData.append(`fotografiasCaso[${index}]`, file, file.name);
+        });
+        formData.append("case", "guardarCaso");
+        formData.append("data", $(this).serialize());
+        $('#guardarSeguimientoCasoBtn').addClass('visually-hidden');
+        $('#spinner').removeClass('d-none');
+        crearPeticion(urlAPI, formData, (rs) => {
+            $('#guardarSeguimientoCasoBtn').removeClass('visually-hidden');
+            $('#spinner').addClass('d-none');
+            mostrarMensajeResultado(rs);
+        });
+    }
 }
