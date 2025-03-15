@@ -6,18 +6,17 @@ function ready() {
         $("#tipoLineaBase").text(res.tipo);
         if (res.existeLineaBase) {
             const data = res.data;
-            $("#content").append(res.tipo === 'inicial' ? crearLineaBaseInicial(data) : crearLineaBaseFinal(data));
+            $("#content").append(crearLineaBaseFinal(data, emprendedor));
             $("#fechaCreacion").html("<strong>Información actualizada a la fecha: </strong> <span>" + data.fechaCreacion + "</span>");
         } else {
             $("#content").append(renderizarSecciones([construirSeccionNoLineaBase()]));
         }
-
         $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
         $("#perfilEmprendedor").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
     });
 }
 
-function crearLineaBaseFinal(data) {
+function crearLineaBaseFinal(data, emprendedor) {
     const sections = [
         construirSeccionPreliminarFinal(data.preliminar),
         construirSeccionSocioeconomico(data.socioeconomico)
@@ -30,28 +29,10 @@ function crearLineaBaseFinal(data) {
         sections.push(construirSeccionNoInfoNegocio());
     }
     sections.push(construirSeccionGeneralidades(data.generalidades));
-    return renderizarSecciones(sections);
+    return renderizarSecciones(sections, data.idLineaBase, emprendedor.id);
 }
 
-function crearLineaBaseInicial(data) {
-    const sections = [
-        construirSeccionPreliminarInicial(data.preliminar),
-        construirSeccionIdentificacion(data.identificacion),
-        construirSeccionDomicilio(data.domicilio),
-        construirSeccionSocioeconomico(data.socioeconomico)
-    ];
-    if (data.negocio) {
-        sections.push(construirSeccionNegocio(data.negocio),
-                construirSeccionAnalisisNegocio(data.analisisNegocio),
-                construirSeccionAdministracionIngresos(data.administracionIngresos));
-    } else {
-        sections.push(construirSeccionNoInfoNegocio());
-    }
-
-    return renderizarSecciones(sections);
-}
-
-function renderizarSecciones(sections) {
+function renderizarSecciones(sections, idLineaBase, emprendedor) {
     let html = `
     <div id="content">
         <div class="position-relative overflow-hidden">
@@ -73,6 +54,9 @@ function renderizarSecciones(sections) {
                                 <p id="fechaCreacion"></p>
                             </div>
                         </div>
+                        <a href="../seguimientoCaso/?lineaBase=${idLineaBase}&emprendedor=${emprendedor}" class="btn btn-outline-primary px-3 shadow-none">
+                            <i class="ti ti-pencil me-2"></i> Modificar
+                        </a>
                     </div>
                     <!-- Navegación de tabs -->
                     <ul class="nav nav-pills user-profile-tab mt-4 justify-content-center justify-content-md-start" id="pills-tab" role="tablist">
@@ -100,18 +84,17 @@ function renderizarSecciones(sections) {
         <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" id="pills-${section.title.toLowerCase().replace(/\s/g, '-')}" role="tabpanel" aria-labelledby="pills-${section.title.toLowerCase().replace(/\s/g, '-')}-tab" tabindex="0">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">${section.title}</h5>
+                    <h5 class="card-title mt-3">${section.title}</h5>
                     <div class="card-text">${section.content}</div>
                 </div>
             </div>
         </div>
         `;
     });
-
     html += `</div></div>`;
-
     return html;
 }
+
 
 function construirSeccionIdentificacion(identificacion) {
     return {
@@ -742,29 +725,30 @@ function construirSeccionGeneralidades(generalidades) {
             <h5 class="card-title mb-4">Fotografías de Caso</h5>
 
             <!-- Card con el carrusel de imágenes -->
-            ${fotografias.length > 0 ? `
-                <div class="card mb-4 mx-auto" style="width: 18rem;">
-                    <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            ${fotografias.map((itm, idx) => `
-                                <div class="carousel-item ${idx === 0 ? "active" : ""}">
-                                    <img src="data:image/jpeg;base64, ${itm}" class="d-block w-100 img-fluid" alt="fotografía de caso">
-                                </div>
-                            `).join('')}
-                        </div>
-                        <a class="carousel-control-prev" href="#controls" role="button" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </a>
-                        <a class="carousel-control-next" href="#controls" role="button" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </a>
+${fotografias.length > 0 ? `
+    <div class="card mb-4 mx-auto" style="width: 18rem;">
+        <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                ${fotografias.map((itm, idx) => `
+                    <div class="carousel-item ${idx === 0 ? "active" : ""}">
+                        <img src="data:image/jpeg;base64, ${itm.value}" class="d-block w-100 img-fluid" alt="fotografía de caso" data-id="${itm.id}">
                     </div>
-                </div>
-            ` : `
-                <p>No hay fotografías disponibles.</p>
-            `}
+                `).join('')}
+            </div>
+            <a class="carousel-control-prev position-absolute start-0 top-50 translate-middle-y" href="#controls" role="button" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </a>
+                    <a class="carousel-control-next position-absolute end-0 top-50 translate-middle-y" href="#controls" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </a>
+        </div>
+    </div>
+` : `
+    <p>No hay fotografías disponibles.</p>
+`}
+
         `
     };
 }
