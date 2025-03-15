@@ -4,51 +4,26 @@ include_once '../../../../../loader.php';
 
 class SeguimientoCasoAPI extends API {
 
-    function recuperarEmprendedores() {
+    function recuperarInfoEmprendedor() {
         $this->enviarRespuesta([
-            "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase(),
-            "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
+            "emprendedor" => getAdminUsuario()->buscarUsuarioPorID($this->getData("emprendedor")),
+            "seguimientoCaso" => getAdminEmprendedor()->recuperarSeguimientoCaso($this->getData("lineaBase")),
         ]);
     }
-
-    function filtrarEmprendedores() {
-        $etapa = $this->getData("etapa");
-        $this->enviarRespuesta([
-            "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase($etapa),
-            "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
-        ]);
+    
+    function eliminarImagen() {
+        $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarImagenSeguimientoCaso($this->getData("id")));
     }
 
-    function actualizarEtapa() {
-        $idLineaBase = $this->getData("lineaBase");
-        $idEtapa = $this->getData("etapa");
-        $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
+    function listarTiposEtapasFormacion() {
+        $this->enviarRespuesta(getAdminEtapaFormacion()->listarTiposEtapasFormacion());
     }
 
-    function recuperarSeguimientoCaso() {
-        $this->enviarRespuesta(["seguimientoCaso" => getAdminEmprendedor()->recuperarSeguimientoCaso($this->data["idLineaBase"])]);
-    }
-
-    function eliminarSeguimientoCaso() {
-        $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarSeguimientoCaso($this->data["id"]));
-    }
-
-    function eliminarLineaBase() {
-        $this->enviarResultadoOperacion(getAdminLineaBase()->eliminarLineaBase($this->data["tipo"], $this->data["usuario"]));
-    }
-
-    function lineaBaseAction() {
-        try {
-            Sesion::setInfoTemporal("idUsuario", $this->getData("idUsuario"));
-            Sesion::setInfoTemporal("tipoLineaBase", $this->getData("tipo"));
-            $rs["success"] = true;
-        } catch (Exception $exc) {
-            $rs["success"] = false;
-            $rs["msg"] = $exc->getMessage();
-        } finally {
-            $this->enviarRespuesta($rs);
-        }
+    function guardarCaso() {
+        $nombreInputFile = "fotografiasCaso";
+        $this->data[$nombreInputFile] = Util::recuperarArchivosServidor($nombreInputFile);
+        $this->enviarResultadoOperacion(getAdminEmprendedor()->guardarSeguimientoCaso($this->data));
     }
 }
 
-Util::iniciarAPI(SeguimientoCasoAPI::class);
+SeguimientoCasoAPI::start();
