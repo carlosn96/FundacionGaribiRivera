@@ -1,47 +1,73 @@
-<div class="card shadow-sm border-1">
-    <div class="card-header bg-white">
-        <h4 class="card-title">Seguimiento de caso</h4>
-        <p class="card-subtitle mb-3">Listado de emprendedores con línea base completa</p>
-        <form id="filterForm">
-            <label for="etapasFilter" class="mb-0 me-2">Filtrar por etapas:</label>
-            <div class="input-group" id="selector">
-                <button id="botonAplicarFiltro" type="submit" class="btn btn-outline-primary">Aplicar Filtro</button>
-                <button type="submit" class="btn btn-outline-danger" onclick="refresh()">Quitar Filtro</button>
-            </div>
-        </form>
+
+<div id="emprendedor"></div>
+<div class="card shadow-sm rounded-3">
+    <div class="px-4 py-3 border-bottom">
+        <h4 class="card-title mb-">Seguimiento de Caso</h4>
     </div>
     <div class="card-body">
-        <div id="tablaEmprendedoresContenedor" class="table-responsive">
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="modalEmprendedor" tabindex="-1" aria-labelledby="modalEmprendedorLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content bg-warning-subtle">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" aria-controls="modalEmprendedor"></button>
-            </div>
-            <div class="modal-body p-4 text-center">
-                <div class="mb-4">
-                    <i class="ti ti-user-exclamation fs-5 text-warning" aria-hidden="true"></i>
-                </div>
-                <h4 class="mt-2" id="nombreEmprendedor" aria-live="polite"></h4>
-                <p class="mt-3" id="cardModalEmprendedorContent"></p>
-
-                <div class="d-flex justify-content-center gap-3 mt-4">
-                    <!-- Botón para dar seguimiento -->
-                    <a id="btnDarSeguimiento" href="#" class="btn btn-lg rounded-circle bg-warning-subtle" data-bs-toggle="tooltip" data-bs-placement="top" title="Dar seguimiento">
-                        <i class="ti ti-file-text fs-4"></i>
-                    </a>
-
-                    <!-- Botón para eliminar seguimiento -->
-                    <a id="btnEliminarSeguimiento" href="javascript:void(0)" class="btn btn-lg rounded-circle bg-danger-subtle" hidden data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar seguimiento">
-                        <i class="ti ti-trash fs-5"></i>
-                    </a>
+        <form id="seguimientoCasoForm">
+            <input type="text" name="idLineaBase" id="idLineaBase" hidden="">
+            <input type="text" name="idSeguimientoCaso" id="idSeguimientoCaso" hidden="">
+            <div class="mb-4 row align-items-center">
+                <label for="observacionesGenerales" class="form-label col-sm-3 col-form-label">Observaciones Generales</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" id="observacionesGenerales" name="observacionesGenerales" rows="3" required=""></textarea>
                 </div>
             </div>
+        </form>
+
+        <div class="mb-4 row align-items-center" id="fotografiasAgregadas">
+            <label class="form-label col-sm-3 col-form-label">Fotografías Agregadas</label>
+            <div class="col-sm-9">
+                <div id="controls" class="carousel slide carousel-dark" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="items">
+                    </div>
+
+                    <!-- Flechas de Navegación del Carousel -->
+                    <a class="carousel-control-prev position-absolute start-0 top-50 translate-middle-y" href="#controls" role="button" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </a>
+                    <a class="carousel-control-next position-absolute end-0 top-50 translate-middle-y" href="#controls" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </a>
+                </div>
+                <!-- Botón de eliminación de la imagen con ícono -->
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarImagen()">
+                        <i class="fa fa-trash-alt me-2"></i> Eliminar Imagen
+                    </button>
+                </div>
+            </div>
         </div>
+
+
+        <!-- Agregar Fotografía -->
+        <div class="mb-4 row align-items-center">
+            <label for="fotografiasCaso" class="form-label col-sm-3 col-form-label">Agregar Fotografías</label>
+            <div class="col-sm-9">
+                <form action="#" id="fotografiasCasoForm" class="dropzone">
+                    <div class="fallback">
+                        <input id="fotografiasCaso" name="fotografiasCaso" type="file" multiple required="">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Botones para Guardar y Regresar al Listado en la misma línea -->
+        <div class="d-flex justify-content-end gap-3">
+            <!-- Botón para Guardar -->
+            <button class="btn btn-warning px-4" type="button" id="guardarSeguimientoCasoBtn">
+                Guardar Seguimiento de Caso
+            </button>
+
+            <!-- Botón para Regresar al Listado -->
+            <a href="../lineaBaseAdministracion/" class="btn btn-outline-primary px-4" type="button" id="regresarListadoBtn">
+                Regresar al Listado
+            </a>
+        </div>
+
+
     </div>
 </div>
