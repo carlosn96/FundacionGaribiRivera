@@ -54,7 +54,7 @@ abstract class DAO {
         return $stat->ejecutarConsultaMultiple();
     }
 
-    public function selectPorCamposEspecificos($seleccion, $tabla, $where, $fetchassoc = false) {
+    public function selectPorCamposEspecificos($seleccion, $tabla, $where = "", $fetchassoc = false) {
         $result = $this->ejecutarInstruccion("SELECT " . $seleccion . " FROM " . $tabla . " " . $where);
         if ($result) {
             return $fetchassoc ? $result->fetch_all(MYSQLI_ASSOC) : $result->fetch_all();

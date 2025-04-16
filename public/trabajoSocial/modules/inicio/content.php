@@ -26,7 +26,7 @@
                                 <div class="mb-2">Seguimiento</div>
                                 <i class="ti ti-clipboard-check fs-9 mb-2"></i>
                                 <div>
-                                    <a href="../lineaBaseAdministracion" class="btn btn-sm btn-outline-primary">Acceder</a>
+                                    <a href="../lineaBaseAdministracion/" class="btn btn-sm btn-outline-primary">Acceder</a>
                                 </div>
                             </div>
                             <!-- Acceso directo a la funcionalidad "Estudio socioeconómico" -->
@@ -34,7 +34,7 @@
                                 <div class="mb-2">Estudio socioeconómico</div>
                                 <i class="ti ti-wallet fs-9 mb-2"></i>
                                 <div>
-                                    <a href="#agregarEmprendedor" class="btn btn-sm btn-outline-success">Acceder</a>
+                                    <a href="../estudioSocioeconomico/" class="btn btn-sm btn-outline-success">Acceder</a>
                                 </div>
                             </div>
                             <!-- Acceso directo a la funcionalidad "Reportes" -->

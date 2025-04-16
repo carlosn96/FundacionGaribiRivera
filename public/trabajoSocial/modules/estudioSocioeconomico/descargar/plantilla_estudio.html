@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Estudio Socioeconómico - Informe</title>
+
+        <style>
+            body {
+                font-family: helvetica;
+                font-size: 10pt;
+                color: #333;
+            }
+
+            h1 {
+                font-size: 16pt;
+                color: #003366;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 12pt;
+                color: #003366;
+                border-bottom: 1px solid #003366;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            p {
+                margin: 4px 0;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            th, td {
+                border: 1px solid #ccc;
+                padding: 6px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f0f0f0;
+                font-weight: bold;
+            }
+
+            ul {
+                padding-left: 18px;
+            }
+
+            .footer {
+                text-align: center;
+                font-size: 8pt;
+                margin-top: 30px;
+                color: #666;
+            }
+
+            .fotos-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                justify-content: flex-start;
+            }
+
+            .foto-card {
+                flex: 1 1 200px;
+                max-width: 200px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s ease;
+            }
+
+            .foto-card:hover {
+                transform: scale(1.03);
+            }
+
+            .foto-img {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+
+            <div class="header" style="display: flex; justify-content: space-between; align-items: center; color: #fff; padding: 20px; border-radius: 8px;">
+                <h1 style="font-family: 'Montserrat', sans-serif; font-weight: 600; margin: 0;">Informe de Estudio Socioeconómico</h1>
+            </div>
+            <p><strong>Fecha de realización: </strong> {{fechaCreacion}}</p>
+            <p><strong>Visita realizada por: </strong> {{trabajadorSocial}}</p>
+
+            <!-- Resultado de la Visita -->
+            <div class="block">
+                <h2 class="section-title">Resultado de la Visita</h2>
+                <p><strong>{{resultadoVisita}}</strong> </p>
+            </div>
+
+            <!-- Información del Emprendedor -->
+            <div class="content">
+                <div class="block">
+                    <h2 class="section-title">Datos del Emprendedor</h2>
+                    <p><strong>Nombre:</strong> {{nombre}} {{apellidos}}</p>
+                    <p><strong>Correo Electrónico:</strong> {{correo}}</p>
+                    <p><strong>Número Celular:</strong> {{celular}}</p>
+                </div>
+
+                <!-- Información sobre Empleo actual-->
+                <div class="block">
+                    <h2 class="section-title">Empleo actual</h2>
+                    <p><strong>Empresa:</strong> {{empleoActualEmpresa}}</p>
+                    <p><strong>Puesto:</strong> {{empleoActualPuesto}}</p>
+                    <p><strong>Antigüedad:</strong> {{empleoActualAntiguedad}} años</p>
+                    <p><strong>Cuenta con servicios de Seguridad Social (IMSS, ISSSTE):</strong> {{cuentaConSeguroSocial}}</p>
+                </div>
+
+                <!-- Información sobre Empleo -->
+                <div class="block">
+                    <h2 class="section-title">Empleo anterior</h2>
+                    <p><strong>Empresa:</strong> {{empleoAnteriorEmpresa}}</p>
+                    <p><strong>Puesto:</strong> {{empleoAnteriorPuesto}}</p>
+                    <p><strong>Antigüedad:</strong> {{empleoAnteriorAntiguedad}} años</p>
+                    <p><strong>Motivo del retirno:</strong> {{empleoAnteriorMotivoRetiro}}</p>
+                </div>
+
+                <!-- Familiares -->
+                <div class="block">
+                    <h2 class="section-title">Composición familiar ({{totalFamiliares}} integrantes)</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Edad</th>
+                                <th>Estado civil</th>
+                                <th>Parentesco</th>
+                                <th>Escolaridad</th>
+                                <th>Ocupación</th>
+                                <th>Ingreso Mensual Fijo</th>
+                                <th>Ingreso Mensual Variable</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{familiares}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Economía -->
+                <div class="block">
+                    <h2 class="section-title">Economía</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rango de ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> {{ingresoMensual}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concepto de egreso</th>
+                                <th>Egreso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{economiaGastos}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Vivienda -->
+                <div class="block">
+                    <h2 class="section-title">Vivienda</h2>
+                    <p><strong>Tipo:</strong> {{tipo}}</p>
+                    <p><strong>Condición:</strong> {{condicion}}</p>
+                    <p><strong>Uso:</strong> {{uso}}</p>
+                    <p><strong>Familias Habitantes:</strong> {{familiasHabitantes}}</p>
+                    <p><strong>Piso:</strong> {{piso}}</p>
+                    <p><strong>Techo:</strong> {{techo}}</p>
+                    <p><strong>Paredes:</strong> {{paredes}}</p>
+                    <p><strong>Distribución:</strong> {{distribucion}}</p>
+                    <p><strong>Servicios:</strong> {{servicios}}</p>
+                </div>
+
+                <!-- Otros Bienes -->
+                <div class="block">
+                    <h2 class="section-title">Otros Bienes</h2>
+                    <p><strong>Cuenta con vehículo propio:</strong> {{vehiculo}}</p>
+                    <p>{{tipoVehiculo}}</p>
+                    <p>{{marcaVehiculo}}</p>
+                    <p>{{modeloVehiculo}}</p>
+                </div>
+
+                <!-- Referencias -->
+                <div class="block">
+                    <h2 class="section-title">Referencia Comercial</h2>
+                    <p><strong>Empresa:</strong> {{refComercialEmpresa}}</p>
+                    <p><strong>Monto de Crédito:</strong> {{refComercialMontoCredito}}</p>
+                    <p><strong>Límite de Crédito:</strong> {{refComercialLimiteCredito}}</p>
+                </div>
+
+                <div class="block">
+                    <h2 class="section-title">Referencia Familiar</h2>
+                    <p><strong>Nombre:</strong> {{refPersonalNombre}}</p>
+                    <p><strong>Teléfono:</strong> {{refPersonalTelefono}}</p>
+                    <p><strong>Parentesco</strong> {{refPersonalParentesco}}</p>
+                    <p><strong>Opinión:</strong> {{refPersonalOpinion}}</p>
+                </div>
+
+                <div class="block">
+                    <h2 class="section-title">Referencia Personal</h2>
+                    <p><strong>Nombre:</strong> {{refPersonalNombre}}</p>
+                    <p><strong>Teléfono:</strong> {{refPersonalTelefono}}</p>
+                    <p><strong>Tiempo de conocerlo:</strong> {{refPersonalTiempoConocerlo}} años</p>
+                    <p><strong>Opinión:</strong> {{refPersonalOpinion}}</p>
+                </div>
+
+                <!-- Vulnerabilidades -->
+                <div class="block">
+                    <h2 class="section-title">Tipo de vulnerabilidades en las que se encuentra</h2>
+                    <ul>
+                        {{vulnerabilidades}}
+                    </ul>
+                </div>
+
+                <!-- Conclusiones -->
+                <div class="block">
+                    <h2 class="section-title">Conclusiones</h2>
+                    <p><strong>Actitudes Positivas:</strong> {{actitudesPositivas}}</p>
+                    <p><strong>Actitudes Negativas:</strong> {{actitudesNegativas}}</p>
+                    <p><strong>Observaciones:</strong> {{observaciones}}</p>
+                    {{fotografias}}
+                </div>
+            </div>
+
+            <!-- Pie de página -->
+            <div class="footer">
+                <p>&copy; {{currentYear}} - Fundación Garibi Rivera</p>
+            </div>
+        </div>
+    </body>
+
+</html>

@@ -2,7 +2,7 @@
 <div id="emprendedor"></div>
 <div class="card shadow-sm rounded-3">
     <div class="px-4 py-3 border-bottom">
-        <h4 class="card-title mb-">Seguimiento de Caso</h4>
+        <h4 class="card-title mb-5">Seguimiento de Caso</h4>
     </div>
     <div class="card-body">
         <form id="seguimientoCasoForm">

@@ -11,6 +11,10 @@ class AdminFactory {
     public static function getAdminLineaBase(): AdminLineaBase {
         return self::getOrCreateInstance(AdminLineaBase::class);
     }
+    
+    public static function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico {
+        return self::getOrCreateInstance(AdminEstudioSocioeconomico::class);
+    }
 
     public static function getAdminMailer(): AdminMailer {
         return self::getOrCreateInstance(AdminMailer::class);

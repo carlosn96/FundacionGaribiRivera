@@ -395,9 +395,9 @@ function crearOpcionSelector($selector, val, text) {
     }));
 }
 
-function crearSelector($container, name, arrayObjetos, required = true) {
+function crearSelector($container, name, arrayObjetos, clase = "form-select", required = true) {
     let $selector = $("<select>", {
-        class: "form-select",
+        class: clase,
         name: name,
         id: name,
         required: required
@@ -412,7 +412,7 @@ function crearSelector($container, name, arrayObjetos, required = true) {
         $container.append($selector);
     } else {
         return $selector;
-}
+    }
 }
 
 function crearSelectorMultiple(container, name, arrayObjetos, required = true) {

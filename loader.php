@@ -17,8 +17,8 @@ class Util {
         return $campos;
     }
 
-    public static function print($val) {
-        echo print_r($val);
+    public static function print($val, bool $return = false): void {
+        echo '<pre>' . print_r($val, true) . '</pre>';
     }
 
     public static function enum($mensaje, $esError): array {
@@ -104,11 +104,13 @@ class Util {
   define('DB_PASS', 'Pruebas2024');
   define('DB_NAME', 'u775111066_pruebas');
  */
-
+//Remote
+///*
 define('DB_HOST', '193.203.166.72');
 define('DB_USER', 'u775111066_emprendedores');
 define('DB_PASS', 'Emprendedores2025');
 define('DB_NAME', 'u775111066_emprendedores');
+//*/
 
 define("ROOT_APP", __DIR__ . DIRECTORY_SEPARATOR);
 define("ROOT_PUBLIC_APP", ROOT_APP . "public" . DIRECTORY_SEPARATOR);
@@ -166,6 +168,10 @@ function buscar($directorio, $clase) {
 
 function getAdminLineaBase(): AdminLineaBase {
     return AdminFactory::getAdminLineaBase();
+}
+
+function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico {
+    return AdminFactory::getAdminEstudioSocioeconomico();
 }
 
 function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion {
