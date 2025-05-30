@@ -13,7 +13,9 @@ class LineaBaseDomicilio {
     private string $colonia;
     private int $comunidadParroquial;
 
-    public function __construct(string $calle, string $calleCruce1, string $calleCruce2, string $numeroExterior, ?string $numeroInterior, int $codigoPostal, string $colonia, int $comunidadParroquial) {
+    public function __construct(string $calle, string $calleCruce1, 
+            string $calleCruce2, string $numeroExterior, ?string $numeroInterior, 
+            int $codigoPostal, string $colonia, int $comunidadParroquial) {
         $this->calle = $calle;
         $this->calleCruce1 = $calleCruce1;
         $this->calleCruce2 = $calleCruce2;

@@ -11,9 +11,11 @@ class InstructorTaller {
     private string $correoElectronico;
     private string $telefono;
     private $fotografia;
-    private string $nombreCompleto;  // Propiedad para el nombre completo
+    private string $nombreCompleto;
 
-    public function __construct(string $nombre, string $apellidoPaterno, string $apellidoMaterno, string $correoElectronico, string $telefono, $fotografia, int $id = 0) {
+    public function __construct(string $nombre, string $apellidoPaterno, 
+            string $apellidoMaterno, string $correoElectronico, 
+            string $telefono, $fotografia, int $id = 0) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->apellidoPaterno = $apellidoPaterno;
@@ -21,8 +23,7 @@ class InstructorTaller {
         $this->correoElectronico = $correoElectronico;
         $this->telefono = $telefono;
         $this->fotografia = $fotografia;
-
-        $this->actualizarNombreCompleto();  // Actualizamos el nombre completo al momento de crear la instancia
+        $this->actualizarNombreCompleto();
     }
 
     public function getId(): int {
@@ -63,17 +64,17 @@ class InstructorTaller {
 
     public function setNombre(string $nombre): void {
         $this->nombre = $nombre;
-        $this->actualizarNombreCompleto();  // Actualizamos el nombre completo cada vez que se cambia el nombre
+        $this->actualizarNombreCompleto();
     }
 
     public function setApellidoPaterno(string $apellidoPaterno): void {
         $this->apellidoPaterno = $apellidoPaterno;
-        $this->actualizarNombreCompleto();  // Actualizamos el nombre completo cada vez que se cambia el apellido paterno
+        $this->actualizarNombreCompleto();
     }
 
     public function setNombreMaterno(string $nombreMaterno): void {
         $this->apellidoMaterno = $nombreMaterno;
-        $this->actualizarNombreCompleto();  // Actualizamos el nombre completo cada vez que se cambia el apellido materno
+        $this->actualizarNombreCompleto();
     }
 
     public function setCorreoElectronico(string $correoElectronico): void {
@@ -88,7 +89,6 @@ class InstructorTaller {
         $this->fotografia = $fotografia;
     }
 
-    // Método privado para actualizar el nombre completo
     private function actualizarNombreCompleto(): void {
         $this->nombreCompleto = $this->nombre . ' ' . $this->apellidoPaterno . ' ' . $this->apellidoMaterno;
     }

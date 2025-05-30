@@ -38,8 +38,8 @@ const wizardOrientaciones = {
     VERTICAL: $.fn.steps.stepsOrientation.vertical
 };
 
-$(".validation-wizard-horizontal").steps(getWizardCoonfigs(wizardOrientaciones.HORIZONTAL));
-$(".validation-wizard-vertical").steps(getWizardCoonfigs(wizardOrientaciones.VERTICAL));
+$(".validation-wizard-horizontal").steps(getWizardCoonfigs($.fn.steps.stepsOrientation.horizontal));
+$(".validation-wizard-vertical").steps(getWizardCoonfigs($.fn.steps.stepsOrientation.vertical));
 
 function getWizardCoonfigs(stepsOrientation) {
     return {

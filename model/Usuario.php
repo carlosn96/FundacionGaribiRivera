@@ -10,7 +10,8 @@ class Usuario {
     private $id_usuario;
     private $fotografia;
 
-    public function __construct($nombre_completo, $telefono, $contrasenia, $tipo_usuario, $es_verificado = false, $id_usuario = 0) {
+    public function __construct($nombre_completo, $telefono, $contrasenia, 
+            $tipo_usuario, $es_verificado = false, $id_usuario = 0) {
         $this->nombre_completo = $nombre_completo;
         $this->telefono = $telefono;
         $this->contrasenia = $contrasenia;

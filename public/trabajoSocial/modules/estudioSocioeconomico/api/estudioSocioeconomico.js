@@ -138,17 +138,11 @@ function construirTablaVacia() {
         class: "table table-bordered align-middle text-nowrap mb-1",
         id: "tablaEmprendedores"
     });
-    const $thead = $('<thead>').append(
-            $('<tr>').append(
-            $('<th>', {text: "Etapa"}),
-            $('<th>', {text: "Nombre"})
-            )
-            );
+    const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Etapa"}),$('<th>', {text: "Nombre"})));
     $tablaVacia.append($thead);
     $("#tablaEmprendedoresContenedor").empty().append($tablaVacia);
     crearDataTable("#tablaEmprendedores");
 }
-
 
 function eliminarEstudioSocioeconomico(id) {
     alertaEliminar({
