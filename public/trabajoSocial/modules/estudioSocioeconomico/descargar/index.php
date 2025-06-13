@@ -5,6 +5,8 @@ include_once '../../../../../loader.php';
 require_once '../../../../../admin/TCPDF/tcpdf.php';
 
 $admin = getAdminLineaBase();
+
+
 $existeLineaBase = $admin->getLineaBase($id = $_GET["id"])["inicial"]["existeLineaBase"];
 $estudio = getAdminEstudioSocioeconomico()->getEstudioSocioeconomico($id);
 $emprendedor = getAdminUsuario()->buscarUsuarioPorID($id);
