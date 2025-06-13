@@ -2,7 +2,7 @@
 
 include_once '../../../../../loader.php';
 
-require_once '../../../../../admin/tcpdf/tcpdf.php';
+require_once '../../../../../admin/TCPDF/tcpdf.php';
 
 $admin = getAdminLineaBase();
 $existeLineaBase = $admin->getLineaBase($id = $_GET["id"])["inicial"]["existeLineaBase"];
