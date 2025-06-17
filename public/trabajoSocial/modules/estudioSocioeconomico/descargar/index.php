@@ -1,12 +1,9 @@
 <?php
 
 include_once '../../../../../loader.php';
-
 require_once '../../../../../admin/TCPDF/tcpdf.php';
 
 $admin = getAdminLineaBase();
-
-
 $existeLineaBase = $admin->getLineaBase($id = $_GET["id"])["inicial"]["existeLineaBase"];
 $estudio = getAdminEstudioSocioeconomico()->getEstudioSocioeconomico($id);
 $emprendedor = getAdminUsuario()->buscarUsuarioPorID($id);
@@ -78,6 +75,7 @@ function renderFotografias($fotos) {
     $html = '<table cellspacing="5" cellpadding="0" border="0" width="100%"><tr>';
     $counter = 0;
     foreach ($fotos as $f) {
+        // Asegúrate de que cada imagen se pase correctamente en formato base64
         $html .= '
             <td align="center" valign="middle" style="border:1px solid #ccc; padding:5px;">
                 <img src="data:image/jpeg;base64,' . $f . '" width="150" height="100" />
@@ -91,9 +89,7 @@ function renderFotografias($fotos) {
     return $html;
 }
 
-
-
-$html = file_get_contents("plantilla_estudio.html");
+$html = file_get_contents("plantilla_estudio_3.html");
 
 $map = [
     '{{nombre}}' => $emprendedor['nombre'],
@@ -136,7 +132,7 @@ $map = [
     '{{refPersonalOpinion}}' => $estudio['referencias']['familiar']['opinion'],
     '{{refPersonalNombre}}' => $estudio['referencias']['personal']['nombre'],
     '{{refPersonalTelefono}}' => $estudio['referencias']['personal']['telefono'],
-    '{{refPersonalTiempoConocerlo}}' => $estudio['referencias']['personal']['tiempoConocerlo'],
+    '{{refPersonalTiempoConocerlo}}' => $estudio['referencias']['personal']['tiempoConocerlo'] . " año" . ($estudio['referencias']['personal']['tiempoConocerlo'] > 1 ? "s" : ""),
     '{{refPersonalOpinion}}' => $estudio['referencias']['personal']['opinion'],
     '{{vulnerabilidades}}' => renderLista($estudio['vulnerabilidades']),
     '{{observaciones}}' => $estudio['conclusiones']['observaciones'],
@@ -147,18 +143,9 @@ $map = [
     '{{trabajadorSocial}}' => $estudio["trabajadorSocial"],
 ];
 
-foreach ($map as $key => $value) {
-    $html = str_replace($key, $value, $html);
-}
-
-
-//Util::print($estudio);
-//echo $html;
-
 $pdf = new TCPDF();
 $pdf->SetTitle('Estudio Socioeconómico');
 $pdf->AddPage();
-$pdf->writeHTML($html);
+$pdf->writeHTML(str_replace(array_keys($map), array_values($map), $html));
 $nombreArchivo = 'Estudio_Socioeconomico_' . $emprendedor['nombre'] . '_' . $emprendedor["apellidos"] . '_' . Util::obtenerFechaActual();
 $pdf->Output($nombreArchivo . '.pdf');
-
