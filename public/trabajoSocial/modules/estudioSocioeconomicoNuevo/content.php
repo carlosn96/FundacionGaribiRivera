@@ -551,20 +551,41 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mb-4 align-items-center">
-                    <label for="observacionesGenerales" class="form-label col-sm-3 col-form-label text-muted">Observaciones generales</label>
-                    <div class="col-sm-9">
+                
+                <div class="row mb-4">
+                    <label for="observacionesGenerales" class="col-sm-3 col-form-label text-muted">Observaciones generales</label>
+                    <div class="col-sm-6">
                         <textarea class="form-control shadow-sm" id="observacionesGenerales" name="observacionesGenerales"
-                                  rows="4" required placeholder="Escribe aquí tus observaciones..."></textarea>
+                                  rows="4" placeholder="Escribe aquí tus observaciones..." disabled=""></textarea>
+                    </div>
+                    <div class="col-sm-3 d-flex align-items-start">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pendienteObservaciones" checked="">
+                            <label class="form-check-label text-muted" for="pendienteObservaciones">
+                                Dejar pendiente
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-4 align-items-center">
-                    <label for="fotografiasEvidencia" class="form-label col-sm-3 col-form-label text-muted">Fotografías de evidencia</label>
-                    <div class="col-sm-9">
-                        <input required="" class="form-control" type="file" id="fotografiasEvidencia" name="fotografiasEvidencia" multiple
-                               accept=".png, .jpg, .jpeg">
+
+                
+                <div class="row mb-4">
+                    <label for="fotografiasEvidencia" class="col-sm-3 col-form-label text-muted">Fotografías de evidencia</label>
+                    <div class="col-sm-6">
+                        <input class="form-control" type="file" id="fotografiasEvidencia" name="fotografiasEvidencia" multiple
+                               accept=".png, .jpg, .jpeg" disabled="">
+                    </div>
+                    <div class="col-sm-3 d-flex align-items-start">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pendienteFotos" checked="">
+                            <label class="form-check-label text-muted" for="pendienteFotos">
+                                Dejar pendiente
+                            </label>
+                        </div>
                     </div>
                 </div>
+
+
             </section>
         </form>
     </div>

@@ -185,6 +185,12 @@ function ajustarEventos() {
             $("#vulnerabilidadOptions").removeClass("d-none");
         }
     });
+    $("#pendienteObservaciones").change(function () {
+        $("#observacionesGenerales").prop("disabled", $(this).is(":checked"));
+    });
+    $("#pendienteFotos").change(function () {
+        $("#fotografiasEvidencia").prop("disabled", $(this).is(":checked"));
+    });
 }
 
 function crearNuevoFamiliar(nombre, edad, estadoCivilSelected, parentesco, escolaridadSelected, ocupacionSelected, ingresoMensualFijo, ingresoMensualVariable) {
