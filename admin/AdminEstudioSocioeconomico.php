@@ -142,4 +142,8 @@ class AdminEstudioSocioeconomico extends Admin {
                 $data["actitudesNegativas"] ?? [], $data["observacionesGenerales"] ?? [],
                 $data["fotografiasEvidencia"]);
     }
+
+    public function cambiarFotografia($idFotografia, $fotografia) {
+        return $this->dao->cambiarFotografia($idFotografia, $fotografia);
+    }
 }
