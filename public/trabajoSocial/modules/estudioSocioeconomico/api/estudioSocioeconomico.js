@@ -4,6 +4,12 @@ function ready() {
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (data) {
         construirSelectorEtapas(data.etapas);
         construirTablaEmprendedores(data);
+        $("input[name='filtroEstudio']").on('change', function () {
+            const filtro = $(this).val();
+            crearPeticion(urlAPI, {case: "getEmprendedoresPorTipo", data: $.param({tipo: filtro})}, function (data) {  
+                construirTablaEmprendedores(data);
+            });
+        });
     });
 
     $("#filterForm").submit(function (e) {
@@ -38,74 +44,49 @@ function construirTablaEmprendedores(data) {
         let opciones;
 
         if (emprendedor.tieneES) {
-    opciones = $('<div>', { class: 'd-flex justify-content-around w-100' }).append(
-        $('<div>', { class: 'dropdown' }).append(
-            $('<button>', {
-                class: 'btn btn-outline-primary btn-sm d-flex justify-content-center w-100',
-                type: 'button',
-                'data-bs-toggle': 'dropdown',
-                'aria-expanded': 'false'
-            }).append(
-                $('<i>', { class: 'ti ti-zoom fs-4' })
-            ),
-            $('<ul>', { class: 'dropdown-menu' }).append(
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item d-flex align-items-center',
-                        href: `./ver/?id=${emprendedor.idUsuario}`
-                    }).append(
-                        $('<i>', { class: 'ti ti-eye me-2' }),
-                        'Visualizar'
-                    )
+            opciones = $('<div>', { class: 'dropdown w-100 d-flex justify-content-center' }).append(
+                $('<button>', {
+                    class: 'btn btn-outline-primary btn-sm d-flex justify-content-center w-100',
+                    type: 'button',
+                    'data-bs-toggle': 'dropdown',
+                    'aria-expanded': 'false'
+                }).append(
+                    $('<i>', { class: 'ti ti-dots-vertical fs-4' })
                 ),
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item d-flex align-items-center',
-                        href: `./descargar/?id=${emprendedor.idUsuario}`,
-                        target: '_blank'
-                    }).append(
-                        $('<i>', { class: 'ti ti-download me-2' }),
-                        'Descargar'
+                $('<ul>', { class: 'dropdown-menu' }).append(
+                    $('<li>').append(
+                        $('<a>', {
+                            class: 'dropdown-item d-flex align-items-center',
+                            href: `./ver/?id=${emprendedor.idUsuario}`
+                        }).append(
+                            $('<i>', { class: 'ti ti-eye me-2' }),
+                            'Visualizar'
+                        )
+                    ),
+                    $('<li>').append(
+                        $('<a>', {
+                            class: 'dropdown-item d-flex align-items-center',
+                            href: `./descargar/?id=${emprendedor.idUsuario}`,
+                            target: '_blank'
+                        }).append(
+                            $('<i>', { class: 'ti ti-download me-2' }),
+                            'Descargar'
+                        )
+                    ),
+                    $('<li>').append(
+                        $('<a>', {
+                            class: 'dropdown-item d-flex align-items-center',
+                            href: 'javascript:void(0)'
+                        }).append(
+                            $('<i>', { class: 'ti ti-trash me-2' }),
+                            'Eliminar'
+                        ).on('click', function () {
+                            eliminarEstudioSocioeconomico(emprendedor.idUsuario);
+                        })
                     )
                 )
-            )
-        ),
-        $('<div>', { class: 'dropdown' }).append(
-            $('<button>', {
-                class: 'btn btn-outline-danger btn-sm d-flex justify-content-center w-100',
-                type: 'button',
-                'data-bs-toggle': 'dropdown',
-                'aria-expanded': 'false'
-            }).append(
-                $('<i>', { class: 'ti ti-pencil fs-4' })
-            ),
-            $('<ul>', { class: 'dropdown-menu' }).append(
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item d-flex align-items-center',
-                        href: '#'
-                    }).append(
-                        $('<i>', { class: 'ti ti-edit me-2' }),
-                        'Editar'
-                    )
-                ),
-                $('<li>').append(
-                    $('<a>', {
-                        class: 'dropdown-item d-flex align-items-center',
-                        href: 'javascript:void(0)'
-                    }).append(
-                        $('<i>', { class: 'ti ti-trash me-2' }),
-                        'Eliminar'
-                    ).on('click', function () {
-                        eliminarEstudioSocioeconomico(emprendedor.idUsuario);
-                    })
-                )
-            )
-        )
-    );
-}
-
- else {
+            );
+        } else {
             // Botón uniforme para crear
             opciones = $('<button>', {
                 type: 'button',
@@ -132,6 +113,7 @@ function construirTablaEmprendedores(data) {
         ? construirTablaDataTable(dataTabla, "table-hover table-bordered", "tablaEmprendedoresContenedor", "tablaEmprendedores", "")
         : construirTablaVacia();
 }
+
 
 function construirTablaVacia() {
     const $tablaVacia = $('<table>', {
