@@ -68,6 +68,9 @@ class Util {
     public static function binToBase64($fileContents) {
         return base64_encode($fileContents);
     }
+    public static function base64ToBin($base64File) {
+        return base64_decode($base64File);
+    }
 
     public static function obtenerFechaActual($format = "Ymd") {
         $date = new DateTime("now", new DateTimeZone("America/Mexico_City"));
