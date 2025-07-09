@@ -61,7 +61,7 @@ function construirTablaEmprendedores(data) {
                 $('<li>').append(
                     $('<a>', {
                         class: 'dropdown-item d-flex align-items-center',
-                        href: `../descargar/?id=${emprendedor.idUsuario}`,
+                        href: `./descargar/?id=${emprendedor.idUsuario}`,
                         target: '_blank'
                     }).append(
                         $('<i>', { class: 'ti ti-download me-2' }),
