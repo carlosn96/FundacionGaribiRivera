@@ -49,4 +49,12 @@ class EstudioSocioeconomicoDAO extends DAO {
     public function eliminarPorEmprendedor($emprendedor) {
         return $this->eliminarPorId("estudio_socioeconomico", "id_emprendedor", $emprendedor);
     }
+
+    public function cambiarFotografia($idFotografia, $fotografia) {        
+        $prep = $this->prepararInstruccion("UPDATE estudio_socioeconomico_seccion_conclusiones_lista_fotografias SET fotografia = ? WHERE id_fotografia = ?");
+        $fotografiaBin = Util::base64ToBin($fotografia);
+        $prep->agregarBlob($fotografiaBin);
+        $prep->agregarInt($idFotografia);
+        return $prep->ejecutar();
+    }
 }
