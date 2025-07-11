@@ -159,7 +159,7 @@ class ESAPI extends API
             throw new Exception("No se pudo obtener la respuesta de OpenRouter.");
         }
 
-        return $json['choices'][0]['message']['content'];*/
+        return $json['choices'][0]['message']['content'];
     }
 
 }
