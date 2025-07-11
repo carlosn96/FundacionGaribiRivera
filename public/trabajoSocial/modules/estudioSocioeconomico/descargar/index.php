@@ -78,7 +78,7 @@ function renderFotografias($fotos) {
         // Asegúrate de que cada imagen se pase correctamente en formato base64
         $html .= '
             <td align="center" valign="middle" style="border:1px solid #ccc; padding:5px;">
-                <img src="data:image/jpeg;base64,' . $f . '" width="150" height="100" />
+                <img src="data:image/jpeg;base64,' . $f["fotografia"] . '" width="150" height="100" />
             </td>';
         $counter++;
         if ($counter % 3 == 0) {
@@ -148,4 +148,4 @@ $pdf->SetTitle('Estudio Socioeconómico');
 $pdf->AddPage();
 $pdf->writeHTML(str_replace(array_keys($map), array_values($map), $html));
 $nombreArchivo = 'Estudio_Socioeconomico_' . $emprendedor['nombre'] . '_' . $emprendedor["apellidos"] . '_' . Util::obtenerFechaActual();
-$pdf->Output($nombreArchivo . '.pdf');
+$pdf->Output($nombreArchivo . '.pdf', 'I'); // 'I' muestra en el navegador
