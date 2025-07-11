@@ -23,6 +23,98 @@ function crearSeccionResumen(data) {
     $("#emprendedorNombre").text(emprendedor.nombre + " " + emprendedor.apellidos);
     $("#resultadoVisita").text(data.estudioSocioeconomico.resultadoVisita);
     $("#observaciones").text(es.observaciones);
+    $("#btnActualizarObservaciones").off("click").on("click", function () {
+        const $btn = $(this); // Guardar referencia al botón
+        const observaciones = $("#observaciones").val()?.trim() || "";
+        const originalHTML = $btn.html();
+        if (observaciones.length === 0) {
+            mostrarMensajeAdvertencia("Las observaciones no pueden estar vacías.", false);
+            return;
+        }
+        if (observaciones.length < 10) {
+            mostrarMensajeAdvertencia("Las observaciones deben contener al menos 10 caracteres.", false);
+            return;
+        }
+        // Activar spinner
+        $btn
+            .prop("disabled", true)
+            .html(`<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Actualizando...`);
+        // Ejecutar la petición
+        crearPeticion(urlAPI, {
+            case: "actualizarObservaciones",
+            data: $.param({
+                observaciones: observaciones,
+                id: es.id
+            })
+        }, function (respuesta) {
+            $btn.prop("disabled", false).html(originalHTML);
+            if (respuesta.es_valor_error === true) {
+                mostrarMensajeError("No se pudo actualizar. Intenta de nuevo.");
+            } else {
+                mostrarMensajeOk("Observaciones actualizadas correctamente.");
+            }
+        });
+    });
+
+    $("#btnMejorarObservaciones").off("click").on("click", function () {
+        const original = $("#observaciones").val()?.trim() || "";
+        if (original.length === 0) {
+            mostrarMensajeAdvertencia("Las observaciones no pueden estar vacías.", false);
+            return;
+        }
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById("modalMejorarObservaciones"));
+        $("#observacionesOriginal").val(original);
+        modal.show();
+    });
+
+    $("#btnUsarTextoMejorado").off("click").on("click", function () {
+        const text = $("#observacionesMejoradas").val()?.trim() || "";
+        if (text.length === 0) {
+            mostrarMensajeAdvertencia("Las observaciones no pueden estar vacías.", false);
+            return;
+        }
+        crearPeticion(urlAPI, {
+            case: "actualizarObservaciones",
+            data: $.param({
+                observaciones: text,
+                id: es.id
+            })
+        });
+    });
+
+    $("#btnMejorarTextoIA").off("click").on("click", function () {
+        const original = $("#observacionesOriginal").val()?.trim() || "";
+        const modelo = $("#modeloIA").val();
+        const $btn = $(this);
+
+        if (!original) {
+            mostrarMensajeAdvertencia("No hay texto original para mejorar.");
+            return;
+        }
+
+        // Spinner + desactivar
+        const originalHTML = $btn.html();
+        $btn.prop("disabled", true).html('<span class="spinner-border spinner-border-sm me-2"></span>Mejorando...');
+        crearPeticion(urlAPI, {
+            case: "mejorarTextoObservaciones",
+            data: $.param({
+                texto: original,
+                modelo: modelo
+            })
+        }, function (res) {
+            $btn.prop("disabled", false).html(originalHTML);
+            if (res.es_respuesta_error === false && res.textoMejorado) {
+                $("#observacionesMejoradas").val(res.textoMejorado);
+            } else {
+                mostrarMensajeError("No se pudo mejorar el texto. Intenta de nuevo.", false);
+            }
+        });
+    });
+
+
+
+
     const crearListaActitudes = (actitudes, tipo) => {
         let listaActitudesHTML = '';
         let colorClass = tipo === 'positiva' ? 'text-success' : 'text-danger';
@@ -48,28 +140,50 @@ function crearSeccionResumen(data) {
         $("#items").empty();
         $("#carouselEditBtnContainer").remove();
 
+        // Mostrar u ocultar el carrusel según si hay fotografías
+        if (!fotografias || fotografias.length === 0) {
+            $("#controls").hide();
+            $("#carouselEditBtnContainer").hide();
+            // Mostrar mensaje amigable de Bootstrap
+            if ($("#mensajeSinFotos").length === 0) {
+                $("#controls").after(`
+                <div id="mensajeSinFotos" class="alert alert-danger text-center mt-3 mb-0" role="alert">
+                    <i class="ti ti-info-circle me-2"></i>
+                    No hay fotografías registradas para esta visita.
+                </div>
+            `);
+            }
+            return;
+        } else {
+            $("#controls").show();
+            $("#mensajeSinFotos").remove();
+        }
+
         fotografias.forEach((fotoObj, idx) => {
             const img = `
-                    <div class="carousel-item ${idx === 0 ? "active" : ""}" data-foto-id="${fotoObj.id}">
-                        <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
-                            <img src="data:image/jpeg;base64,${fotoObj.fotografia}" 
-                                 class="img-fluid rounded shadow" 
-                                 style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                                 alt="Fotografía ${fotoObj.id}">
-                        </div>
+                <div class="carousel-item ${idx === 0 ? "active" : ""}" data-foto-id="${fotoObj.id}">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                        <img src="data:image/jpeg;base64,${fotoObj.fotografia}" 
+                             class="img-fluid rounded shadow" 
+                             style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                             alt="Fotografía ${fotoObj.id}">
                     </div>
-                `;
+                </div>
+            `;
             $("#items").append(img);
         });
 
-        // Agregar el contenedor del botón justo después del carrusel
+        // Agregar el contenedor de botones alineados y agrupados
         $("#items").parent().after(`
-                <div id="carouselEditBtnContainer" class="text-center mt-3">
-                    <button id="btnEditarFoto" class="btn btn-warning">
-                        <i class="ti ti-edit"></i> Cambiar fotografía
-                    </button>
-                </div>
-            `);
+            <div id="carouselEditBtnContainer" class="d-flex justify-content-center gap-2 mb-4">
+                <button id="btnEditarFoto" class="btn btn-outline-warning d-flex align-items-center">
+                    <i class="ti ti-edit me-2"></i> Cambiar
+                </button>
+                <button id="btnEliminarFoto" class="btn btn-outline-danger d-flex align-items-center">
+                    <i class="ti ti-trash me-2"></i> Eliminar
+                </button>
+            </div>
+        `);
 
         // Función para obtener el id de la foto activa
         function getFotoIdActual() {
@@ -79,11 +193,11 @@ function crearSeccionResumen(data) {
         // Evento para actualizar el id de la foto al cambiar de slide
         $('#carouselExample').on('slid.bs.carousel', function () {
             const idFotoActual = getFotoIdActual();
-            $("#btnEditarFoto").data("foto-id", idFotoActual);
+            $("#btnEditarFoto, #btnEliminarFoto").data("foto-id", idFotoActual);
         });
 
         // Inicializar el id en el botón al cargar
-        $("#btnEditarFoto").data("foto-id", getFotoIdActual());
+        $("#btnEditarFoto, #btnEliminarFoto").data("foto-id", getFotoIdActual());
 
         // Evento click para editar la foto actual
         $("#btnEditarFoto").off("click").on("click", function () {
@@ -125,8 +239,95 @@ function crearSeccionResumen(data) {
             $inputFile.click();
         });
 
+        // Evento click para eliminar la foto actual
+        $("#btnEliminarFoto").off("click").on("click", function () {
+            const idFoto = $(this).data("foto-id");
+            alertaEliminar({
+                mensajeAlerta: "La fotografía se eliminará permanentemente.",
+                url: urlAPI,
+                data: {
+                    case: "eliminarFotografia",
+                    data: $.param({ idFoto: idFoto })
+                }
+            });
+        });
     };
     crearCarousel(es.fotografias);
+    let nuevasFotos = [];
+
+    // Previsualización y gestión de archivos seleccionados
+    $("#inputAgregarFotos").on("change", function (e) {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+
+        const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+        let errores = [];
+
+
+        files.forEach(file => {
+            if (!validTypes.includes(file.type)) {
+                errores.push(file.name);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                nuevasFotos.push({
+                    name: file.name,
+                    type: file.type,
+                    dataUrl: evt.target.result
+                });
+                renderPreviews();
+            };
+            reader.readAsDataURL(file);
+        });
+        $(this).val("");
+    });
+    // Renderiza las previsualizaciones y habilita el botón guardar
+    function renderPreviews() {
+        const $preview = $("#previewFotos");
+        $preview.empty();
+        nuevasFotos.forEach((foto, idx) => {
+            $preview.append(`
+            <div class="col position-relative">
+                <div class="card shadow-sm">
+                    <img src="${foto.dataUrl}" class="card-img-top img-thumbnail" style="object-fit:cover; height:140px;" alt="Nueva foto">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Eliminar" title="Eliminar" onclick="eliminarPreviewFoto(${idx})"></button>
+                    <div class="card-body p-2">
+                        <small class="text-truncate d-block">${foto.name}</small>
+                    </div>
+                </div>
+            </div>
+        `);
+        });
+        // Habilita o deshabilita el botón guardar
+        $("#btnGuardarFotos").prop("disabled", nuevasFotos.length === 0);
+    }
+
+    // Elimina una foto del array y actualiza la vista
+    window.eliminarPreviewFoto = function (idx) {
+        nuevasFotos.splice(idx, 1);
+        renderPreviews();
+    };
+
+    // Evento para guardar las fotos seleccionadas
+    $("#btnGuardarFotos").on("click", function () {
+        if (nuevasFotos.length === 0) return;
+        fotografiasInsertar = nuevasFotos.map(foto => (
+            foto.dataUrl.split(',')[1]
+        ));
+        print(fotografiasInsertar);
+        crearPeticion(urlAPI, {
+            case: "agregarFotografias",
+            data: $.param({
+                idConclusiones: es.id,
+                fotos: fotografiasInsertar
+            })
+        });
+        // Limpia el array y la vista tras guardar
+        nuevasFotos = [];
+        renderPreviews();
+    });
+
 }
 
 function crearSeccionEmpleabilidad(empleabilidad) {

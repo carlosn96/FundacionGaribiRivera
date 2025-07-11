@@ -57,4 +57,24 @@ class EstudioSocioeconomicoDAO extends DAO {
         $prep->agregarInt($idFotografia);
         return $prep->ejecutar();
     }
+    public function eliminarFotografia($idFotografia) {      
+        return $this->eliminarPorId("estudio_socioeconomico_seccion_conclusiones_lista_fotografias", "id_fotografia", $idFotografia);
+    }
+
+    public function agregarFotografiasNuevas(int $idConclusiones, array $fotografias) {
+        if (empty($fotografias)) {
+            return false;
+        }
+        $prep = $this->prepararInstruccion("CALL guardar_estudio_socioeconomico_fotografias_nuevas (?, ?)");
+        $prep->agregarInt($idConclusiones);
+        $prep->agregarJSON($fotografias);
+        return $prep->ejecutarConsultaMultiple();
+    }
+
+    public function actualizarObservaciones(int $id, string $observaciones) {
+        $prep = $this->prepararInstruccion("UPDATE estudio_socioeconomico_seccion_conclusiones SET observaciones_generales = ? WHERE id = ?");
+        $prep->agregarString($observaciones);
+        $prep->agregarInt($id);
+        return $prep->ejecutar();
+    }
 }

@@ -1,8 +1,10 @@
 <?php
 
-class Util {
+class Util
+{
 
-    public static function redirigir($url, $permanent = false) {
+    public static function redirigir($url, $permanent = false)
+    {
         if (headers_sent()) {
             echo "<script>window.location = '$url';</script>";
             echo "<script type='text/javascript'>window.location.replace('$url');</script>";
@@ -11,44 +13,53 @@ class Util {
         }
     }
 
-    public static function separarCamposFomulario($data) {
+    public static function separarCamposFomulario($data)
+    {
         $campos = array();
         parse_str($data, $campos);
         return $campos;
     }
 
-    public static function print($val, bool $return = false): void {
+    public static function print($val, bool $return = false): void
+    {
         echo '<pre>' . print_r($val, true) . '</pre>';
     }
 
-    public static function enum($mensaje, $esError): array {
+    public static function enum($mensaje, $esError): array
+    {
         return [
             "mensaje" => $mensaje,
             "es_valor_error" => $esError,
         ];
     }
 
-    public static function map(int $id, string $val) {
+    public static function map(int $id, string $val)
+    {
         return ["id" => $id, "val" => $val];
     }
 
-    public static function encriptarContrasenia($contrasenia) {
+    public static function encriptarContrasenia($contrasenia)
+    {
         return password_hash($contrasenia, PASSWORD_DEFAULT);
     }
 
-    public static function verificarContrasenia($contraseniaIngresada, $hash) {
+    public static function verificarContrasenia($contraseniaIngresada, $hash)
+    {
         return password_verify($contraseniaIngresada, $hash);
     }
 
-    public static function iniciarAPI($nombre) {
+    public static function iniciarAPI($nombre)
+    {
         (new $nombre($_POST["case"] ?? "", isset($_POST["data"]) ? $_POST["data"] : ""));
     }
 
-    public static function getCodigoValidacionCuenta() {
+    public static function getCodigoValidacionCuenta()
+    {
         return substr(str_shuffle("0123456789"), 0, 4);
     }
 
-    public static function recuperarArchivosServidor($nombreInputFile, $toBase64 = true) {
+    public static function recuperarArchivosServidor($nombreInputFile, $toBase64 = true)
+    {
         $archivos = [];
         $files = $_FILES[$nombreInputFile] ?? null;
         if (!$files) {
@@ -65,23 +76,28 @@ class Util {
         return $archivos;
     }
 
-    public static function binToBase64($fileContents) {
+    public static function binToBase64($fileContents)
+    {
         return base64_encode($fileContents);
     }
-    public static function base64ToBin($base64File) {
+    public static function base64ToBin($base64File)
+    {
         return base64_decode($base64File);
     }
 
-    public static function obtenerFechaActual($format = "Ymd") {
+    public static function obtenerFechaActual($format = "Ymd")
+    {
         $date = new DateTime("now", new DateTimeZone("America/Mexico_City"));
         return $date->format($format);
     }
 
-    public static function respuestaBoolToStr(bool $respuesta) {
+    public static function respuestaBoolToStr(bool $respuesta)
+    {
         return $respuesta ? "Sí" : "No";
     }
 
-    public static function obtenerFotografiaRand() {
+    public static function obtenerFotografiaRand()
+    {
         $fotos = [];
         $dir = DIR_FOTOGRAFIAS;
         if (is_dir($dir)) {
@@ -93,12 +109,54 @@ class Util {
         return $fotos[rand(0, count($fotos) - 1)];
     }
 
-    public static function error_log($message) {
+    public static function error_log($message)
+    {
         if (is_array($message) || is_object($message)) {
             $message = print_r($message, true);
         }
         error_log($message);
     }
+
+    public static function HTTPPost($url, $data = [], $headers = [], $isJson = false)
+    {
+        $ch = curl_init($url);
+
+        // Codificar los datos según el tipo de contenido
+        $payload = $isJson ? json_encode($data) : http_build_query($data);
+
+        // Headers por defecto
+        $defaultHeaders = $isJson
+            ? ['Content-Type: application/json']
+            : ['Content-Type: application/x-www-form-urlencoded'];
+
+        // Merge de headers
+        $headers = array_merge($defaultHeaders, $headers);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_HTTPHEADER => $headers,
+        ]);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new Exception("cURL error: $error");
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode >= 400) {
+            throw new Exception("HTTP error $httpCode: $response");
+        }
+
+        return $response;
+    }
+
 }
 
 /* / Definir variables de base de datos en config.php
@@ -153,7 +211,8 @@ spl_autoload_register(function ($clase) {
     }
 });
 
-function buscar($directorio, $clase) {
+function buscar($directorio, $clase)
+{
     // Convertir el namespace en una ruta de archivo
     $archivo = $directorio . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $clase) . '.php';
     if (file_exists($archivo)) {
@@ -169,42 +228,52 @@ function buscar($directorio, $clase) {
     return false;
 }
 
-function getAdminLineaBase(): AdminLineaBase {
+function getAdminLineaBase(): AdminLineaBase
+{
     return AdminFactory::getAdminLineaBase();
 }
 
-function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico {
+function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico
+{
     return AdminFactory::getAdminEstudioSocioeconomico();
 }
 
-function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion {
+function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion
+{
     return AdminFactory::getAdminEvaluacionFormacion();
 }
 
-function getAdminEmprendedor(): AdminEmprendedor {
+function getAdminEmprendedor(): AdminEmprendedor
+{
     return AdminFactory::getAdminEmprendedor();
 }
 
-function getAdminTaller(): AdminTaller {
+function getAdminTaller(): AdminTaller
+{
     return AdminFactory::getAdminTaller();
 }
 
-function getAdminEtapaFormacion(): AdminEtapaFormacion {
+function getAdminEtapaFormacion(): AdminEtapaFormacion
+{
     return AdminFactory::getAdminEtapaFormacion();
 }
 
-function getAdminUsuario(): AdminUsuario {
+function getAdminUsuario(): AdminUsuario
+{
     return AdminFactory::getAdminUsuario();
 }
 
-function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento {
+function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento
+{
     return AdminFactory::getAdminVisitaSeguimiento();
 }
 
-function getAdminImpacto(): AdminImpacto {
+function getAdminImpacto(): AdminImpacto
+{
     return AdminFactory::getAdminImpacto();
 }
 
-function getAdminLog(): AdminLog {
+function getAdminLog(): AdminLog
+{
     return AdminFactory::getAdminLog();
 }
