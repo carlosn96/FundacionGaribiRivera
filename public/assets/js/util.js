@@ -202,9 +202,10 @@ function alertaEliminar(opcionesPeticion) {
     var msg = opcionesPeticion.mensajeAlerta;
     var url = opcionesPeticion.url;
     var data = opcionesPeticion.data;
+    var fn = opcionesPeticion.fnSuccess ? opcionesPeticion.fnSuccess : mostrarMensajeResultado;
     mostrarMensajeThen("¿Estás seguro?", "warning", msg, function () {
         //crearPeticion(url, data, print);
-        crearPeticion(url, data);
+        crearPeticion(url, data, fn);
     }, {
         icon: "warning",
         showCancelButton: true,
