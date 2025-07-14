@@ -213,4 +213,9 @@ class AdminEstudioSocioeconomico extends Admin
     {
         return $this->dao->actualizarObservaciones($id, $observaciones);
     }
+
+    public function eliminarFamiliar($idFamiliar)
+    {
+        return $this->dao->eliminarFamiliar($idFamiliar);
+    }
 }

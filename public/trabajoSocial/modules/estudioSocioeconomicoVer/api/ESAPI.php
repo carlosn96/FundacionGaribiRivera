@@ -109,6 +109,28 @@ class ESAPI extends API
         }
     }
 
+    public function eliminarFamiliar()
+    {
+        $idFamiliar = $this->getData("idFamiliar");
+        if (getAdminEstudioSocioeconomico()->eliminarFamiliar($idFamiliar)) {
+            $info = $this->extraerInfo();
+            if (isset($info["estudioSocioeconomico"]["familiares"]) && is_array($info["estudioSocioeconomico"]["familiares"])) {
+                foreach ($info["estudioSocioeconomico"]["familiares"] as $idx => $familiar) {
+                    if ($familiar["idFamiliar"] == $idFamiliar) {
+                        unset($info["estudioSocioeconomico"]["familiares"][$idx]);
+                        break;
+                    }
+                }
+                // Reindexar el array
+                $info["estudioSocioeconomico"]["familiares"] = array_values($info["estudioSocioeconomico"]["familiares"]);
+            }
+            Sesion::setInfoTemporal("estudioSocioeconomico", $info["estudioSocioeconomico"]);
+            $this->enviarResultadoOperacion(true);
+        } else {
+            $this->enviarResultadoOperacion(false);
+        }
+    }
+
 
     function mejorarTextoObservaciones()
     {

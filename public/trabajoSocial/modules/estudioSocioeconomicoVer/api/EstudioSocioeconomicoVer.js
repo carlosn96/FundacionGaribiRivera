@@ -12,13 +12,25 @@ function ready() {
         crearSeccionOtrosBienes(estudio.otrosBienes);
         crearSeccionReferencias(estudio.referencias);
         crearSeccionVulnerabilidades(estudio.vulnerabilidades);
+        crearSeccionConeval(estudio.coneval);
     });
+}
+
+function crearSeccionConeval(coneval) {
+    if (!coneval || typeof coneval !== 'object') {
+        console.warn("Objeto CONEVAL inválido.");
+        return;
+    }
+    // Actualizar los campos con los valores del objeto
+    $('#fechaMuestra').val(coneval.fechaMuestra);
+    $('#montoVulnerableIngreso').val(coneval.montoVulnerableIngreso.toFixed(2));
+    $('#montoPobrezaExtrema').val(coneval.montoPobrezaExtrema.toFixed(2));
 }
 
 function crearSeccionResumen(data) {
     const emprendedor = data.emprendedor;
     const es = data.estudioSocioeconomico.conclusiones;
-    print(es);
+    //print(es);
     $("#emprendedorProfilePicture").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
     $("#emprendedorNombre").text(emprendedor.nombre + " " + emprendedor.apellidos);
     $("#resultadoVisita").text(data.estudioSocioeconomico.resultadoVisita);
@@ -395,7 +407,9 @@ function crearSeccionEmpleabilidad(empleabilidad) {
 
 
 function crearSeccionFamiliares(familiares) {
-    familiares.forEach(function (familiar) {
+    print(familiares);
+    generateFamilyTable(familiares);
+    /*familiares.forEach(function (familiar) {
         const color = getRandomBoostrapColor();
         const id = familiar.idFamiliar;
 
@@ -428,7 +442,7 @@ function crearSeccionFamiliares(familiares) {
             </div>
         </div>`;
         $("#familiaresContainer").append(cardHTML);
-    });
+    });*/
 }
 
 
@@ -458,6 +472,8 @@ function crearSeccionEconomia(economia) {
         otros: { icon: 'archive', color: 'text-primary', label: 'Otros' }
     };
 
+    var totalGastos = 0;
+
     Object.entries(economia).forEach(([key, value]) => {
         if (key === 'ingresoMensual')
             return;
@@ -468,6 +484,9 @@ function crearSeccionEconomia(economia) {
             label: key.charAt(0).toUpperCase() + key.slice(1)
         };
 
+        const valueNumber = Number(value);
+        totalGastos += valueNumber;
+
         const html = `
             <div class="col-md-6">
                 <div class="d-flex align-items-center justify-content-between border rounded p-3 bg-white h-100">
@@ -475,62 +494,24 @@ function crearSeccionEconomia(economia) {
                         <i class="ti ti-${icon} me-2 ${color}"></i>
                         <span class="fw-semibold">${label}</span>
                     </div>
-                    <div class="text-end fw-bold text-dark">$${Number(value).toFixed(2)}</div>
+                    <div class="text-end fw-bold text-dark">$${valueNumber.toFixed(2)}</div>
                 </div>
             </div>
         `;
         $contenedorEconomia.append(html);
     });
+
+    $("#totalExpenditures").text(`$${totalGastos.toFixed(2)}`);
+
 }
 
 function crearSeccionVivienda(vivienda) {
-    const $viviendaContainer = $('#viviendaDistribucion');
-    $viviendaContainer.empty();
-
-    // Campos simples (tipo, condición, etc.)
-    const camposSimples = [
-        { key: 'tipo', label: 'Tipo de vivienda' },
-        { key: 'condicion', label: 'Condición' },
-        { key: 'familiasHabitantes', label: 'Familias que habitan' },
-        { key: 'uso', label: 'Uso de la vivienda' }
-    ];
-
-    camposSimples.forEach(({ key, label }) => {
-        if (vivienda[key]) {
-            const html = `
-                <div class="mb-3">
-                    <span class="text-muted">${label}:</span>
-                    <span class="fw-semibold text-dark ms-2">${vivienda[key].value}</span>
-                </div>
-            `;
-            $viviendaContainer.append(html);
-        }
+    $('#btnEditarDistribucion').on('click', function () {
+        cargarEspaciosEditables();
+        new bootstrap.Modal(document.getElementById('modalEditarDistribucion')).show();
     });
-
-    // Campos múltiples (piso, techo, etc.)
-    const camposMultiples = [
-        { key: 'piso', label: 'Tipo de piso' },
-        { key: 'techo', label: 'Tipo de techo' },
-        { key: 'paredes', label: 'Tipo de paredes' },
-        { key: 'distribucion', label: 'Distribución' },
-        { key: 'servicios', label: 'Servicios disponibles' }
-    ];
-
-    camposMultiples.forEach(({ key, label }) => {
-        const valores = vivienda[key];
-        if (Array.isArray(valores) && valores.length > 0) {
-            const listItems = valores.map(item =>
-                `<span class="badge bg-light text-dark me-1 mb-1">${item.value}</span>`
-            ).join('');
-            const html = `
-                <div class="mb-3">
-                    <span class="text-muted d-block mb-1">${label}:</span>
-                    <div class="d-flex flex-wrap">${listItems}</div>
-                </div>
-            `;
-            $viviendaContainer.append(html);
-        }
-    });
+    $('#guardarDistribucion').on('click', guardarDistribucion);
+    renderVivienda(vivienda);
 }
 
 function crearSeccionOtrosBienes(otrosBienes) {

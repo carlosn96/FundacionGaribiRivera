@@ -43,6 +43,7 @@ class EstudioSocioeconomicoDAO extends DAO {
             'referencias' => json_decode($data['referencias'], true),
             'vulnerabilidades' => ($vul = json_decode($data['vulnerabilidades'], true)) ? $vul : [],
             'conclusiones' => json_decode($data['conclusiones'], true),
+            'coneval' => $this->consultarConeval(),
         ];
     }
     
@@ -76,5 +77,16 @@ class EstudioSocioeconomicoDAO extends DAO {
         $prep->agregarString($observaciones);
         $prep->agregarInt($id);
         return $prep->ejecutar();
+    }
+
+    public function consultarConeval($fecha = null) {
+        $prep = $this->prepararInstruccion("CALL consultar_coneval(?)");
+        $prep->agregarString(is_null($fecha) ? "" : $fecha);
+        $data = $prep->ejecutarConsulta();
+        return count($data) ? $data : [];
+    }
+
+    public function eliminarFamiliar($idFamiliar) {
+        return $this->eliminarPorId("estudio_socioeconomico_seccion_familiares", "id_familiar", $idFamiliar);
     }
 }
