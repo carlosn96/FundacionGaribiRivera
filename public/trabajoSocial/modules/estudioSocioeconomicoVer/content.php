@@ -566,11 +566,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-
-
                 </div>
 
                 <!-- TAB: Referencias -->
@@ -585,7 +580,12 @@
                 <div class="tab-pane fade" id="pills-vulnerabilidad" role="tabpanel"
                     aria-labelledby="pills-vulnerabilidad-tab" tabindex="0">
                     <div class="row justify-content-center">
-                        <div id="vulnerabilidadesContainer" class="container mt-5 col-lg-9"></div>
+                        <div class="col-12 col-md-10 col-lg-12">
+                            <div class="card border shadow-none">
+                                <div class="card-body p-3 p-md-4" id="vulnerabilidadesContainer">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -920,7 +920,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="guardarDistribucion">
+                <button disabled type="button" class="btn btn-primary" id="guardarDistribucion">
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     <i class="ti ti-check"></i> Guardar Cambios
                 </button>

@@ -11,7 +11,7 @@ function ready() {
         crearSeccionVivienda(estudio.vivienda);
         crearSeccionOtrosBienes(estudio.otrosBienes);
         crearSeccionReferencias(estudio.referencias);
-        crearSeccionVulnerabilidades(estudio.vulnerabilidades);
+        crearSeccionVulnerabilidades(estudio.vulnerabilidades, estudio.id);
         crearSeccionConeval(estudio.coneval);
     });
 }
@@ -407,7 +407,7 @@ function crearSeccionEmpleabilidad(empleabilidad) {
 
 
 function crearSeccionFamiliares(familiares) {
-    print(familiares);
+    //print(familiares);
     generateFamilyTable(familiares);
     /*familiares.forEach(function (familiar) {
         const color = getRandomBoostrapColor();
@@ -608,33 +608,6 @@ function crearSeccionReferencias(referencias) {
     `);
 }
 
-function crearSeccionVulnerabilidades(vulnerabilidades) {
-    // Verificar si el array está vacío o no
-    let contenidoHTML = '';
-
-    if (vulnerabilidades.length === 0) {
-        contenidoHTML = `
-            <div class="alert alert-info" role="alert">
-                NO es vulnerable.
-            </div>
-        `;
-    } else {
-        // Crear una lista ordenada usando `ol` y las clases de Bootstrap para vulnerabilidades
-        contenidoHTML = `
-            <ol class="list-group list-group-numbered">
-                ${vulnerabilidades.map(vulnerabilidad => `
-                    <li class="list-group-item m-0">
-                          ${vulnerabilidad.descripcion}
-                    </li>
-                `).join('')}
-            </ol>
-        `;
-    }
-
-    // Insertar el contenido en el contenedor
-    $('#vulnerabilidadesContainer').html(`
-        <div class="row justify-content-center">
-            ${contenidoHTML}
-        </div>
-    `);
+function crearSeccionVulnerabilidades(vulnerabilidades, idEstudio) {
+    renderSeccionVulnerabilidades(vulnerabilidades, idEstudio);
 }

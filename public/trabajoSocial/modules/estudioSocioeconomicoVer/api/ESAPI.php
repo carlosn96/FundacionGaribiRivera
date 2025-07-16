@@ -184,6 +184,29 @@ class ESAPI extends API
         return $json['choices'][0]['message']['content'];
     }
 
+
+    public function cambiarEstadoVulnerabilidad()
+    {
+        $admin = getAdminEstudioSocioeconomico();
+        $idVulnerabilidad = intval($this->getData("id"));
+        $idEstudio = intval($this->getData("idEstudioSocioeconomico"));
+        $aplica = $this->getData("aplica") === '1';
+        if (
+            ($esResultadoCorrecto = $aplica
+                ? $admin->agregarVulnerabilidad($idVulnerabilidad, $idEstudio)
+                : $admin->eliminarVulnerabilidad($idVulnerabilidad, $idEstudio))
+        ) {
+            $info = $this->extraerInfo();
+            $vulnerabilidades = $info["estudioSocioeconomico"]["vulnerabilidades"];
+            $index = array_search($idVulnerabilidad, array_column($vulnerabilidades, 'id'));
+            if ($index !== false) {
+                $vulnerabilidades[$index]['aplica'] = $aplica;
+                $info["estudioSocioeconomico"]["vulnerabilidades"] = $vulnerabilidades;
+                Sesion::setInfoTemporal("estudioSocioeconomico", $info["estudioSocioeconomico"]);
+            }
+        }
+        $this->enviarResultadoOperacion($esResultadoCorrecto);
+    }
 }
 
 ESAPI::start();

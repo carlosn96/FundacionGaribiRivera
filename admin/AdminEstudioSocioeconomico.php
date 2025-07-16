@@ -218,4 +218,15 @@ class AdminEstudioSocioeconomico extends Admin
     {
         return $this->dao->eliminarFamiliar($idFamiliar);
     }
+
+
+    public function eliminarVulnerabilidad($idVulnerabilidad, $idEstudio)
+    {
+        return $this->dao->eliminarVulnerabilidad($idVulnerabilidad, $idEstudio);
+    }
+
+    public function agregarVulnerabilidad($idVulnerabilidad, $idEstudio)
+    {
+        return $this->dao->agregarVulnerabilidad($idVulnerabilidad, $idEstudio);
+    }
 }
