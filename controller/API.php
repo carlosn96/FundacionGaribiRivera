@@ -1,62 +1,75 @@
 <?php
 
-abstract class API {
+abstract class API
+{
 
     private $case;
     protected $data;
 
-    function __construct($case, $data) {
+    function __construct($case, $data)
+    {
         $this->setCase($case);
         $this->setData(Util::separarCamposFomulario($data));
         $this->resolverPeticion();
     }
 
-    protected function resolverPeticion() {
+    protected function resolverPeticion()
+    {
         $case = $this->case;
         if (method_exists($this, $case)) {
             $this->$case();
         } else {
-            $this->enviarRespuestaStr("sin respuesta");
+            $this->enviarRespuesta(Util::enum("Sin respuesta", true));
         }
     }
 
-    private function codificarRespuesta($respuesta) {
+    private function codificarRespuesta($respuesta)
+    {
         echo json_encode($respuesta);
     }
 
-    protected function enviarRespuesta(array $respuesta) {
+    protected function enviarRespuesta(array $respuesta)
+    {
         $this->codificarRespuesta($respuesta);
     }
 
-    protected function enviarResultadoOperacion(bool $esResultadoCorrecto) {
+    protected function enviarResultadoOperacion(bool $esResultadoCorrecto)
+    {
         $this->enviarRespuesta($esResultadoCorrecto ? OPERACION_COMPLETA : OPERACION_INCOMPLETA);
     }
 
-    protected function enviarRespuestaStr(string $respuesta) {
+    protected function enviarRespuestaStr(string $respuesta)
+    {
         $this->enviarRespuesta(["response" => $respuesta]);
     }
 
-    function getCase() {
+    function getCase()
+    {
         return $this->case;
     }
 
-    function setCase($case): void {
+    function setCase($case): void
+    {
         $this->case = $case;
     }
 
-    function setData($data): void {
+    function setData($data): void
+    {
         $this->data = $data;
     }
 
-    function getData($key) {
+    function getData($key)
+    {
         return $this->data[$key] ?? "";
     }
-    
-    protected function getUsuarioActual() {
-        return  Sesion::obtenerIDUsuarioActual();
+
+    protected function getUsuarioActual()
+    {
+        return Sesion::obtenerIDUsuarioActual();
     }
-    
-    public static function start() {
+
+    public static function start()
+    {
         Util::iniciarAPI(static::class);
     }
 }
