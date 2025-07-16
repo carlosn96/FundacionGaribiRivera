@@ -281,7 +281,7 @@ function initializeTooltips() {
 
 // Funciones de acción
 function editMember(id) {
-    mostrarMensajeInfo("En este momento solo se puede agregar y eliminar un familiar, la edición de informacion sigue en desarrollo.", false);
+    mostrarMensajeInfo("En este momento solo se puede eliminar un familiar de los agregados previamente, la edición de informacion sigue en desarrollo.", false);
     /* const familiar = familyData.find(f => f.idFamiliar === id);
      if (!familiar) return;
  
