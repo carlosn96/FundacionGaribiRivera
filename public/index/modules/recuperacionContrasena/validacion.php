@@ -1,5 +1,5 @@
 <?php
-include_once 'assets/sesion.php';
+require_once 'assets/sesion.php';
 ?>
 
 <!DOCTYPE html>
@@ -7,13 +7,13 @@ include_once 'assets/sesion.php';
     <head>
         <!-- Head -->
         <?php
-        include_once '../../includes/head.php';
+        require_once '../../includes/head.php';
         ?>
     </head>
     <body>
         <!-- Preloader y Overlay con Spinner -->
         <?php
-        include_once '../../includes/overlay.php';
+        require_once '../../includes/overlay.php';
         ?>
         <div id="main-wrapper" class="p-0 bg-white">
             <div class="auth-login position-relative overflow-hidden d-flex align-items-center justify-content-center px-7 px-xxl-0 rounded-3 h-n20">
@@ -47,8 +47,8 @@ include_once 'assets/sesion.php';
                                                 <input type="text" class="form-control py-6 text-center mx-1" id="codigo4" name="codigo[]" maxlength="1" required>
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-primary w-100 mb-4 rounded-pill">Validar Cuenta</button>
-                                        <a href='../inicio/' class="btn btn-secondary w-100 rounded-pill">Cancelar</a>
+                                        <button type="submit" class="btn btn-warning w-100 mb-4 rounded-pill">Validar Cuenta</button>
+                                        <a href='../inicio/' class="btn btn-outline-warning w-100 rounded-pill">Cancelar</a>
                                     </form>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@ include_once 'assets/sesion.php';
             </div>
         </div>
         <?php
-        include_once '../../includes/scripts.php';
+        require_once '../../includes/scripts.php';
         ?>
         <!-- Script para manejar la solicitud de envío de correo -->
         <script src="api/validacion.js"></script>

@@ -3,49 +3,58 @@
     <head>
         <!-- Head -->
         <?php
-        include_once '../../includes/head.php';
+        require_once '../../includes/head.php';
         ?>
     </head>
     <body>
         <!-- Preloader y Overlay con Spinner -->
         <?php
-        include_once '../../includes/overlay.php';
+        require_once '../../includes/overlay.php';
         ?>
-        <div id="main-wrapper" class="p-0 bg-white auth-customizer-none">
-            <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
-                <div class="auth-login-shape-box position-relative">
-                    <div class="d-flex align-items-center justify-content-center w-100 z-1 position-relative">
-                        <div class="card auth-card mb-0 mx-3 glass-effect">
-                            <div class="card-body pt-5">
-                                <div class="row mb-5">
-                                    <div class="col text-center">
-                                        <a href="https://fundaciongaribirivera.com/" target="_blank">
-                                            <img src="../../../assets/images/logos/logo-dark.svg" class="light-logo" alt="Logo-Dark" />
-                                        </a>
-                                    </div>
+        
+        <div class="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-white">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 col-xxl-3">
+                        <div class="card shadow-lg border-0 rounded-4">
+                            <div class="card-body p-4 p-md-5">
+                                <!-- Logo Section -->
+                                <div class="text-center mb-4">
+                                    <a href="https://fundaciongaribirivera.com/" target="_blank" class="d-inline-block mb-3">
+                                        <img src="../../../assets/images/logos/logo-dark.svg" class="img-fluid" alt="Logo-Dark" style="max-height: 60px;">
+                                    </a>
+                                    <h2 class="h4 fw-bold text-dark mb-2">Iniciar sesión</h2>
+                                    <p class="text-muted small">Ingresa tus credenciales para acceder</p>
                                 </div>
-                                <h2 class="mb-4 text-center fs-6 fw-bolder">Iniciar sesión</h2>
+
+                                <!-- Login Form -->
                                 <form id="loginForm">
                                     <div class="mb-3">
-                                        <label for="correo" class="form-label">Correo electrónico:</label>
-                                        <input  type="email" class="form-control border-warning" id="correo" name="correo" required>
+                                        <label for="correo" class="form-label fw-semibold text-dark">Correo electrónico:</label>
+                                        <input type="email" class="form-control border-warning" id="correo" name="correo" required>
                                     </div>
+                                    
                                     <div class="mb-3">
-                                        <label for="contrasena" class="form-label">Contraseña:</label>
-                                        <input  type="password" class="form-control border-warning" id="contrasena" name="contrasena" required>
+                                        <label for="contrasena" class="form-label fw-semibold text-dark">Contraseña:</label>
+                                        <input type="password" class="form-control border-warning" id="contrasena" name="contrasena" required>
                                     </div>
-                                    <div class="d-flex justify-content-between mb-4">
-                                        <a class="text-warning" href="../recuperacionContrasena/">¿Olvidaste tu contraseña?</a>
+                                    
+                                    <div class="text-end mb-4">
+                                        <a class="text-warning text-decoration-none small" href="../recuperacionContrasena/">¿Olvidaste tu contraseña?</a>
                                     </div>
-                                    <button id="submitButton" type="submit" class="btn btn-warning w-100 mb-3">
-                                        <span id="buttonText">Entrar</span>
-                                        <div id="spinner" class="spinner-border d-none" role="status">
-                                            <span class="visually-hidden"></span>
-                                        </div>
-                                    </button>
-                                    <div class="d-flex justify-content-between mb-4">
-                                        <p class="mb-0">¿No tienes cuenta?</p>
-                                        <a class="text-warning fw-bold" href="../crearCuenta/">Crear una cuenta</a>
+                                    
+                                    <div class="d-grid mb-3">
+                                        <button id="submitButton" type="submit" class="btn btn-warning btn-lg fw-bold">
+                                            <span id="buttonText">Entrar</span>
+                                            <div id="spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-0 text-muted small">¿No tienes cuenta?</p>
+                                        <a class="text-warning fw-bold text-decoration-none small" href="../crearCuenta/">Crear una cuenta</a>
                                     </div>
                                 </form>
                             </div>
@@ -54,11 +63,11 @@
                 </div>
             </div>
         </div>
+        
         <?php
-        include '../../includes/scripts.php';
+        require '../../includes/scripts.php';
         ?>
         <script src="../../../assets/js/controlSesion.js"></script>
         <script src="api/inicio.js"></script>
     </body>
-
 </html>
