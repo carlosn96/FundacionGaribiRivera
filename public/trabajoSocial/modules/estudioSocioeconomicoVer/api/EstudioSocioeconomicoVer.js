@@ -4,6 +4,7 @@ const urlAPI = "api/ESAPI.php";
 function ready() {
     crearPeticion(urlAPI, { case: "consultarEstudioSocioeconomico" }, function (data) {
         const estudio = data.estudioSocioeconomico;
+        print(data);
         crearSeccionResumen(data);
         crearSeccionEmpleabilidad(estudio.empleabilidad);
         crearSeccionFamiliares(estudio.familiares);
@@ -506,11 +507,6 @@ function crearSeccionEconomia(economia) {
 }
 
 function crearSeccionVivienda(vivienda) {
-    $('#btnEditarDistribucion').on('click', function () {
-        cargarEspaciosEditables();
-        new bootstrap.Modal(document.getElementById('modalEditarDistribucion')).show();
-    });
-    $('#guardarDistribucion').on('click', guardarDistribucion);
     renderVivienda(vivienda);
 }
 

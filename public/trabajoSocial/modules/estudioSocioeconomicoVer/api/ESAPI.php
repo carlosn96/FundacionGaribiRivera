@@ -1,6 +1,6 @@
 <?php
 
-include_once '../../../../../loader.php';
+require_once '../../../../../loader.php';
 
 class ESAPI extends API
 {
@@ -23,9 +23,8 @@ class ESAPI extends API
     }
     private function actualizarFotografiaEnInfo(&$info, $idFotografia, $fotografia = null, $eliminar = false)
     {
-        if (
-            isset($info["estudioSocioeconomico"]["conclusiones"]["fotografias"]) &&
-            is_array($info["estudioSocioeconomico"]["conclusiones"]["fotografias"])
+        if (isset($info["estudioSocioeconomico"]["conclusiones"]["fotografias"]) 
+            && is_array($info["estudioSocioeconomico"]["conclusiones"]["fotografias"])
         ) {
             foreach ($info["estudioSocioeconomico"]["conclusiones"]["fotografias"] as $idx => &$fotoObj) {
                 if (isset($fotoObj["id"]) && $fotoObj["id"] == $idFotografia) {
@@ -191,10 +190,7 @@ class ESAPI extends API
         $idVulnerabilidad = intval($this->getData("id"));
         $idEstudio = intval($this->getData("idEstudioSocioeconomico"));
         $aplica = $this->getData("aplica") === '1';
-        if (
-            ($esResultadoCorrecto = $aplica
-                ? $admin->agregarVulnerabilidad($idVulnerabilidad, $idEstudio)
-                : $admin->eliminarVulnerabilidad($idVulnerabilidad, $idEstudio))
+        if (($esResultadoCorrecto = $aplica? $admin->agregarVulnerabilidad($idVulnerabilidad, $idEstudio): $admin->eliminarVulnerabilidad($idVulnerabilidad, $idEstudio))
         ) {
             $info = $this->extraerInfo();
             $vulnerabilidades = $info["estudioSocioeconomico"]["vulnerabilidades"];
@@ -207,6 +203,44 @@ class ESAPI extends API
         }
         $this->enviarResultadoOperacion($esResultadoCorrecto);
     }
+    public function modificarCantidadEspaciosVivienda()
+    {
+        $admin = getAdminEstudioSocioeconomico();
+        $idEspacio = intval($this->getData("idEspacio"));
+        $idVivienda = intval($this->getData("idVivienda"));
+        $cantidad = intval($this->getData("cantidad"));
+        if (($esResultadoCorrecto = $admin->modificarCantidadEspaciosVivienda($idVivienda, $idEspacio, $cantidad))) {
+            $info = $this->extraerInfo();
+            $distribucion = &$info["estudioSocioeconomico"]["vivienda"]["distribucion"];
+            $index = array_search($idEspacio, array_column($distribucion, 'id'));
+            if ($index !== false) {
+                $distribucion[$index]["cantidad"] = $cantidad;
+                Sesion::setInfoTemporal("estudioSocioeconomico", $info["estudioSocioeconomico"]);
+            }
+        }
+        $this->enviarResultadoOperacion($esResultadoCorrecto);
+    }
+
+
+    public function eliminarEspacioVivienda()
+    {
+        $admin = getAdminEstudioSocioeconomico();
+        $idEspacio = intval($this->getData("idEspacio"));
+        $idVivienda = intval($this->getData("idVivienda"));
+        if (($esResultadoCorrecto = $admin->eliminarEspacioVivienda($idEspacio, $idVivienda))) {
+            $info = $this->extraerInfo();
+            $distribucion = &$info["estudioSocioeconomico"]["vivienda"]["distribucion"];
+            $index = array_search($idEspacio, array_column($distribucion, 'id'));
+            if ($index !== false) {
+                unset($distribucion[$index]);
+                $info["estudioSocioeconomico"]["vivienda"]["distribucion"] = array_values($distribucion);
+                Sesion::setInfoTemporal("estudioSocioeconomico", $info["estudioSocioeconomico"]);
+            }
+        }
+        // Devolver resultado al frontend
+        $this->enviarResultadoOperacion($esResultadoCorrecto);
+    }
+
 }
 
 ESAPI::start();

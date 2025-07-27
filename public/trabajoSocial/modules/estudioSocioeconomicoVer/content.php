@@ -388,186 +388,157 @@
                 </div>
 
                 <!-- TAB: Vivienda -->
-                <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
-                    tabindex="0">
+<div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
 
-                    <!-- Información General de la Vivienda -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h4 class="card-title mb-2">
-                                                <i class="ti ti-house-door"></i> <span id="tipoVivienda">Mi
-                                                    Vivienda</span>
-                                            </h4>
-                                            <p class="mb-0">
-                                                <span class="badge bg-white text-warning me-2"
-                                                    id="condicionVivienda">-</span>
-                                                <span class="badge bg-white text-warning me-2" id="usoVivienda">-</span>
-                                                <span class="badge bg-white text-warning" id="familiasVivienda">-</span>
-                                            </p>
-                                        </div>
-                                        <div class="col-md-4 text-end">
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <span class="badge bg-white text-warning fs-6">
-                                                    <span id="totalEspacios">0</span> Espacios
-                                                </span>
-                                                <span class="badge bg-white text-warning fs-6">
-                                                    <span id="totalServicios">0</span> Servicios
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card  border shadow-none ">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h6 class="mb-1 fw-bold">
+                                <i class="ti ti-house-door me-2"></i>
+                                Tipo de vivienda:
+                                <span id="tipoVivienda">-</span>
+                            </h6>
+                            <small class="opacity-75">
+                                Condición:
+                                <span id="condicionVivienda">-</span> • 
+                                Uso:
+                                <span id="usoVivienda">-</span> • 
+                                Familias que habitan:
+                                <span id="familiasVivienda">-</span> familia(s)
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid compacto de información principal -->
+    <div class="row g-2 mb-3">
+        <!-- Construcción -->
+        <div class="col-12 col-lg-6">
+            <div class="card border shadow-none h-100">
+                <div class="card-header  py-2">
+                    <h6 class="mb-0 text-primary">
+                        <i class="ti ti-tools me-2"></i>Construcción
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <div class="text-center">
+                                <i class="ti ti-wall text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                <small class="text-muted d-block mb-1">Paredes</small>
+                                <div id="paredesContainer" class="small">
+                                    <!-- Materiales de paredes -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center">
+                                <i class="ti ti-home-up text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                <small class="text-muted d-block mb-1">Techo</small>
+                                <div id="techoContainer" class="small">
+                                    <!-- Materiales de techo -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center">
+                                <i class="ti ti-home-down text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                <small class="text-muted d-block mb-1">Piso</small>
+                                <div id="pisoContainer" class="small">
+                                    <!-- Material de piso -->
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Características de Construcción -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="ti ti-tools"></i> Características de Construcción
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="card bg-light">
-                                                <div class="card-body text-center">
-                                                    <i class="ti ti-wall text-primary" style="font-size: 2rem;"></i>
-                                                    <h6 class="mt-2">Paredes</h6>
-                                                    <div id="paredesContainer" class="mt-2">
-                                                        <!-- Materiales de paredes -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+        <!-- Distribución -->
+        <div class="col-12 col-lg-6">
+            <div class="card border shadow-none h-100">
+                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-primary">
+                        <i class="ti ti-grid-3x3 me-2"></i>Espacios
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    <div id="distribucionContainer" class="row g-2">
+                        <!-- Espacios se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                        <div class="col-md-4">
-                                            <div class="card bg-light">
-                                                <div class="card-body text-center">
-                                                    <i class="ti ti-home-up text-primary" style="font-size: 2rem;"></i>
-                                                    <h6 class="mt-2">Techo</h6>
-                                                    <div id="techoContainer" class="mt-2">
-                                                        <!-- Materiales de techo -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+    </div>
 
-                                        <div class="col-md-4">
-                                            <div class="card bg-light">
-                                                <div class="card-body text-center">
-                                                    <i class="ti ti-home-down text-primary"
-                                                        style="font-size: 2rem;"></i>
-                                                    <h6 class="mt-2">Piso</h6>
-                                                    <div id="pisoContainer" class="mt-2">
-                                                        <!-- Material de piso -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+    <!-- Segunda fila de información -->
+    <div class="row g-2 mb-3">
+        
+        <!-- Servicios -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0 py-2">
+                    <h6 class="mb-0 text-primary">
+                        <i class="ti ti-gear me-2"></i>Servicios
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    <div id="serviciosContainer" class="row g-2">
+                        <!-- Servicios se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Otros Bienes -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0 py-2">
+                    <h6 class="mb-0 text-primary">
+                        <i class="ti ti-car-front me-2"></i>Otros Bienes
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    <div id="otrosBienesContainer">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body p-2 text-center">
+                                        <i class="ti ti-car-front text-primary mb-1" style="font-size: 1.5rem;"></i>
+                                        <small class="d-block mb-2 fw-bold">Vehículos</small>
+                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
+                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Distribución de Espacios -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title mb-0">
-                                            <i class="ti ti-grid-3x3"></i> Distribución de Espacios
-                                        </h5>
-                                        <small class="text-muted">Espacios y cantidad en la vivienda</small>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-primary" id="btnEditarDistribucion">
-                                        <i class="ti ti-pencil"></i> Editar Distribución
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div id="distribucionContainer" class="row g-3">
-                                        <!-- Espacios se cargarán aquí -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Servicios -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="ti ti-gear"></i> Servicios Disponibles
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="serviciosContainer" class="row g-3">
-                                        <!-- Servicios se cargarán aquí -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Otros Bienes -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="ti ti-car-front"></i> Otros Bienes
-                                    </h5>
-                                    <small class="text-muted">Información sobre vehículos y otros bienes</small>
-                                </div>
-                                <div class="card-body">
-                                    <div id="otrosBienesContainer">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <div class="card border-secondary">
-                                                    <div class="card-body text-center">
-                                                        <i class="ti ti-car-front text-secondary"
-                                                            style="font-size: 2rem;"></i>
-                                                        <h6 class="mt-2">Vehículos</h6>
-                                                        <p class="text-muted mb-3">Gestiona información de vehículos</p>
-                                                        <button class="btn btn-outline-secondary btn-sm">
-                                                            <i class="ti ti-plus"></i> Agregar Vehículo
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="card border-secondary">
-                                                    <div class="card-body text-center">
-                                                        <i class="ti ti-box text-secondary"
-                                                            style="font-size: 2rem;"></i>
-                                                        <h6 class="mt-2">Otros Bienes</h6>
-                                                        <p class="text-muted mb-3">Artículos de valor adicionales</p>
-                                                        <button class="btn btn-outline-secondary btn-sm">
-                                                            <i class="ti ti-plus"></i> Agregar Bien
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                            <div class="col-6">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body p-2 text-center">
+                                        <i class="ti ti-box text-primary mb-1" style="font-size: 1.5rem;"></i>
+                                        <small class="d-block mb-2 fw-bold">Otros</small>
+                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
+                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
+    </div>
+
+</div>
                 <!-- TAB: Referencias -->
                 <div class="tab-pane fade" id="pills-referencias" role="tabpanel"
                     aria-labelledby="pills-referencias-tab" tabindex="0">
@@ -889,42 +860,6 @@
         </div>
         <div class="toast-body" id="toastBody">
             Operación completada exitosamente
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Editar Distribución -->
-<div class="modal fade" id="modalEditarDistribucion" tabindex="-1" aria-labelledby="modalEditarDistribucionLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarDistribucionLabel">
-                    <i class="ti ti-pencil"></i> Editar Distribución de Espacios
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-info" role="alert">
-                    <i class="ti ti-message"></i>
-                    <strong>Instrucciones:</strong> Modifica la cantidad de cada espacio según tus necesidades. Usa 0
-                    para espacios que no tienes.
-                </div>
-
-                <form id="formEditarDistribucion">
-                    <input type="hidden" id="viviendaId" name="viviendaId">
-                    <div id="espaciosEditables" class="row g-3">
-                        <!-- Los espacios editables se cargarán aquí -->
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancelar</button>
-                <button disabled type="button" class="btn btn-primary" id="guardarDistribucion">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    <i class="ti ti-check"></i> Guardar Cambios
-                </button>
-            </div>
         </div>
     </div>
 </div>

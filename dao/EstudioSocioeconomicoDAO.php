@@ -120,4 +120,24 @@ class EstudioSocioeconomicoDAO extends DAO
         return $prep->ejecutar();
     }
 
+    public function modificarCantidadEspaciosVivienda($idVivienda, $idEspacio, $cantidad)
+    {
+        $sql= "UPDATE estudio_socioeconomico_seccion_vivienda_lista_distribucion SET cantidad = ? WHERE id_vivienda = ? AND id_distribucion = ?";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($cantidad);
+        $prep->agregarInt($idVivienda);
+        $prep->agregarInt($idEspacio);
+        return $prep->ejecutar();
+    }
+
+    public function eliminarEspacioVivienda($idEspacio, $idVivienda)
+    {
+
+        $sql = "DELETE FROM estudio_socioeconomico_seccion_vivienda_lista_distribucion WHERE id_vivienda = ? AND id_distribucion = ?";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idVivienda);
+        $prep->agregarInt($idEspacio);
+        return $prep->ejecutar();
+    }
+
 }

@@ -5,7 +5,7 @@ let familiarCount = 0;
 function ready() {
     const idEmprendedor = extraerParametrosURL(window.location).id;
     if (idEmprendedor) {
-        crearPeticion(urlAPI, {case: "recuperarCamposInformacion", data: $.param({id: idEmprendedor})}, (rs) => {
+        crearPeticion(urlAPI, { case: "recuperarCamposInformacion", data: $.param({ id: idEmprendedor }) }, (rs) => {
             print(rs);
             if (rs.existeLineaBase) {
                 if (rs.existeEstudioSocioeconomico) {
@@ -28,7 +28,73 @@ function completarInfoEmprendedor(emprendedor) {
     $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
 }
 
+function validarInput(input) {
+    let valor = parseInt(input.value) || 0;
+    if (valor < 0) valor = 0;
+    if (valor > 20) valor = 20;
+    input.value = valor;
+}
+
+
 function completarCamposFormulario(campos) {
+    const $contenedorDistribucion = $('#distribucion');
+    $contenedorDistribucion.empty();
+    campos.seleccionMultiple.distribucionVivienda.forEach((item, index) => {
+        const input = `
+            <div class="col-12 mb-2">
+                <div class="border rounded-3 p-2">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 me-2">
+                            <label for="distribucion-${item.id_distribucion}" 
+                                   class="form-label mb-0 fw-medium text-dark small">
+                                ${item.descripcion}
+                            </label>
+                        </div>
+                        <div class="input-group" style="width: 120px;">
+                            <input type="number"
+                                   class="form-control form-control-sm text-center fw-bold"
+                                   id="distribucion-${item.id_distribucion}"
+                                   name="distribucion[${item.id_distribucion}]"
+                                   min="0" max="20" value="0"
+                                   data-id="${item.id_distribucion}"
+                                   onchange="validarInput(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        $contenedorDistribucion.append(input);
+    });
+
+    const $contenedor = $('#servicios');
+    $contenedor.empty();
+
+    campos.seleccionMultiple.servicios.forEach((item, index) => {
+        const checkbox = `
+        <div class="col-12 mb-2">
+            <div class="border rounded-3 p-2">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 me-2">
+                        <label for="servicio-${item.id_servicio}"
+                               class="form-label mb-0 fw-medium text-dark small">
+                            ${item.descripcion}
+                        </label>
+                    </div>
+                    <div>
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="servicio-${item.id_servicio}"
+                               name="servicios[]"
+                               value="${item.id_servicio}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+        $contenedor.append(checkbox);
+    });
+
+
     $.each(campos.selector.modal, (idx, elementos) => {
         crearSelector($("#" + idx + "Modal"), idx, elementos, "form-select border border-warning");
         crearSelector($("#" + idx + "ModalEditar"), idx + "Editar", elementos, "form-select border border-warning");
@@ -126,8 +192,8 @@ function ajustarEventos() {
         const ingresoMensualFijo = $('#ingresoMensualFijoFamiliar').val();
         const ingresoMensualVariable = $('#ingresoMensualVariableFamiliar').val();
         crearNuevoFamiliar(nombre, edad, estadoCivilSelected, parentesco,
-                escolaridadSelected, ocupacionSelected, ingresoMensualFijo,
-                ingresoMensualVariable);
+            escolaridadSelected, ocupacionSelected, ingresoMensualFijo,
+            ingresoMensualVariable);
         $('#formFamiliar')[0].reset();
         $('#modalDependienteFamiliar').modal('hide');
         actualizarTotalFamiliares(true);

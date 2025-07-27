@@ -1,13 +1,14 @@
 let datosVivienda = null;
+let distribucion = [];
 // Iconos para cada tipo de espacio
 const iconosEspacios = {
     'Recámara': 'ti-bed',
-    'Sala': 'ti-tv',
+    'Sala': 'ti-device-tv',
     'Cocina': 'ti-cup',
     'Baño': 'ti-bath',
     'Comedor': 'ti-table',
     'Estudio': 'ti-book',
-    'Garaje': 'ti-car-front',
+    'Cochera': 'ti-car-garage',
     'Jardín': 'ti-tree',
     'Patio': 'ti-sun',
     'Terraza': 'ti-balcony',
@@ -29,12 +30,13 @@ const iconosServicios = {
 
 // Función principal para crear la sección de vivienda
 function renderVivienda(datos) {
+    print(datos);
     datosVivienda = datos;
+    distribucion = datos.distribucion || [];
     actualizarInformacionGeneral(datos);
     actualizarCaracteristicasConstruccion(datos);
-    actualizarDistribucion(datos.distribucion);
+    actualizarDistribucion();
     actualizarServicios(datos.servicios);
-    actualizarContadores(datos);
 }
 
 
@@ -78,44 +80,17 @@ function actualizarCaracteristicasConstruccion(datos) {
 
     // Piso
     const pisoContainer = document.getElementById('pisoContainer');
-    if (datos.piso) {
-        pisoContainer.innerHTML = `<span class="badge bg-secondary">${datos.piso.value}</span>`;
+    pisoContainer.innerHTML = '';
+    if (datos.piso && datos.piso.length > 0) {
+        datos.piso.forEach(piso => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-secondary me-1 mb-1';
+            badge.textContent = piso.value;
+            pisoContainer.appendChild(badge);
+        });
     } else {
         pisoContainer.innerHTML = '<span class="text-muted">No especificado</span>';
     }
-}
-
-// Función para actualizar distribución
-function actualizarDistribucion(distribucion) {
-    const container = document.getElementById('distribucionContainer');
-    container.innerHTML = '';
-
-    if (!distribucion || distribucion.length === 0) {
-        container.innerHTML = `
-                    <div class="col-12 text-center py-4">
-                        <i class="ti ti-house text-muted" style="font-size: 3rem;"></i>
-                        <h6 class="text-muted mt-2">No hay espacios configurados</h6>
-                    </div>
-                `;
-        return;
-    }
-
-    distribucion.forEach(espacio => {
-        const icono = iconosEspacios[espacio.value] || 'ti-house';
-        const espacioDiv = document.createElement('div');
-        espacioDiv.className = 'col-md-6 col-lg-4';
-        espacioDiv.innerHTML = `
-                    <div class="card border-primary">
-                        <div class="card-body text-center">
-                            <i class="ti ${icono} text-primary" style="font-size: 2rem;"></i>
-                            <h6 class="mt-2 mb-1">${espacio.value}</h6>
-                            <div class="display-6 text-primary fw-bold">${espacio.cantidad}</div>
-                            <small class="text-muted">${espacio.cantidad === 1 ? 'espacio' : 'espacios'}</small>
-                        </div>
-                    </div>
-                `;
-        container.appendChild(espacioDiv);
-    });
 }
 
 // Función para actualizar servicios
@@ -149,177 +124,201 @@ function actualizarServicios(servicios) {
         container.appendChild(servicioDiv);
     });
 }
+// Función para bloquear contenedor
+function bloquearContenedor() {
+    const container = document.getElementById('distribucionContainer');
+    container.style.position = 'relative';
 
-// Función para actualizar contadores
-function actualizarContadores(datos) {
-    const totalEspacios = datos.distribucion ? datos.distribucion.reduce((sum, espacio) => sum + espacio.cantidad, 0) : 0;
-    const totalServicios = datos.servicios ? datos.servicios.length : 0;
+    // Crear overlay de bloqueo
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    `;
 
-    document.getElementById('totalEspacios').textContent = totalEspacios;
-    document.getElementById('totalServicios').textContent = totalServicios;
+    overlay.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="mt-2 text-muted">Procesando...</div>
+        </div>
+    `;
+
+    container.appendChild(overlay);
+
+    // Deshabilitar todos los botones
+    const botones = container.querySelectorAll('button');
+    botones.forEach(btn => btn.disabled = true);
 }
 
-// Función para cargar espacios editables en el modal
-function cargarEspaciosEditables() {
-    const container = document.getElementById('espaciosEditables');
+// Función para desbloquear contenedor
+function desbloquearContenedor() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+
+    // Rehabilitar botones (se hará automáticamente al re-renderizar)
+    const container = document.getElementById('distribucionContainer');
+    const botones = container.querySelectorAll('button');
+    botones.forEach(btn => btn.disabled = false);
+}
+async function modificarCantidad(id, accion) {
+    bloquearContenedor();
+
+    try {
+        const index = distribucion.findIndex(item => item.id === id);
+        if (index === -1) {
+            desbloquearContenedor();
+            return;
+        }
+
+        let cantidadActual = distribucion[index].cantidad;
+        let cantidadNueva = cantidadActual;
+
+        if (accion === 'aumentar') {
+            cantidadNueva++;
+        } else if (accion === 'disminuir') {
+            if (cantidadActual <= 1) {
+                desbloquearContenedor();
+                return;
+            }
+            cantidadNueva--;
+        } else {
+            desbloquearContenedor();
+            return;
+        }
+
+        crearPeticion(
+            urlAPI,
+            {
+                case: "modificarCantidadEspaciosVivienda",
+                data: $.param({
+                    idVivienda: datosVivienda.id,
+                    idEspacio: id,
+                    cantidad: cantidadNueva,
+                    accion: accion
+                })
+            },
+            function (response) {
+                if (!response.es_valor_error) {
+                    distribucion[index].cantidad = cantidadNueva;
+                    actualizarDistribucion();
+                } else {
+                    mostrarMensajeError('Error al modificar la cantidad. Inténtalo de nuevo.', false);
+                }
+                desbloquearContenedor(); // <- Solo aquí
+            }
+        );
+
+    } catch (error) {
+        mostrarMensajeError('Error al modificar la cantidad. Inténtalo de nuevo.', false);
+        desbloquearContenedor(); // <- Solo si hay excepción
+    }
+}
+
+
+function eliminarEspacio(id) {
+    bloquearContenedor();
+
+    const index = distribucion.findIndex(item => item.id === id);
+    if (index === -1) {
+        desbloquearContenedor();
+        return;
+    }
+    crearPeticion(
+        urlAPI,
+        {
+            case: "eliminarEspacioVivienda",
+            data: $.param({ idVivienda: datosVivienda.id, idEspacio: id })
+        },
+        function (response) {
+            print(response);
+            desbloquearContenedor();
+            if (!response || response.es_valor_error === true) {
+                mostrarMensajeError('Error al eliminar el espacio. Inténtalo de nuevo.', false);
+                return;
+            }
+            distribucion.splice(index, 1);
+            actualizarDistribucion();
+        }
+    );
+}
+
+
+// Función para actualizar distribución mejorada
+function actualizarDistribucion() {
+    const container = document.getElementById('distribucionContainer');
     container.innerHTML = '';
 
-    if (!datosVivienda || !datosVivienda.distribucion) {
-        container.innerHTML = '<div class="col-12 text-center text-muted">No hay datos de distribución</div>';
+    if (!distribucion || distribucion.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <i class="ti ti-house text-muted" style="font-size: 3rem;"></i>
+                <h6 class="text-muted mt-2">No hay espacios configurados</h6>
+            </div>
+        `;
         return;
     }
 
-    // Agregar ID de vivienda al formulario
-    document.getElementById('viviendaId').value = datosVivienda.id;
-
-    datosVivienda.distribucion.forEach((espacio, index) => {
+    distribucion.forEach(espacio => {
         const icono = iconosEspacios[espacio.value] || 'ti-house';
         const espacioDiv = document.createElement('div');
-        espacioDiv.className = 'col-md-6 mb-3';
+        espacioDiv.className = 'col-md-6 col-lg-4 col-xl-3 mb-3';
+
         espacioDiv.innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="ti ${icono} text-primary" style="font-size: 1.5rem;"></i>
-                                <h6 class="ms-2 mb-0">${espacio.value}</h6>
-                            </div>
-                            <div class="row align-items-center">
-                                <div class="col-4">
-                                    <label class="form-label">Cantidad:</label>
-                                </div>
-                                <div class="col-8">
-                                    <input type="hidden" name="espacios[${index}][id]" value="${espacio.id}">
-                                    <input type="hidden" name="espacios[${index}][value]" value="${espacio.value}">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary" type="button" onclick="cambiarCantidad(${index}, -1)">
-                                            <i class="ti ti-minus"></i>
-                                        </button>
-                                        <input type="number" 
-                                               class="form-control text-center" 
-                                               name="espacios[${index}][cantidad]" 
-                                               value="${espacio.cantidad}" 
-                                               min="0" 
-                                               max="20"
-                                               id="cantidad_${index}">
-                                        <button class="btn btn-outline-secondary" type="button" onclick="cambiarCantidad(${index}, 1)">
-                                            <i class="ti ti-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="card h-100 shadow-sm">
+                <div class="card-body p-3 d-flex flex-column text-center">
+                    <!-- Parte superior: Tipo e ícono -->
+                    <div class="mb-3">
+                        <i class="ti ${icono} text-primary" style="font-size: 2.5rem;"></i>
+                        <h6 class="mt-2 mb-0 fw-semibold">${espacio.value}</h6>
+                    </div>
+                    
+                    <!-- Centro: Cantidad -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <div>
+                            <div class="display-4 text-primary fw-bold mb-1">${espacio.cantidad}</div>
+                            <small class="text-muted">${espacio.cantidad === 1 ? 'espacio' : 'espacios'}</small>
                         </div>
                     </div>
-                `;
+                    
+                    <!-- Parte inferior: Botones -->
+                    <div class="mt-3">
+                        <div class="btn-group btn-group-sm w-100" role="group">
+                            <button class="btn btn-outline-secondary" 
+                                    onclick="modificarCantidad(${espacio.id}, 'disminuir')"
+                                    ${espacio.cantidad <= 1 ? 'disabled' : ''}
+                                    title="Disminuir cantidad">
+                                <i class="ti ti-minus"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" 
+                                    onclick="modificarCantidad(${espacio.id}, 'aumentar')"
+                                    title="Aumentar cantidad">
+                                <i class="ti ti-plus"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" 
+                                    onclick="eliminarEspacio(${espacio.id})" 
+                                    title="Eliminar espacio">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
         container.appendChild(espacioDiv);
     });
-}
-
-// Función para cambiar cantidad con botones
-function cambiarCantidad(index, cambio) {
-    const input = document.getElementById(`cantidad_${index}`);
-    const valorActual = parseInt(input.value) || 0;
-    const nuevoValor = Math.max(0, Math.min(20, valorActual + cambio));
-    input.value = nuevoValor;
-}
-// Función para mostrar toast
-function mostrarToast(titulo, mensaje, tipo = 'success') {
-    const toastElement = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastBody = document.getElementById('toastBody');
-
-    // Configurar icono y clase según el tipo
-    if (tipo === 'success') {
-        toastIcon.className = 'ti ti-check-circle text-success';
-    } else if (tipo === 'error') {
-        toastIcon.className = 'ti ti-exclamation-triangle text-danger';
-    } else if (tipo === 'info') {
-        toastIcon.className = 'ti ti-info-circle text-primary';
-    }
-
-    toastTitle.textContent = titulo;
-    toastBody.textContent = mensaje;
-
-    const toast = new bootstrap.Toast(toastElement);
-    toast.show();
-}
-
-// Función para guardar distribución (AJAX)
-async function guardarDistribucion() {
-    const form = document.getElementById('formEditarDistribucion');
-    const formData = new FormData(form);
-    const submitBtn = document.getElementById('guardarDistribucion');
-    const spinner = submitBtn.querySelector('.spinner-border');
-
-    // Mostrar loading
-    spinner.classList.remove('d-none');
-    submitBtn.disabled = true;
-
-    try {
-        // Preparar datos para envío
-        const datosEnvio = {
-            viviendaId: formData.get('viviendaId'),
-            distribucion: []
-        };
-
-        // Extraer datos de espacios
-        const espaciosData = {};
-        for (let [key, value] of formData.entries()) {
-            if (key.startsWith('espacios[')) {
-                const match = key.match(/espacios\[(\d+)\]\[(\w+)\]/);
-                if (match) {
-                    const index = match[1];
-                    const campo = match[2];
-                    if (!espaciosData[index]) espaciosData[index] = {};
-                    espaciosData[index][campo] = value;
-                }
-            }
-        }
-
-        // Convertir a array
-        Object.values(espaciosData).forEach(espacio => {
-            datosEnvio.distribucion.push({
-                id: parseInt(espacio.id),
-                value: espacio.value,
-                cantidad: parseInt(espacio.cantidad)
-            });
-        });
-
-        // Simulación de llamada AJAX
-        const response = await fetch('/api/vivienda/distribucion', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            body: JSON.stringify(datosEnvio)
-        });
-
-        if (response.ok) {
-            const resultado = await response.json();
-
-            // Actualizar datos locales
-            datosVivienda.distribucion = datosEnvio.distribucion;
-
-            // Actualizar interfaz
-            actualizarDistribucion(datosVivienda.distribucion);
-            actualizarContadores(datosVivienda);
-
-            // Cerrar modal
-            bootstrap.Modal.getInstance(document.getElementById('modalEditarDistribucion')).hide();
-
-            // Mostrar éxito
-            mostrarMensajeOK('Éxito', 'Distribución actualizada correctamente', false);
-        } else {
-            throw new Error('Error en la respuesta del servidor');
-        }
-
-    } catch (error) {
-        console.error('Error al guardar distribución:', error);
-        mostrarMensajeError('No se pudo guardar la distribución. Intenta nuevamente.', false);
-    } finally {
-        // Ocultar loading
-        spinner.classList.add('d-none');
-        submitBtn.disabled = false;
-    }
 }

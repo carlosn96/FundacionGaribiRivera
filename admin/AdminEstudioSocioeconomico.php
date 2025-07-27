@@ -190,7 +190,7 @@ class AdminEstudioSocioeconomico extends Admin
         return new EstudioSocioeconomicoSeccionConclusiones(
             $data["actitudesPositivas"] ?? [],
             $data["actitudesNegativas"] ?? [],
-            $data["observacionesGenerales"] ?? [],
+            $data["observacionesGenerales"] ?? "",
             $data["fotografiasEvidencia"]
         );
     }
@@ -228,5 +228,15 @@ class AdminEstudioSocioeconomico extends Admin
     public function agregarVulnerabilidad($idVulnerabilidad, $idEstudio)
     {
         return $this->dao->agregarVulnerabilidad($idVulnerabilidad, $idEstudio);
+    }
+
+    public function modificarCantidadEspaciosVivienda($idvivenda, $idEspacio, $cantidad)
+    {
+        return $this->dao->modificarCantidadEspaciosVivienda($idvivenda, $idEspacio, $cantidad);
+    }
+
+    public function eliminarEspacioVivienda($idEspacio, $idVivienda)
+    {
+        return $this->dao->eliminarEspacioVivienda($idEspacio, $idVivienda);
     }
 }
