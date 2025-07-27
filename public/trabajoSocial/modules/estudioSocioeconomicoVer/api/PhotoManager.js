@@ -2,9 +2,14 @@ class PhotoManager {
     constructor() {
         this.photos = [];
         this.previewPhotos = [];
+        this.idConclusiones = null;
         this.initializeElements();
         this.bindEvents();
         this.updatePhotoCount();
+    }
+
+    setIdConclusiones(id) {
+        this.idConclusiones = id;
     }
 
     initializeElements() {
@@ -22,23 +27,37 @@ class PhotoManager {
         this.uploadProgress = document.getElementById('uploadProgress');
         this.btnSpinner = document.getElementById('btnSpinner');
         this.btnText = document.getElementById('btnText');
+        this.carouselEditBtnContainer = document.getElementById('carouselEditBtnContainer');
+        this.btnEditarFoto = document.getElementById('btnEditarFoto');
+        this.btnEliminarFoto = document.getElementById('btnEliminarFoto');
+        this.carouselItems = document.getElementById('carouselItems');
+        this.carouselIndicators = document.getElementById('carouselIndicators');
+        this.carouselElement = document.getElementById('photoCarousel');
     }
 
     bindEvents() {
-        // Drag and drop
-        this.uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
-        this.uploadZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
-        this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
-        this.uploadZone.addEventListener('click', () => this.fileInput.click());
+        if (this.uploadZone) {
+            this.uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
+            this.uploadZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+            this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
+            this.uploadZone.addEventListener('click', () => this.fileInput.click());
+        }
 
-        // File selection
-        this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
-        this.selectFilesBtn.addEventListener('click', () => this.fileInput.click());
-
-        // Buttons
-        this.saveBtn.addEventListener('click', this.savePhotos.bind(this));
-        this.cancelBtn.addEventListener('click', this.cancelSelection.bind(this));
-        this.clearAllBtn.addEventListener('click', this.clearAll.bind(this));
+        if (this.fileInput) {
+            this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+        }
+        if (this.selectFilesBtn) {
+            this.selectFilesBtn.addEventListener('click', () => this.fileInput.click());
+        }
+        if (this.saveBtn) {
+            this.saveBtn.addEventListener('click', this.savePhotos.bind(this));
+        }
+        if (this.cancelBtn) {
+            this.cancelBtn.addEventListener('click', this.cancelSelection.bind(this));
+        }
+        if (this.clearAllBtn) {
+            this.clearAllBtn.addEventListener('click', this.clearAll.bind(this));
+        }
     }
 
     handleDragOver(e) {
@@ -64,28 +83,28 @@ class PhotoManager {
     }
 
     processFiles(files) {
-        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        const imageFiles = files.filter(file => validTypes.includes(file.type));
 
         if (imageFiles.length === 0) {
-            this.showToast('Por favor selecciona solo archivos de imagen', 'error');
+            this.showToast('Por favor selecciona solo archivos de imagen JPG o PNG.', 'error');
             return;
         }
 
         imageFiles.forEach(file => {
             if (file.size > 5 * 1024 * 1024) {
-                this.showToast(`${file.name} es demasiado grande. Máximo 5MB`, 'error');
+                this.showToast(`${file.name} es demasiado grande. Máximo 5MB.`, 'error');
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                const photo = {
+                this.previewPhotos.push({
                     id: Date.now() + Math.random(),
-                    file: file,
+                    file,
                     url: e.target.result,
                     name: file.name
-                };
-                this.previewPhotos.push(photo);
+                });
                 this.updatePreview();
             };
             reader.readAsDataURL(file);
@@ -95,8 +114,10 @@ class PhotoManager {
     }
 
     updatePreview() {
+        if (!this.previewContainer) return;
+
         if (this.previewPhotos.length === 0) {
-            this.previewSection.style.display = 'none';
+            this.previewSection?.style.setProperty('display', 'none');
             this.saveBtn.disabled = true;
             this.cancelBtn.style.display = 'none';
             return;
@@ -105,27 +126,29 @@ class PhotoManager {
         this.previewSection.style.display = 'block';
         this.saveBtn.disabled = false;
         this.cancelBtn.style.display = 'inline-block';
-
         this.previewContainer.innerHTML = '';
+
         this.previewPhotos.forEach(photo => {
             const col = document.createElement('div');
-            col.className = 'col';
+            col.className = 'col position-relative';
             col.innerHTML = `
-                        <div class="position-relative">
-                            <img src="${photo.url}" class="img-fluid rounded shadow-sm" style="height: 120px; width: 100%; object-fit: cover;" alt="${photo.name}">
-                            <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle" 
-                                    onclick="photoManager.removePreview('${photo.id}')"
-                                    style="width: 30px; height: 30px; padding: 0;">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    `;
+                <div class="card shadow-sm">
+                    <img src="${photo.url}" class="card-img-top img-thumbnail" style="object-fit:cover; height:140px;" alt="Nueva foto">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Eliminar" title="Eliminar"></button>
+                    <div class="card-body p-2">
+                        <small class="text-truncate d-block">${photo.name}</small>
+                    </div>
+                </div>
+            `;
+            col.querySelector('button.btn-close').onclick = () => {
+                this.removePreview(photo.id);
+            };
             this.previewContainer.appendChild(col);
         });
     }
 
     removePreview(photoId) {
-        this.previewPhotos = this.previewPhotos.filter(photo => photo.id !== photoId);
+        this.previewPhotos = this.previewPhotos.filter(p => p.id !== photoId);
         this.updatePreview();
     }
 
@@ -140,62 +163,73 @@ class PhotoManager {
 
     async savePhotos() {
         if (this.previewPhotos.length === 0) return;
+        if (!this.idConclusiones) {
+            this.showToast('Falta ID de conclusiones para guardar las fotos.', 'error');
+            return;
+        }
 
         this.btnSpinner.classList.remove('d-none');
         this.btnText.textContent = 'Guardando...';
         this.saveBtn.disabled = true;
 
         this.uploadProgress.style.display = 'block';
-        const progressBar = this.uploadProgress.querySelector('.progress-bar');
 
-        for (let i = 0; i <= 100; i += 10) {
-            progressBar.style.width = i + '%';
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const fotosBase64 = this.previewPhotos.map(p => p.url.split(',')[1]);
 
-        this.photos.push(...this.previewPhotos);
-        this.previewPhotos = [];
+        crearPeticion(urlAPI, {
+            case: "agregarFotografias",
+            data: $.param({
+                idConclusiones: this.idConclusiones,
+                fotos: fotosBase64
+            })
+        }, (response) => {
+            if (response.es_valor_error) {
+                this.showToast(response.mensaje, 'error');
+            } else {
+                this.photos.push(...this.previewPhotos);
+                this.previewPhotos = [];
+                this.updateCarousel();
+                this.updatePreview();
+                this.updatePhotoCount();
+                this.showToast('Fotografías guardadas exitosamente', 'success');
+            }
 
-        this.updateCarousel();
-        this.updatePreview();
-        this.updatePhotoCount();
+            this.btnSpinner.classList.add('d-none');
+            this.btnText.textContent = 'Guardar fotografías';
+            this.saveBtn.disabled = false;
+            this.uploadProgress.style.display = 'none';
 
-        this.btnSpinner.classList.add('d-none');
-        this.btnText.textContent = 'Guardar fotografías';
-        this.saveBtn.disabled = false;
-        this.uploadProgress.style.display = 'none';
-
-        this.showToast('Fotografías guardadas exitosamente', 'success');
+        });
     }
 
     updateCarousel() {
-        const carouselItems = document.getElementById('carouselItems');
-        const carouselIndicators = document.getElementById('carouselIndicators');
+        if (!this.carouselItems || !this.carouselIndicators) return;
 
         if (this.photos.length === 0) {
-            this.carouselSection.style.display = 'none';
-            this.emptyState.style.display = 'block';
+            this.carouselSection?.style.setProperty('display', 'none');
+            this.emptyState?.style.setProperty('display', 'block');
+            this.carouselEditBtnContainer?.style.setProperty('display', 'none');
             return;
         }
 
         this.carouselSection.style.display = 'block';
         this.emptyState.style.display = 'none';
 
-        carouselItems.innerHTML = '';
-        carouselIndicators.innerHTML = '';
+        this.carouselItems.innerHTML = '';
+        this.carouselIndicators.innerHTML = '';
 
         this.photos.forEach((photo, index) => {
-            const carouselItem = document.createElement('div');
-            carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-            carouselItem.innerHTML = `
-                        <img src="${photo.url}" class="d-block w-100 h-100" style="object-fit: cover;" alt="${photo.name}">
-                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
-                            <h6 class="mb-0">${photo.name}</h6>
-                        </div>
-                    `;
-            carouselItems.appendChild(carouselItem);
+            const item = document.createElement('div');
+            item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            item.dataset.photoId = photo.id;
+            item.style.height = '400px';
+            item.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <img src="${photo.url}" class="img-fluid rounded shadow" style="max-height:100%; max-width:100%; object-fit:contain;" alt="${photo.name}">
+                </div>
+            `;
+            this.carouselItems.appendChild(item);
 
             const indicator = document.createElement('button');
             indicator.type = 'button';
@@ -204,18 +238,126 @@ class PhotoManager {
             indicator.className = index === 0 ? 'active' : '';
             indicator.setAttribute('aria-label', `Slide ${index + 1}`);
             if (index === 0) indicator.setAttribute('aria-current', 'true');
-            carouselIndicators.appendChild(indicator);
+            this.carouselIndicators.appendChild(indicator);
+        });
+
+        this.bindCarouselEditEvents();
+    }
+
+    bindCarouselEditEvents() {
+        if (!this.carouselEditBtnContainer || !this.btnEditarFoto || !this.btnEliminarFoto || !this.carouselElement) return;
+
+        if (this.photos.length === 0) {
+            this.carouselEditBtnContainer.style.display = 'none';
+            return;
+        }
+
+        this.carouselEditBtnContainer.style.display = 'flex';
+
+        const getActiveIndex = () => {
+            const items = this.carouselItems.querySelectorAll('.carousel-item');
+            return Array.from(items).findIndex(item => item.classList.contains('active'));
+        };
+
+        const updateDataIndex = () => {
+            const idx = getActiveIndex();
+            this.btnEditarFoto.dataset.photoIndex = idx;
+            this.btnEliminarFoto.dataset.photoIndex = idx;
+        };
+
+        this.carouselElement.addEventListener('slid.bs.carousel', updateDataIndex);
+        updateDataIndex();
+
+        this.btnEditarFoto.onclick = () => {
+            const idx = parseInt(this.btnEditarFoto.dataset.photoIndex);
+            this.replacePhoto(idx);
+        };
+
+        this.btnEliminarFoto.onclick = () => {
+            const idx = parseInt(this.btnEliminarFoto.dataset.photoIndex);
+            this.deletePhoto(idx);
+        };
+    }
+
+    replacePhoto(index) {
+        if (index == null || index < 0 || index >= this.photos.length) return;
+
+        let input = document.getElementById('inputFotoCambio');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.jpg,.jpeg,.png';
+            input.id = 'inputFotoCambio';
+            input.style.display = 'none';
+            document.body.appendChild(input);
+        }
+
+        input.value = '';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                this.photos[index].url = evt.target.result;
+                this.updateCarousel();
+                this.showToast('Fotografía cambiada correctamente.', 'success');
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    }
+
+    deletePhoto(index) {
+        if (index == null || index < 0 || index >= this.photos.length) return;
+        const photo = this.photos[index];
+
+        alertaEliminar({
+            mensajeAlerta: "La fotografía se eliminará permanentemente.",
+            url: urlAPI,
+            data: {
+                case: "eliminarFotografia",
+                data: $.param({ idFoto: photo.id })
+            },
+            callback: () => {
+                this.photos.splice(index, 1);
+                this.updateCarousel();
+                this.updatePhotoCount();
+                this.showToast("Fotografía eliminada correctamente.", "success");
+            }
         });
     }
 
     updatePhotoCount() {
-        this.photoCount.textContent = this.photos.length;
+        if (!this.photoCount) return;
+        const total = this.photos.length + this.previewPhotos.length;
+        this.photoCount.textContent = `${total} ${total === 1 ? 'fotografía' : 'fotografías'}`;
     }
 
-    showToast(message, type = 'success') {
-        const fn = type === 'success' ? mostrarMensajeOK : mostrarMensajeError;
+    showToast(message, type = 'info') {
+        const fn = {
+            success: mostrarMensajeOk,
+            error: mostrarMensajeError,
+            warning: mostrarMensajeAdvertencia,
+            info: mostrarMensajeInfo
+        }[type] || mostrarMensajeInfo;
+
         fn(message, false);
+    }
+
+    crearCarousel(fotografias = []) {
+        if (!Array.isArray(fotografias)) fotografias = [];
+
+        this.photos = fotografias.map(f => ({
+            id: f.id,
+            url: `data:image/jpeg;base64,${f.fotografia}`,
+            name: `Foto ${f.id}`
+        }));
+
+        this.updateCarousel();
+        this.updatePhotoCount();
     }
 }
 
 const photoManager = new PhotoManager();
+

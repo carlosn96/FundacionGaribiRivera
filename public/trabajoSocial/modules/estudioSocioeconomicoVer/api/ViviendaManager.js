@@ -30,7 +30,7 @@ const iconosServicios = {
 
 // Función principal para crear la sección de vivienda
 function renderVivienda(datos) {
-    print(datos);
+    //print(datos);
     datosVivienda = datos;
     distribucion = datos.distribucion || [];
     actualizarInformacionGeneral(datos);

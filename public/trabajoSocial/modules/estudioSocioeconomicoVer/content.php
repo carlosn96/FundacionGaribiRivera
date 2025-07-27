@@ -12,6 +12,15 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button
+                    class="nav-link position-relative rounded-0  d-flex align-items-center justify-content-center bg-transparent fs-3 py-3"
+                    id="pills-fotos-tab" data-bs-toggle="pill" data-bs-target="#pills-fotos" type="button"
+                    role="tab" aria-controls="pills-fotos" aria-selected="true">
+                    <i class="ti ti-user-circle me-2 fs-6"></i>
+                    <span class="d-none d-md-block">Fotografías de la visita</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button
                     class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3"
                     id="pills-notifications-tab" data-bs-toggle="pill" data-bs-target="#pills-notifications"
                     type="button" role="tab" aria-controls="pills-notifications" aria-selected="false" tabindex="-1">
@@ -123,46 +132,7 @@
                                         <ul class="list-group" id="actitudes"></ul>
                                     </div>
 
-                                    <!-- Fotografías -->
-                                    <div class="border-top pt-4 mt-4">
-                                        <h5 class="mb-3 fw-semibold">
-                                            <i class="ti ti-photo me-2"></i>Fotografías de la visita
-                                        </h5>
-                                        <!-- Carousel Section -->
-                                        <div class="mb-3">
-                                            <div id="controls" class="carousel slide carousel-dark"
-                                                data-bs-ride="carousel">
-                                                <div class="carousel-inner" id="items"></div>
-                                                <a class="carousel-control-prev position-absolute start-0 top-50 translate-middle-y"
-                                                    href="#controls" role="button" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon bg-dark rounded-circle p-3"
-                                                        aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Anterior</span>
-                                                </a>
-                                                <a class="carousel-control-next position-absolute end-0 top-50 translate-middle-y"
-                                                    href="#controls" role="button" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon bg-dark rounded-circle p-3"
-                                                        aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Siguiente</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <!-- Selector de archivos múltiple -->
-                                        <div class="d-flex flex-column align-items-center gap-2">
-                                            <label for="inputAgregarFotos" class="form-label fw-semibold">Agregar nueva
-                                                fotografía</label>
-                                            <input type="file" id="inputAgregarFotos" class="form-control w-auto"
-                                                accept=".jpg,.jpeg,.png" multiple>
-                                        </div>
-
-                                        <div id="previewFotos" class="row row-cols-2 row-cols-md-4 g-3 w-100 mt-2">
-                                        </div>
-
-                                        <button id="btnGuardarFotos" class="btn btn-outline-primary mt-2 w-100"
-                                            disabled>
-                                            <i class="ti ti-upload me-2"></i>Guardar fotografías seleccionadas
-                                        </button>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -388,157 +358,154 @@
                 </div>
 
                 <!-- TAB: Vivienda -->
-<div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+                <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
 
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card  border shadow-none ">
-                <div class="card-body py-3">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <h6 class="mb-1 fw-bold">
-                                <i class="ti ti-house-door me-2"></i>
-                                Tipo de vivienda:
-                                <span id="tipoVivienda">-</span>
-                            </h6>
-                            <small class="opacity-75">
-                                Condición:
-                                <span id="condicionVivienda">-</span> • 
-                                Uso:
-                                <span id="usoVivienda">-</span> • 
-                                Familias que habitan:
-                                <span id="familiasVivienda">-</span> familia(s)
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Grid compacto de información principal -->
-    <div class="row g-2 mb-3">
-        <!-- Construcción -->
-        <div class="col-12 col-lg-6">
-            <div class="card border shadow-none h-100">
-                <div class="card-header  py-2">
-                    <h6 class="mb-0 text-primary">
-                        <i class="ti ti-tools me-2"></i>Construcción
-                    </h6>
-                </div>
-                <div class="card-body p-3">
-                    <div class="row g-2">
-                        <div class="col-4">
-                            <div class="text-center">
-                                <i class="ti ti-wall text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
-                                <small class="text-muted d-block mb-1">Paredes</small>
-                                <div id="paredesContainer" class="small">
-                                    <!-- Materiales de paredes -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="text-center">
-                                <i class="ti ti-home-up text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
-                                <small class="text-muted d-block mb-1">Techo</small>
-                                <div id="techoContainer" class="small">
-                                    <!-- Materiales de techo -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="text-center">
-                                <i class="ti ti-home-down text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
-                                <small class="text-muted d-block mb-1">Piso</small>
-                                <div id="pisoContainer" class="small">
-                                    <!-- Material de piso -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Distribución -->
-        <div class="col-12 col-lg-6">
-            <div class="card border shadow-none h-100">
-                <div class="card-header py-2 d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 text-primary">
-                        <i class="ti ti-grid-3x3 me-2"></i>Espacios
-                    </h6>
-                </div>
-                <div class="card-body p-3">
-                    <div id="distribucionContainer" class="row g-2">
-                        <!-- Espacios se cargarán aquí -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Segunda fila de información -->
-    <div class="row g-2 mb-3">
-        
-        <!-- Servicios -->
-        <div class="col-12 col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-light border-0 py-2">
-                    <h6 class="mb-0 text-primary">
-                        <i class="ti ti-gear me-2"></i>Servicios
-                    </h6>
-                </div>
-                <div class="card-body p-3">
-                    <div id="serviciosContainer" class="row g-2">
-                        <!-- Servicios se cargarán aquí -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Otros Bienes -->
-        <div class="col-12 col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-light border-0 py-2">
-                    <h6 class="mb-0 text-primary">
-                        <i class="ti ti-car-front me-2"></i>Otros Bienes
-                    </h6>
-                </div>
-                <div class="card-body p-3">
-                    <div id="otrosBienesContainer">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body p-2 text-center">
-                                        <i class="ti ti-car-front text-primary mb-1" style="font-size: 1.5rem;"></i>
-                                        <small class="d-block mb-2 fw-bold">Vehículos</small>
-                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
-                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body p-2 text-center">
-                                        <i class="ti ti-box text-primary mb-1" style="font-size: 1.5rem;"></i>
-                                        <small class="d-block mb-2 fw-bold">Otros</small>
-                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
-                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
-                                        </button>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="card  border shadow-none ">
+                                <div class="card-body py-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-8">
+                                            <h6 class="mb-1 fw-bold">
+                                                <i class="ti ti-house-door me-2"></i>
+                                                Tipo de vivienda:
+                                                <span id="tipoVivienda">-</span>
+                                            </h6>
+                                            <small class="opacity-75">
+                                                Condición:
+                                                <span id="condicionVivienda">-</span> • 
+                                                Uso:
+                                                <span id="usoVivienda">-</span> • 
+                                                Familias que habitan:
+                                                <span id="familiasVivienda">-</span> familia(s)
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Grid compacto de información principal -->
+                    <div class="row g-2 mb-3">
+                        <!-- Construcción -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card border shadow-none h-100">
+                                <div class="card-header  py-2">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="ti ti-tools me-2"></i>Construcción
+                                    </h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <div class="text-center">
+                                                <i class="ti ti-wall text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                                <small class="text-muted d-block mb-1">Paredes</small>
+                                                <div id="paredesContainer" class="small">
+                                                    <!-- Materiales de paredes -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-center">
+                                                <i class="ti ti-home-up text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                                <small class="text-muted d-block mb-1">Techo</small>
+                                                <div id="techoContainer" class="small">
+                                                    <!-- Materiales de techo -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-center">
+                                                <i class="ti ti-home-down text-muted d-block mb-1" style="font-size: 1.5rem;"></i>
+                                                <small class="text-muted d-block mb-1">Piso</small>
+                                                <div id="pisoContainer" class="small">
+                                                    <!-- Material de piso -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Distribución -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card border shadow-none h-100">
+                                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="ti ti-grid-3x3 me-2"></i>Espacios
+                                    </h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div id="distribucionContainer" class="row g-2">
+                                        <!-- Espacios se cargarán aquí -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Segunda fila de información -->
+                    <div class="row g-2 mb-3">
+                        <!-- Servicios -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light border-0 py-2">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="ti ti-gear me-2"></i>Servicios
+                                    </h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div id="serviciosContainer" class="row g-2">
+                                        <!-- Servicios se cargarán aquí -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Otros Bienes -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light border-0 py-2">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="ti ti-car-front me-2"></i>Otros Bienes
+                                    </h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div id="otrosBienesContainer">
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="card bg-light border-0">
+                                                    <div class="card-body p-2 text-center">
+                                                        <i class="ti ti-car-front text-primary mb-1" style="font-size: 1.5rem;"></i>
+                                                        <small class="d-block mb-2 fw-bold">Vehículos</small>
+                                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
+                                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="card bg-light border-0">
+                                                    <div class="card-body p-2 text-center">
+                                                        <i class="ti ti-box text-primary mb-1" style="font-size: 1.5rem;"></i>
+                                                        <small class="d-block mb-2 fw-bold">Otros</small>
+                                                        <button class="btn btn-outline-primary btn-sm py-1 px-2">
+                                                            <i class="ti ti-plus" style="font-size: 0.8rem;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-    </div>
-
-</div>
                 <!-- TAB: Referencias -->
                 <div class="tab-pane fade" id="pills-referencias" role="tabpanel"
                     aria-labelledby="pills-referencias-tab" tabindex="0">
@@ -561,8 +528,7 @@
                 </div>
 
                 <!-- TAB: Fotos -->
-                <div class="tab-pane fade" id="pills-fotos" role="tabpanel" aria-labelledby="pills-fotos-tab"
-                    tabindex="0">
+                <div class="tab-pane fade" id="pills-fotos" role="tabpanel" aria-labelledby="pills-fotos-tab" tabindex="0">
                     <div class="row justify-content-center">
                         <div class="col-lg-10">
                             <!-- Header Section -->
@@ -570,8 +536,37 @@
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                                     <span class="badge bg-warning fs-6 px-3 py-2">
                                         <i class="ti ti-photo me-1"></i>
-                                        <span id="photoCount">0</span> fotos
+                                        <span id="photoCount">0</span>
                                     </span>
+                                </div>
+                            </div>
+
+                            <!-- Carrusel de fotos guardadas -->
+                            <div id="carouselSection" style="display: none;" class="mb-4">
+                                <div id="photoCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner" id="carouselItems"></div>
+                                    <div class="carousel-indicators" id="carouselIndicators"></div>
+
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel"
+                                        data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Anterior</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel"
+                                        data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Siguiente</span>
+                                    </button>
+                                </div>
+
+                                <!-- Botones editar/eliminar foto activa -->
+                                <div class="d-flex justify-content-center mt-3 gap-2" id="carouselEditBtnContainer" style="display: none;">
+                                    <button disabled class="btn btn-sm btn-outline-primary" id="btnEditarFoto">
+                                        <i class="ti ti-pencil me-1"></i>Cambiar foto
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" id="btnEliminarFoto">
+                                        <i class="ti ti-trash me-1"></i>Eliminar foto
+                                    </button>
                                 </div>
                             </div>
 
@@ -582,38 +577,34 @@
                                 <p class="mb-0">Comienza agregando algunas imágenes de tu visita</p>
                             </div>
 
-                            <!-- Upload Section -->
-                            <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-light">
-                                    <h6 class="fw-semibold mb-0">
-                                        <i class="ti ti-circle-plus me-2"></i>Agregar nuevas fotografías
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light"
-                                        id="uploadZone">
-                                        <i class="ti ti-cloud-upload display-4 text-primary mb-3"></i>
-                                        <h6 class="fw-semibold mb-2">Arrastra y suelta tus fotos aquí</h6>
-                                        <p class="text-muted mb-3">o haz clic para seleccionar archivos</p>
-                                        <button type="button" class="btn btn-outline-primary" id="selectFilesBtn">
-                                            <i class="ti ti-folder-open me-2"></i>Seleccionar fotos
+                            <!-- Accordion para Agregar nuevas fotografías -->
+                            <div class="accordion mb-4" id="uploadAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingUpload">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpload" aria-expanded="false" aria-controls="collapseUpload">
+                                            <i class="ti ti-circle-plus me-2"></i>Agregar nuevas fotografías
                                         </button>
-                                        <input type="file" id="inputAgregarFotos" class="d-none"
-                                            accept=".jpg,.jpeg,.png,.webp" multiple>
-                                    </div>
-                                    <div class="mt-3">
-                                        <small class="text-muted">
-                                            <i class="ti ti-info-circle me-1"></i>
-                                            Formatos soportados: JPG, JPEG, PNG, WebP (máx. 5MB por archivo)
-                                        </small>
+                                    </h2>
+                                    <div id="collapseUpload" class="accordion-collapse collapse" aria-labelledby="headingUpload" data-bs-parent="#uploadAccordion">
+                                        <div class="accordion-body">
+                                            <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light" id="uploadZone">
+                                                <i class="ti ti-cloud-upload display-4 text-primary mb-3"></i>
+                                                <h6 class="fw-semibold mb-2">Arrastra y suelta tus fotos aquí</h6>
+                                                <p class="text-muted mb-3">o haz clic para seleccionar archivos</p>
+                                                <button type="button" class="btn btn-outline-primary" id="selectFilesBtn">
+                                                    <i class="ti ti-folder-open me-2"></i>Seleccionar fotos
+                                                </button>
+                                                <input type="file" id="inputAgregarFotos" class="d-none" accept=".jpg,.jpeg,.png,.webp" multiple>
+                                            </div>
+                                            <div class="mt-3">
+                                                <small class="text-muted">
+                                                    <i class="ti ti-info-circle me-1"></i>
+                                                    Formatos soportados: JPG, JPEG, PNG, WebP (máx. 5MB por archivo)
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Progress Bar -->
-                            <div class="progress mb-4" style="height: 4px; display: none;" id="uploadProgress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                                    style="width: 0%"></div>
                             </div>
 
                             <!-- Preview Section -->
@@ -635,15 +626,14 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="d-flex gap-2 justify-content-end flex-wrap">
-                                <button id="btnCancelar" class="btn btn-outline-secondary" style="display: none;">
+                            <div class="d-flex gap-2 justify-content-end flex-wrap mb-4">
+                                <button id="btnCancelar" class="btn btn-outline-success" style="display: none;">
                                     <i class="ti ti-x me-2"></i>Cancelar
                                 </button>
                                 <button id="btnGuardarFotos" class="btn btn-primary" disabled>
                                     <i class="ti ti-cloud-upload me-2"></i>
                                     <span id="btnText">Guardar fotografías</span>
-                                    <span class="spinner-border spinner-border-sm ms-2 d-none" id="btnSpinner"
-                                        role="status">
+                                    <span class="spinner-border spinner-border-sm ms-2 d-none" id="btnSpinner" role="status">
                                         <span class="visually-hidden">Cargando...</span>
                                     </span>
                                 </button>
@@ -655,8 +645,6 @@
         </div> <!-- Cierre de card-body -->
     </div> <!-- Cierre de card -->
 </div> <!-- Cierre de content -->
-
-
 
 <!-- Modal: Mejorar Observaciones -->
 <div class="modal fade" id="modalMejorarObservaciones" tabindex="-1" aria-labelledby="mejorarObservacionesLabel"
@@ -744,7 +732,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal: Editar Familiar -->
 <div class="modal fade" id="modalEditarFamiliar" tabindex="-1" aria-labelledby="modalEditarFamiliarLabel"
