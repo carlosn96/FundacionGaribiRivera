@@ -245,4 +245,48 @@ class AdminEstudioSocioeconomico extends Admin
     {
         return $this->dao->consultarConeval($fecha);
     }
+
+    /**
+     * Obtiene todas las configuraciones CONEVAL.
+     */
+    public function listarConfiguracionesConeval()
+    {
+        return $this->dao->listarConfiguracionesConeval();
+    }
+
+    /**
+     * Crea una nueva configuración CONEVAL.
+     */
+    public function crearConfiguracionConeval(array $formData)
+    {
+
+        return $this->dao->crearConfiguracionConeval($this->construirConfiguracionConeval($formData));
+    }
+
+    /**
+     * Actualiza una configuración CONEVAL existente.
+     */
+    public function actualizarConfiguracionConeval(array $formData)
+    {
+        return $this->dao->actualizarConfiguracionConeval($this->construirConfiguracionConeval($formData));
+    }
+
+    /**
+     * Elimina una configuración CONEVAL por su ID.
+     */
+    public function eliminarConfiguracionConeval(int $id)
+    {
+        return $this->dao->eliminarConfiguracionConeval($id);
+    }
+
+
+    private function construirConfiguracionConeval(array $data)
+    {
+        return new ConfiguracionConeval(
+            $data['montoVulnerableIngreso'],
+            $data['montoPobrezaExtrema'],
+            $data['fechaMuestra'],
+            intval($data['idConeval'] ?? 0),
+        );
+    }
 }

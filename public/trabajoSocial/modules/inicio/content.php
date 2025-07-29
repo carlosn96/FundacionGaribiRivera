@@ -65,7 +65,7 @@
                     <div>
                         <h4 class="fw-light mb-2 lh-1 text-dark">Configuración</h4>
                     </div>
-                    <a href="#" class="btn btn-outline-warning btn-sm border-2 fw-normal stretched-link">
+                    <a href="../configuracion" class="btn btn-outline-warning btn-sm border-2 fw-normal stretched-link">
                         Configurar <i class="ti ti-arrow-up-right ms-1"></i>
                     </a>
                 </div>

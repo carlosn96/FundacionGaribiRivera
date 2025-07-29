@@ -63,6 +63,20 @@
                         <span class="hide-menu ps-1">Estudio socioeconómico </span>
                     </a>
                 </li>
+                <!-- ============================= -->
+                <!-- Configuración -->
+                <!-- ============================= -->
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Configuraciones</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../configuracionConeval/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:wallet-money-broken" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">CONEVAL </span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

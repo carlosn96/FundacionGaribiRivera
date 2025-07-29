@@ -5,6 +5,10 @@ class EstudioSocioeconomicoDAO extends DAO
 
     private const GUARDAR_ESTUDIO_SOCIOECONOMICO = "CALL guardar_estudio_socioeconomico(?)";
     private const RECUPERAR_ESTUDIO_SOCIOECONOMICO = "SELECT * FROM recuperar_estudio_socioeconomico WHERE idEmprendedor = ?";
+    private const TABLA_CONEVAL = 'estudio_socioeconomico_coneval';
+
+    private const GUARDAR_CONEVAL = "CALL guardar_coneval(?)";
+    private const ACTUALIZAR_CONEVAL = "CALL actualizar_coneval(?)";
 
     public function guardar(EstudioSocioeconomico $estudioSocioeconomico)
     {
@@ -138,6 +142,56 @@ class EstudioSocioeconomicoDAO extends DAO
         $prep->agregarInt($idVivienda);
         $prep->agregarInt($idEspacio);
         return $prep->ejecutar();
+    }
+
+
+    /**
+     * Obtiene todos los registros de configuración, ordenados por fecha descendente.
+     *
+     * @return array|false
+     */
+    public function listarConfiguracionesConeval()
+    {
+        return $this->selectPorCamposEspecificos("*", self::TABLA_CONEVAL, " ORDER BY fecha_muestra DESC", true);
+    }
+
+    /**
+     * Inserta un nuevo registro de configuración.
+     *
+     * @param ConfiguracionConeval $coneval Los datos del formulario.
+     * 
+     * @return bool
+     */
+    public function crearConfiguracionConeval(ConfiguracionConeval $coneval)
+    {
+        $prep = $this->prepararInstruccion(self::GUARDAR_CONEVAL);
+        $prep->agregarEntidad($coneval);
+        return $prep->ejecutar();
+    }
+    /**
+     * Actualiza un registro de configuración existente.
+     *
+     * @param ConfiguracionConeval $coneval Los datos del formulario.
+     * 
+     * @return bool
+     */
+    public function actualizarConfiguracionConeval(ConfiguracionConeval $coneval)
+    {
+        $prep = $this->prepararInstruccion(self::ACTUALIZAR_CONEVAL);
+        $prep->agregarEntidad($coneval);
+        return $prep->ejecutar();
+    }
+
+    /**
+     * Elimina una configuración CONEVAL por su ID.
+     *
+     * @param int $id El ID de la configuración a eliminar.
+     * 
+     * @return bool
+     */
+    public function eliminarConfiguracionConeval(int $id)
+    {
+        return $this->eliminarPorId(self::TABLA_CONEVAL, 'id_coneval', $id);
     }
 
 }
