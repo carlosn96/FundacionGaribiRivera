@@ -48,7 +48,7 @@ class EstudioSocioeconomicoDAO extends DAO
             'referencias' => json_decode($data['referencias'], true),
             'vulnerabilidades' => ($vul = json_decode($data['vulnerabilidades'], true)),
             'conclusiones' => json_decode($data['conclusiones'], true),
-            'coneval' => $this->consultarConeval(),
+            'coneval' => json_decode($data['coneval'], true),
         ];
     }
 

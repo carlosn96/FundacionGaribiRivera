@@ -7,6 +7,7 @@
         </div>
         <form class="validation-wizard-horizontal wizard-circle needs-validation" id="estudioSocioeconomicoForm">
             <input id="idEmprendedor" name="idEmprendedor" hidden="">
+            
             <h6>Empleabilidad y Seguridad Social</h6>
             <section>
                 <div class="mb-4">
@@ -78,6 +79,8 @@
                     </div>
                 </div>
             </section>
+             
+           
             <h6>Datos Familiares</h6>
             <section id="datosFamiliares" class="position-relative">
                 <h5 class="fw-bold mb-4">Composición Familiar (Dependientes Económicos)</h5>
@@ -162,9 +165,12 @@
                     <div class="col">
                         <div class="mb-3">
                             <label for="totalEgresos" class="form-label">Total de egresos</label>
-                            <div class="input-group">
+                            <div class="input-group has-validation">
                                 <span class="input-group-text">$</span>
                                 <input type="number" class="form-control" id="totalEgresos" name="totalEgresos" value="0" readonly>
+                                <div class="invalid-feedback">
+                                    La suma de los egresos no puede ser mayor que los ingresos.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -312,7 +318,7 @@
                     </div>
                 </div>
             </section>
-
+ 
             <h6>Vivienda</h6>
             <section>
                 <div class="row mb-3 border p-3 rounded">
@@ -532,6 +538,79 @@
                         </div>
                     </div>
                 </div>
+
+
+
+<div class="mt-4 p-4 border rounded-3 shadow-sm bg-white">
+    <!-- Header con ingreso familiar -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="p-3">
+                <label for="totalIngresosFamiliaVulnerabilidad" class="form-label fw-semibold text-dark mb-2 d-block">
+                    Ingreso familiar:
+                </label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white text-muted border">MXN</span>
+                    <input type="text" id="totalIngresosFamiliaVulnerabilidad" name="totalIngresosFamiliaVulnerabilidad"
+                        class="form-control border" placeholder="Monto" readonly value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CONEVAL  -->
+    <div class="mb-4 pb-3 border-bottom">
+        <h5 class="mb-1 fw-bold text-dark">CONEVAL</h5>
+        <small class="text-muted">
+            Información de referencia para determinar pobreza por ingresos
+        </small>
+    </div>
+
+    <!-- Fecha de referencia -->
+    <div class="mb-4">
+        <label for="fechaMuestra" class="form-label fw-semibold text-dark mb-2">
+            Fecha de referencia
+        </label>
+        <div class="input-group">
+            <input type="text" id="fechaMuestra" name="fechaMuestra"
+                class="form-control" placeholder="dd/mm/yyyy">
+            <span class="input-group-text bg-light border">
+                <i class="fas fa-calendar-alt text-muted"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Montos CONEVAL -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="p-3 rounded-3 border">
+                <label for="montoVulnerableIngreso" class="form-label fw-semibold text-dark mb-2 d-block">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Vulnerable por ingresos
+                </label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white text-muted border">MXN</span>
+                    <input type="text" id="montoVulnerableIngreso" name="montoVulnerableIngreso"
+                        class="form-control border" placeholder="Monto" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 rounded-3 border">
+                <label for="montoPobrezaExtrema" class="form-label fw-semibold text-dark mb-2 d-block">
+                    <i class="fas fa-exclamation-circle text-danger me-2"></i>
+                    Pobreza extrema por ingresos
+                </label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white text-muted border">MXN</span>
+                    <input type="text" id="montoPobrezaExtrema" name="montoPobrezaExtrema"
+                        class="form-control border" placeholder="Monto" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
             </section>
             <h6 class="text-primary">Conclusiones</h6>
             <section class="my-4">

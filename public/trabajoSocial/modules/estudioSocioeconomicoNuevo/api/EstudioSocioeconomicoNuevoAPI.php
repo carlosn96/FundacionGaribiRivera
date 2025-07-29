@@ -16,22 +16,27 @@ class EstudioSocioeconomicoNuevoAPI extends API
         $nombreInputFile = "fotografiasEvidencia"; 
         $this->data[$nombreInputFile] = Util::recuperarArchivosServidor($nombreInputFile);
         $this->data["trabajadorSocial"] = $this->getUsuarioActual();
+        $this->data["coneval"] = Sesion::getInfoTemporal("coneval")["idConeval"] ?? 0;
         $this->enviarResultadoOperacion(getAdminEstudioSocioeconomico()->guardarEstudioSocioeconomico($this->data));
     }
 
     function recuperarCamposInformacion()
     {
         $admin = getAdminLineaBase();
+        $adminEstudioSocioeconomico = getAdminEstudioSocioeconomico();
         $existeLineaBase = $admin->getLineaBase($id = $this->getData("id"))["inicial"]["existeLineaBase"];
-        $estudioSocioeconomico = getAdminEstudioSocioeconomico()->getEstudioSocioeconomico($id);
+        $estudioSocioeconomico = $adminEstudioSocioeconomico->getEstudioSocioeconomico($id);
+        $coneval = $adminEstudioSocioeconomico->consultarConeval();
         Sesion::setInfoTemporal("estudioSocioeconomico", $estudioSocioeconomico);
         Sesion::setInfoTemporal("emprendedor", $emprendedor = getAdminUsuario()->buscarUsuarioPorID($id));
+        Sesion::setInfoTemporal("coneval", $coneval);
         $this->enviarRespuesta(
             [
             "emprendedor" => $emprendedor,
             "existeLineaBase" => $existeLineaBase,
             "existeEstudioSocioeconomico" => $estudioSocioeconomico !== null,
-            "campos" => $this->recuperarCampos($admin)
+            "campos" => $this->recuperarCampos($admin),
+            "coneval" => $coneval
             ]
         );
     }

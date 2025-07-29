@@ -13,6 +13,7 @@ function ready() {
                 } else {
                     completarCamposFormulario(rs.campos);
                     completarInfoEmprendedor(rs.emprendedor);
+                    completarInfoCONEVAL(rs.coneval);
                     ajustarEventos();
                 }
             }
@@ -121,9 +122,35 @@ function completarCamposFormulario(campos) {
         </div>`;
         $('#vulnerabilidadList').append(checkboxHtml);
     });
+
+}
+
+function completarInfoCONEVAL(coneval) {
+    if (!coneval || typeof coneval !== 'object') {
+        console.warn("Objeto CONEVAL inválido.");
+        return;
+    }
+    // Actualizar los campos con los valores del objeto
+    $('#fechaMuestra').val(coneval.fechaMuestra);
+    $('#montoVulnerableIngreso').val(coneval.montoVulnerableIngreso.toFixed(2));
+    $('#montoPobrezaExtrema').val(coneval.montoPobrezaExtrema.toFixed(2));
 }
 
 async function enviarForm() {
+    const totalIngresos = parseFloat($("#totalIngresos").text()) || 0;
+    let totalEgresos = 0;
+    $(".egreso").each(function () {
+        totalEgresos += parseFloat(this.value) || 0;
+    });
+
+    if (totalEgresos > totalIngresos) {
+        mostrarMensajeAdvertencia("La suma de los egresos no puede ser mayor a los ingresos familiares.", false);
+        const $totalEgresosInput = $("#totalEgresos");
+        $totalEgresosInput.removeClass("is-valid").addClass("is-invalid");
+        $totalEgresosInput[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
     const esVulnerable = $("#esVulnerableSi").is(":checked");
     if (esVulnerable) {
         const vulnerabilidades = $("input[name='vulnerabilidad[vulnerabilidades][]']:checked").map(function () {
@@ -232,11 +259,22 @@ function ajustarEventos() {
     });
 
     $(".egreso").change(function () {
-        var totalEgresos = 0;
+        const totalIngresos = parseFloat($("#totalIngresos").text()) || 0;
+        const $totalEgresosInput = $("#totalEgresos");
+
+        let totalEgresos = 0;
         $(".egreso").each(function () {
             totalEgresos += parseFloat(this.value) || 0;
         });
-        $("#totalEgresos").val(totalEgresos.toFixed(2));
+
+        $totalEgresosInput.val(totalEgresos.toFixed(2));
+        $totalEgresosInput.removeClass("is-invalid is-valid");
+
+        if (totalEgresos > totalIngresos) {
+            $totalEgresosInput.addClass("is-invalid");
+        } else {
+            $totalEgresosInput.addClass("is-valid");
+        }
     });
 
     $("input[name='vehiculoPropio']").change(function () {
@@ -403,5 +441,6 @@ function actualizarIngresos(integrantesTotal) {
     $("#totalIngresoFijoValor").text(ingresoFijoTotal.toFixed(2));
     $("#totalIngresoVariableValor").text(ingresoVariableTotal.toFixed(2));
     $("#totalIngresos").text(totalIngresos.toFixed(2));
+    $("#totalIngresosFamiliaVulnerabilidad").val(totalIngresos.toFixed(2));
     $("#promedioIngreso").text(promedioIngreso.toFixed(2));
 }

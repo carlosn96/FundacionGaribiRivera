@@ -108,6 +108,7 @@ class AdminEstudioSocioeconomico extends Admin
             $this->construirSeccionConclusiones($data),
             $data["resultadoVisita"],
             $data["trabajadorSocial"],
+            $data["coneval"],
             $data["fechaCreacion"] ?? ""
         );
     }
@@ -238,5 +239,10 @@ class AdminEstudioSocioeconomico extends Admin
     public function eliminarEspacioVivienda($idEspacio, $idVivienda)
     {
         return $this->dao->eliminarEspacioVivienda($idEspacio, $idVivienda);
+    }
+
+    public function consultarConeval($fecha = null)
+    {
+        return $this->dao->consultarConeval($fecha);
     }
 }

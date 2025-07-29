@@ -1,6 +1,7 @@
 <?php
 
-class EstudioSocioeconomico {
+class EstudioSocioeconomico
+{
 
     use Entidad;
 
@@ -16,8 +17,12 @@ class EstudioSocioeconomico {
     private string|null $resultadoVisita;
     private $fechaCreacion;
     private int $trabajadorSocial;
+    private int $coneval;
 
-    public function __construct(int $idEmprendedor, $empleabilidad, $familiares, $economia, $vivienda, $otrosBienes, $referencias, $vulnerabilidades, $conclusiones, string $resultadoVisita, int $trabajadorSocial, $fechaCreacion = "") {
+
+    public function __construct(int $idEmprendedor, $empleabilidad, $familiares, $economia, $vivienda, 
+        $otrosBienes, $referencias, $vulnerabilidades, $conclusiones, string $resultadoVisita, int $trabajadorSocial, int $coneval, $fechaCreacion = ""
+    ) {
         $this->idEmprendedor = $idEmprendedor;
         $this->empleabilidad = $empleabilidad;
         $this->familiares = $familiares;
@@ -29,6 +34,7 @@ class EstudioSocioeconomico {
         $this->conclusiones = $conclusiones;
         $this->resultadoVisita = $resultadoVisita;
         $this->fechaCreacion = $fechaCreacion;
+        $this->coneval = $coneval;
         $this->trabajadorSocial = $trabajadorSocial;
     }
 }
