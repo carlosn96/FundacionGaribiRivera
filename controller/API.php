@@ -63,6 +63,11 @@ abstract class API
         return $this->data[$key] ?? "";
     }
 
+    protected function getDataAll()
+    {
+        return $this->data;
+    }
+
     protected function getUsuarioActual()
     {
         return Sesion::obtenerIDUsuarioActual();
