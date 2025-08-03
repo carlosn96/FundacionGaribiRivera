@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row d-flex align-items-stretch g-3">
-        <input hidden="" id="instructor" value="<?= $_GET["id"] ?? null ?>">
+        <input hidden="" id="instructor" value="<?php echo $_GET["id"] ?? null ?>">
 
         <!-- Card de instructor -->
         <div class="col-lg-4">

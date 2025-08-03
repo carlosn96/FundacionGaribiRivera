@@ -1,5 +1,3 @@
-
-
 <div class="card shadow-sm border-1">
     <div class="card-body">
         <h4 class="card-title">Administración de Línea Base</h4>
@@ -39,6 +37,13 @@
             </div>
 
             <div class="tab-pane p-3" id="navpill-22" role="tabpanel">
+                <div class="row mb-2">
+                    <div class="col-12 d-flex justify-content-end">
+                        <button id="btn-eliminar-seleccionados" type="button" class="btn btn-outline-danger" onclick="eliminarSeleccionados()">
+                            <i class="ti ti-trash me-2"></i>Eliminar seleccionados
+                        </button>
+                    </div>
+                </div>
                 <div class="row">
                     <div id="tablaEmprendedoresSinLineaBaseContenedor" class="table-responsive">
                     </div>

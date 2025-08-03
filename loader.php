@@ -132,12 +132,14 @@ class Util
         // Merge de headers
         $headers = array_merge($defaultHeaders, $headers);
 
-        curl_setopt_array($ch, [
+        curl_setopt_array(
+            $ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => $headers,
-        ]);
+            ]
+        );
 
         $response = curl_exec($ch);
 
@@ -202,21 +204,23 @@ define("NO_COMPLETE_DATA_ERROR", Util::enum("La información solicitada no está
 define("ES_VALOR_ERROR", true);
 define("NO_ES_VALOR_ERROR", !ES_VALOR_ERROR);
 
-spl_autoload_register(function ($clase) {
-    $directorios = ["admin", "dao", "dao/util", "model", "model/impacto", "controller", "libs"];
-    foreach ($directorios as $directorio) {
-        if (buscar(ROOT_APP . $directorio, $clase)) {
-            return;
+spl_autoload_register(
+    function ($clase) {
+        $directorios = ["admin", "dao", "dao/util", "model", "model/impacto", "controller", "libs"];
+        foreach ($directorios as $directorio) {
+            if (buscar(ROOT_APP . $directorio, $clase)) {
+                return;
+            }
         }
     }
-});
+);
 
 function buscar($directorio, $clase)
 {
     // Convertir el namespace en una ruta de archivo
     $archivo = $directorio . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $clase) . '.php';
     if (file_exists($archivo)) {
-        require_once($archivo);
+        include_once $archivo;
         return true;
     }
     // Si no se encuentra el archivo, buscar recursivamente en los subdirectorios
@@ -242,6 +246,10 @@ function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion
 {
     return AdminFactory::getAdminEvaluacionFormacion();
 }
+function getAdminUsuario(): AdminUsuario
+{
+    return AdminFactory::getAdminUsuario();
+}
 
 function getAdminEmprendedor(): AdminEmprendedor
 {
@@ -256,11 +264,6 @@ function getAdminTaller(): AdminTaller
 function getAdminEtapaFormacion(): AdminEtapaFormacion
 {
     return AdminFactory::getAdminEtapaFormacion();
-}
-
-function getAdminUsuario(): AdminUsuario
-{
-    return AdminFactory::getAdminUsuario();
 }
 
 function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento

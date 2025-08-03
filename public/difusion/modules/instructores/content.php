@@ -1,19 +1,10 @@
 <div class="container-fluid">
+    <div id="cardsInstructores" class="row"></div>
     <div class="card">
         <div class="card-body">
             <h5 class="card-title fw-semibold mb-4">Nuevo Instructor</h5>
             <form id="instructorForm" class="needs-validation">
-                <div class="row mb-3">
-                    <!-- Fotografía -->
-                    <div class="col-12 text-center mb-4">
-                        <div class="col-4 mx-auto">
-                            <img id="previewImage" width="200" class="rounded-1 img-thumbnail mb-3" style="max-width: 100%; height: auto;">
-                        </div>
-                        <label for="fotografia" class="form-label text-success">Fotografía</label>
-                        <input type="file" class="form-control form-control-sm border border-success" id="fotografiaInstructor" name="fotografiaInstructor" accept="image/*">
-                        <div class="form-text text-success">Solo se permiten imágenes (JPG, PNG, etc.)</div>
-                    </div>
-                </div>
+
 
                 <div class="row mb-3">
                     <!-- Nombre -->
@@ -75,6 +66,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <!-- Fotografía -->
+                    <div class="col-12 text-center mb-4">
+                        
+                        <label for="fotografia" class="form-label text-success">Fotografía</label>
+                        <input type="file" class="form-control form-control-sm border border-success" id="fotografiaInstructor" name="fotografiaInstructor" accept="image/*">
+                        <div class="form-text text-success">Solo se permiten imágenes (JPG, PNG, etc.)</div>
+                        <div class="col-4 mx-auto">
+                            <img id="previewImage" width="200" class="rounded-1 img-thumbnail mb-3" style="max-width: 100%; height: auto;">
+                        </div>
+                    </div>
+                </div>
 
                 <div class="d-md-flex align-items-center">
                     <!-- Botón de guardar -->
@@ -89,24 +92,5 @@
 
         </div>
     </div>
-    <div class="card" hidden="">
-        <div class="card-body">
-            <h4 class="card-title mb-4 pb-2">Instructores</h4>
-            <div class="table-responsive pb-4">
-                <table id="tablaInstructores" class="table table-striped table-bordered border text-nowrap align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-<!--                            <th>Correo electrónico</th>
-                            <th>Teléfono</th>-->
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="cardsInstructores" class="row"></div>
+    
 </div>

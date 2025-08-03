@@ -1,4 +1,4 @@
-function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoError = () => { return true; }, fnSuccess = mostrarMensajeResultado) {
+function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoError = fnValidateNoErrorDefecto, fnSuccess = mostrarMensajeResultado) {
     $(idFormulario.startsWith('#') ? idFormulario : '#' + idFormulario).submit(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -12,6 +12,10 @@ function fijarSubmitFormulario(idFormulario, urlAPI, submitCase, fnValidateNoErr
         }
         form.addClass("was-validated");
     });
+}
+
+function fnValidateNoErrorDefecto() {
+    return true; // Por defecto, no hay validación adicional
 }
 
 function crearFormData(form) {

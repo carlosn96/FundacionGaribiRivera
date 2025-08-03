@@ -64,7 +64,10 @@ function construirTablaEmprendedoresSinLineaBase(data) {
     const columnas = [
         {nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => emprendedor.etapa},
         {nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="#" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>`},
-        {nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo}
+        {nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo},
+         {nombre: "Seleccionar", titulo: "Seleccionar", generar: (emprendedor) => 
+            `<input type="checkbox" class="form-check-input" name="seleccionar_emprendedor" value="${emprendedor.idUsuario}" />`
+        } // Checbox para seleccionar emprendedor
     ];
     construirTablaGenerica(data, columnas, "tablaEmprendedoresSinLineaBaseContenedor", "tablaEmprendedoresSinLineaBase");
 }
@@ -189,5 +192,23 @@ function eliminarlineaBase(tipo, idUsuario) {
         mensajeAlerta: "La información de la linea base " + tipo + " ya no estará disponible",
         url: urlAPI,
         data: {case: "eliminarLineaBase", data: $.param({tipo: tipo, usuario: idUsuario})}
+    });
+}
+
+function eliminarSeleccionados() {
+    const idsSeleccionados = [];
+    $("input[name='seleccionar_emprendedor']:checked").each(function () {
+        idsSeleccionados.push($(this).val());
+    });
+
+    if (idsSeleccionados.length === 0) {
+        mostrarMensajeError("No se han seleccionado emprendedores.", false);
+        return;
+    }
+
+    alertaEliminar({
+        mensajeAlerta: "Los emprendedores seleccionados serán eliminados permanentemente.",
+        url: urlAPI,
+        data: {case: "eliminarEmprendedoresSeleccionados", data: $.param({ids: idsSeleccionados})}
     });
 }

@@ -72,6 +72,14 @@
                     <span class="hide-menu">Emprendededores</span>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../altaEmprendedores/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:user-plus-broken" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Alta de emprendedores </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../listadoGeneralEmprendedores/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="solar:users-group-rounded-bold" class="fs-6"></iconify-icon>
@@ -87,14 +95,6 @@
                         <span class="hide-menu ps-1">Línea Base </span>
                     </a>
                 </li>
-                <!--                <li class="sidebar-item">
-                                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
-                                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                                            <iconify-icon icon="solar:clipboard-check-broken" class="fs-6"></iconify-icon>
-                                        </span>
-                                        <span class="hide-menu ps-1">Visita de seguimiento</span>
-                                    </a>
-                                </li>-->
                 <li class="nav-small-cap">
                     <span class="hide-menu">Impacto</span>
                 </li>

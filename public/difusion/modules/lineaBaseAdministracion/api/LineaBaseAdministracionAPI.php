@@ -1,44 +1,56 @@
 <?php
 
-include_once '../../../../../loader.php';
+require_once '../../../../../loader.php';
 
-class LineaBaseAdministracionAPI extends API {
+class LineaBaseAdministracionAPI extends API
+{
 
-    function recuperarEmprendedores() {
-        $this->enviarRespuesta([
+    function recuperarEmprendedores()
+    {
+        $this->enviarRespuesta(
+            [
             "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase(),
             "emprendedoresNoLineaBase" => getAdminLineaBase()->listarEmprendoresSinLineaBase(),
             "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
-        ]);
+            ]
+        );
     }
 
-    function filtrarEmprendedores() {
+    function filtrarEmprendedores()
+    {
         $etapa = $this->getData("etapa");
-        $this->enviarRespuesta([
+        $this->enviarRespuesta(
+            [
             "emprendedores" => getAdminLineaBase()->listarEmprendoresConLineaBase($etapa),
             "etapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
-        ]);
+            ]
+        );
     }
 
-    function actualizarEtapa() {
+    function actualizarEtapa()
+    {
         $idLineaBase = $this->getData("lineaBase");
         $idEtapa = $this->getData("etapa");
         $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
     }
 
-    function recuperarSeguimientoCaso() {
+    function recuperarSeguimientoCaso()
+    {
         $this->enviarRespuesta(["seguimientoCaso" => getAdminEmprendedor()->recuperarSeguimientoCaso($this->data["idLineaBase"])]);
     }
 
-    function eliminarSeguimientoCaso() {
+    function eliminarSeguimientoCaso()
+    {
         $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarSeguimientoCaso($this->data["id"]));
     }
 
-    function eliminarLineaBase() {
+    function eliminarLineaBase()
+    {
         $this->enviarResultadoOperacion(getAdminLineaBase()->eliminarLineaBase($this->data["tipo"], $this->data["usuario"]));
     }
 
-    function lineaBaseAction() {
+    function lineaBaseAction()
+    {
         try {
             Sesion::setInfoTemporal("idUsuario", $this->getData("idUsuario"));
             Sesion::setInfoTemporal("tipoLineaBase", $this->getData("tipo"));
@@ -49,6 +61,12 @@ class LineaBaseAdministracionAPI extends API {
         } finally {
             $this->enviarRespuesta($rs);
         }
+    }
+
+    function eliminarEmprendedoresSeleccionados()
+    {
+        $ids = $this->getData("ids");
+        $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarMultipleEmprendedores($ids));
     }
 }
 
