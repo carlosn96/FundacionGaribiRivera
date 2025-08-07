@@ -331,11 +331,11 @@
                     tabindex="0">
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="card border shadow-none">
+                            <div class="card ">
                                 <div class="card-body p-4">
                                     <h4 class="card-title mb-4">Economía</h4>
                                     <div class="mb-4">
-                                        <p class="card-subtitle text-muted fw-semibold border-bottom pb-2">Rango de
+                                        <p class="card-subtitle text-muted fw-semibold pb-2">Rango de
                                             ingresos familiares (información de la línea base)</p>
                                         <div class="border p-2 rounded" id="ingresoMensual"></div>
                                     </div>

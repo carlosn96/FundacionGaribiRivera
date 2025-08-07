@@ -123,6 +123,54 @@ function completarCamposFormulario(campos) {
         $('#vulnerabilidadList').append(checkboxHtml);
     });
 
+    crearEgresos();
+
+}
+
+function crearEgresos() {
+    const egresos = [
+        { id: "ahorro", label: "Ahorro", icon: "basket-dollar", color: "text-success" },
+        { id: "alimentacion", label: "Alimentación", icon: "shopping-cart", color: "text-success" },
+        { id: "vivienda", label: "Vivienda", icon: "home", color: "text-primary" },
+        { id: "celular", label: "Celular", icon: "phone", color: "text-danger" },
+        { id: "colegiaturas", label: "Colegiaturas", icon: "book", color: "text-warning" },
+        { id: "luz", label: "Luz", icon: "bolt", color: "text-warning" },
+        { id: "camiones", label: "Camiones", icon: "bus", color: "text-success" },
+        { id: "telefono", label: "Teléfono", icon: "phone-call", color: "text-primary" },
+        { id: "gasolina", label: "Gasolina", icon: "gas-station", color: "text-danger" },
+        { id: "gas", label: "Gas", icon: "flame", color: "text-warning" },
+        { id: "medico", label: "Médico", icon: "heartbeat", color: "text-danger" },
+        { id: "agua", label: "Agua", icon: "droplet", color: "text-primary" },
+        { id: "diversiones", label: "Diversiones", icon: "device-gamepad-2", color: "text-success" },
+        { id: "internet", label: "Internet", icon: "wifi", color: "text-danger" },
+        { id: "deudas", label: "Pago de deudas", icon: "credit-card", color: "text-warning" },
+        { id: "cable", label: "Cable", icon: "device-tv", color: "text-success" },
+        { id: "medicinas", label: "Medicinas", icon: "pills", color: "text-danger" },
+        { id: "otros", label: "Otros", icon: "archive", color: "text-primary" }
+    ];
+
+    egresos.forEach(item => {
+        const inputHTML = `
+        <div class="col-md-4 mb-3">
+            <label for="egresos${capitalize(item.id)}" class="form-label">
+                <i class="ti ti-${item.icon} ${item.color} me-2"></i> ${item.label}
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control egreso" 
+                    id="egresos${capitalize(item.id)}" 
+                    name="egresos[${item.id}]" 
+                    min="0" required>
+            </div>
+        </div>`;
+
+        $('#egresosContainer').append(inputHTML);
+    });
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
 }
 
 function completarInfoCONEVAL(coneval) {

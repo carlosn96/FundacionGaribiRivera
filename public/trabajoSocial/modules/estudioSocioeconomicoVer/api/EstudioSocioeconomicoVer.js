@@ -256,12 +256,12 @@ function crearSeccionFamiliares(familiares) {
 
 
 function crearSeccionEconomia(economia) {
-
     const $contenedorEconomia = $('#economia');
     const $ingresoMensual = $('#ingresoMensual');
 
     $ingresoMensual.html(`<strong>${economia.ingresoMensual?.value || 'No especificado'}</strong>`);
     const iconMap = {
+        ahorro: {icon: 'basket-dollar', color: 'text-success', label: 'Ahorro'},
         alimentacion: { icon: 'shopping-cart', color: 'text-success', label: 'Alimentación' },
         vivienda: { icon: 'home', color: 'text-primary', label: 'Vivienda' },
         celular: { icon: 'phone', color: 'text-danger', label: 'Celular' },
