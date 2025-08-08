@@ -1,6 +1,7 @@
 <?php
 
-class EtapaFormacion {
+class EtapaFormacion
+{
 
     use Entidad;
 
@@ -9,78 +10,81 @@ class EtapaFormacion {
     private $fechaInicio;
     private $fechaFin;
     private $tipo;
-    private $claveAcceso;
     private bool $esActual;
     private array $talleres;
 
-    public function __construct($idEtapa, $nombre, $fechaInicio, $fechaFin, $tipo, $claveAcceso, $esActual) {
+    public function __construct($idEtapa, $nombre, $fechaInicio, $fechaFin, $tipo, $esActual)
+    {
         $this->idEtapa = $idEtapa;
         $this->nombre = $nombre;
         $this->fechaInicio = $fechaInicio;
         $this->fechaFin = $fechaFin;
         $this->tipo = $tipo;
-        $this->claveAcceso = $claveAcceso;
         $this->esActual = $esActual;
         $this->setTalleres([]);
     }
 
-    public function getIdEtapa() {
+    public function getIdEtapa()
+    {
         return $this->idEtapa;
     }
-
-    public function getClaveAcceso() {
-        return $this->claveAcceso;
-    }
-
-    public function setClaveAcceso($claveAcceso): void {
-        $this->claveAcceso = $claveAcceso;
-    }
-
-    public function getTalleres(): array {
+    public function getTalleres(): array
+    {
         return $this->talleres;
     }
 
-    public function setTalleres(array $talleres): void {
+    public function setTalleres(array $talleres): void
+    {
         $this->talleres = $talleres;
     }
 
-    public function getIdEntidad() {
+    public function getIdEntidad()
+    {
         return $this->idEtapa;
     }
 
-    public function getNombre() {
+    public function getNombre()
+    {
         return $this->nombre;
     }
 
-    public function getFechaInicio() {
+    public function getFechaInicio()
+    {
         return $this->fechaInicio;
     }
 
-    public function getFechaFin() {
+    public function getFechaFin()
+    {
         return $this->fechaFin;
     }
 
-    public function getTipo() {
+    public function getTipo()
+    {
         return $this->tipo;
     }
 
-    public function setIdEntidad($idEntidad): void {
+    public function setIdEntidad($idEntidad): void
+    {
         $this->idEtapa = $idEntidad;
     }
 
-    public function setNombre($nombre): void {
+    public function setNombre($nombre): void
+    {
         $this->nombre = $nombre;
     }
 
-    public function setFechaInicio($fechaInicio): void {
+    public function setFechaInicio($fechaInicio): void
+    {
         $this->fechaInicio = $fechaInicio;
     }
 
-    public function setFechaFin($fechaFin): void {
+    public function setFechaFin($fechaFin): void
+    {
         $this->fechaFin = $fechaFin;
     }
 
-    public function setTipo($tipo): void {
+    public function setTipo($tipo): void
+    {
         $this->tipo = $tipo;
     }
 

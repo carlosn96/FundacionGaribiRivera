@@ -1,36 +1,45 @@
 <?php
 
-class AdminEtapaFormacion extends Admin {
+class AdminEtapaFormacion extends Admin
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct(new EtapaFormacionDAO());
     }
 
-    public function crearEtapa($data) {
+    public function crearEtapa($data)
+    {
         return $this->dao->insertarEtapa($this->construirEtapa($data));
     }
 
-    public function eliminarEtapa($id) {
+    public function eliminarEtapa($id)
+    {
         return $this->dao->eliminarEtapa($id);
     }
 
-    public function actualizarEtapa($data) {
+    public function actualizarEtapa($data)
+    {
         return $this->dao->actualizarEtapa($this->construirEtapa($data));
     }
 
-    public function actualizarEtapaActual($id) {
+    public function actualizarEtapaActual($id)
+    {
         return $this->dao->actualizarEtapaActual($id);
     }
 
-    public function obtenerEtapaActual() {
+    public function obtenerEtapaActual()
+    {
         return empty(($data = $this->dao->obtenerEtapaActual())) ? $data : $this->construirEtapa($data)->toArray();
     }
 
-    public function listarEtapasFormacion() {
+    public function listarEtapasFormacion()
+    {
         return $this->listarEtapasFormacionPorAnio(null);
     }
 
-    public function listarEtapasFormacionPorAnio($anio) {
+    public function listarEtapasFormacionPorAnio($anio)
+    {
         $etapas = [];
         foreach ($this->dao->listarEtapasFormacion($anio) as $data) {
             $etapas[] = $this->construirEtapa($data)->toArray();
@@ -38,24 +47,32 @@ class AdminEtapaFormacion extends Admin {
         return $etapas;
     }
 
-    public function listarTiposEtapasFormacion() {
+    public function listarTiposEtapasFormacion()
+    {
         return $this->dao->listarTiposEtapasFormacion();
     }
 
-    private function construirEtapa($data): EtapaFormacion {
+    private function construirEtapa($data): EtapaFormacion
+    {
         $idEtapa = $data["idEtapa"] ?? 0;
         $nombre = $data["nombre"];
         $fechaInicio = $data["fechaInicio"];
         $fechaFin = $data["fechaFin"];
         $tipo = isset($data["descripcionTipo"]) ?
                 Util::map($data["tipo"], $data["descripcionTipo"]) : $data["tipo"];
-        $claveAcceso = $data["claveAcceso"];
         $esActual = $data["esActual"] ?? false;
-        $etapa = new EtapaFormacion($idEtapa, $nombre, $fechaInicio, $fechaFin,
-                $tipo, $claveAcceso, $esActual);
+        $etapa = new EtapaFormacion(
+            $idEtapa, $nombre, $fechaInicio, $fechaFin,
+            $tipo,  $esActual
+        );
         if (isset($data["talleres"])) {
             $etapa->setTalleres($data["talleres"]);
         }
         return $etapa;
+    }
+
+    public function listarTalleresPorEtapa($idEtapa)
+    {
+        $this->dao->listarTalleresPorEtapa($idEtapa);
     }
 }
