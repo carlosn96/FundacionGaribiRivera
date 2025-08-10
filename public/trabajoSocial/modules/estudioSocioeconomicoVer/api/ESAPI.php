@@ -133,54 +133,24 @@ class ESAPI extends API
 
     function mejorarTextoObservaciones()
     {
+        // El texto principal se trata por separado
         $texto = $this->getData("texto");
-        $modelo = $this->getData("modelo");
-        $this->enviarRespuesta(Util::enum("Función no implementada en este momento ...", true));
-        /*$result = $this->callOpenRouterAPI($texto);
-        if ($result) {
-            $info = $this->extraerInfo();
-            if (!isset($info["estudioSocioeconomico"]["conclusiones"]["observacionesMejoradas"])) {
-                $info["estudioSocioeconomico"]["conclusiones"]["observacionesMejoradas"] = [];
-            }
-            $info["estudioSocioeconomico"]["conclusiones"]["observacionesMejoradas"] = $result;
-            Sesion::setInfoTemporal("estudioSocioeconomico", $info["estudioSocioeconomico"]);
-            $this->enviarRespuesta(Util::emum($result, false));
-        } else {
-            $this->enviarResultadoOperacion(false);
-        }*/
-    }
-    //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
 
-    private function callOpenRouterAPI($texto)
-    {
-        $url = "https://openrouter.ai/api/v1/chat/completions";
-
-        $data = [
-            "model" => "openai/gpt-4o",
-            "messages" => [
-                [
-                    "role" => "user",
-                    "content" => $texto
-                ]
-            ]
-        ];
-
-        $headers = [
-            "Authorization: Bearer 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", // Recomendado desde variable de entorno
-            "Content-Type: application/json"
-        ];
-
-        // Llamada a la función HTTPPost con JSON
-        $response = Util::HTTPPost($url, $data, $headers, true);
-
-        // Decodificar respuesta JSON y devolver el contenido del mensaje
-        $json = json_decode($response, true);
-
-        if (!isset($json['choices'][0]['message']['content'])) {
-            throw new Exception("No se pudo obtener la respuesta de OpenRouter.");
+        // Definir las claves de las opciones que se esperan de la petición
+        $clavesOpciones = ['tipo_escrito', 'anonimizar'];
+        
+        $opciones = [];
+        foreach ($clavesOpciones as $clave) {
+            $opciones[$clave] = $this->getData($clave);
         }
 
-        return $json['choices'][0]['message']['content'];
+        // Procesamiento especial para ciertos valores
+        if (isset($opciones['anonimizar'])) {
+            $opciones['anonimizar'] = filter_var($opciones['anonimizar'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Llamar al método de la IA con el texto y el array de opciones dinámico
+        $this->enviarRespuesta(getAdminLLM()->mejorarTextoAI($texto, $opciones));
     }
 
 

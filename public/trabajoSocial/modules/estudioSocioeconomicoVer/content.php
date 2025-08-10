@@ -649,7 +649,7 @@
 <!-- Modal: Mejorar Observaciones -->
 <div class="modal fade" id="modalMejorarObservaciones" tabindex="-1" aria-labelledby="mejorarObservacionesLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
 
             <!-- Header -->
@@ -669,21 +669,60 @@
                     <textarea class="form-control" id="observacionesOriginal" rows="6" readonly></textarea>
                 </div>
 
-                <!-- Selector de modelo + botón de mejorar -->
-                <div class="mb-3 row align-items-center">
-                    <div class="col-md-6">
-                        <label for="modeloIA" class="form-label fw-semibold">Seleccionar modelo de mejora:</label>
-                        <select class="form-select" id="modeloIA">
-                            <option value="gpt-4" selected>GPT-4 (alta calidad)</option>
-                            <option value="gpt-3.5">GPT-3.5 (más rápido)</option>
-                            <option value="claude">Claude (alternativa)</option>
-                        </select>
+                <!-- Opciones de IA para Trabajo Social -->
+                <div class="card border-light shadow-sm mb-4" style="background-color: #fcfdff;">
+                    <div class="card-body p-3">
+                        <div class="row gx-5 gy-3">
+                            <!-- Tipo de Escrito -->
+                            <div class="col-12 col-lg-8">
+                                <label class="form-label fw-semibold mb-2 d-block">
+                                    <i class="ti ti-file-text me-1"></i>Tipo de Escrito:
+                                </label>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="radio" name="iaWritingType" id="typeNotaExpediente" value="Nota para Expediente" checked>
+                                    <label class="form-check-label" for="typeNotaExpediente">
+                                        Nota para Expediente <small class="text-muted d-block">Texto objetivo y detallado para registro interno.</small>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="radio" name="iaWritingType" id="typeResumenFortalezas" value="Resumen de Fortalezas">
+                                    <label class="form-check-label" for="typeResumenFortalezas">
+                                        Resumen de Fortalezas <small class="text-muted d-block">Párrafo conciso enfocado en aspectos positivos y recursos.</small>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="radio" name="iaWritingType" id="typeAnalisisVulnerabilidades" value="Análisis de Vulnerabilidades">
+                                    <label class="form-check-label" for="typeAnalisisVulnerabilidades">
+                                        Análisis de Vulnerabilidades <small class="text-muted d-block">Descripción específica de retos y áreas de apoyo.</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="iaWritingType" id="typeComunicadoBeneficiario" value="Comunicado para Beneficiario">
+                                    <label class="form-check-label" for="typeComunicadoBeneficiario">
+                                        Comunicado para Beneficiario <small class="text-muted d-block">Texto simple y empático para compartir con la persona.</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Opciones Adicionales -->
+                            <div class="col-12 col-lg-4">
+                                <label class="form-label fw-semibold mb-2 d-block">
+                                    <i class="ti ti-adjustments-horizontal me-1"></i>Ajustes Adicionales:
+                                </label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="iaAnonymize" role="switch" id="iaAnonymize">
+                                    <label class="form-check-label" for="iaAnonymize">Omitir datos personales</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6 mt-3 mt-md-4 text-md-end">
-                        <button type="button" class="btn btn-outline-success" id="btnMejorarTextoIA">
-                            <i class="ti ti-sparkles me-1"></i>Mejorar texto
-                        </button>
-                    </div>
+                </div>
+
+                <!-- Botón de mejorar -->
+                <div class="text-center mb-3">
+                    <button type="button" class="btn btn-outline-success" id="btnMejorarTextoIA">
+                        <i class="ti ti-sparkles me-2"></i>Mejorar texto
+                    </button>
                 </div>
 
                 <!-- Texto Mejorado -->
@@ -699,7 +738,7 @@
                 <div class="text-muted small">El texto mejorado es generado automáticamente por IA. Verifica antes de
                     usar.</div>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-primary" id="btnUsarTextoMejorado">
+                    <button disabled type="button" class="btn btn-outline-primary" id="btnUsarTextoMejorado">
                         <i class="ti ti-check me-1"></i>Usar texto mejorado
                     </button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>

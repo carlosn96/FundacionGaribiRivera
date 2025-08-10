@@ -97,8 +97,10 @@ function crearSeccionResumen(data) {
     });
 
     $("#btnMejorarTextoIA").off("click").on("click", function () {
+        // 1. Recopilar datos del formulario
         const original = $("#observacionesOriginal").val()?.trim() || "";
-        const modelo = $("#modeloIA").val();
+        const tipoEscrito = $('input[name="iaWritingType"]:checked').val();
+        const anonimizar = $("#iaAnonymize").is(':checked');
         const $btn = $(this);
 
         if (!original) {
@@ -106,21 +108,33 @@ function crearSeccionResumen(data) {
             return;
         }
 
-        // Spinner + desactivar
+        // 2. Desactivar botón y mostrar spinner
         const originalHTML = $btn.html();
-        $btn.prop("disabled", true).html('<span class="spinner-border spinner-border-sm me-2"></span>Mejorando...');
+        $btn.prop("disabled", true).html('<span class="spinner-border spinner-border-sm me-2"></span>Generando...');
+
+        // 3. Preparar y enviar la petición
         crearPeticion(urlAPI, {
             case: "mejorarTextoObservaciones",
             data: $.param({
                 texto: original,
-                modelo: modelo
+                tipo_escrito: tipoEscrito,
+                anonimizar: anonimizar
             })
         }, function (res) {
+            // 4. Manejar la respuesta
             $btn.prop("disabled", false).html(originalHTML);
-            if (res.es_respuesta_error === false && res.textoMejorado) {
-                $("#observacionesMejoradas").val(res.textoMejorado);
+            if (res.es_valor_error === false && res.mensaje) {
+                // Habilitar botón de usar texto mejorado
+                $("#btnUsarTextoMejorado").prop("disabled", false);
+                // Mostrar texto mejorado
+                $("#observacionesMejoradas").prop("readonly", false);
+                $("#observacionesMejoradas").removeClass("bg-light");
+                $("#observacionesMejoradas").addClass("bg-white");
+                $("#btnUsarTextoMejorado").prop("disabled", false);
+                $("#observacionesMejoradas").val(res.mensaje);
             } else {
-                mostrarMensajeError("No se pudo mejorar el texto. Intenta de nuevo.", false);
+                const errorMessage = res.mensaje || "No se pudo mejorar el texto. Intenta de nuevo.";
+                mostrarMensajeError(errorMessage, false);
             }
         });
     });

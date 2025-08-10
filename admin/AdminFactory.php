@@ -1,54 +1,71 @@
 <?php
 
-class AdminFactory {
+class AdminFactory
+{
 
     private static $instances = [];
 
-    public static function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion {
+    public static function getAdminEvaluacionFormacion(): AdminEvaluacionFormacion
+    {
         return self::getOrCreateInstance(AdminEvaluacionFormacion::class);
     }
 
-    public static function getAdminLineaBase(): AdminLineaBase {
+    public static function getAdminLineaBase(): AdminLineaBase
+    {
         return self::getOrCreateInstance(AdminLineaBase::class);
     }
     
-    public static function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico {
+    public static function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico
+    {
         return self::getOrCreateInstance(AdminEstudioSocioeconomico::class);
     }
 
-    public static function getAdminMailer(): AdminMailer {
+    public static function getAdminMailer(): AdminMailer
+    {
         return self::getOrCreateInstance(AdminMailer::class);
     }
 
-    public static function getAdminEmprendedor(): AdminEmprendedor {
+    public static function getAdminEmprendedor(): AdminEmprendedor
+    {
         return self::getOrCreateInstance(AdminEmprendedor::class);
     }
 
-    public static function getAdminEtapaFormacion(): AdminEtapaFormacion {
+    public static function getAdminEtapaFormacion(): AdminEtapaFormacion
+    {
         return self::getOrCreateInstance(AdminEtapaFormacion::class);
     }
 
-    public static function getAdminUsuario(): AdminUsuario {
+    public static function getAdminUsuario(): AdminUsuario
+    {
         return self::getOrCreateInstance(AdminUsuario::class);
     }
 
-    public static function getAdminTaller(): AdminTaller {
+    public static function getAdminTaller(): AdminTaller
+    {
         return self::getOrCreateInstance(AdminTaller::class);
     }
 
-    public static function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento {
+    public static function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento
+    {
         return self::getOrCreateInstance(AdminVisitaSeguimiento::class);
     }
 
-    public static function getAdminImpacto(): AdminImpacto {
+    public static function getAdminImpacto(): AdminImpacto
+    {
         return self::getOrCreateInstance(AdminImpacto::class);
     }
-
-    public static function getAdminLog(): AdminLog {
+    public static function getAdminLog(): AdminLog
+    {
         return self::getOrCreateInstance(AdminLog::class);
     }
+    
+    public static function getAdminLLM(): AdminLLM
+    {
+        return self::getOrCreateInstance(AdminLLM::class);
+    }
 
-    private static function getOrCreateInstance(string $class): Admin {
+    private static function getOrCreateInstance(string $class): Admin
+    {
         if (!isset(self::$instances[$class])) {
             self::$instances[$class] = new $class();
         }
