@@ -13,7 +13,6 @@ function ready() {
 function construirButtonGroupTipoEtapa($container, name, tiposEtapa) {
     $container.empty();
     $container.append(`
-        <label class="form-label mb-2">Tipo de etapa</label>
         <div class="btn-group w-100" role="group" aria-label="Selector de tipo de etapa" id="btnGroup_${name}">
             ${tiposEtapa.map((tipo, idx) => `
                 <input type="radio" class="btn-check" name="${name}" id="${name}_${tipo.id_tipo}" value="${tipo.id_tipo}" autocomplete="off" ${idx === 0 ? 'checked' : ''} required>

@@ -1,10 +1,22 @@
-
 const urlAPI = "api/InstructorAPI.php";
+let allInstructores = []; // Store all instructor data
+let instructorsDataTable = null;
 
 function ready() {
     crearPeticion(urlAPI, {case: "recuperarInstructores"}, function (instructores) {
-        crearCards(instructores);
-        //crearTabla(instructores);
+        allInstructores = instructores;
+        print(instructores);
+        construirCardsInstructores(allInstructores);
+        construirTablaInstructores(allInstructores);
+        
+        // Initialize DataTable
+        instructorsDataTable = crearDataTable($('#instructorsTable'));
+
+        configurarEventosInstructores();
+        configurarViewSwitcherInstructors();
+        configurarBusquedaInstructores();
+        
+        // Initialize tooltips after all elements are rendered
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
 
@@ -30,54 +42,56 @@ function ready() {
     fijarSubmitFormulario("instructorForm", urlAPI, "guardarInstructor");
 }
 
-function crearTabla(instructores) {
-    $("#tablaInstructores tbody").empty();
-    instructores.forEach(function (instructor) {
-        const fila = `
-        <tr>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <img src="data:image/jpeg;base64,${instructor.fotografia}" alt="Foto de ${instructor.nombreCompleto}" width="45" class="rounded-circle" />
-                    </div>
-                    <div>
-                        <h6 class="mb-1">${instructor.nombreCompleto}</h6>
-                    </div>
-                </div>
-            </td>
+function configurarBusquedaInstructores() {
+    $("#searchInstructor").on("input", function () {
+        const query = $(this).val().toLowerCase();
+        
+        // Filter cards
+        const filteredInstructores = allInstructores.filter(function (instructor) {
+            const nombreCompleto = instructor.nombreCompleto.toLowerCase();
+            const correo = instructor.correoElectronico.toLowerCase();
+            const telefono = instructor.telefono.toLowerCase();
+            return nombreCompleto.includes(query) || correo.includes(query) || telefono.includes(query);
+        });
+        construirCardsInstructores(filteredInstructores);
 
-            <td>
-                <div class="dropdown dropstart">
-                    <a href="javascript:void(0)" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="ti ti-dots-vertical fs-5"></i>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-3" href="../instructor/?id=${instructor.id}">
-                                <i class="fs-4 ti ti-eye"></i>Detalles
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-3" href="javascript:void(0)">
-                                <i class="fs-4 ti ti-trash"></i>Borrar
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    `;
-        $("#tablaInstructores tbody").append(fila);
+        // Filter table
+        instructorsDataTable.search(query).draw();
     });
-    crearDataTable("#tablaInstructores");
 }
 
-function crearCards(instructores) {
-    var cards = "";
+function configurarViewSwitcherInstructors() {
+    $('#btn-grid-view-instructors').on('click', function() {
+        $(this).addClass('active').siblings().removeClass('active');
+        $('#cardsInstructores').show();
+        $('#instructorsTableView').hide();
+    });
+
+    $('#btn-table-view-instructors').on('click', function() {
+        $(this).addClass('active').siblings().removeClass('active');
+        $('#cardsInstructores').hide();
+        $('#instructorsTableView').show();
+        // Adjust DataTables columns when switching to table view
+        if (instructorsDataTable) {
+            instructorsDataTable.columns.adjust().draw();
+        }
+    });
+}
+
+function construirCardsInstructores(instructores) {
+    const $container = $("#cardsInstructores");
+    $container.empty();
+
+    if (instructores.length === 0) {
+        $container.html('<div class="col-12"><p class="text-center">No se encontraron instructores.</p></div>');
+        return;
+    }
+
     instructores.forEach(function (i) {
-        cards += `
-        <div class="col-md-4">
-            <div class="card hover-img">
+        const dataInstructorStr = JSON.stringify(i).replace(/"/g, "'");
+        const card = `
+        <div class="col-md-4 mb-4">
+            <div class="card hover-img h-100">
                 <div class="card-body p-4 text-center border-bottom">
                     <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombre}" class="rounded-circle mb-3" width="80" height="80">
                     <h4 class="card-title mb-1">${i.nombreCompleto}</h4>
@@ -94,6 +108,7 @@ function crearCards(instructores) {
                     <li class="position-relative">
                         <a class="text-danger d-flex align-items-center justify-content-center p-2 fs-5 rounded-circle fw-semibold" 
                            href="javascript:void(0)" 
+                           onclick="eliminarInstructor(${i.id})"
                            data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
                            <i class="fs-4 ti ti-trash"></i>
                         </a>
@@ -102,6 +117,70 @@ function crearCards(instructores) {
             </div>
         </div>
         `;
+        $container.append(card);
     });
-    $("#cardsInstructores").append(cards);
+}
+
+function construirTablaInstructores(instructores) {
+    const $tableBody = $("#instructorsTableBody");
+    $tableBody.empty();
+
+    if (instructores.length === 0) {
+        // DataTables will show its own message
+        return;
+    }
+
+    instructores.forEach(function (instructor) {
+        const dataInstructorStr = JSON.stringify(instructor).replace(/"/g, "'");
+        const row = `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <img src="data:image/jpeg;base64,${instructor.fotografia}" alt="Foto de ${instructor.nombreCompleto}" width="45" class="rounded-circle" />
+                        </div>
+                        <div>
+                            <h6 class="mb-1">${instructor.nombreCompleto}</h6>
+                            <span class="text-muted">${instructor.correoElectronico}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>${instructor.telefono}</td>
+                <td>
+                    <div class="dropdown">
+                        <a href="javascript:void(0)" class="btn btn-outline-primary shadow-none px-3" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-dots-vertical fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButtonTable_${instructor.id}">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-3" href="../instructor/?id=${instructor.id}">
+                                    <i class="fs-4 ti ti-eye"></i> Detalles
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-3" href="javascript:void(0)" onclick="eliminarInstructor(${instructor.id})">
+                                    <i class="fs-4 ti ti-trash"></i> Eliminar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
+        $tableBody.append(row);
+    });
+}
+
+function configurarEventosInstructores() {
+    // Any specific event listeners for instructor page can go here
+    // For example, if there are edit modals for instructors, their submit handlers
+    // or other dynamic elements.
+}
+
+function eliminarInstructor(id) {
+    alertaEliminar({
+        mensajeAlerta: "Se eliminará el instructor",
+        url: urlAPI,
+        data: {"case": "eliminarInstructor", "data": `id=${id}`}
+    });
 }

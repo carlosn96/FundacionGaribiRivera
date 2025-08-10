@@ -4,6 +4,10 @@ require_once '../../../../../loader.php';
 
 class LineaBaseAdministracionAPI extends API
 {
+    private const FILTRO_SIN_ETAPA = '-';
+    private const FILTRO_TODOS = '-1';
+    private const FILTRAR_EMPRENDEDORES_SIN_ETAPA = [self::FILTRO_SIN_ETAPA, 'Sin etapa asignada (emprendedores sin línea base)'];
+    private const FILTRAR_EMPRENDEDORES_TODOS = [self::FILTRO_TODOS, 'Todos los registros'];
 
     function recuperarEmprendedores()
     {

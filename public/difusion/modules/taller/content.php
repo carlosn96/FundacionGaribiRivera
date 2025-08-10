@@ -33,8 +33,33 @@
                     </div>
                 </div>
             </div>
+            <div class="d-flex justify-content-end mb-3">
+                <div class="btn-group" role="group" aria-label="View switcher">
+                    <button type="button" class="btn btn-outline-primary active" id="btn-grid-view" aria-label="Vista de cuadrícula">
+                        <i class="ti ti-layout-grid"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="btn-table-view" aria-label="Vista de tabla">
+                        <i class="ti ti-list"></i>
+                    </button>
+                </div>
+            </div>
             <div class="row" id="talleresContent">
                 <!-- Aquí se mostrarán las tarjetas de los talleres -->
+            </div>
+            <div id="talleresTableView" class="table-responsive" style="display: none;">
+                <table id="talleresTable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Taller</th>
+                            <th>Tipo de Formación</th>
+                            <th>Instructor</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="talleresTableBody">
+                        <!-- Rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -52,8 +52,19 @@ class EmprendedorDAO extends DAO
 
     public function listarPorEtapa($idEtapa)
     {
-        $etapa = $idEtapa === '-' ? " IS NULL " : "= $idEtapa";
-        $where = " WHERE id_etapa $etapa";
+        $where = "";
+        if (is_array($idEtapa)) {
+            if (count($idEtapa) > 0) {
+                $ids = implode(",", array_map('intval', $idEtapa));
+                $where = " WHERE id_etapa IN ($ids)";
+            } else {
+                // Si el array está vacío, no devolver ningún resultado.
+                $where = " WHERE 1 = 0"; 
+            }
+        } else {
+            $condicion = $idEtapa === '-' ? "IS NULL" : "= ".intval($idEtapa);
+            $where = " WHERE id_etapa $condicion";
+        }
         return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES_ETAPA . $where);
     }
 

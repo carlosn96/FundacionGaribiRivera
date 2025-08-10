@@ -5,16 +5,16 @@
         </div>
         <div class="card-body">
             <!-- Pestañas de Navegación -->
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-individual-tab" data-bs-toggle="pill" data-bs-target="#pills-individual" type="button" role="tab" aria-controls="pills-individual" aria-selected="true">
-                        <i class="ti ti-user-plus me-2"></i>Registro Individual
-                    </button>
+            <ul class="nav nav-pills flex-column flex-sm-row mt-4 mb-4" role="tablist">
+                <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
+                    <a class="nav-link border active" id="pills-individual-tab" data-bs-toggle="pill" href="#pills-individual" role="tab" aria-controls="pills-individual" aria-selected="true">
+                        <span><i class="ti ti-user-plus me-2"></i>Registro Individual</span>
+                    </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-masivo-tab" data-bs-toggle="pill" data-bs-target="#pills-masivo" type="button" role="tab" aria-controls="pills-masivo" aria-selected="false">
-                        <i class="ti ti-upload me-2"></i>Carga Masiva (CSV)
-                    </button>
+                <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
+                    <a class="nav-link border" id="pills-masivo-tab" data-bs-toggle="pill" href="#pills-masivo" role="tab" aria-controls="pills-masivo" aria-selected="false">
+                        <span><i class="ti ti-upload me-2"></i>Carga Masiva (CSV)</span>
+                    </a>
                 </li>
             </ul>
 

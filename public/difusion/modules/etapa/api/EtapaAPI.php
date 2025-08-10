@@ -1,43 +1,60 @@
 <?php
 
-include_once '../../../../../loader.php';
+require_once '../../../../../loader.php';
 
-class EtapaAPI extends API {
+class EtapaAPI extends API
+{
 
-    function recuperarCampos() {
+    function recuperarCampos()
+    {
         $admEtapa = getAdminEtapaFormacion();
-        $this->enviarRespuesta([
+        $this->enviarRespuesta(
+            [
             "etapas" => ($etapas = $admEtapa->listarEtapasFormacion()),
             "tiposEtapa" => $admEtapa->listarTiposEtapasFormacion(),
             "aniosEtapas" => $this->filtrarAnios($etapas)
-        ]);
+            ]
+        );
     }
     
-    function filtrarEtapasPorAnio() {
+    function filtrarEtapasPorAnio()
+    {
         $this->enviarRespuesta(getAdminEtapaFormacion()->listarEtapasFormacionPorAnio($this->getData("anio")));
     }
 
-    function agregarEtapa() {
+    function agregarEtapa()
+    {
+        $this->data["tipo"] = $this->getData("tipoEtapa");
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->crearEtapa($this->data));
     }
 
-    function eliminar() {
+    function eliminar()
+    {
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->eliminarEtapa($this->data["id"]));
     }
 
-    function actualizarEtapa() {
-        $this->data["tipo"] = $this->data["tipoModal"];
+    function actualizarEtapa()
+    {
+        $this->data["tipo"] = $this->getData("tipoModal");
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->actualizarEtapa($this->data));
     }
 
-    function actualizarEtapaActual() {
+    function actualizarEtapaActual()
+    {
         $this->enviarResultadoOperacion(getAdminEtapaFormacion()->actualizarEtapaActual($this->data["id"]));
     }
 
-    private function filtrarAnios($etapas) {
-        return array_values(array_unique(array_map(function ($item) {
-            return date('Y', strtotime($item['fechaInicio']));
-        }, $etapas)));
+    private function filtrarAnios($etapas)
+    {
+        return array_values(
+            array_unique(
+                array_map(
+                    function ($item) {
+                        return date('Y', strtotime($item['fechaInicio']));
+                    }, $etapas
+                )
+            )
+        );
     }
 }
 

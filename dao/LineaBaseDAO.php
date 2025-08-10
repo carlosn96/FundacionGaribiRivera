@@ -29,8 +29,23 @@ class LineaBaseDAO extends DAO {
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    public function listarEmprendedoresLineaBase($etapa = null) {
-        $where = is_null($etapa) ? "" : " WHERE idEtapa = $etapa";
+    public function listarEmprendedoresLineaBase($etapa = null)
+    {
+        $where = "";
+        if (is_array($etapa)) {
+            if (count($etapa) > 0) {
+                $ids = implode(",", array_map('intval', $etapa));
+                $where = " WHERE idEtapa IN ($ids)";
+            } else {
+                // Si el array está vacío, no devolver ningún resultado.
+                $where = " WHERE 1 = 0"; 
+            }
+        } else if (!is_null($etapa)) {
+            // Para un solo ID de etapa. Ignoramos explícitamente '-' y '-1' aquí.
+            // Asumimos que si no es un array y no es null, es un ID de etapa válido.
+            $where = " WHERE idEtapa = " . intval($etapa);
+        }
+        // Si $etapa es null, $where permanece vacío, listando todos los emprendedores con línea base.
         return $this->listarEmprendedores(self::LISTAR_EMPRENDEDOR_LINEA_BASE . $where);
     }
 

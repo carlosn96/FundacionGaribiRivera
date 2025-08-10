@@ -16,7 +16,7 @@ class EtapaFormacionDAO extends DAO
     public function listarEtapasFormacion($anio)
     {
         $where = empty($anio) || is_null($anio) ? "" : " WHERE fechaInicio BETWEEN $anio AND $anio";
-        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION. $where." ORDER BY fechaInicio DESC");
+        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION. $where);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
