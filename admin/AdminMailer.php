@@ -12,23 +12,18 @@ use PHPMailer\PHPMailer;
 
 class AdminMailer {
 
-    private const EMAIL_USER = "support@fundaciongaribirivera.com";
-    private const EMAIL_HOST = "smtp.hostinger.com";
-    private const EMAIL_PASSWORD = "az8BbVj=3";
-    private const EMAIL_PORT = 587;
-
     private static function enviarCorreo($destinatario, $asunto, $tipo, $body) {
         $mailer = new PHPMailer(true);
         $mailer->isSMTP();
-        $mailer->Host = self::EMAIL_HOST;
+        $mailer->Host = MAIL_HOST;
         $mailer->SMTPAuth = true;
-        $mailer->Username = self::EMAIL_USER;
-        $mailer->Password = self::EMAIL_PASSWORD;
-        $mailer->SMTPSecure = 'tls';
-        $mailer->Port = self::EMAIL_PORT;
+        $mailer->Username = MAIL_USERNAME;
+        $mailer->Password = MAIL_PASSWORD;
+        $mailer->SMTPSecure = MAIL_ENCRYPTION;
+        $mailer->Port = MAIL_PORT;
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
-        $mailer->setFrom(self::EMAIL_USER, 'Fundación Cardenal Garibi Rivera - Soporte');
+        $mailer->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME);
         $mailer->addAddress($destinatario);
         $mailer->Subject = $asunto;
         $mailer->isHTML(true);

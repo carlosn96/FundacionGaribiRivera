@@ -3,9 +3,9 @@
 class Conexion {
 
     private const SERVIDOR = DB_HOST;
-    private const USUARIO = DB_USER;
-    private const CONTRASENIA = DB_PASS;
-    private const BD = DB_NAME;
+    private const USUARIO = DB_USERNAME;
+    private const CONTRASENIA = DB_PASSWORD;
+    private const BD = DB_DATABASE;
 
     private $conexion;
 
