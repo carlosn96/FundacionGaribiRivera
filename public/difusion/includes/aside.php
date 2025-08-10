@@ -63,6 +63,12 @@
                                 <span class="hide-menu">Instructores</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a href="../asistenciaTaller/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Asistencia</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <!-- ============================= -->
@@ -76,15 +82,15 @@
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="solar:user-plus-broken" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Alta de emprendedores </span>
+                        <span class="hide-menu ps-1">Nuevo </span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../listadoGeneralEmprendedores/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:users-group-rounded-bold" class="fs-6"></iconify-icon>
+                            <iconify-icon icon="solar:history-linear" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Listado general </span>
+                        <span class="hide-menu ps-1">Historial de registros </span>
                     </a>
                 </li>
                 <li class="sidebar-item">
@@ -95,7 +101,7 @@
                         <span class="hide-menu ps-1">Línea Base </span>
                     </a>
                 </li>
-                <li class="nav-small-cap">
+                <!-- li class="nav-small-cap">
                     <span class="hide-menu">Impacto</span>
                 </li>
                 <li class="sidebar-item">
@@ -104,6 +110,18 @@
                             <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Medición de Impactos</span>
+                    </a>
+                </li -->
+
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Reportes</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Reportes</span>
                     </a>
                 </li>
             </ul>
