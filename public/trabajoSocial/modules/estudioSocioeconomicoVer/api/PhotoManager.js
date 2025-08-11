@@ -24,7 +24,6 @@ class PhotoManager {
         this.emptyState = document.getElementById('emptyState');
         this.previewSection = document.getElementById('previewSection');
         this.photoCount = document.getElementById('photoCount');
-        this.uploadProgress = document.getElementById('uploadProgress');
         this.btnSpinner = document.getElementById('btnSpinner');
         this.btnText = document.getElementById('btnText');
         this.carouselEditBtnContainer = document.getElementById('carouselEditBtnContainer');
@@ -172,8 +171,7 @@ class PhotoManager {
         this.btnText.textContent = 'Guardando...';
         this.saveBtn.disabled = true;
 
-        this.uploadProgress.style.display = 'block';
-
+        
 
         const fotosBase64 = this.previewPhotos.map(p => p.url.split(',')[1]);
 
@@ -198,7 +196,7 @@ class PhotoManager {
             this.btnSpinner.classList.add('d-none');
             this.btnText.textContent = 'Guardar fotografías';
             this.saveBtn.disabled = false;
-            this.uploadProgress.style.display = 'none';
+            
 
         });
     }
