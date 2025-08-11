@@ -3,6 +3,7 @@
 class TipoUsuario
 {
 
+    public const COORDINADOR_EMPRENDIMIENTO = 5;
     public const ADMINISTRADOR_GENERAL = 4;
     public const TRABABAJOR_SOCIAL = 3;
     public const AUXILIAR_DIFUSION = 2;
@@ -13,6 +14,7 @@ class TipoUsuario
         self::AUXILIAR_DIFUSION => ["rol" => "Difusión y Comunicación", "url" => "difusion"],
         self::TRABABAJOR_SOCIAL => ["rol" => "Trabajador Social", "url" => "trabajoSocial"],
         self::ADMINISTRADOR_GENERAL => ["rol" => "Adm. General", "url" => "administracionGeneral"],
+        self::COORDINADOR_EMPRENDIMIENTO => ["rol" => "Coord. Emprendimiento", "url" => "emprendimiento"],
     ];
 
     public static function get($tipo)
