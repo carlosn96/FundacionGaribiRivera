@@ -247,6 +247,19 @@ function crearBotonesLineaBase(emprendedor) {
                     href: '#',
                     click: function (e) {
                         e.preventDefault();
+                        lineaBaseAction('inicial', 'Descargar', emprendedor.idUsuario);
+                    }
+                }).append(
+                    $('<i>', { class: 'ti ti-download me-2', title: 'Descargar' }),
+                    'Descargar'
+                )
+            ),
+            $('<li>').append(
+                $('<a>', {
+                    class: 'dropdown-item',
+                    href: '#',
+                    click: function (e) {
+                        e.preventDefault();
                         eliminarlineaBase('inicial', emprendedor.idUsuario);
                     }
                 }).append(

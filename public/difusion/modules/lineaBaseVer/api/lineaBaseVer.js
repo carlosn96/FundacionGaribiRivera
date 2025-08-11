@@ -72,8 +72,8 @@ function renderizarSecciones(sections) {
                                 <p id="fechaCreacion"></p>
                             </div>
                         </div>
-                        <button type="button" disabled class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
-                            <i class="ti ti-download fs-4 me-2"></i>Imprimir línea base
+                        <button type="button" class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
+                            <i class="ti ti-download fs-4 me-2"></i>Descargar línea base
                         </button>
                     </div>
                     <!-- Navegación de tabs -->
@@ -731,5 +731,5 @@ function construirSeccionNoInfo(titulo, mensaje, subtitulo) {
 }
 
 function descargarLineaBase() {
-
+    redireccionar("../lineaBaseDescargar/");
 }
