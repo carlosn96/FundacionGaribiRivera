@@ -154,11 +154,13 @@ function updateStats(data) {
                 .text('No');
         }
     } else {
-        // Si no hay datos válidos
-        $('#esVulnerable, #esPobrezaExtrema')
-            .removeClass().addClass('badge bg-secondary')
-            .text('Sin datos');
+            // Si no hay datos válidos
+            $('#esVulnerable, #esPobrezaExtrema')
+                .removeClass().addClass('badge bg-secondary')
+                .text('Sin datos');
+        }
     }
+    updateIncomeExpenseDifference();
 }
 
 

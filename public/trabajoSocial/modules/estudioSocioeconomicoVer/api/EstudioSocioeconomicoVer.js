@@ -1,4 +1,6 @@
 
+let totalGastosGlobal = 0;
+
 const urlAPI = "api/ESAPI.php";
 
 function ready() {
@@ -324,8 +326,16 @@ function crearSeccionEconomia(economia) {
         $contenedorEconomia.append(html);
     });
 
-    $("#totalExpenditures").text(`$${totalGastos.toFixed(2)}`);
+    $("#totalExpenditures").text(`${totalGastos.toFixed(2)}`);
+    totalGastosGlobal = totalGastos; // Assign to global variable
+    updateIncomeExpenseDifference(); // Call the new function
+}
 
+function updateIncomeExpenseDifference() {
+    const totalIncomeText = $('#totalIncome').text();
+    const totalIncome = parseFloat(totalIncomeText.replace(/[^0-9.-]+/g, '')) || 0;
+    const incomeExpenseDifference = totalIncome - totalGastosGlobal;
+    $('#incomeExpenseDifference').text(formatCurrency(incomeExpenseDifference));
 }
 
 function crearSeccionVivienda(vivienda) {

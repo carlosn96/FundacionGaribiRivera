@@ -178,6 +178,10 @@
                                                     Promedio por integrante: <span class="fw-bold"
                                                         id="averageIncomePerMember"></span>
                                                 </small>
+                                                <small class="text-muted d-block">
+                                                    Diferencia (Ingresos - Egresos): <span class="fw-bold"
+                                                        id="incomeExpenseDifference"></span>
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
