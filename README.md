@@ -28,22 +28,33 @@ Esta función es un wrapper de `$.ajax` de jQuery que estandariza el envío de d
 
 **Uso:**
 ```javascript
-crearPeticion(modulo, accion, datos)
-  .then(respuesta => {
-    // Procesar la respuesta exitosa del servidor
-  })
-  .catch(error => {
-    // Manejar el error
-  });
+const url = 'controller/API.php'; // URL del punto de acceso principal
+const datos = {
+  case: 'nombreDeLaAccion',
+  parametro1: 'valor1'
+  // Otros datos necesarios
+};
+
+crearPeticion(url, datos, function(respuesta) {
+  // Procesar la respuesta exitosa del servidor.
+  console.log(respuesta);
+});
 ```
+
+**Parámetros:**
+
+*   `url` (String): La URL del script de PHP que funciona como API.
+*   `data` (Object | FormData): Un objeto JSON o un objeto `FormData` para enviar. Este objeto debe contener una propiedad `case` que indica la acción a realizar en el backend.
+*   `fnSuccess` (Function): La función callback que se ejecuta si la petición tiene éxito. Recibe la respuesta del servidor como su único argumento.
+*   `fnError` (Function, Opcional): La función callback que se ejecuta si ocurre un error. Por defecto, procesa el error y muestra un mensaje al usuario.
 
 ### Backend (Servidor)
 
-1.  La función `crearPeticion` envía una solicitud `POST` al archivo `API.php` ubicado en el directorio `/controller`.
-2.  `API.php` actúa como un controlador principal que recibe el `modulo` y la `accion` especificados en la petición.
-3.  Basándose en estos parámetros, `API.php` instancia la clase administrativa correspondiente (del directorio `/admin/`) y ejecuta el método solicitado.
+1.  La función `crearPeticion` envía una solicitud `POST` a la URL especificada, que generalmente es `controller/API.php`.
+2.  `API.php` actúa como un controlador principal que recibe los datos y busca un parámetro `case` dentro de ellos.
+3.  Basándose en el valor del `case`, `API.php` determina qué clase administrativa (del directorio `/admin/`) debe instanciar y qué método debe ejecutar para manejar la solicitud.
 4.  La clase de `admin` procesa la petición, interactuando con los `DAO` para acceder a la base de datos y con los `model` para estructurar la información.
-5.  Finalmente, el servidor devuelve una respuesta en formato JSON al cliente, que es gestionada por la promesa (`.then` o `.catch`) de la función `crearPeticion`.
+5.  Finalmente, el servidor devuelve una respuesta en formato JSON al cliente, que es gestionada por la función `callback` (`fnSuccess` o `fnError`) pasada a `crearPeticion`.
 
 Este flujo asegura que toda la comunicación pase por un único punto de entrada (`API.php`), haciendo que el sistema sea más ordenado y fácil de mantener.
 
