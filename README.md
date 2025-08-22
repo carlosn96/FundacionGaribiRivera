@@ -87,3 +87,34 @@ Cada uno de estos módulos sigue una estructura similar:
 ## Comunicación Frontend-Backend
 
 La comunicación entre el frontend y el backend se realiza a través de peticiones AJAX, utilizando la función `crearPeticion()` definida en `public/assets/js/util.js`. Esta función envía las peticiones al archivo `API.php` en el directorio `/controller`, que actúa como un controlador principal para dirigir las peticiones a las clases administrativas correspondientes.
+
+## Universo de Discurso
+
+El sistema gestiona el ciclo de vida de los participantes en los programas de la Fundación Garibi Rivera. El universo de discurso se centra en el seguimiento y desarrollo de los emprendedores.
+
+### Actores Principales
+
+-   **Emprendedor**: Es la entidad central. Persona que participa en los programas de la fundación, busca desarrollar un negocio y recibe apoyo.
+-   **Usuario del Sistema**: Personal de la fundación (administradores, trabajadores sociales, coordinador de área de emprendimiento, auxiliar de difusión.) que opera el sistema para gestionar la información y el emprendedor.
+
+### Procesos y Entidades Clave
+
+El seguimiento de un emprendedor se organiza en torno a los siguientes procesos y entidades:
+
+-   **Diagnóstico Inicial**:
+    -   **Línea Base**: Una evaluación inicial que captura el estado del emprendedor y su negocio al ingresar al programa. Incluye datos de identificación, domicilio, análisis del negocio e información socioeconómica.
+    -   **Estudio Socioeconómico**: Un análisis detallado de las condiciones de vida del emprendedor, incluyendo su vivienda, economía familiar, vulnerabilidades y referencias.
+
+-   **Formación y Capacitación**:
+    -   **Taller**: Eventos de capacitación sobre temas específicos a los que asisten los emprendedores.
+    -   **Etapa de Formación**: Fases estructuradas del programa de formación por las que avanza el emprendedor.
+    -   **Asistencia a Taller**: Registro que vincula a un emprendedor con un taller al que asistió.
+    -   **Evaluación de Formación**: Medición del conocimiento o habilidades adquiridas por el emprendedor tras una etapa de formación.
+
+-   **Seguimiento y Medición**:
+    -   **Visita de Seguimiento**: Visitas periódicas del personal de la fundación para monitorear el progreso del emprendedor y su negocio.
+    -   **Impacto**: Mediciones periódicas para evaluar el efecto a largo plazo del programa en el bienestar y el éxito del negocio del emprendedor.
+
+-   **Administración**:
+    -   **Gestión de Usuarios**: Administración de las cuentas y permisos de los usuarios del sistema.
+    -   **Reportes**: Generación de informes consolidados sobre los datos del sistema (asistencia, evaluaciones, impacto, etc.).
