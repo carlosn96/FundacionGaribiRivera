@@ -15,10 +15,13 @@ class ImpactoDAO extends DAO {
     VALUES (?, ?)
     ON DUPLICATE KEY UPDATE
         lista_registros_filtrados = VALUES(lista_registros_filtrados)";
+    private const CALIDAD_VIDA_1 = "recuperar_impacto_calidad_vida_seccion_1";
+    private const CALIDAD_VIDA_2 = "recuperar_impacto_calidad_vida_seccion_2";
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
     private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)";
+    private const RECUPERAR_IMPACTO_CALIDAD_VIDA = "CALL nuevo_recuperar_impacto_calidad_vida(?)";
     private const CAMPOS_ADM_RECURSOS = [
         [
             "columna" => "cantEmpleados",
@@ -105,6 +108,9 @@ class ImpactoDAO extends DAO {
             "pregunta" => "¿Cuál es el monto aproximado de tus ahorros mensuales?"
         ],
     ];
+    private const CAMPOS_OPORTUNIDADES_ENTORNO = [
+        ["columna" => 'tieneNegocio', "pregunta" => "¿Actualmente tienes un negocio?"]
+    ];
     private const SECCIONES_IMPACTO = [
         'estabilidadEconomica' => [
             self::ESTABILIDAD_ECONOMICA_1 => [
@@ -122,20 +128,28 @@ class ImpactoDAO extends DAO {
                 'campos' => self::CAMPOS_MEJORA_AHORROS,
                 'peso' => 10
             ]
+        ],
+        'calidadVida' => [
+            self::CALIDAD_VIDA_1 => [
+                'nombre' => "Favorecimiento de oportunidades del entorno",
+                'campos' => self::CAMPOS_OPORTUNIDADES_ENTORNO,
+                'peso' => 50
+            ]
         ]
     ];
 
     /**
      * Método genérico para recuperar el impacto de cualquier sección
      *
-     * @param string $tipo Sección de impacto (estabilidadEconomica)
+     * @param string $tipo Sección de impacto (estabilidadEconomica o calidadVida)
      * @param int $usuario ID del usuario
      * @return array
      */
     private function recuperarImpactoPorTipo(string $tipo, int $usuario): array {
         // Arreglo de mapeo de tipo de impacto con las constantes correspondientes
         $impactoMap = [
-            'estabilidadEconomica' => self::RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA
+            'estabilidadEconomica' => self::RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA,
+            'calidadVida' => self::RECUPERAR_IMPACTO_CALIDAD_VIDA
         ];
 
         // Verificar si el tipo está en el arreglo de mapeo
@@ -183,10 +197,23 @@ class ImpactoDAO extends DAO {
         return $this->recuperarImpactoPorTipo('estabilidadEconomica', $usuario);
     }
 
+    /**
+     * Recupera la calidad de vida del usuario
+     *
+     * @param int $usuario ID del usuario
+     * @return array
+     */
+    public function recuperarCalidadVida(int $usuario): array {
+        return $this->recuperarImpactoPorTipo('calidadVida', $usuario);
+    }
+
     public function getMedicionImpacto($usuario): array {
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
         $medicionesEE = $estabilidadEconomica["mediciones"];
+        $calidadVida = $this->recuperarCalidadVida($usuario);
+        $medicionesCV = $calidadVida["mediciones"];
         $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
+        $medicionesCV[] = (new Seccion("Estabilidad económica", 50, [], $sumaPromediosEstabilidad))->toSeccionArray();
         $fechas = $this->getAniosLineaBase($usuario);
         return [
             "fechas" => $fechas,
@@ -197,6 +224,14 @@ class ImpactoDAO extends DAO {
                     "narrativa" =>
                     $this->getNarrativa("estabilizar la economia",
                             $estabilidadEconomica["total_registros"], $sumaPromediosEstabilidad, $fechas["inicioSelected"], $fechas["finSelected"])
+                ],
+                [
+                    "data" => $medicionesCV,
+                    "nombre" => "Calidad de vida",
+                    "narrativa" =>
+                    $this->getNarrativa("mejorar la calidad de vida",
+                            $calidadVida["total_registros"], array_sum(array_column($medicionesCV, 'contribucionImpacto')),
+                            $fechas["inicioSelected"], $fechas["finSelected"])
                 ]
             ]
         ];

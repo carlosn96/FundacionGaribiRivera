@@ -1,6 +1,6 @@
 // Mostrar mensaje de error
 const urlAPI = "api/MedicionImpactosAPI.php";
-const alertError = $('<div class="alert alert-light border-danger alert-dismissible fade show" role="alert">');
+const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
 
 function ready() {
     crearPeticion(urlAPI, {case: "consultarMedicionImpactos"}, (res) => {
@@ -30,7 +30,7 @@ function generarImpactoHTML(data, emprendedores) {
     // === SIDEBAR DE NAVEGACIÓN ===
     const sidebarCol = $("<div>", {class: "col-lg-3 col-md-4"});
     const sidebarCard = $("<div>", {class: "card sticky-top", style: "top: 1rem;"});
-    const sidebarHeader = $("<div>", {class: "card-header bg-primary text-white"});
+    const sidebarHeader = $("<div>", {class: "card-header"});
     sidebarHeader.append($("<h5>", {class: "card-title mb-0", text: "Navegación"}));
     
     const sidebarBody = $("<div>", {class: "card-body p-0"});
@@ -46,7 +46,7 @@ function generarImpactoHTML(data, emprendedores) {
     navItems.forEach((item, index) => {
         const navItem = $("<button>", {
             type: "button",
-            class: `list-group-item list-group-item-action d-flex align-items-center ${index === 0 ? 'active' : ''}`,
+            class: `list-group-item list-group-item-action d-flex align-items-center ${index === 0 ? 'active bg-light text-dark' : ''}`,
             id: item.id,
             "data-target": item.target,
             "aria-controls": item.target,
@@ -60,8 +60,8 @@ function generarImpactoHTML(data, emprendedores) {
         
         navItem.on("click", function() {
             // Actualizar estado activo
-            navList.find(".list-group-item").removeClass("active").attr("aria-selected", "false");
-            $(this).addClass("active").attr("aria-selected", "true");
+            navList.find(".list-group-item").removeClass("active bg-light text-dark").attr("aria-selected", "false");
+            $(this).addClass("active bg-light text-dark").attr("aria-selected", "true");
             
             // Mostrar sección correspondiente
             $("#main-content").find(".content-section").addClass("d-none");
@@ -88,7 +88,7 @@ function generarImpactoHTML(data, emprendedores) {
         class: "content-section"
     });
 
-    const medicionHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4"});
+    const medicionHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-primary"});
     medicionHeader.append(
         $("<h2>", {class: "h3 mb-0"}).append(
             $("<i>", {class: "ti ti-chart-bar me-2"}),
@@ -104,8 +104,15 @@ function generarImpactoHTML(data, emprendedores) {
     // Accordion para cada tipo de impacto
     const impactosAccordion = $("<div>", {class: "accordion", id: "impactosAccordion"});
 
-    data.impactos.forEach((impacto, index) => {
-        const accordionItem = $("<div>", {class: "accordion-item border-0 shadow-sm mb-3"});
+    // --- INICIO: Ocultar temporalmente el indicador de Calidad de Vida ---
+    // Se filtra el array de impactos para mostrar únicamente "Estabilidad económica".
+    // Para volver a mostrar el indicador de "Calidad de Vida" (si el backend lo proporciona),
+    // simplemente elimine la siguiente línea de filtro y use "data.impactos" directamente en el forEach.
+    const impactosVisibles = data.impactos.filter(p => p.nombre === 'Estabilidad económica');
+    // --- FIN: Ocultar temporalmente el indicador de Calidad de Vida ---
+
+    impactosVisibles.forEach((impacto, index) => {
+        const accordionItem = $("<div>", {class: "accordion-item border-0 shadow-sm mb-3 border-start border-5 border-info"});
         
         // Header del accordion
         const accordionHeader = $("<h2>", {class: "accordion-header", id: `heading-${index}`});
@@ -121,7 +128,7 @@ function generarImpactoHTML(data, emprendedores) {
         accordionButton.append(
             $("<div>", {class: "d-flex align-items-center w-100"}).append(
                 $("<div>", {class: "me-3"}).append(
-                    $("<span>", {class: "badge bg-light text-dark fs-6", text: index + 1})
+                    $("<span>", {class: "badge bg-info text-white fs-6", text: index + 1})
                 ),
                 $("<div>", {class: "flex-grow-1"}).append(
                     $("<h5>", {class: "mb-1", text: impacto.nombre}),
@@ -151,14 +158,14 @@ function generarImpactoHTML(data, emprendedores) {
 
         const summaryCard = $("<div>", {class: "col-12 mb-3"});
         const summaryAlert = $("<div>", {
-            class: `alert alert-${totalImpacto >= 70 ? 'success' : totalImpacto >= 40 ? 'warning' : 'danger'} border-0`,
+            class: `alert ${totalImpacto >= 70 ? 'alert-success border-success' : totalImpacto >= 40 ? 'alert-warning border-warning' : 'alert-danger border-danger'} border-start border-5`,
             role: "alert"
         });
         
         summaryAlert.append(
             $("<div>", {class: "d-flex align-items-center"}).append(
                 $("<div>", {class: "me-3"}).append(
-                    $("<i>", {class: `ti ${totalImpacto >= 70 ? 'ti-check' : totalImpacto >= 40 ? 'ti-alert-triangle' : 'ti-x'} fs-2`})
+                    $("<i>", {class: `ti ${totalImpacto >= 70 ? 'ti-check text-success' : totalImpacto >= 40 ? 'ti-alert-triangle text-warning' : 'ti-x text-danger'} fs-2`})
                 ),
                 $("<div>").append(
                     $("<h5>", {class: "alert-heading mb-1", text: "Impacto Total"}),
@@ -195,14 +202,14 @@ function generarImpactoHTML(data, emprendedores) {
                     )
                 ),
                 $("<td>", {class: "text-center"}).append(
-                    $("<span>", {class: "badge bg-light text-dark", text: `${seccion.obtenido}%`})
+                    $("<span>", {class: "badge bg-secondary", text: `${seccion.obtenido}%`})
                 ),
                 $("<td>", {class: "text-center"}).append(
-                    $("<span>", {class: "badge bg-secondary", text: `${seccion.peso}%`})
+                    $("<span>", {class: "badge bg-dark", text: `${seccion.peso}%`})
                 ),
                 $("<td>", {class: "text-center"}).append(
                     $("<span>", {
-                        class: `badge ${parseFloat(seccion.contribucionImpacto) >= 15 ? 'bg-success' : parseFloat(seccion.contribucionImpacto) >= 10 ? 'bg-warning' : 'bg-danger'}`,
+                        class: `badge ${parseFloat(seccion.contribucionImpacto) >= 15 ? 'bg-success' : parseFloat(seccion.contribucionImpacto) >= 10 ? 'bg-warning text-dark' : 'bg-danger'}`,
                         text: `${seccion.contribucionImpacto}%`
                     })
                 )
@@ -215,7 +222,7 @@ function generarImpactoHTML(data, emprendedores) {
         totalRow.append(
             $("<td>", {text: "Total", colspan: 3}),
             $("<td>", {class: "text-center"}).append(
-                $("<span>", {class: "badge bg-dark fs-6", text: `${totalImpacto.toFixed(2)}%`})
+                $("<span>", {class: "badge bg-primary fs-6", text: `${totalImpacto.toFixed(2)}%`})
             )
         );
         tableBody.append(totalRow);
@@ -224,8 +231,8 @@ function generarImpactoHTML(data, emprendedores) {
         tableContainer.append(table);
 
         // Narrativa en card separada
-        const narrativaCard = $("<div>", {class: "card border-0 bg-light mb-4"});
-        const narrativaHeader = $("<div>", {class: "card-header bg-transparent border-0"});
+        const narrativaCard = $("<div>", {class: "card border-0 bg-light shadow-sm mb-4"});
+        const narrativaHeader = $("<div>", {class: "card-header bg-transparent border-0 border-bottom border-2 border-info"});
         narrativaHeader.append(
             $("<h6>", {class: "card-title mb-0"}).append(
                 $("<i>", {class: "ti ti-file-text me-2"}),
@@ -264,7 +271,7 @@ function generarImpactoHTML(data, emprendedores) {
             const varTable = $("<div>", {class: "table-responsive"});
             const detailTable = $("<table>", {class: "table table-sm"});
             
-            const detailHeader = $("<thead>", {class: "table-success"});
+            const detailHeader = $("<thead>", {class: "table-light"});
             detailHeader.append(
                 $("<tr>").append(
                     $("<th>", {text: "Pregunta"}),
@@ -284,7 +291,7 @@ function generarImpactoHTML(data, emprendedores) {
                     $("<td>", {class: "text-center", text: medicion.final}),
                     $("<td>", {class: "text-center"}).append(
                         $("<span>", {
-                            class: `badge bg-${parseFloat(variacion) > 0 ? 'success' : parseFloat(variacion) < 0 ? 'danger' : 'secondary'}`,
+                            class: `badge ${parseFloat(variacion) > 0 ? 'bg-success' : parseFloat(variacion) < 0 ? 'bg-danger' : 'bg-secondary'}`,
                             text: `${variacion}%`
                         })
                     )
@@ -314,7 +321,7 @@ function generarImpactoHTML(data, emprendedores) {
         class: "content-section d-none"
     });
 
-    const configHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4"});
+    const configHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-info"});
     configHeader.append(
         $("<h2>", {class: "h3 mb-0"}).append(
             $("<i>", {class: "ti ti-settings me-2"}),
@@ -325,7 +332,7 @@ function generarImpactoHTML(data, emprendedores) {
 
     // Card de configuración temporal
     const configCard = $("<div>", {class: "card shadow-sm mb-4"});
-    const configCardHeader = $("<div>", {class: "card-header bg-light"});
+    const configCardHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-info"});
     configCardHeader.append(
         $("<h5>", {class: "card-title mb-0"}).append(
             $("<i>", {class: "ti ti-calendar me-2"}),
@@ -368,13 +375,13 @@ function generarImpactoHTML(data, emprendedores) {
 
     // Card de gestión de emprendedores
     const emprendedoresCard = $("<div>", {class: "card shadow-sm"});
-    const emprendedoresHeader = $("<div>", {class: "card-header bg-light d-flex justify-content-between align-items-center"});
+    const emprendedoresHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-primary d-flex justify-content-between align-items-center"});
     emprendedoresHeader.append(
         $("<h5>", {class: "card-title mb-0"}).append(
             $("<i>", {class: "ti ti-users me-2"}),
             $("<span>", {text: "Gestión de Emprendedores"})
         ),
-        $("<span>", {class: "badge bg-light text-dark", id: "emprendedores-count", text: `${emprendedores.length} total`})
+        $("<span>", {class: "badge bg-dark text-white", id: "emprendedores-count", text: `${emprendedores.length} total`})
     );
 
     const emprendedoresBody = $("<div>", {class: "card-body"});
@@ -407,7 +414,7 @@ function generarImpactoHTML(data, emprendedores) {
     const btnGroup = $("<div>", {class: "btn-group w-100", role: "group"});
     btnGroup.append(
         $("<button>", {
-            class: "btn btn-outline-success",
+            class: "btn btn-outline-primary",
             type: "button",
             id: "select-all-btn",
             text: "Seleccionar Todos"
@@ -466,7 +473,7 @@ function generarImpactoHTML(data, emprendedores) {
                 $("<div>", {class: "d-flex align-items-center"}).append(
                     $("<div>", {class: "me-3"}).append(
                         $("<div>", {
-                            class: "bg-light text-dark rounded-circle d-flex align-items-center justify-content-center border",
+                            class: "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center border border-2 border-light",
                             style: "width: 40px; height: 40px; font-weight: bold;",
                             text: emprendedor.nombre.charAt(0) + emprendedor.apellidos.charAt(0)
                         })
@@ -479,7 +486,7 @@ function generarImpactoHTML(data, emprendedores) {
             $("<td>", {text: emprendedor.correo}),
             $("<td>", {class: "text-center"}).append(
                 $("<span>", {
-                    class: "badge bg-light text-dark",
+                    class: "badge bg-light text-dark border border-secondary",
                     text: emprendedor.etapa
                 })
             )
@@ -497,7 +504,7 @@ function generarImpactoHTML(data, emprendedores) {
             $("<span>", {class: "text-muted", id: "seleccionados-info", text: "0 emprendedores seleccionados"})
         ),
         $("<button>", {
-            class: "btn btn-dark",
+            class: "btn btn-primary",
             type: "button",
             id: "apply-filter",
             click: aplicarFiltro
@@ -518,7 +525,7 @@ function generarImpactoHTML(data, emprendedores) {
         class: "content-section d-none"
     });
 
-    const vistaHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4"});
+    const vistaHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-success"});
     vistaHeader.append(
         $("<h2>", {class: "h3 mb-0"}).append(
             $("<i>", {class: "ti ti-file-analytics me-2"}),
@@ -528,7 +535,7 @@ function generarImpactoHTML(data, emprendedores) {
     seccionVistaGeneral.append(vistaHeader);
 
     const vistaCard = $("<div>", {class: "card shadow-sm"});
-    const vistaCardHeader = $("<div>", {class: "card-header bg-light"});
+    const vistaCardHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-success"});
     vistaCardHeader.append(
         $("<h5>", {class: "card-title mb-0"}).append(
             $("<i>", {class: "ti ti-download me-2"}),
@@ -547,7 +554,7 @@ function generarImpactoHTML(data, emprendedores) {
     btnGroupExport.append(
         $("<button>", {
             type: "button",
-            class: "btn btn-outline-dark btn-lg",
+            class: "btn btn-outline-info btn-lg",
             id: "btnInicial",
             "data-tipo": "inicial",
             click: recuperarVistaImpacto
@@ -557,7 +564,7 @@ function generarImpactoHTML(data, emprendedores) {
         ),
         $("<button>", {
             type: "button",
-            class: "btn btn-outline-dark btn-lg",
+            class: "btn btn-outline-success btn-lg",
             id: "btnFinal",
             "data-tipo": "final",
             click: recuperarVistaImpacto
@@ -574,7 +581,7 @@ function generarImpactoHTML(data, emprendedores) {
         style: "display: none;"
     });
     
-    const loadingAlert = $("<div>", {class: "alert alert-info d-flex align-items-center", role: "alert"});
+    const loadingAlert = $("<div>", {class: "alert alert-info border-info border-2 d-flex align-items-center", role: "alert"});
     loadingAlert.append(
         $("<div>", {
             class: "spinner-border spinner-border-sm me-3",
@@ -700,7 +707,7 @@ function aplicarFiltro() {
     }, (res) => {
         if (!res.es_valor_error) {
             // Mostrar mensaje de éxito
-            const alertSuccess = $('<div class="alert alert-light border-success alert-dismissible fade show" role="alert">');
+            const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
             alertSuccess.append(
                 '<i class="ti ti-check text-success me-2"></i>',
                 '<strong>¡Éxito!</strong> La configuración se ha aplicado correctamente.',
@@ -717,7 +724,7 @@ function aplicarFiltro() {
             refresh();
         } else {
             // Mostrar mensaje de error
-            const alertError = $('<div class="alert alert-light border-danger alert-dismissible fade show" role="alert">');
+            const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
             alertError.append(
                 '<i class="ti ti-x text-danger me-2"></i>',
                 '<strong>Error:</strong> No se pudo aplicar la configuración. Intente nuevamente.',
@@ -768,7 +775,7 @@ function completarParametrosConfiguracion() {
         
         if (añoInicio > añoFinal) {
             // Mostrar mensaje de advertencia con mejor UX
-            const alertWarning = $('<div class="alert alert-light border-warning alert-dismissible fade show" role="alert">');
+            const alertWarning = $('<div class="alert alert-warning border-warning border-2 alert-dismissible fade show" role="alert">');
             alertWarning.append(
                 '<i class="ti ti-alert-triangle text-warning me-2"></i>',
                 '<strong>Advertencia:</strong> El año de inicio no puede ser mayor que el año final.',
@@ -812,7 +819,7 @@ function completarParametrosConfiguracion() {
             
             if (!res.es_valor_error) {
                 // Mostrar mensaje de éxito
-                const alertSuccess = $('<div class="alert alert-light border-success alert-dismissible fade show" role="alert">');
+                const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
                 alertSuccess.append(
                     '<i class="ti ti-check text-success me-2"></i>',
                     '<strong>¡Actualizado!</strong> La configuración temporal se ha guardado correctamente.',
@@ -828,7 +835,7 @@ function completarParametrosConfiguracion() {
                 refresh();
             } else {
                 // Mostrar mensaje de error
-                const alertError = $('<div class="alert alert-light border-danger alert-dismissible fade show" role="alert">');
+                const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
                 alertError.append(
                     '<i class="ti ti-x text-danger me-2"></i>',
                     '<strong>Error:</strong> No se pudo actualizar la configuración.',
@@ -885,7 +892,7 @@ function recuperarVistaImpacto() {
             tempTable.destroy();
             
             // Mostrar mensaje de éxito
-            const alertSuccess = $('<div class="alert alert-light border-success alert-dismissible fade show" role="alert">');
+            const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
             alertSuccess.append(
                 '<i class="ti ti-download text-success me-2"></i>',
                 `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
@@ -900,9 +907,9 @@ function recuperarVistaImpacto() {
             
         } else {
             // Mostrar mensaje informativo
-            const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
+            const alertInfo = $('<div class="alert alert-info border-info border-2 alert-dismissible fade show" role="alert">');
             alertInfo.append(
-                '<i class="bi bi-info-circle me-2"></i>',
+                '<i class="ti ti-info-circle me-2"></i>',
                 '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
             );
