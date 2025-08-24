@@ -28,8 +28,7 @@ $router->get(
 );
 
 
-$router->get(
-    '/list', function () use ($router) {
-        return response()->json($router->getRoutes());
-    }
-);
+$router->group(['prefix' => 'auth'], function () use ($router) {
+    $router->post('verify-email', 'AuthController@verifyEmail');
+    $router->post('register', 'AuthController@register');
+});
