@@ -28,7 +28,10 @@ $router->get(
 );
 
 
-$router->group(['prefix' => 'auth'], function () use ($router) {
-    $router->post('verify-email', 'AuthController@verifyEmail');
-    $router->post('register', 'AuthController@register');
-});
+$router->group(
+    ['prefix' => 'auth'], function () use ($router) {
+        $router->post('verify-email', 'AuthController@verifyEmail');
+        $router->post('verify-code', 'AuthController@verifyCode');
+        $router->post('register', 'AuthController@register');
+    }
+);
