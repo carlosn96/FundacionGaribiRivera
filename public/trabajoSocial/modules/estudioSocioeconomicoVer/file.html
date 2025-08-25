@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Componente de Fotografías - Bootstrap 5.3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <!-- Header Section -->
+                <div class="border-start border-primary border-4 ps-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h4 class="fw-bold text-primary mb-1">
+                                <i class="bi bi-camera-fill me-2"></i>Fotografías de la visita
+                            </h4>
+                            <p class="text-muted mb-0">Gestiona y visualiza las imágenes de tu visita</p>
+                        </div>
+                        <span class="badge bg-primary fs-6 px-3 py-2">
+                            <i class="bi bi-images me-1"></i>
+                            <span id="photoCount">0</span> fotos
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Carousel Section -->
+                <div class="card shadow-sm mb-4" id="carouselSection" style="display: none;">
+                    <div class="card-body p-0">
+                        <div id="photoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                            <div class="carousel-inner rounded" id="carouselItems" style="height: 400px;"></div>
+                            
+                            <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                            
+                            <div class="carousel-indicators" id="carouselIndicators"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="text-center py-5 text-muted" id="emptyState">
+                    <i class="bi bi-camera display-1 opacity-25"></i>
+                    <h5 class="mt-3">No hay fotografías</h5>
+                    <p class="mb-0">Comienza agregando algunas imágenes de tu visita</p>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="fw-semibold mb-0">
+                            <i class="bi bi-plus-circle me-2"></i>Agregar nuevas fotografías
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light" id="uploadZone">
+                            <i class="bi bi-cloud-upload display-4 text-primary mb-3"></i>
+                            <h6 class="fw-semibold mb-2">Arrastra y suelta tus fotos aquí</h6>
+                            <p class="text-muted mb-3">o haz clic para seleccionar archivos</p>
+                            <button type="button" class="btn btn-outline-primary" id="selectFilesBtn">
+                                <i class="bi bi-folder2-open me-2"></i>Seleccionar fotos
+                            </button>
+                            <input type="file" id="inputAgregarFotos" class="d-none" accept=".jpg,.jpeg,.png,.webp" multiple>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Formatos soportados: JPG, JPEG, PNG, WebP (máx. 5MB por archivo)
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress mb-4" style="height: 4px; display: none;" id="uploadProgress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="card shadow-sm mb-4" id="previewSection" style="display: none;">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="fw-semibold mb-0">
+                                <i class="bi bi-eye me-2"></i>Vista previa
+                            </h6>
+                            <button class="btn btn-outline-danger btn-sm" id="clearAllBtn">
+                                <i class="bi bi-trash me-1"></i>Limpiar todo
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="previewFotos" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 justify-content-end flex-wrap">
+                    <button id="btnCancelar" class="btn btn-outline-secondary" style="display: none;">
+                        <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </button>
+                    <button id="btnGuardarFotos" class="btn btn-primary" disabled>
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        <span id="btnText">Guardar fotografías</span>
+                        <span class="spinner-border spinner-border-sm ms-2 d-none" id="btnSpinner" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                <strong class="me-auto">Éxito</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-x-circle text-danger me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        class PhotoManager {
+            constructor() {
+                this.photos = [];
+                this.previewPhotos = [];
+                this.initializeElements();
+                this.bindEvents();
+                this.updatePhotoCount();
+            }
+
+            initializeElements() {
+                this.uploadZone = document.getElementById('uploadZone');
+                this.fileInput = document.getElementById('inputAgregarFotos');
+                this.previewContainer = document.getElementById('previewFotos');
+                this.saveBtn = document.getElementById('btnGuardarFotos');
+                this.cancelBtn = document.getElementById('btnCancelar');
+                this.clearAllBtn = document.getElementById('clearAllBtn');
+                this.selectFilesBtn = document.getElementById('selectFilesBtn');
+                this.carouselSection = document.getElementById('carouselSection');
+                this.emptyState = document.getElementById('emptyState');
+                this.previewSection = document.getElementById('previewSection');
+                this.photoCount = document.getElementById('photoCount');
+                this.uploadProgress = document.getElementById('uploadProgress');
+                this.btnSpinner = document.getElementById('btnSpinner');
+                this.btnText = document.getElementById('btnText');
+            }
+
+            bindEvents() {
+                // Drag and drop
+                this.uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
+                this.uploadZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+                this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
+                this.uploadZone.addEventListener('click', () => this.fileInput.click());
+                
+                // File selection
+                this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+                this.selectFilesBtn.addEventListener('click', () => this.fileInput.click());
+                
+                // Buttons
+                this.saveBtn.addEventListener('click', this.savePhotos.bind(this));
+                this.cancelBtn.addEventListener('click', this.cancelSelection.bind(this));
+                this.clearAllBtn.addEventListener('click', this.clearAll.bind(this));
+            }
+
+            handleDragOver(e) {
+                e.preventDefault();
+                this.uploadZone.classList.add('border-primary', 'bg-primary-subtle');
+            }
+
+            handleDragLeave(e) {
+                e.preventDefault();
+                this.uploadZone.classList.remove('border-primary', 'bg-primary-subtle');
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                this.uploadZone.classList.remove('border-primary', 'bg-primary-subtle');
+                const files = Array.from(e.dataTransfer.files);
+                this.processFiles(files);
+            }
+
+            handleFileSelect(e) {
+                const files = Array.from(e.target.files);
+                this.processFiles(files);
+            }
+
+            processFiles(files) {
+                const imageFiles = files.filter(file => file.type.startsWith('image/'));
+                
+                if (imageFiles.length === 0) {
+                    this.showToast('Por favor selecciona solo archivos de imagen', 'error');
+                    return;
+                }
+
+                imageFiles.forEach(file => {
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.showToast(`${file.name} es demasiado grande. Máximo 5MB`, 'error');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const photo = {
+                            id: Date.now() + Math.random(),
+                            file: file,
+                            url: e.target.result,
+                            name: file.name
+                        };
+                        this.previewPhotos.push(photo);
+                        this.updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                this.fileInput.value = '';
+            }
+
+            updatePreview() {
+                if (this.previewPhotos.length === 0) {
+                    this.previewSection.style.display = 'none';
+                    this.saveBtn.disabled = true;
+                    this.cancelBtn.style.display = 'none';
+                    return;
+                }
+
+                this.previewSection.style.display = 'block';
+                this.saveBtn.disabled = false;
+                this.cancelBtn.style.display = 'inline-block';
+
+                this.previewContainer.innerHTML = '';
+                this.previewPhotos.forEach(photo => {
+                    const col = document.createElement('div');
+                    col.className = 'col';
+                    col.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${photo.url}" class="img-fluid rounded shadow-sm" style="height: 120px; width: 100%; object-fit: cover;" alt="${photo.name}">
+                            <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle" 
+                                    onclick="photoManager.removePreview('${photo.id}')"
+                                    style="width: 30px; height: 30px; padding: 0;">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    `;
+                    this.previewContainer.appendChild(col);
+                });
+            }
+
+            removePreview(photoId) {
+                this.previewPhotos = this.previewPhotos.filter(photo => photo.id !== photoId);
+                this.updatePreview();
+            }
+
+            clearAll() {
+                this.previewPhotos = [];
+                this.updatePreview();
+            }
+
+            cancelSelection() {
+                this.clearAll();
+            }
+
+            async savePhotos() {
+                if (this.previewPhotos.length === 0) return;
+
+                this.btnSpinner.classList.remove('d-none');
+                this.btnText.textContent = 'Guardando...';
+                this.saveBtn.disabled = true;
+
+                this.uploadProgress.style.display = 'block';
+                const progressBar = this.uploadProgress.querySelector('.progress-bar');
+                
+                for (let i = 0; i <= 100; i += 10) {
+                    progressBar.style.width = i + '%';
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                this.photos.push(...this.previewPhotos);
+                this.previewPhotos = [];
+
+                this.updateCarousel();
+                this.updatePreview();
+                this.updatePhotoCount();
+
+                this.btnSpinner.classList.add('d-none');
+                this.btnText.textContent = 'Guardar fotografías';
+                this.saveBtn.disabled = false;
+                this.uploadProgress.style.display = 'none';
+
+                this.showToast('Fotografías guardadas exitosamente', 'success');
+            }
+
+            updateCarousel() {
+                const carouselItems = document.getElementById('carouselItems');
+                const carouselIndicators = document.getElementById('carouselIndicators');
+                
+                if (this.photos.length === 0) {
+                    this.carouselSection.style.display = 'none';
+                    this.emptyState.style.display = 'block';
+                    return;
+                }
+
+                this.carouselSection.style.display = 'block';
+                this.emptyState.style.display = 'none';
+
+                carouselItems.innerHTML = '';
+                carouselIndicators.innerHTML = '';
+
+                this.photos.forEach((photo, index) => {
+                    const carouselItem = document.createElement('div');
+                    carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                    carouselItem.innerHTML = `
+                        <img src="${photo.url}" class="d-block w-100 h-100" style="object-fit: cover;" alt="${photo.name}">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                            <h6 class="mb-0">${photo.name}</h6>
+                        </div>
+                    `;
+                    carouselItems.appendChild(carouselItem);
+
+                    const indicator = document.createElement('button');
+                    indicator.type = 'button';
+                    indicator.setAttribute('data-bs-target', '#photoCarousel');
+                    indicator.setAttribute('data-bs-slide-to', index);
+                    indicator.className = index === 0 ? 'active' : '';
+                    indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+                    if (index === 0) indicator.setAttribute('aria-current', 'true');
+                    carouselIndicators.appendChild(indicator);
+                });
+            }
+
+            updatePhotoCount() {
+                this.photoCount.textContent = this.photos.length;
+            }
+
+            showToast(message, type = 'success') {
+                const toastId = type === 'success' ? 'successToast' : 'errorToast';
+                const toast = document.getElementById(toastId);
+                const toastBody = toast.querySelector('.toast-body');
+                
+                toastBody.textContent = message;
+                
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            }
+        }
+
+        const photoManager = new PhotoManager();
+    </script>
+</body>
+</html>

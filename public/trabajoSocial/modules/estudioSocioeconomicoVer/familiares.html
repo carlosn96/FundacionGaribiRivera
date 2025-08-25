@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Familiares - Vista Tabular</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/1.39.1/tabler-icons.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h1 class="h3 mb-2 text-primary">
+                                    <i class="ti ti-users me-2"></i>Gestión de Familiares
+                                </h1>
+                                <p class="text-muted mb-0">
+                                    Administra la información de tu familia de manera eficiente
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                <div class="btn-group me-2" role="group">
+                                    <button class="btn btn-outline-secondary" onclick="switchView('cards')" id="cardsView">
+                                        <i class="ti ti-layout-grid me-1"></i>Tarjetas
+                                    </button>
+                                    <button class="btn btn-secondary active" onclick="switchView('table')" id="tableView">
+                                        <i class="ti ti-table me-1"></i>Tabla
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary" onclick="addNewMember()">
+                                    <i class="ti ti-plus me-2"></i>Agregar Familiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Tabla de familiares -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <!-- Header con estadísticas -->
+                        <div class="card-header bg-light border-bottom-0 py-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-0">
+                                        <i class="ti ti-users text-primary me-2"></i>
+                                        Lista de Familiares
+                                        <span class="badge bg-primary ms-2" id="totalCount">3</span>
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <small class="text-muted">
+                                        <i class="ti ti-currency-dollar me-1"></i>
+                                        Total Ingresos: <span class="fw-bold text-success" id="totalIncome">$31,500</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla responsiva -->
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="familiaresTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="border-0 ps-4">
+                                            <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark fw-semibold" 
+                                                    onclick="sortTable(0)">
+                                                <i class="ti ti-user me-1"></i>Familiar
+                                                <i class="ti ti-chevron-up-down ms-1"></i>
+                                            </button>
+                                        </th>
+                                        <th scope="col" class="border-0 text-center">
+                                            <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark fw-semibold" 
+                                                    onclick="sortTable(1)">
+                                                <i class="ti ti-calendar me-1"></i>Edad
+                                                <i class="ti ti-chevron-up-down ms-1"></i>
+                                            </button>
+                                        </th>
+                                        <th scope="col" class="border-0">
+                                            <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark fw-semibold" 
+                                                    onclick="sortTable(2)">
+                                                <i class="ti ti-home me-1"></i>Parentesco
+                                                <i class="ti ti-chevron-up-down ms-1"></i>
+                                            </button>
+                                        </th>
+                                        <th scope="col" class="border-0 d-none d-md-table-cell">
+                                            <i class="ti ti-heart me-1"></i>Estado Civil
+                                        </th>
+                                        <th scope="col" class="border-0 d-none d-lg-table-cell">
+                                            <i class="ti ti-book me-1"></i>Escolaridad
+                                        </th>
+                                        <th scope="col" class="border-0 d-none d-lg-table-cell">
+                                            <i class="ti ti-briefcase me-1"></i>Ocupación
+                                        </th>
+                                        <th scope="col" class="border-0 text-end">
+                                            <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark fw-semibold" 
+                                                    onclick="sortTable(6)">
+                                                <i class="ti ti-currency-dollar me-1"></i>Ingresos
+                                                <i class="ti ti-chevron-up-down ms-1"></i>
+                                            </button>
+                                        </th>
+                                        <th scope="col" class="border-0 text-center pe-4">
+                                            <i class="ti ti-settings me-1"></i>Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="familiaresTableBody">
+                                    <!-- Contenido generado dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Paginación de familiares">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted">
+                            <small>Mostrando 1-3 de 3 familiares</small>
+                        </div>
+                        <ul class="pagination mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">
+                                    <i class="ti ti-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#">1</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">
+                                    <i class="ti ti-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para vista detallada en móvil -->
+    <div class="modal fade" id="memberDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="ti ti-user me-2"></i>Detalles del Familiar
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="memberDetailContent">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="editMemberFromModal()">
+                        <i class="ti ti-edit me-1"></i>Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Datos de ejemplo (mismos que el original)
+        const familyData = [
+            {
+                idFamiliar: 1,
+                nombre: "María González",
+                edad: 45,
+                parentesco: "Esposa",
+                estadoCivil: { value: "Casada" },
+                escolaridad: { value: "Licenciatura" },
+                ocupacion: { value: "Enfermera" },
+                ingresoMensualFijo: "$25,000",
+                ingresoMensualVariable: "$3,000"
+            },
+            {
+                idFamiliar: 2,
+                nombre: "Carlos González",
+                edad: 20,
+                parentesco: "Hijo",
+                estadoCivil: { value: "Soltero" },
+                escolaridad: { value: "Universidad" },
+                ocupacion: { value: "Estudiante" },
+                ingresoMensualFijo: "$0",
+                ingresoMensualVariable: "$2,500"
+            },
+            {
+                idFamiliar: 3,
+                nombre: "Ana González",
+                edad: 17,
+                parentesco: "Hija",
+                estadoCivil: { value: "Soltera" },
+                escolaridad: { value: "Preparatoria" },
+                ocupacion: { value: "Estudiante" },
+                ingresoMensualFijo: "$0",
+                ingresoMensualVariable: "$1,000"
+            }
+        ];
+
+        let currentSortColumn = -1;
+        let currentSortDirection = 'asc';
+
+        // Función para calcular total de ingresos
+        function calculateTotal(fixed, variable) {
+            const fixedAmount = parseFloat(fixed.replace(/[^0-9.-]+/g, '')) || 0;
+            const variableAmount = parseFloat(variable.replace(/[^0-9.-]+/g, '')) || 0;
+            return fixedAmount + variableAmount;
+        }
+
+        // Función para formatear moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(amount);
+        }
+
+        // Función para obtener badge de parentesco
+        function getParentescoBadge(parentesco) {
+            const badges = {
+                'Esposa': 'bg-success',
+                'Hijo': 'bg-primary',
+                'Hija': 'bg-info'
+            };
+            return badges[parentesco] || 'bg-secondary';
+        }
+
+        // Función para generar la tabla
+        function generateTable(data = familyData) {
+            const tbody = document.getElementById('familiaresTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(familiar => {
+                const total = calculateTotal(familiar.ingresoMensualFijo, familiar.ingresoMensualVariable);
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td class="ps-4">
+                        <div>
+                            <h6 class="mb-0">${familiar.nombre}</h6>
+                            <small class="text-muted d-md-none">${familiar.edad} años</small>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark">${familiar.edad}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${getParentescoBadge(familiar.parentesco)}">${familiar.parentesco}</span>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <small class="text-muted">${familiar.estadoCivil.value}</small>
+                    </td>
+                    <td class="d-none d-lg-table-cell">
+                        <small class="text-muted">${familiar.escolaridad.value}</small>
+                    </td>
+                    <td class="d-none d-lg-table-cell">
+                        <small class="text-muted">${familiar.ocupacion.value}</small>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="fw-bold text-success">${formatCurrency(total)}</span>
+                            <small class="text-muted d-none d-md-block">
+                                F: ${familiar.ingresoMensualFijo} | V: ${familiar.ingresoMensualVariable}
+                            </small>
+                        </div>
+                    </td>
+                    <td class="text-center pe-4">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-secondary d-md-none" 
+                                    onclick="showMemberDetail(${familiar.idFamiliar})"
+                                    data-bs-toggle="tooltip" 
+                                    title="Ver detalles">
+                                <i class="ti ti-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="editMember(${familiar.idFamiliar})"
+                                    data-bs-toggle="tooltip" 
+                                    title="Editar">
+                                <i class="ti ti-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="deleteMember(${familiar.idFamiliar})"
+                                    data-bs-toggle="tooltip" 
+                                    title="Eliminar">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+            // Actualizar estadísticas
+            updateStats(data);
+            
+            // Inicializar tooltips
+            initializeTooltips();
+        }
+
+        // Función para actualizar estadísticas
+        function updateStats(data) {
+            const totalCount = data.length;
+            const totalIncome = data.reduce((sum, familiar) => {
+                return sum + calculateTotal(familiar.ingresoMensualFijo, familiar.ingresoMensualVariable);
+            }, 0);
+
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+        }
+
+        // Función para ordenar tabla
+        function sortTable(columnIndex) {
+            const isNewColumn = currentSortColumn !== columnIndex;
+            currentSortDirection = isNewColumn ? 'asc' : (currentSortDirection === 'asc' ? 'desc' : 'asc');
+            currentSortColumn = columnIndex;
+
+            familyData.sort((a, b) => {
+                let aValue, bValue;
+
+                switch (columnIndex) {
+                    case 0: // Nombre
+                        aValue = a.nombre.toLowerCase();
+                        bValue = b.nombre.toLowerCase();
+                        break;
+                    case 1: // Edad
+                        aValue = a.edad;
+                        bValue = b.edad;
+                        break;
+                    case 2: // Parentesco
+                        aValue = a.parentesco.toLowerCase();
+                        bValue = b.parentesco.toLowerCase();
+                        break;
+                    case 6: // Ingresos
+                        aValue = calculateTotal(a.ingresoMensualFijo, a.ingresoMensualVariable);
+                        bValue = calculateTotal(b.ingresoMensualFijo, b.ingresoMensualVariable);
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (typeof aValue === 'string') {
+                    return currentSortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                } else {
+                    return currentSortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+                }
+            });
+
+            generateTable();
+        }
+
+        // Función para mostrar detalles del familiar en móvil
+        function showMemberDetail(id) {
+            const familiar = familyData.find(f => f.idFamiliar === id);
+            if (!familiar) return;
+
+            const total = calculateTotal(familiar.ingresoMensualFijo, familiar.ingresoMensualVariable);
+            const modalContent = document.getElementById('memberDetailContent');
+            
+            modalContent.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="text-center mb-3">
+                            <h5 class="mt-2 mb-0">${familiar.nombre}</h5>
+                            <small class="text-muted">${familiar.edad} años • ${familiar.parentesco}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ti ti-heart text-danger me-2"></i>
+                            <small class="text-muted">Estado Civil</small>
+                        </div>
+                        <p class="mb-0 fw-medium">${familiar.estadoCivil.value}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ti ti-book text-info me-2"></i>
+                            <small class="text-muted">Escolaridad</small>
+                        </div>
+                        <p class="mb-0 fw-medium">${familiar.escolaridad.value}</p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ti ti-briefcase text-warning me-2"></i>
+                            <small class="text-muted">Ocupación</small>
+                        </div>
+                        <p class="mb-0 fw-medium">${familiar.ocupacion.value}</p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <hr class="my-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ti ti-currency-dollar text-success me-2"></i>
+                            <small class="text-muted">Ingresos Mensuales</small>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Fijo:</small>
+                                <p class="mb-0 fw-medium">${familiar.ingresoMensualFijo}</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Variable:</small>
+                                <p class="mb-0 fw-medium">${familiar.ingresoMensualVariable}</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-success">Total Mensual:</span>
+                                <span class="fw-bold text-success fs-5">${formatCurrency(total)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Guardar ID para edición
+            modalContent.dataset.memberId = id;
+            
+            const modal = new bootstrap.Modal(document.getElementById('memberDetailModal'));
+            modal.show();
+        }
+
+        // Función para inicializar tooltips
+        function initializeTooltips() {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        }
+
+        // Funciones de acción (mantener las originales)
+        function editMember(id) {
+            const familiar = familyData.find(f => f.idFamiliar === id);
+            if (familiar) {
+                alert(`Editando: ${familiar.nombre}\n\nEsta función abriría un modal de Bootstrap con formulario.`);
+            }
+        }
+
+        function editMemberFromModal() {
+            const modalContent = document.getElementById('memberDetailContent');
+            const memberId = modalContent.dataset.memberId;
+            if (memberId) {
+                bootstrap.Modal.getInstance(document.getElementById('memberDetailModal')).hide();
+                editMember(parseInt(memberId));
+            }
+        }
+
+        function deleteMember(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este familiar?')) {
+                const index = familyData.findIndex(f => f.idFamiliar === id);
+                if (index > -1) {
+                    familyData.splice(index, 1);
+                    generateTable();
+                }
+            }
+        }
+
+        function addNewMember() {
+            alert('Esta función abriría un modal de Bootstrap para agregar un nuevo familiar.');
+        }
+
+        function switchView(view) {
+            if (view === 'table') {
+                document.getElementById('tableView').classList.add('active');
+                document.getElementById('cardsView').classList.remove('active');
+                alert('Vista de tabla activada');
+            } else {
+                document.getElementById('cardsView').classList.add('active');
+                document.getElementById('tableView').classList.remove('active');
+                alert('Cambiar a vista de tarjetas (implementar navegación)');
+            }
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTable();
+        });
+    </script>
+</body>
+</html>

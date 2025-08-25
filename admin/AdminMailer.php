@@ -10,9 +10,11 @@ require_once 'PHPMailer/SMTP.php';
 
 use PHPMailer\PHPMailer;
 
-class AdminMailer {
+class AdminMailer
+{
 
-    private static function enviarCorreo($destinatario, $asunto, $tipo, $body) {
+    private static function enviarCorreo($destinatario, $asunto, $tipo, $body)
+    {
         $mailer = new PHPMailer(true);
         $mailer->isSMTP();
         $mailer->Host = MAIL_HOST;
@@ -33,14 +35,16 @@ class AdminMailer {
         return $mailer->send();
     }
 
-    public static function enviarCorreoRestablecerCuenta($destinatario, $codigoVerificacion) {
+    public static function enviarCorreoRestablecerCuenta($destinatario, $codigoVerificacion)
+    {
         $body = "<p>Ha solicitado restablecer su contraseña. Por favor, use el siguiente código para completar el proceso:</p>
                 <p style='font-size: 24px; font-weight: bold; text-align: center;'>$codigoVerificacion</p>
                 <p>Si no solicitó este cambio, por favor, ignore este correo electrónico.</p>";
         return self::enviarCorreo($destinatario, "Restablecer contraseña", "Restablecimiento de contraseña", $body);
     }
 
-    public static function enviarCorreoVerificacionCuenta($destinatario, $codigoVerificacion) {
+    public static function enviarCorreoVerificacionCuenta($destinatario, $codigoVerificacion)
+    {
         $body = "<p>Utilice el siguiente código para verificar su cuenta: </p>
                 <p style='font-size: 24px; font-weight: bold; text-align: center;'>$codigoVerificacion</p>
                 <p>Si no solicitó verificar su cuenta, por favor, ignore este correo electrónico.</p>";

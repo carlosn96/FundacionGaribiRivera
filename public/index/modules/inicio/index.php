@@ -31,12 +31,12 @@
                                 <form id="loginForm">
                                     <div class="mb-3">
                                         <label for="correo" class="form-label fw-semibold text-dark">Correo electrónico:</label>
-                                        <input type="email" class="form-control border-warning" id="correo" name="correo" required>
+                                        <input value="carlos_n96@hotmail.com" type="email" class="form-control border-warning" id="correo" name="correo" required>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="contrasena" class="form-label fw-semibold text-dark">Contraseña:</label>
-                                        <input type="password" class="form-control border-warning" id="contrasena" name="contrasena" required>
+                                        <input value="1" type="password" class="form-control border-warning" id="contrasena" name="contrasena" required>
                                     </div>
                                     
                                     <div class="text-end mb-4">

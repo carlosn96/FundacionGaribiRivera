@@ -1,0 +1,30 @@
+# Estructura del Proyecto
+
+## Directorios Principales
+
+- **/ (Raíz):** Contiene archivos de configuración y el punto de entrada principal de la aplicación.
+- **/admin/:** Clases PHP para la lógica de negocio y operaciones administrativas.
+- **/controller/:** Controladores para gestionar peticiones y sesiones.
+- **/dao/:** Objetos de Acceso a Datos para la interacción con la base de datos.
+- **/model/:** Entidades del negocio y estructuras de datos.
+- **/public/:** Directorio raíz web, con los archivos accesibles desde el navegador.
+
+## Módulos en /public/
+
+El directorio `/public/` está organizado en los siguientes módulos, cada uno con su propia funcionalidad y estructura interna:
+
+- **/administracionGeneral/:** Módulo para la administración general del sistema.
+- **/emprendedor/:** Módulo para la gestión de emprendedores.
+- **/index/:** Módulo principal de la aplicación, con la página de inicio y el formulario de login.
+- **/proyectos/:** Módulo para la gestión de proyectos.
+- **/trabajoSocial/:** Módulo para el área de trabajo social.
+
+Cada uno de estos módulos sigue una estructura similar:
+
+- **index.php:** Punto de entrada del módulo.
+- **includes/:** Archivos comunes al módulo, como plantillas y encabezados.
+- **modules/:** Sub-módulos con funcionalidades específicas, cada uno con su propia estructura de archivos (vistas, API, etc.).
+
+## Comunicación Frontend-Backend
+
+La comunicación entre el frontend y el backend se realiza a través de peticiones AJAX, utilizando la función `crearPeticion()` definida en `public/assets/js/util.js`. Esta función envía las peticiones al archivo `API.php` en el directorio `/controller`, que actúa como un controlador principal para dirigir las peticiones a las clases administrativas correspondientes.
