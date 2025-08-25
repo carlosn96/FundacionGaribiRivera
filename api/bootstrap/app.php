@@ -111,6 +111,10 @@ $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Cache\CacheServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
+$app->alias('auth', 'Tymon\\JWTAuth\\Facades\\JWTAuth');
+$app->alias('JWTAuth', 'Tymon\\JWTAuth\\Facades\\JWTAuth');
+$app->alias('JWTFactory', 'Tymon\\JWTAuth\\Facades\\JWTFactory');
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
