@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\ApiResponse;
 use App\Services\MailService;
 use App\Services\SessionService;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -41,13 +43,21 @@ class AuthController extends Controller
         $correo = $request->input('correo');
         $codigo = $request->input('codigo');
         $storedCode = SessionService::get($correo);
-        if (($verified = $storedCode === $codigo)) {
+        if (($verified = intval($storedCode) === intval($codigo))) {
             SessionService::unset($correo);
             $msg = 'Correo verificado exitosamente';
+            // Generate JWT token
+            $user = Usuario::where('correo_electronico', $correo)->first();
+            if ($user) {
+                $token = JWTAuth::fromUser($user);
+                return ApiResponse::success(['verified' => $verified, 'token' => $token], $msg);
+            } else {
+                return ApiResponse::error('Usuario no encontrado después de la verificación', ApiResponse::HTTP_NOT_FOUND);
+            }
         } else {
             $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
+            return ApiResponse::success(['verified' => $verified], $msg);
         }
-        return ApiResponse::success(['verified' => $verified], $msg);
     }
 
     public function resendCodeVerifyAccount(Request $request)
@@ -80,20 +90,30 @@ class AuthController extends Controller
     }
 
 
+    
+
+
     public function register(Request $request)
     {
-        $this->validate(
-            $request, [
+        $validator = Validator::make(
+            $request->all(), [
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
-            'correo_electronico' => 'required|email|unique:usuario',
+            'correo_electronico' => 'required|email|unique:usuarios,correo_electronico',
             'numero_celular' => 'required|string|max:15',
             'contrasena' => 'required|string|min:6',
             'estado_activo' => 'required|in:activo,inactivo',
             'tipo_usuario' => 'required|integer',
-            // 'fotografia' => 'nullable|string', // Assuming base64 encoded string or URL
             ]
         );
+
+        if ($validator->fails()) {
+            return ApiResponse::error(
+                'Validation failed',
+                ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
+                $validator->errors()
+            );
+        }
 
         try {
             $user = Usuario::create(
@@ -105,15 +125,25 @@ class AuthController extends Controller
                 'contrasena' => Hash::make($request->input('contrasena')),
                 'estado_activo' => $request->input('estado_activo'),
                 'tipo_usuario' => $request->input('tipo_usuario'),
-                // 'fotografia' => $request->input('fotografia'),
+                'fotografia' => Util::obtenerFotografiaRand(),
                 ]
             );
 
-            return ApiResponse::success(['user' => $user], 'User registered successfully', 201);
+            return ApiResponse::success(
+                ['user_id' => $user->id],
+                'User registered successfully',
+                201
+            );
+
         } catch (\Exception $e) {
-            return ApiResponse::error('User registration failed', 500, ['exception' => $e->getMessage()]);
+            return ApiResponse::error(
+                'User registration failed',
+                ApiResponse::HTTP_INTERNAL_SERVER_ERROR,
+                ['exception' => $e->getMessage()]
+            );
         }
     }
+
 
     private static function getAccountValidationCode()
     {

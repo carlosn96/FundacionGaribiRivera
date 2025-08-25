@@ -17,7 +17,17 @@
 
 $router->get(
     '/', function () use ($router) {
-        return $router->app->version();
+        $result = [
+            'app'     => 'Fundacion Garibi Rivera API',
+            'version' => $router->app->version(),
+            'author'  => 'Juan Carlos Gonzalez A.',
+            'accesPoints' => [
+                'POST /auth/verify-email' => 'Verifica si un correo electrónico ya está registrado y envía un código de verificación si no lo está.',
+                'POST /auth/verify-code' => 'Verifica el código de verificación enviado al correo electrónico del usuario.',
+                'POST /auth/register' => 'Registra una nueva cuenta de usuario después de verificar el código.',
+            ]
+        ];
+        return response()->json($result);
     }
 );
 
@@ -32,6 +42,6 @@ $router->group(
     ['prefix' => 'auth'], function () use ($router) {
         $router->post('verify-email', 'AuthController@verifyEmail');
         $router->post('verify-code', 'AuthController@verifyCode');
-        $router->post('register', 'AuthController@register');
+        $router->post('register', ['middleware' => 'auth', 'uses' => 'AuthController@register']);
     }
 );

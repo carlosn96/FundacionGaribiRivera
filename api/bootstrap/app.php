@@ -64,6 +64,8 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('cache');
+$app->configure('jwt');
+$app->configure('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +101,7 @@ $app->configure('cache');
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Cache\CacheServiceProvider::class);
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

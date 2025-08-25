@@ -1,5 +1,6 @@
 {
     "require": {
-        "illuminate/cache": "^12.25"
+        "illuminate/cache": "^12.25",
+        "tymon/jwt-auth": "*"
     }
 }
