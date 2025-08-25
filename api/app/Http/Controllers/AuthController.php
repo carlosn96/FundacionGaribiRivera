@@ -12,6 +12,7 @@ use App\Services\SessionService;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -104,42 +105,55 @@ class AuthController extends Controller
         return $emailSent;
     }
 
-
-    
-
-
     public function register(Request $request)
     {
+        try {
+            $payload = JWTAuth::parseToken()->getPayload();
+            $emailFromToken = $payload->get('email');
+        } catch (JWTException $e) {
+            return ApiResponse::error(
+                'Token inválido, expirado o no proporcionado.',
+                ApiResponse::HTTP_UNAUTHORIZED,
+                ['exception' => $e->getMessage()]
+            );
+        }
+
         $validator = Validator::make(
-            $request->all(), [
-            'nombre' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'correo_electronico' => 'required|email|unique:usuarios,correo_electronico',
-            'numero_celular' => 'required|string|max:15',
-            'contrasena' => 'required|string|min:6',
-            'estado_activo' => 'required|in:activo,inactivo',
-            'tipo_usuario' => 'required|integer',
+            $request->all(),
+            [
+                'nombre' => 'required|string|max:255',
+                'apellidos' => 'required|string|max:255',
+                'correo' => 'required|email|unique:usuarios,correo_electronico',
+                'numero_celular' => 'required|string|max:15',
+                'contrasena' => 'required|string|min:6'
             ]
         );
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Validation failed',
+                'Error de validación',
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
                 $validator->errors()
+            );
+        }
+
+        if ($request->input('correo_electronico') !== $emailFromToken) {
+            return ApiResponse::error(
+                'El correo electrónico no coincide con el correo verificado.',
+                ApiResponse::HTTP_BAD_REQUEST
             );
         }
 
         try {
             $user = Usuario::create(
                 [
-                'nombre' => $request->input('nombre'),
-                'apellidos' => $request->input('apellidos'),
-                'correo_electronico' => $request->input('correo_electronico'),
-                'numero_celular' => $request->input('numero_celular'),
-                'contrasena' => Hash::make($request->input('contrasena')),
-                'tipo_usuario' => 1,
-                'fotografia' => self::obtenerFotografiaRand(),
+                    'nombre' => $request->input('nombre'),
+                    'apellidos' => $request->input('apellidos'),
+                    'correo_electronico' => $emailFromToken,
+                    'numero_celular' => $request->input('numero_celular'),
+                    'contrasena' => Hash::make($request->input('contrasena')),
+                    'tipo_usuario' => 1,
+                    'fotografia' => self::obtenerFotografiaRand(),
                 ]
             );
 
@@ -148,10 +162,9 @@ class AuthController extends Controller
                 'Registro completo. Ya puedes iniciar sesión.',
                 201
             );
-
         } catch (\Exception $e) {
             return ApiResponse::error(
-                'User registration failed',
+                'No se pudo registrar al usuario.',
                 ApiResponse::HTTP_INTERNAL_SERVER_ERROR,
                 ['exception' => $e->getMessage()]
             );
