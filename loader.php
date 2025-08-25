@@ -127,7 +127,8 @@ class Util
                 $fotos[] = $dir . DIRECTORY_SEPARATOR . $fotografias;
             }
         }
-        return $fotos[rand(0, count($fotos) - 1)];
+        $randomPhotoPath = $fotos[rand(0, count($fotos) - 1)];
+        return file_get_contents($randomPhotoPath);
     }
 
     public static function error_log($message)
