@@ -9,10 +9,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\TipoUsuario;
 
 class Usuario extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
     use Authenticatable, Authorizable, HasFactory;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['rol', 'fotografia_base64'];
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -65,5 +80,40 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
      */
     protected $hidden = [
         'contrasena',
+        'fotografia',
     ];
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
+
+    /**
+     * Get the user's type name.
+     *
+     * @return string
+     */
+    public function getRolAttribute()
+    {
+        $tipoUsuarioInfo = TipoUsuario::get($this->tipo_usuario);
+        return is_array($tipoUsuarioInfo) ? $tipoUsuarioInfo['rol'] : 'Desconocido';
+    }
+
+    /**
+     * Get the user's fotografia as base64.
+     *
+     * @return string|null
+     */
+    public function getFotografiaBase64Attribute()
+    {
+        if ($this->attributes['fotografia']) {
+            return base64_encode($this->attributes['fotografia']);
+        }
+        return null;
+    }
 }

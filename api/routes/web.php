@@ -19,13 +19,17 @@ $router->get(
     '/', function () use ($router) {
         $result = [
             'app'     => 'Fundacion Garibi Rivera API',
-            'frame-version' => $router->app->version(),
+            'framework-version' => $router->app->version(),
             'app-version' => "2025.08.24",
             'author'  => 'Juan Carlos Gonzalez A.',
             'accesPoints' => [
                 'POST /auth/verify-email' => 'Verifica si un correo electrónico ya está registrado y envía un código de verificación si no lo está.',
                 'POST /auth/verify-code' => 'Verifica el código de verificación enviado al correo electrónico del usuario.',
                 'POST /auth/register' => 'Registra una nueva cuenta de usuario después de verificar el código.',
+                'POST /auth/login' => 'Autentica a un usuario y devuelve un token de acceso.',
+                'POST /auth/logout' => 'Cierra la sesión del usuario.',
+                'POST /auth/refresh' => 'Renueva el token de acceso del usuario.',
+                'POST /auth/me' => 'Obtiene la información del usuario autenticado.',
             ]
         ];
         return response()->json($result);
@@ -41,8 +45,12 @@ $router->get(
 
 $router->group(
     ['prefix' => 'auth'], function () use ($router) {
-        $router->post('verify-email', 'AuthController@verifyEmail');
-        $router->post('verify-code', 'AuthController@verifyCode');
-        $router->post('register', 'AuthController@register');
+        $router->post('verify-email', 'RegisterController@verifyEmail');
+        $router->post('verify-code', 'RegisterController@verifyCode');
+        $router->post('register', 'RegisterController@register');
+        $router->post('login', 'AuthController@login');
+        $router->post('logout', 'AuthController@logout');
+        $router->post('refresh', 'AuthController@refresh');
+        $router->post('me', 'AuthController@me');
     }
 );
