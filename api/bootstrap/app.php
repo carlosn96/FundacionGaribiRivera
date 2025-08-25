@@ -51,6 +51,14 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->singleton('auth', function ($app) {
+    return $app['Tymon\\JWTAuth\\JWTAuth'];
+});
+
+$app->singleton('tymon.jwt', function ($app) {
+    return $app['Tymon\\JWTAuth\\Manager'];
+});
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
