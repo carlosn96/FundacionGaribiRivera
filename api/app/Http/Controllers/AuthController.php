@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\ApiResponse;
@@ -41,18 +42,32 @@ class AuthController extends Controller
             'codigo' => 'required|string|max:4',
             ]
         );
+    
         $correo = $request->input('correo');
         $codigo = $request->input('codigo');
         $storedCode = SessionService::get($correo);
+    
         if (($verified = intval($storedCode) === intval($codigo))) {
             SessionService::unset($correo);
             $msg = 'Correo verificado exitosamente';
+            $now = Carbon::now();
+            $exp = $now->copy()->addMinutes(15);
 
-            // Generate JWT token for the verified email
-            $customClaims = ['email' => $correo];
-            $payload = JWTFactory::make($customClaims);
-            $token = JWTAuth::encode($payload);
-
+            // Claims JWT completos
+            $customClaims = [
+            'sub' => $correo,                  // identificador único (temporal)
+            'email' => $correo,               // info adicional
+            'iat' => $now->timestamp,         // emitido en
+            'exp' => $exp->timestamp,         // expira en 15 min
+            'nbf' => $now->timestamp,         // válido desde ahora
+            'iss' => 'fundacion-api',         // identificador del emisor
+            'jti' => uniqid(),                // JWT ID único
+            ];
+        
+            // CORRECCIÓN: Aplicar los claims al payload
+            $payload = JWTFactory::customClaims($customClaims)->make();
+            $token = JWTAuth::encode($payload)->get();
+        
             return ApiResponse::success(['verified' => $verified, 'token' => $token], $msg);
         } else {
             $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
@@ -123,15 +138,14 @@ class AuthController extends Controller
                 'correo_electronico' => $request->input('correo_electronico'),
                 'numero_celular' => $request->input('numero_celular'),
                 'contrasena' => Hash::make($request->input('contrasena')),
-                'estado_activo' => $request->input('estado_activo'),
-                'tipo_usuario' => $request->input('tipo_usuario'),
-                'fotografia' => Util::obtenerFotografiaRand(),
+                'tipo_usuario' => 1,
+                'fotografia' => self::obtenerFotografiaRand(),
                 ]
             );
 
             return ApiResponse::success(
                 ['user_id' => $user->id],
-                'User registered successfully',
+                'Registro completo. Ya puedes iniciar sesión.',
                 201
             );
 
@@ -149,6 +163,19 @@ class AuthController extends Controller
     {
         $dictionary = "0123456789";
         return substr(str_shuffle($dictionary), 0, 4);
+    }
+
+    private static function obtenerFotografiaRand()
+    {
+        $fotos = [];
+        $dir = base_path("../public/assets/images/profile");
+        if (is_dir($dir)) {
+            $archivos = array_diff(scandir($dir), array('.', '..'));
+            foreach ($archivos as $fotografias) {
+                $fotos[] = $dir . DIRECTORY_SEPARATOR . $fotografias;
+            }
+        }
+        return file_get_contents($fotos[rand(0, count($fotos) - 1)]);
     }
 
 }

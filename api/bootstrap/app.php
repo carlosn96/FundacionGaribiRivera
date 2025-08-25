@@ -51,13 +51,6 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
-$app->singleton('auth', function ($app) {
-    return $app['Tymon\\JWTAuth\\JWTAuth'];
-});
-
-$app->singleton('tymon.jwt', function ($app) {
-    return $app['Tymon\\JWTAuth\\Manager'];
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +65,6 @@ $app->singleton('tymon.jwt', function ($app) {
 
 $app->configure('app');
 $app->configure('cache');
-$app->configure('jwt');
 $app->configure('auth');
 
 /*
@@ -94,6 +86,12 @@ $app->configure('auth');
 //     'auth' => App\Http\Middleware\Authenticate::class,
 // ]);
 
+$app->routeMiddleware(
+    [
+    'auth' => App\Http\Middleware\Authenticate::class,
+    ]
+);
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
@@ -105,11 +103,13 @@ $app->configure('auth');
 |
 */
 
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 // $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Cache\CacheServiceProvider::class);
-$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+
+
 
 $app->alias('auth', 'Tymon\\JWTAuth\\Facades\\JWTAuth');
 $app->alias('JWTAuth', 'Tymon\\JWTAuth\\Facades\\JWTAuth');
@@ -126,10 +126,12 @@ $app->alias('JWTFactory', 'Tymon\\JWTAuth\\Facades\\JWTFactory');
 |
 */
 
-$app->router->group([
+$app->router->group(
+    [
     'namespace' => 'App\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
-});
+    ], function ($router) {
+        include __DIR__.'/../routes/web.php';
+    }
+);
 
 return $app;
