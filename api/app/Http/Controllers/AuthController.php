@@ -10,6 +10,7 @@ use App\Services\MailService;
 use App\Services\SessionService;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 class AuthController extends Controller
 {
@@ -46,14 +47,13 @@ class AuthController extends Controller
         if (($verified = intval($storedCode) === intval($codigo))) {
             SessionService::unset($correo);
             $msg = 'Correo verificado exitosamente';
-            // Generate JWT token
-            $user = Usuario::where('correo_electronico', $correo)->first();
-            if ($user) {
-                $token = JWTAuth::fromUser($user);
-                return ApiResponse::success(['verified' => $verified, 'token' => $token], $msg);
-            } else {
-                return ApiResponse::error('Usuario no encontrado después de la verificación', ApiResponse::HTTP_NOT_FOUND);
-            }
+
+            // Generate JWT token for the verified email
+            $customClaims = ['email' => $correo];
+            $payload = JWTFactory::make($customClaims);
+            $token = JWTAuth::encode($payload);
+
+            return ApiResponse::success(['verified' => $verified, 'token' => $token], $msg);
         } else {
             $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
             return ApiResponse::success(['verified' => $verified], $msg);
