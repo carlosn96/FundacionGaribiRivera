@@ -1,0 +1,5 @@
+{
+    "require": {
+        "illuminate/cache": "^12.25"
+    }
+}

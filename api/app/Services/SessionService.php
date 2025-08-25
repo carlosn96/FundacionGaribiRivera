@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
+
 class SessionService
 {
     /**
@@ -13,12 +15,12 @@ class SessionService
      */
     public static function set(string $key, $value): void
     {
-        $_SESSION[$key] = $value;
+        Cache::put('session_service:' . $key, $value, 600);
     }
 
     public static function unset(string $key): void
     {
-        unset($_SESSION[$key]);
+        Cache::forget('session_service:' . $key);
     }
 
     /**
@@ -29,6 +31,6 @@ class SessionService
      */
     public static function get(string $key)
     {
-        return $_SESSION[$key] ?? [];
+        return Cache::get('session_service:' . $key) ?? [];
     }
 }
