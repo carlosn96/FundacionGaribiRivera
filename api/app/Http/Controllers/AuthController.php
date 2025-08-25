@@ -123,7 +123,7 @@ class AuthController extends Controller
             [
                 'nombre' => 'required|string|max:255',
                 'apellidos' => 'required|string|max:255',
-                'correo' => 'required|email|unique:usuarios,correo_electronico',
+                'correo_electronico' => 'required|email|unique:usuario,correo_electronico',
                 'numero_celular' => 'required|string|max:15',
                 'contrasena' => 'required|string|min:6'
             ]
