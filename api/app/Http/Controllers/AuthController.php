@@ -14,7 +14,8 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('jwt.cookie', ['except' => ['login']]); // Extract token from cookie first
+        $this->middleware('auth:api', ['except' => ['login']]); // Then authenticate
     }
 
     public function login(Request $request)
@@ -34,9 +35,9 @@ class AuthController extends Controller
 
         // Determine TTL based on remember_me
         if ($rememberMe) {
-            JWTFactory::setTTL(43200); // 30 days
+            JWTAuth::factory()->setTTL(43200); // 30 days
         } else {
-            JWTFactory::setTTL(60); // 1 hour
+            JWTAuth::factory()->setTTL(60); // 1 hour
         }
 
         // If password is correct and user is active, manually log in the user

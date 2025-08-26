@@ -84,12 +84,11 @@ $app->configure('auth');
 
 $app->routeMiddleware(
     [
-          'auth' => App\Http\Middleware\Authenticate::class,
+     'auth' => App\Http\Middleware\Authenticate::class,
      'jwt.cookie' => App\Http\Middleware\JwtFromCookieMiddleware::class,
     ]
 );
-    ]
-);
+
 
 /*
 |--------------------------------------------------------------------------
