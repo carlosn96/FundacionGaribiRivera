@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
-use App\Models\TipoUsuario;
 use App\Http\Responses\ApiResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Factory as JWTFactory;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends Controller
 {
@@ -20,13 +20,25 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $inputCredentials = $request->only('correo', 'contrasena');
+        $rememberMe = $request->has('remember_me') ? (bool)$request->input('remember_me') : false;
+
         $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
+
         if (!$user) {
             return ApiResponse::unauthorized('Correo no encontrado.');
         }
+
         if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
             return ApiResponse::unauthorized('Contraseña incorrecta.');
         }
+
+        // Determine TTL based on remember_me
+        if ($rememberMe) {
+            JWTFactory::setTTL(43200); // 30 days
+        } else {
+            JWTFactory::setTTL(60); // 1 hour
+        }
+
         // If password is correct and user is active, manually log in the user
         auth()->login($user);
 
@@ -45,22 +57,38 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return ApiResponse::success(null, 'Successfully logged out');
+        // Delete the access_token cookie
+        $cookie = Cookie::create('access_token', null, -1, '/', null, true, true, false, 'strict');
+
+        return ApiResponse::success(null, 'Successfully logged out')->withCookie($cookie);
     }
 
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh(), auth()->user());
+        $token = auth()->refresh();
+        return $this->respondWithToken($token, auth()->user());
     }
 
     protected function respondWithToken($token, $user)
     {
+        $expiresIn = JWTAuth::factory()->getTTL() * 60; // in seconds
+
+        $cookie = Cookie::create(
+            'access_token',
+            $token,
+            time() + $expiresIn, // expiration time
+            '/', // path
+            null, // domain
+            true, // secure
+            true, // httponly
+            false, // raw
+            'strict' // samesite
+        );
+
         $data = [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60,
             'user' => $user
         ];
-        return ApiResponse::success($data, 'Authenticated');
+
+        return ApiResponse::success($data, 'Authenticated')->withCookie($cookie);
     }
 }
