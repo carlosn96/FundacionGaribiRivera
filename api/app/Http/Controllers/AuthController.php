@@ -85,11 +85,6 @@ class AuthController extends Controller
             false, // raw
             'strict' // samesite
         );
-
-        $data = [
-            'user' => $user
-        ];
-
-        return ApiResponse::success($data, 'Authenticated')->withCookie($cookie);
+        return ApiResponse::success($user, 'Authenticated')->withCookie($cookie);
     }
 }
