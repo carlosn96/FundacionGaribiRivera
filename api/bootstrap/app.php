@@ -66,6 +66,7 @@ $app->singleton(
 $app->configure('app');
 $app->configure('cache');
 $app->configure('auth');
+$app->configure('cookie');
 
 /*
 |--------------------------------------------------------------------------
@@ -78,9 +79,9 @@ $app->configure('auth');
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
+ $app->middleware([
+     Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class
+ ]);
 
 $app->routeMiddleware(
     [
@@ -102,6 +103,7 @@ $app->routeMiddleware(
 */
 
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(Illuminate\Cookie\CookieServiceProvider::class);
 // $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
