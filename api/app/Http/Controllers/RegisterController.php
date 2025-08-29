@@ -65,11 +65,21 @@ class RegisterController extends Controller
             'jti' => uniqid(),                // JWT ID único
             ];
         
-            // CORRECCIÓN: Aplicar los claims al payload
             $payload = JWTFactory::customClaims($customClaims)->make();
             $token = JWTAuth::encode($payload)->get();
         
-            return ApiResponse::success(['verified' => $verified, 'token' => $token], $msg);
+            $cookie = Cookie::create(
+                'access_token',
+                $token,
+                $exp->timestamp, // expiration time
+                '/', // path
+                null, // domain
+                true, // secure
+                true, // httponly
+                false, // raw
+                'strict' // samesite
+            );
+            return ApiResponse::success(['verified' => $verified], $msg)->withCookie($cookie);
         } else {
             $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
             return ApiResponse::success(['verified' => $verified], $msg);
@@ -131,7 +141,7 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Error de validación',
+                'Error de validación: '.$validator->errors()->all(),
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
                 $validator->errors()
             );
