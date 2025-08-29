@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\ApiResponse;
 use App\Services\MailService;
 use App\Services\SessionService;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTFactory;
