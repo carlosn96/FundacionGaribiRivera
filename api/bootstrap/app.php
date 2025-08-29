@@ -30,6 +30,43 @@ $app->withFacades();
 
 $app->withEloquent();
 
+// Register Cookie Service Provider
+$app->register(\Illuminate\Cookie\CookieServiceProvider::class);
+$app->configure('session');
+
+// Configure encryption key if not set
+if (!env('APP_KEY')) {
+    $key = base64_encode(random_bytes(32));
+    file_put_contents(dirname(__DIR__) . '/.env', "\nAPP_KEY={$key}", FILE_APPEND);
+}
+
+// Register cookie bindings and encryption service
+$app->singleton(
+    'encrypter', function () use ($app) {
+        return new \Illuminate\Encryption\Encrypter(
+            base64_decode(env('APP_KEY')),
+            'AES-256-CBC'
+        );
+    }
+);
+
+$app->singleton(
+    'cookie', function () use ($app) {
+        return new class extends \Illuminate\Cookie\CookieJar {
+            public function create($name, $value, $minutes = 0, $path = null, $domain = null, $secure = null, $httpOnly = true, $raw = false, $sameSite = null)
+            {
+                return $this->make($name, $value, $minutes, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
+            }
+        };
+    }
+);
+
+$app->singleton(
+    \Illuminate\Contracts\Cookie\QueueingFactory::class, function () use ($app) {
+        return $app->make('cookie');
+    }
+);
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -79,9 +116,12 @@ $app->configure('cookie');
 |
 */
 
- $app->middleware([
-     Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class
- ]);
+$app->middleware(
+    [
+    App\Http\Middleware\CorsMiddleware::class,
+    Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class
+    ]
+);
 
 $app->routeMiddleware(
     [

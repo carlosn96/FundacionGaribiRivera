@@ -69,16 +69,18 @@ class RegisterController extends Controller
             $payload = JWTFactory::customClaims($customClaims)->make();
             $token = JWTAuth::encode($payload)->get();
         
+            $secure = env('APP_ENV') !== 'local';
+
             $cookie = Cookie::create(
                 'access_token',
                 $token,
-                $exp->timestamp, // expiration time
+                15, // minutes
                 '/', // path
                 null, // domain
-                true, // secure
+                $secure, // secure
                 true, // httponly
                 false, // raw
-                'strict' // samesite
+                'None' // samesite
             );
             return ApiResponse::success(['verified' => $verified], $msg)->withCookie($cookie);
         } else {
@@ -119,7 +121,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         try {
-            $payload = JWTAuth::parseToken()->getPayload();
+            $payload = JWTAuth::getPayload();
             $emailFromToken = $payload->get('email');
         } catch (JWTException $e) {
             return ApiResponse::error(
@@ -134,7 +136,7 @@ class RegisterController extends Controller
             [
                 'nombre' => 'required|string|max:255',
                 'apellidos' => 'required|string|max:255',
-                'correo_electronico' => 'required|email|unique:usuario,correo_electronico',
+                'correo' => 'required|email|unique:usuario,correo_electronico',
                 'numero_celular' => 'required|string|max:15',
                 'contrasena' => 'required|string|min:6'
             ]
@@ -142,13 +144,13 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Error de validación: '.$validator->errors()->all(),
+                'Error de validación: '.print_r($validator->errors()->all()),
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
                 $validator->errors()
             );
         }
 
-        if ($request->input('correo_electronico') !== $emailFromToken) {
+        if ($request->input('correo') !== $emailFromToken) {
             return ApiResponse::error(
                 'El correo electrónico no coincide con el correo verificado.',
                 ApiResponse::HTTP_BAD_REQUEST

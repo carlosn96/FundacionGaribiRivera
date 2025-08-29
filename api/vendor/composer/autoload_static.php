@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit92349cb28edd03fc664907cf9290705c
+class ComposerStaticInit76da63770eaf23bd340a254e91a70dab
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -15,8 +15,8 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
+        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '06a34129a50df3d9257ee706cf3c875b' => __DIR__ . '/..' . '/illuminate/filesystem/functions.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
@@ -120,6 +120,7 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
             'Illuminate\\Events\\' => 18,
             'Illuminate\\Encryption\\' => 22,
             'Illuminate\\Database\\' => 20,
+            'Illuminate\\Cookie\\' => 18,
             'Illuminate\\Contracts\\' => 21,
             'Illuminate\\Container\\' => 21,
             'Illuminate\\Console\\' => 19,
@@ -364,10 +365,10 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
         ),
         'Illuminate\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/illuminate/support',
-            1 => __DIR__ . '/..' . '/illuminate/collections',
-            2 => __DIR__ . '/..' . '/illuminate/conditionable',
-            3 => __DIR__ . '/..' . '/illuminate/macroable',
+            0 => __DIR__ . '/..' . '/illuminate/collections',
+            1 => __DIR__ . '/..' . '/illuminate/conditionable',
+            2 => __DIR__ . '/..' . '/illuminate/macroable',
+            3 => __DIR__ . '/..' . '/illuminate/support',
         ),
         'Illuminate\\Session\\' => 
         array (
@@ -412,6 +413,10 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
         'Illuminate\\Database\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/database',
+        ),
+        'Illuminate\\Cookie\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/cookie',
         ),
         'Illuminate\\Contracts\\' => 
         array (
@@ -522,13 +527,15 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
-        'App\\Http\\Controllers\\ExampleController' => __DIR__ . '/../..' . '/app/Http/Controllers/ExampleController.php',
+        'App\\Http\\Controllers\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/RegisterController.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
         'App\\Http\\Middleware\\ExampleMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/ExampleMiddleware.php',
+        'App\\Http\\Middleware\\JwtFromCookieMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/JwtFromCookieMiddleware.php',
         'App\\Http\\Responses\\ApiResponse' => __DIR__ . '/../..' . '/app/Http/Responses/ApiResponse.php',
         'App\\Jobs\\ExampleJob' => __DIR__ . '/../..' . '/app/Jobs/ExampleJob.php',
         'App\\Jobs\\Job' => __DIR__ . '/../..' . '/app/Jobs/Job.php',
         'App\\Listeners\\ExampleListener' => __DIR__ . '/../..' . '/app/Listeners/ExampleListener.php',
+        'App\\Models\\TipoUsuario' => __DIR__ . '/../..' . '/app/Models/TipoUsuario.php',
         'App\\Models\\Usuario' => __DIR__ . '/../..' . '/app/Models/Usuario.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
@@ -1793,6 +1800,11 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
         'Illuminate\\Contracts\\View\\Factory' => __DIR__ . '/..' . '/illuminate/contracts/View/Factory.php',
         'Illuminate\\Contracts\\View\\View' => __DIR__ . '/..' . '/illuminate/contracts/View/View.php',
         'Illuminate\\Contracts\\View\\ViewCompilationException' => __DIR__ . '/..' . '/illuminate/contracts/View/ViewCompilationException.php',
+        'Illuminate\\Cookie\\CookieJar' => __DIR__ . '/..' . '/illuminate/cookie/CookieJar.php',
+        'Illuminate\\Cookie\\CookieServiceProvider' => __DIR__ . '/..' . '/illuminate/cookie/CookieServiceProvider.php',
+        'Illuminate\\Cookie\\CookieValuePrefix' => __DIR__ . '/..' . '/illuminate/cookie/CookieValuePrefix.php',
+        'Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse' => __DIR__ . '/..' . '/illuminate/cookie/Middleware/AddQueuedCookiesToResponse.php',
+        'Illuminate\\Cookie\\Middleware\\EncryptCookies' => __DIR__ . '/..' . '/illuminate/cookie/Middleware/EncryptCookies.php',
         'Illuminate\\Database\\Capsule\\Manager' => __DIR__ . '/..' . '/illuminate/database/Capsule/Manager.php',
         'Illuminate\\Database\\ClassMorphViolationException' => __DIR__ . '/..' . '/illuminate/database/ClassMorphViolationException.php',
         'Illuminate\\Database\\Concerns\\BuildsQueries' => __DIR__ . '/..' . '/illuminate/database/Concerns/BuildsQueries.php',
@@ -5247,9 +5259,9 @@ class ComposerStaticInit92349cb28edd03fc664907cf9290705c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit92349cb28edd03fc664907cf9290705c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit92349cb28edd03fc664907cf9290705c::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit92349cb28edd03fc664907cf9290705c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit76da63770eaf23bd340a254e91a70dab::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit76da63770eaf23bd340a254e91a70dab::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit76da63770eaf23bd340a254e91a70dab::$classMap;
 
         }, null, ClassLoader::class);
     }

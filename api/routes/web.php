@@ -47,7 +47,7 @@ $router->group(
     ['prefix' => 'auth'], function () use ($router) {
         $router->post('verify-email', 'RegisterController@verifyEmail');
         $router->post('verify-code', 'RegisterController@verifyCode');
-                $router->post('register', ['middleware' => 'jwt.cookie', 'uses' => 'RegisterController@register']);
+        $router->post('register', ['middleware' => 'jwt.cookie', 'uses' => 'RegisterController@register']);
         $router->post('login', 'AuthController@login');
         $router->post('logout', 'AuthController@logout');
         $router->post('refresh', ['middleware' => 'jwt.cookie', 'uses' => 'AuthController@refresh']);
