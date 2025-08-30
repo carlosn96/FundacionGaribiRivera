@@ -20,9 +20,10 @@ class RegisterController extends Controller
     public function verifyEmail(Request $request)
     {
         $this->validate(
-            $request, [
-            'correo' => 'required|email',
-            'nombre' => 'required|string|max:255',
+            $request,
+            [
+                'correo' => 'required|email',
+                'nombre' => 'required|string|max:255',
             ]
         );
         $correo = $request->input('correo');
@@ -39,16 +40,17 @@ class RegisterController extends Controller
     public function verifyCode(Request $request)
     {
         $this->validate(
-            $request, [
-            'correo' => 'required|email',
-            'codigo' => 'required|string|max:4',
+            $request,
+            [
+                'correo' => 'required|email',
+                'codigo' => 'required|string|max:4',
             ]
         );
-    
+
         $correo = $request->input('correo');
         $codigo = $request->input('codigo');
         $storedCode = SessionService::get($correo);
-    
+
         if (($verified = intval($storedCode) === intval($codigo))) {
             SessionService::unset($correo);
             $msg = 'Correo verificado exitosamente';
@@ -57,18 +59,18 @@ class RegisterController extends Controller
 
             // Claims JWT completos
             $customClaims = [
-            'sub' => $correo,                  // identificador único (temporal)
-            'email' => $correo,               // info adicional
-            'iat' => $now->timestamp,         // emitido en
-            'exp' => $exp->timestamp,         // expira en 15 min
-            'nbf' => $now->timestamp,         // válido desde ahora
-            'iss' => 'fundacion-api',         // identificador del emisor
-            'jti' => uniqid(),                // JWT ID único
+                'sub' => $correo,                  // identificador único (temporal)
+                'email' => $correo,               // info adicional
+                'iat' => $now->timestamp,         // emitido en
+                'exp' => $exp->timestamp,         // expira en 15 min
+                'nbf' => $now->timestamp,         // válido desde ahora
+                'iss' => 'fundacion-api',         // identificador del emisor
+                'jti' => uniqid(),                // JWT ID único
             ];
-        
+
             $payload = JWTFactory::customClaims($customClaims)->make();
             $token = JWTAuth::encode($payload)->get();
-        
+
             $secure = env('APP_ENV') !== 'local';
 
             $cookie = Cookie::create(
@@ -92,9 +94,10 @@ class RegisterController extends Controller
     public function resendCodeVerifyAccount(Request $request)
     {
         $this->validate(
-            $request, [
-            'correo' => 'required|email',
-            'nombre' => 'required|string|max:255',
+            $request,
+            [
+                'correo' => 'required|email',
+                'nombre' => 'required|string|max:255',
             ]
         );
         $codeSent = $this->sendCode($request->input('correo'), $request->input('nombre'));
@@ -107,13 +110,12 @@ class RegisterController extends Controller
     private function sendCode($correo, $nombre)
     {
         $codigo = self::getAccountValidationCode();
-        if(($emailSent = MailService::enviarCorreoVerificacionCuenta(
+        if (($emailSent = MailService::enviarCorreoVerificacionCuenta(
             $correo,
             $nombre,
             $codigo
-        ))
-        ) {
-             SessionService::set($correo, $codigo);
+        ))) {
+            SessionService::set($correo, $codigo);
         }
         return $emailSent;
     }
@@ -144,9 +146,12 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Error de validación: '.print_r($validator->errors()->all()),
+                'Error de validación',
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
-                $validator->errors()
+                [
+                    'message' => 'Los datos proporcionados no son válidos',
+                    'errors' => $validator->errors()->toArray()
+                ]
             );
         }
 
@@ -203,5 +208,4 @@ class RegisterController extends Controller
         }
         return file_get_contents($fotos[rand(0, count($fotos) - 1)]);
     }
-
 }

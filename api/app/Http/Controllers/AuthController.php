@@ -8,7 +8,7 @@ use App\Models\Usuario;
 use App\Http\Responses\ApiResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Factory as JWTFactory;
-use Symfony\Component\HttpFoundation\Cookie;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
