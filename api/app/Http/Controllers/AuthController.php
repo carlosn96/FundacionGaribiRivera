@@ -9,9 +9,12 @@ use App\Http\Responses\ApiResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cookie;
 use Carbon\Carbon;
+use App\Http\Controllers\Traits\RespondsWithToken;
 
 class AuthController extends Controller
 {
+    use RespondsWithToken;
+
     public function __construct()
     {
         $this->middleware('jwt.cookie', ['except' => ['login']]); // Extract token from cookie first
@@ -43,8 +46,8 @@ class AuthController extends Controller
         return $this->validate(
             $request,
             [
-            'correo' => 'required|email', // Asegurarse de que el correo es válido
-            'contrasena' => 'required|string|min:8', // Asegurarse de que la contraseña sea lo suficientemente fuerte
+            'correo' => 'required|email',
+            'contrasena' => 'required|string',
             'rememberMe' => 'required|boolean'
             ]
         );
@@ -81,27 +84,7 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        $token = auth()->refresh();
+        $token = JWTAuth::refresh();
         return $this->respondWithToken($token, auth()->user());
     }
-
-    protected function respondWithToken($token, $user)
-    {
-        $expiresIn = JWTAuth::factory()->getTTL(); // en segundos
-        // Crear la cookie
-        $cookie = Cookie::create(
-            'access_token',
-            $token,
-            $expiresIn, // expiración en minutos
-            '/', // ruta
-            null, // dominio
-            true, // seguro
-            true, // httponly
-            false, // raw
-            'none' // samesite
-        );
-        return ApiResponse::success($user, 'Authenticated')
-        ->withCookie($cookie);
-    }
-
 }
