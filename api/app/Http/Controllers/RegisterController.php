@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTFactory;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Controllers\Traits\RespondsWithToken;
 
 class RegisterController extends Controller
 {
+    use RespondsWithToken;
+
     public function verifyEmail(Request $request)
     {
         $this->validate(
@@ -31,7 +34,7 @@ class RegisterController extends Controller
             return ApiResponse::success(['exists' => true], "El correo electronico {$correo} ya se encuentra registrado");
         }
         if (!$this->sendCode($correo, $request->input('nombre'))) {
-            return ApiResponse::error('No se pudo verificar el correo electrónico', ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error('El correo se encuentra disponible, pero hubo un error al enviar el código de verificación. Intente más tarde.', ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
         return ApiResponse::success(['exists' => false], "El correo electrónico {$correo} está disponible");
     }
@@ -146,12 +149,9 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Error de validación',
+                'Los datos proporcionados no son válidos',
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
-                [
-                    'message' => 'Los datos proporcionados no son válidos',
-                    'errors' => $validator->errors()->toArray()
-                ]
+                $validator->errors()->toArray()
             );
         }
 
@@ -175,11 +175,9 @@ class RegisterController extends Controller
                 ]
             );
 
-            return ApiResponse::success(
-                ['user_id' => $user->id],
-                'Registro completo. Ya puedes iniciar sesión.',
-                201
-            );
+            auth()->login($user);
+            $token = JWTAuth::fromUser($user);
+            return $this->respondWithToken($token, $user, 'Registro completo.', ApiResponse::HTTP_CREATED);
         } catch (\Exception $e) {
             return ApiResponse::error(
                 'No se pudo registrar al usuario.',
