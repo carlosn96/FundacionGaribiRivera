@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Http\Responses\ApiResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Factory as JWTFactory;
 use Illuminate\Support\Facades\Cookie;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -20,34 +20,51 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $inputCredentials = $request->only('correo', 'contrasena');
-        $rememberMe = $request->has('remember_me') ? (bool)$request->input('remember_me') : false;
-
-        $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
-
-        if (!$user) {
-            return ApiResponse::unauthorized('Correo no encontrado.');
-        }
-
-        if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
+        $validatedData = $this->validateLoginRequest($request);
+        $inputCredentials = $validatedData;
+        $rememberMe = $validatedData['rememberMe'] ?? false;
+        $user = $this->findUserByEmail($inputCredentials['correo']);
+        if (!$this->checkPassword($inputCredentials['contrasena'], $user->contrasena)) {
             return ApiResponse::unauthorized('Contraseña incorrecta.');
         }
 
-        // Determine TTL based on remember_me
-        if ($rememberMe) {
-            JWTAuth::factory()->setTTL(43200); // 30 days
-        } else {
-            JWTAuth::factory()->setTTL(60); // 1 hour
-        }
-
-        // If password is correct and user is active, manually log in the user
+        JWTAuth::factory()->setTTL($rememberMe ? 60 * 24 * 7 : 60 * 60 * 24); // en minutos
         auth()->login($user);
-
-        // Generate the token for the authenticated user
-        $token = auth()->fromUser($user);
-
+        try {
+            $token =  JWTAuth::fromUser($user);
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al generar el token.'. $e->getMessage(), 500);
+        }
         return $this->respondWithToken($token, $user);
     }
+
+    protected function validateLoginRequest(Request $request)
+    {
+        return $this->validate(
+            $request,
+            [
+            'correo' => 'required|email', // Asegurarse de que el correo es válido
+            'contrasena' => 'required|string|min:8', // Asegurarse de que la contraseña sea lo suficientemente fuerte
+            'rememberMe' => 'required|boolean'
+            ]
+        );
+    }
+
+    protected function findUserByEmail($email)
+    {
+        $user = Usuario::where('correo_electronico', $email)->first();
+
+        if (!$user) {
+            throw new \Exception('Correo no encontrado.');
+        }
+
+        return $user;
+    }
+    protected function checkPassword($inputPassword, $storedPassword)
+    {
+        return Hash::check($inputPassword, $storedPassword);
+    }
+
 
     public function me()
     {
@@ -57,10 +74,8 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-
         // Delete the access_token cookie
         $cookie = Cookie::create('access_token', null, -1, '/', null, true, true, false, 'strict');
-
         return ApiResponse::success(null, 'Successfully logged out')->withCookie($cookie);
     }
 
@@ -72,19 +87,21 @@ class AuthController extends Controller
 
     protected function respondWithToken($token, $user)
     {
-        $expiresIn = JWTAuth::factory()->getTTL() * 60; // in seconds
-
+        $expiresIn = JWTAuth::factory()->getTTL(); // en segundos
+        // Crear la cookie
         $cookie = Cookie::create(
             'access_token',
             $token,
-            time() + $expiresIn, // expiration time
-            '/', // path
-            null, // domain
-            true, // secure
+            $expiresIn, // expiración en minutos
+            '/', // ruta
+            null, // dominio
+            true, // seguro
             true, // httponly
             false, // raw
-            'strict' // samesite
+            'none' // samesite
         );
-        return ApiResponse::success($user, 'Authenticated')->withCookie($cookie);
+        return ApiResponse::success($user, 'Authenticated')
+        ->withCookie($cookie);
     }
+
 }
