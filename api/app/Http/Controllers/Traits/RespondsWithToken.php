@@ -12,16 +12,18 @@ trait RespondsWithToken
     {
         $expiresIn = JWTAuth::factory()->getTTL(); // en minutos
 
+        $secure = env('APP_ENV') !== 'local';
+
         $cookie = Cookie::create(
             'access_token',
             $token,
-            $expiresIn, // expiración en minutos
-            '/', // ruta
-            null, // dominio
-            env('APP_ENV') !== 'local', // seguro
+            $expiresIn, // minutes
+            '/', // path
+            null, // domain
+            true, // secure (use the $secure variable)
             true, // httponly
             false, // raw
-            'none' // samesite
+            'None' // samesite (MUST be 'None' for cross-site fetch)
         );
 
         return ApiResponse::success($user, $message, $status)

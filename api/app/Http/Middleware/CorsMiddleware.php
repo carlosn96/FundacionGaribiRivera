@@ -14,7 +14,7 @@ class CorsMiddleware
 
         $allowedOrigins = explode(',', $allowedOriginsEnv);
 
-        if (!in_array($origin, $allowedOrigins)) {
+        if (!in_array($origin,  $allowedOrigins)) {
             return $next($request); // If origin not allowed, continue without CORS headers
         }
 

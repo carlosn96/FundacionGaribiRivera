@@ -17,8 +17,8 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt.cookie', ['except' => ['login']]); // Extract token from cookie first
-        $this->middleware('auth:api', ['except' => ['login']]); // Then authenticate
+        $this->middleware('jwt.cookie', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login']]);
     }
 
     public function login(Request $request)
@@ -26,17 +26,20 @@ class AuthController extends Controller
         $validatedData = $this->validateLoginRequest($request);
         $inputCredentials = $validatedData;
         $rememberMe = $validatedData['rememberMe'] ?? false;
-        $user = $this->findUserByEmail($inputCredentials['correo']);
-        if (!$this->checkPassword($inputCredentials['contrasena'], $user->contrasena)) {
+
+        $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
+        if (!$user) {
+            return ApiResponse::unauthorized('Correo no encontrado.');
+        }
+        if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
             return ApiResponse::unauthorized('Contraseña incorrecta.');
         }
-
-        JWTAuth::factory()->setTTL($rememberMe ? 60 * 24 * 7 : 60 * 60 * 24); // en minutos
+        JWTAuth::factory()->setTTL($rememberMe ? 60 * 24 * 7 : 60 * 24); // 1 semana o 1 día
         auth()->login($user);
         try {
-            $token =  JWTAuth::fromUser($user);
+            $token = JWTAuth::fromUser($user);
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al generar el token.'. $e->getMessage(), 500);
+            return ApiResponse::error('Error al generar el token. ' . $e->getMessage(), 500);
         }
         return $this->respondWithToken($token, $user);
     }
@@ -53,25 +56,10 @@ class AuthController extends Controller
         );
     }
 
-    protected function findUserByEmail($email)
-    {
-        $user = Usuario::where('correo_electronico', $email)->first();
-
-        if (!$user) {
-            throw new \Exception('Correo no encontrado.');
-        }
-
-        return $user;
-    }
-    protected function checkPassword($inputPassword, $storedPassword)
-    {
-        return Hash::check($inputPassword, $storedPassword);
-    }
-
 
     public function me()
     {
-        return ApiResponse::success(auth()->user());
+        return ApiResponse::success(auth()->user(), "User retrieved successfully.");
     }
 
     public function logout()

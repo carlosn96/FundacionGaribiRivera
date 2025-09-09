@@ -82,10 +82,10 @@ class RegisterController extends Controller
                 15, // minutes
                 '/', // path
                 null, // domain
-                $secure, // secure
+                $secure, // secure (use the $secure variable)
                 true, // httponly
                 false, // raw
-                'None' // samesite
+                'None' // samesite (MUST be 'None' for cross-site fetch)
             );
             return ApiResponse::success(['verified' => $verified], $msg)->withCookie($cookie);
         } else {
@@ -117,7 +117,8 @@ class RegisterController extends Controller
             $correo,
             $nombre,
             $codigo
-        ))) {
+        ))
+        ) {
             SessionService::set($correo, $codigo);
         }
         return $emailSent;
@@ -130,9 +131,8 @@ class RegisterController extends Controller
             $emailFromToken = $payload->get('email');
         } catch (JWTException $e) {
             return ApiResponse::error(
-                'Token inválido, expirado o no proporcionado.',
-                ApiResponse::HTTP_UNAUTHORIZED,
-                ['exception' => $e->getMessage()]
+                'Token inválido, expirado o no proporcionado. '.$e->getMessage(),
+                ApiResponse::HTTP_UNAUTHORIZED
             );
         }
 
@@ -149,9 +149,8 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Los datos proporcionados no son válidos',
+                'Los datos proporcionados no son válidos: '.$validator->errors()->toArray(),
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
-                $validator->errors()->toArray()
             );
         }
 
