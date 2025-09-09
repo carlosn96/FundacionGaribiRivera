@@ -82,20 +82,23 @@ class ApiResponse
 
     public static function success($data = [], string $message = 'Success', int $statusCode = self::HTTP_OK): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'message' => $message,
             'data' => $data,
             'status' => $statusCode,
-        ], $statusCode);
+            ], $statusCode
+        );
     }
 
-    public static function error(string $message = 'Error', int $statusCode = self::HTTP_BAD_REQUEST, $errors = []): JsonResponse
+    public static function error(string $message = 'Error', int $statusCode = self::HTTP_BAD_REQUEST): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'message' => $message,
-            'errors' => $errors,
             'status' => $statusCode,
-        ], $statusCode);
+            ], $statusCode
+        );
     }
 
     public static function notFound(string $message = 'Resource not found'): JsonResponse
@@ -106,10 +109,5 @@ class ApiResponse
     public static function unauthorized(string $message = 'Unauthorized'): JsonResponse
     {
         return self::error($message, self::HTTP_UNAUTHORIZED);
-    }
-
-    public static function validationError(string $message = 'Validation Error', $errors = []): JsonResponse
-    {
-        return self::error($message, self::HTTP_UNPROCESSABLE_ENTITY, $errors);
     }
 }
