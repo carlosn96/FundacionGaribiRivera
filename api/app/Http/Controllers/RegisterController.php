@@ -82,7 +82,7 @@ class RegisterController extends Controller
                 15, // minutes
                 '/', // path
                 null, // domain
-                $secure, // secure (use the $secure variable)
+                true, // secure (use the $secure variable)
                 true, // httponly
                 false, // raw
                 'None' // samesite (MUST be 'None' for cross-site fetch)
