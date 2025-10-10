@@ -53,6 +53,17 @@
                         <span class="hide-menu ps-1">Crédito</span>
                     </a>
                 </li>
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Historial</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link info-hover-bg" href="../historialEmprendedores/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-info-subtle rounded-1">
+                            <iconify-icon icon="mdi:history" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Emprendedores</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- End Sidebar navigation -->
