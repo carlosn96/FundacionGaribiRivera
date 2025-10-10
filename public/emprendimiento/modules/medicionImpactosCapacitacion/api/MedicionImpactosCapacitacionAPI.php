@@ -2,7 +2,7 @@
 
 include_once '../../../../../loader.php';
 
-class MedicionImpactosAPI extends API {
+class MedicionImpactosCapacitacionAPI extends API {
 
     function consultarMedicionImpactos() {
         $idUsuario = $this->getUsuarioActual();
@@ -35,4 +35,4 @@ class MedicionImpactosAPI extends API {
     
 }
 
-Util::iniciarAPI(MedicionImpactosAPI::class);
+Util::iniciarAPI(MedicionImpactosCapacitacionAPI::class);

@@ -35,14 +35,22 @@
                 <!-- ============================= -->
                 
                 <li class="nav-small-cap">
-                    <span class="hide-menu">Impacto</span>
+                    <span class="hide-menu">Medición de Impacto</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactos/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCapacitacion/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Medición de Impactos</span>
+                        <span class="hide-menu ps-1">Capacitación</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCredito/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="tabler:credit-card" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Crédito</span>
                     </a>
                 </li>
             </ul>

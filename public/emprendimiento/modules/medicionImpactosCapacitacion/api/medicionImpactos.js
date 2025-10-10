@@ -1,5 +1,5 @@
 // Mostrar mensaje de error
-const urlAPI = "api/MedicionImpactosAPI.php";
+const urlAPI = "api/MedicionImpactosCapacitacionAPI.php";
 const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
 
 function ready() {

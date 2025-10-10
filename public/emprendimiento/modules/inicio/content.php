@@ -14,7 +14,7 @@
         </a>
       </div>
       <div class="col">
-        <a href="../medicionImpactosCapacitación/" class="btn btn-outline-success w-100 py-2 border-2 text-decoration-none d-flex justify-content-center align-items-center" aria-label="Ir a Etapas">
+        <a href="../medicionImpactosCapacitacion/" class="btn btn-outline-success w-100 py-2 border-2 text-decoration-none d-flex justify-content-center align-items-center" aria-label="Ir a Etapas">
           <i class="ti ti-chart-histogram me-2"></i>
           <span class="fw-medium">Capacitación</span>
         </a>
