@@ -1,29 +1,41 @@
 <?php
 
-abstract class DAO {
+abstract class DAO
+{
 
     private $conexion;
 
-    function __construct() {
+    function __construct()
+    {
         $this->conexion = new Conexion();
     }
 
-    function getConexion(): Conexion {
+    function getConexion(): Conexion
+    {
         return $this->conexion;
     }
 
-    private function abrirConexion() {
+    private function abrirConexion()
+    {
         //$this->conexion->crearConexion();
     }
 
-    protected function cerrarConexion() {
+    protected function cerrarConexion()
+    {
         $this->conexion->cerrarConexion();
     }
 
-    protected function ejecutarInstruccion($instruccion) {
+    protected function ejecutarInstruccion($instruccion)
+    {
         //$this->abrirConexion();
         $resultado = $this->conexion->ejecutarInstruccion($instruccion);
         return $resultado;
+    }
+
+    protected function ejecutarInstruccionResult($instruccion)
+    {
+        $resultado = $this->ejecutarInstruccion($instruccion);
+        return $resultado->fetch_all(MYSQLI_ASSOC);
     }
 
     /**
@@ -34,7 +46,8 @@ abstract class DAO {
      * @return El resultado de fetch_assoc
      * @see fetch_assoc()
      */
-    protected function selectPorId($instruccion, $idRegistro) {
+    protected function selectPorId($instruccion, $idRegistro)
+    {
         $stat = $this->prepararInstruccion($instruccion);
         $stat->agregarInt($idRegistro);
         return $stat->ejecutarConsulta();
@@ -48,13 +61,15 @@ abstract class DAO {
      * @return El resultado de fetch_all(MYSQLI_ASSOC)
      * @see fetch_all()
      */
-    protected function selectAllPorId($instruccion, $idRegistro) {
+    protected function selectAllPorId($instruccion, $idRegistro)
+    {
         $stat = $this->prepararInstruccion($instruccion);
         $stat->agregarInt($idRegistro);
         return $stat->ejecutarConsultaMultiple();
     }
 
-    public function selectPorCamposEspecificos($seleccion, $tabla, $where = "", $fetchassoc = false) {
+    public function selectPorCamposEspecificos($seleccion, $tabla, $where = "", $fetchassoc = false)
+    {
         $result = $this->ejecutarInstruccion("SELECT " . $seleccion . " FROM " . $tabla . " " . $where);
         if ($result) {
             return $fetchassoc ? $result->fetch_all(MYSQLI_ASSOC) : $result->fetch_all();
@@ -68,11 +83,13 @@ abstract class DAO {
      * @param string $tabla nombre de la tabla a buscar
      * @param string $campoBusqueda de la forma: nombre_campo = cadena_busqueda
      */
-    protected function verificarCampoExistente($tabla, $campoBusqueda) {
+    protected function verificarCampoExistente($tabla, $campoBusqueda)
+    {
         return $this->recuperarCountAll($tabla, $campoBusqueda);
     }
 
-    protected function eliminarPorId($tabla, $columna, $id) {
+    protected function eliminarPorId($tabla, $columna, $id)
+    {
         $instruccionDelete = "DELETE FROM " . $tabla . " WHERE " . $columna . " = ?";
         $pre = $this->prepararInstruccion($instruccionDelete);
         $pre->agregarInt($id);
@@ -85,20 +102,24 @@ abstract class DAO {
       // return $$this->ejecutarInstruccion($instruccion);
       } */
 
-    protected function prepararInstruccion($instruccion): InstruccionPreparada {
+    protected function prepararInstruccion($instruccion): InstruccionPreparada
+    {
         //$this->abrirConexion();
         return new InstruccionPreparada($this->conexion->prepararInstruccion($instruccion));
     }
 
-    protected function obtenerIdAutogenerado() {
+    protected function obtenerIdAutogenerado()
+    {
         return $this->conexion->obtenerIdAutogenerado();
     }
 
-    protected function obtenerUltimoInsertado($id, $tabla) {
+    protected function obtenerUltimoInsertado($id, $tabla)
+    {
         return $this->ejecutarInstruccion("SELECT MAX($id) FROM $tabla")->fetch_row()[0];
     }
 
-    protected function extraerIdTupla($nombreID, $campoBusqueda, $valorCampoBusqueda, $tabla) {
+    protected function extraerIdTupla($nombreID, $campoBusqueda, $valorCampoBusqueda, $tabla)
+    {
         $resultado = $this->ejecutarInstruccion("SELECT $nombreID FROM $tabla WHERE $campoBusqueda = '$valorCampoBusqueda'");
         $fila = $resultado->fetch_assoc();
         if ($fila !== null && isset($fila[$nombreID])) {
@@ -108,13 +129,15 @@ abstract class DAO {
         }
     }
 
-    protected function recuperarCountAll($tabla, $where = null) {
-        $sql = "SELECT COUNT(*) FROM $tabla " . ( empty($where) ? "" : " WHERE $where");
+    protected function recuperarCountAll($tabla, $where = null)
+    {
+        $sql = "SELECT COUNT(*) FROM $tabla " . (empty($where) ? "" : " WHERE $where");
         $res = $this->ejecutarInstruccion($sql);
         return $res->fetch_array()[0];
     }
 
-    protected function getError() {
+    protected function getError()
+    {
         return $this->conexion->errorInfo();
     }
 }
