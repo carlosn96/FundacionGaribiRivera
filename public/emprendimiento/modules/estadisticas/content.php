@@ -16,6 +16,44 @@
         </div>
     </div>
 
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="filtrosEstadisticasForm" class="form-inline">
+                        <div class="form-group mr-3 mb-2">
+                            <label for="fechaInicio" class="mr-2">Fecha Inicio:</label>
+                            <input type="date" class="form-control" id="fechaInicio" name="fecha_inicio">
+                        </div>
+                        <div class="form-group mr-3 mb-2">
+                            <label for="fechaFin" class="mr-2">Fecha Fin:</label>
+                            <input type="date" class="form-control" id="fechaFin" name="fecha_fin">
+                        </div>
+                        <div class="form-group mr-3 mb-2">
+                            <label for="etapa" class="mr-2">Etapa:</label>
+                            <select class="form-control" id="etapa" name="etapa">
+                                <option value="">Todas</option>
+                                <?php
+                                /*
+                                require_once 'c:/Users/HP/Documents/Workspace/Web/FundacionGaribiRivera/dao/EtapaDAO.php';
+                                $etapaDAO = new EtapaDAO();
+                                $etapas = $etapaDAO->getAllEtapas(); // This is a hypothetical method name
+                                foreach ($etapas as $etapa) {
+                                    echo '<option value="' . htmlspecialchars($etapa->getId()) . '">' . htmlspecialchars($etapa->getNombre()) . '</option>';
+                                }
+                                */
+                                ?>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-2">Aplicar Filtros</button>
+                        <button type="button" id="limpiarFiltros" class="btn btn-secondary mb-2 ml-2">Limpiar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Cards de resumen -->
     <div class="row mb-4" id="summaryCards">
         <!-- Tarjeta de Emprendedores -->
@@ -394,3 +432,61 @@
         animation: fadeIn 0.3s ease-out;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('filtrosEstadisticasForm');
+    const limpiarButton = document.getElementById('limpiarFiltros');
+
+    // Function to apply filters
+    const applyFilters = () => {
+        const fechaInicio = document.getElementById('fechaInicio').value;
+        const fechaFin = document.getElementById('fechaFin').value;
+        const etapa = document.getElementById('etapa').value;
+
+        const params = new URLSearchParams(window.location.search);
+        if (fechaInicio) {
+            params.set('fecha_inicio', fechaInicio);
+        } else {
+            params.delete('fecha_inicio');
+        }
+        if (fechaFin) {
+            params.set('fecha_fin', fechaFin);
+        } else {
+            params.delete('fecha_fin');
+        }
+        if (etapa) {
+            params.set('etapa', etapa);
+        } else {
+            params.delete('etapa');
+        }
+
+        window.location.search = params.toString();
+    };
+
+    // Function to clear filters
+    const clearFilters = () => {
+        const params = new URLSearchParams(window.location.search);
+        params.delete('fecha_inicio');
+        params.delete('fecha_fin');
+        params.delete('etapa');
+        window.location.search = params.toString();
+    };
+
+    // Set initial values from URL
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('fechaInicio').value = params.get('fecha_inicio') || '';
+    document.getElementById('fechaFin').value = params.get('fecha_fin') || '';
+    document.getElementById('etapa').value = params.get('etapa') || '';
+
+    // Add event listeners
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        applyFilters();
+    });
+
+    limpiarButton.addEventListener('click', function () {
+        clearFilters();
+    });
+});
+</script>

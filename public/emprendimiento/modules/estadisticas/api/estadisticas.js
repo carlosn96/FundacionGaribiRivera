@@ -24,28 +24,6 @@ function isChartJsLoaded() {
     return typeof Chart !== 'undefined';
 }
 
-// Cargar Chart.js dinámicamente si no está disponible
-function loadChartJs(callback) {
-    if (isChartJsLoaded()) {
-        initializeChartDefaults();
-        callback();
-        return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
-    script.onload = function() {
-        console.log('Chart.js cargado exitosamente');
-        initializeChartDefaults();
-        callback();
-    };
-    script.onerror = function() {
-        console.error('Error al cargar Chart.js');
-        alert('Error al cargar la librería de gráficas. Por favor, recarga la página.');
-    };
-    document.head.appendChild(script);
-}
-
 // Inicializar configuración global de Chart.js
 function initializeChartDefaults() {
     if (!isChartJsLoaded()) return;
