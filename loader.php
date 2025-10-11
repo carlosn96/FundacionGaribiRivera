@@ -154,11 +154,12 @@ class Util
         $headers = array_merge($defaultHeaders, $headers);
 
         curl_setopt_array(
-            $ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => $headers,
+            $ch,
+            [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $payload,
+                CURLOPT_HTTPHEADER => $headers,
             ]
         );
 
@@ -237,6 +238,11 @@ function buscar($directorio, $clase)
         }
     }
     return false;
+}
+
+function getAdminEstadisticas(): AdminEstadisticas
+{
+    return AdminFactory::getAdminEstadisticas();
 }
 
 function getAdminLineaBase(): AdminLineaBase

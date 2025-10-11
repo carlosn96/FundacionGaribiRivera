@@ -29,16 +29,17 @@
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
                 </li>
-                
+
                 <!-- ============================= -->
                 <!-- Impacto -->
                 <!-- ============================= -->
-                
+
                 <li class="nav-small-cap">
                     <span class="hide-menu">Medición de Impacto</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCapacitacion/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCapacitacion/"
+                        aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
                         </span>
@@ -46,7 +47,8 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCredito/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCredito/"
+                        aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <iconify-icon icon="tabler:credit-card" class="fs-6"></iconify-icon>
                         </span>
@@ -57,11 +59,23 @@
                     <span class="hide-menu">Historial</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link info-hover-bg" href="../historialEmprendedores/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link info-hover-bg" href="../historialEmprendedores/"
+                        aria-expanded="false">
                         <span class="aside-icon p-2 bg-info-subtle rounded-1">
                             <iconify-icon icon="mdi:history" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Emprendedores</span>
+                    </a>
+                </li>
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Estadisticas</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../estadisticas" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Estadisticas</span>
                     </a>
                 </li>
             </ul>
@@ -73,13 +87,15 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between gap-3">
                     <div class="d-flex align-items-center gap-3">
-                        <img src="data:image/jpeg;base64," width="45" height="45" class="img-usuario img-fluid rounded-circle" alt="spike-img" />
+                        <img src="data:image/jpeg;base64," width="45" height="45"
+                            class="img-usuario img-fluid rounded-circle" alt="spike-img" />
                         <div>
                             <h5 class="mb-1 profile-name"></h5>
                             <p class="mb-0 profile-subtext"></p>
                         </div>
                     </div>
-                    <a href="javascript:cerrarSesion()" class="position-relative" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Salir">
+                    <a href="javascript:cerrarSesion()" class="position-relative" data-bs-toggle="tooltip"
+                        data-bs-placement="top" data-bs-title="Salir">
                         <iconify-icon icon="solar:logout-line-duotone" class="fs-8"></iconify-icon>
                     </a>
                 </div>

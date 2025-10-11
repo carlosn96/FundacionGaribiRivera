@@ -14,7 +14,7 @@ class AdminFactory
     {
         return self::getOrCreateInstance(AdminLineaBase::class);
     }
-    
+
     public static function getAdminEstudioSocioeconomico(): AdminEstudioSocioeconomico
     {
         return self::getOrCreateInstance(AdminEstudioSocioeconomico::class);
@@ -58,10 +58,15 @@ class AdminFactory
     {
         return self::getOrCreateInstance(AdminLog::class);
     }
-    
+
     public static function getAdminLLM(): AdminLLM
     {
         return self::getOrCreateInstance(AdminLLM::class);
+    }
+
+    public static function getAdminEstadisticas(): AdminEstadisticas
+    {
+        return self::getOrCreateInstance(AdminEstadisticas::class);
     }
 
     private static function getOrCreateInstance(string $class): Admin
