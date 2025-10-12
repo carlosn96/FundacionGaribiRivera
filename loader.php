@@ -106,6 +106,20 @@ class Util
         return base64_decode($base64File);
     }
 
+    public static function obtenerFechaEstandar($datestr)
+    {
+        $formatos = ['d/m/Y', 'm/d/Y', 'Y-m-d'];
+        foreach ($formatos as $formato) {
+            $fecha = DateTime::createFromFormat($formato, $datestr, new DateTimeZone("America/Mexico_City"));
+            if ($fecha && $fecha->format($formato) === $datestr) {
+                return $fecha->format('Y-m-d');
+            }
+        }
+        // Si no se puede parsear, lanzar un error o devolver null
+        throw new Exception("Formato de fecha no válido: " . $datestr);
+    }
+
+
     public static function obtenerFechaActual($format = "Ymd")
     {
         $date = new DateTime("now", new DateTimeZone("America/Mexico_City"));
