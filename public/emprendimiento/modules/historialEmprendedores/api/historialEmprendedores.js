@@ -109,6 +109,8 @@ function cargarDatos() {
     mostrarCargando();
 
     crearPeticion(urlAPI, { case: "getHistorialEmprendedores" }, function (res) {
+        console.log('Respuesta recibida:', res);
+        
         historialData = res.historial || [];
         filteredData = [...historialData];
 
@@ -119,12 +121,26 @@ function cargarDatos() {
 
         actualizarContadores();
         aplicarFiltros();
-    }, function (err) {
+    }, function (xhr, status, error) {
         mostrarError();
-        console.error('Error al realizar la petición:', err);
+        
+        // Log detallado del error
+        console.error('=== Error en la petición ===');
+        console.error('Status:', status);
+        console.error('Error:', error);
+        console.error('Response Status:', xhr.status);
+        console.error('Response Text:', xhr.responseText);
+        console.error('Ready State:', xhr.readyState);
+        
+        // Intentar parsear la respuesta como JSON
+        try {
+            const errorResponse = JSON.parse(xhr.responseText);
+            console.error('Error parseado:', errorResponse);
+        } catch (e) {
+            console.error('No se pudo parsear la respuesta como JSON');
+        }
     });
 }
-
 function exportarDatos() {    
     const activeTab = $('.nav-link.active').attr('id');
     let dataToExport = filteredData;
