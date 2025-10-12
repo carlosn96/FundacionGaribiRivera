@@ -1,4 +1,6 @@
-const urlAPI = 'api/HistorialEmprendedoresAPI.php';
+
+const urlAPI = "api/HistorialEmprendedoresAPI.php";
+
 let historialData = [];
 let filteredData = [];
 let sortConfig = {
