@@ -24,14 +24,15 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="../inicio/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="mdi:home" class="fs-6"></iconify-icon>
+                            <!-- Icono de Dashboard (Inicio) -->
+                            <iconify-icon icon="mdi:view-dashboard" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
                 </li>
 
                 <!-- ============================= -->
-                <!-- Impacto -->
+                <!-- Medición de Impacto -->
                 <!-- ============================= -->
 
                 <li class="nav-small-cap">
@@ -41,7 +42,8 @@
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCapacitacion/"
                         aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
+                            <!-- Icono de Capacitación -->
+                            <iconify-icon icon="mdi:school" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Capacitación</span>
                     </a>
@@ -50,20 +52,43 @@
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCredito/"
                         aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="tabler:credit-card" class="fs-6"></iconify-icon>
+                            <!-- Icono de Crédito -->
+                            <iconify-icon icon="mdi:credit-card" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Crédito</span>
                     </a>
                 </li>
+
+                <!-- ============================= -->
+                <!-- Estadísticas -->
+                <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <span class="hide-menu">Estadisticas</span>
+                    <span class="hide-menu">Estadísticas</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../estadisticas" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="streamline:decent-work-and-economic-growth" class="fs-6"></iconify-icon>
+                            <!-- Icono de Gráfico (Estadísticas) -->
+                            <iconify-icon icon="mdi:chart-bar" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Estadisticas</span>
+                        <span class="hide-menu ps-1">Estadísticas</span>
+                    </a>
+                </li>
+
+                <!-- ============================= -->
+                <!-- Historial -->
+                <!-- ============================= -->
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Historial</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../historialEmprendedores"
+                        aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <!-- Icono de Historial -->
+                            <iconify-icon icon="mdi:history" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Emprendedores</span>
                     </a>
                 </li>
             </ul>

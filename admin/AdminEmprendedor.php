@@ -68,4 +68,9 @@ class AdminEmprendedor extends Admin
     {
         return $this->dao->eliminarMultipleEmprendedores($ids);
     }
+
+    public function actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor)
+    {
+        return $this->dao->actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor);
+    }
 }

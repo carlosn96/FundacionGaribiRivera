@@ -79,4 +79,13 @@ class EmprendedorDAO extends DAO
         $sql = "DELETE FROM usuario WHERE id IN ($ids)";
         return $this->ejecutarInstruccion($sql);
     }
+
+    public function actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor)
+    {
+        $prep = $this->prepararInstruccion("UPDATE " . self::NOMBRE_TABLA_EMPRENDEDOR . " SET fecha_graduacion = ?, graduado = ? WHERE id_emprendedor = ?");
+        $prep->agregarString($fechaGraduacion);
+        $prep->agregarInt($graduado);
+        $prep->agregarInt($idEmprendedor);
+        return $prep->ejecutar();
+    }
 }
