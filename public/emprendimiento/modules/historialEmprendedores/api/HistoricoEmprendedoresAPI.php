@@ -4,7 +4,7 @@
 require_once '../../../../../loader.php';
 
 
-class HistorialEmprendedoresAPI extends API
+class HistoricoEmprendedoresAPI extends API
 {
     public function getHistorialEmprendedores()
     {
@@ -19,4 +19,4 @@ class HistorialEmprendedoresAPI extends API
     }
 }
 
-HistorialEmprendedoresAPI::start();
+HistoricoEmprendedoresAPI::start();

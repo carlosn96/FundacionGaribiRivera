@@ -1,5 +1,5 @@
 
-const urlAPI = "api/HistorialEmprendedoresAPI.php";
+const urlAPI = "api/HistoricoEmprendedoresAPI.php";
 
 let historialData = [];
 let filteredData = [];
