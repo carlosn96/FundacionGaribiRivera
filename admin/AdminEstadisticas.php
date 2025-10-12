@@ -12,8 +12,32 @@ class AdminEstadisticas extends Admin
     /**
      * Orquesta la obtención de datos estadísticos y los devuelve como Array.
      */
-    public function obtenerEstadisticasLineaBase($etapa = 0, $fechaInicio = '', $fechaFin = '')
+    public function obtenerEstadisticasLineaBase(array $campos, $etapa = 0, $fechaInicio = '', $fechaFin = '')
     {
-        return $this->dao->obtenerEstadisticasLineaBase($etapa, $fechaInicio, $fechaFin);
+        $seleccion = implode(',', $campos);
+        return $this->formatearRespuestaMultiple($this->dao->obtenerEstadisticasLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin));
     }
+
+    public function camposDisponiblesReporte()
+    {
+        return $this->dao->camposDisponiblesReporte();
+    }
+
+    private function formatearRespuestaMultiple($respuesta)
+    {
+        if (isset($respuesta["detalle"][0]["mediosConocimiento"])) {
+            foreach ($respuesta["detalle"] as &$detalle) {
+                if (isset($detalle["mediosConocimiento"])) {
+                    // Convierte la cadena en un array usando '^' como separador y elimina espacios extra
+                    $detalle["mediosConocimiento"] = implode('; ', array_filter(
+                        array_map('trim', explode('^', $detalle["mediosConocimiento"])),
+                        fn($item) => $item !== ''
+                    ));
+                }
+            }
+            unset($detalle); // Buenas prácticas para referencias
+        }
+        return $respuesta;
+    }
+
 }

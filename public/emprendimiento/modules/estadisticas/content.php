@@ -41,7 +41,14 @@
                                 <button class="nav-link" id="etapa-tab" data-bs-toggle="tab"
                                     data-bs-target="#filtro-etapa" type="button" role="tab" aria-controls="filtro-etapa"
                                     aria-selected="false">
-                                    <i class="fas fa-layer-group me-2"></i>Por Etapa
+                                    <i class="fas fa-users me-2"></i>Por Etapa
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="campos-tab" data-bs-toggle="tab"
+                                    data-bs-target="#filtro-campos" type="button" role="tab"
+                                    aria-controls="filtro-campos" aria-selected="false">
+                                    <i class="fas fa-th-list me-2"></i>Campos
                                 </button>
                             </li>
                         </ul>
@@ -50,7 +57,7 @@
                             <!-- Filtro por Fecha -->
                             <div class="tab-pane fade show active" id="filtro-fecha" role="tabpanel"
                                 aria-labelledby="fecha-tab">
-                                <div class="row g-3 align-items-end">
+                                <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label fw-semibold text-dark mb-2">
                                             <i class="fas fa-calendar-week me-2 text-primary"></i>Rango de Fechas
@@ -74,8 +81,8 @@
 
                             <!-- Filtro por Etapa -->
                             <div class="tab-pane fade" id="filtro-etapa" role="tabpanel" aria-labelledby="etapa-tab">
-                                <div class="row g-3 align-items-end">
-                                    <div class="col-12 col-md-8 col-lg-6">
+                                <div class="row g-3">
+                                    <div class="col-12">
                                         <label for="etapa" class="form-label fw-semibold text-dark mb-2">
                                             <i class="fas fa-tasks me-2 text-success"></i>Seleccionar Etapa
                                         </label>
@@ -90,9 +97,15 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Filtro por Campos -->
+                            <div class="tab-pane fade" id="filtro-campos" role="tabpanel" aria-labelledby="campos-tab">
+                                <div id="campoSelectorContainer">
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Botones compartidos para ambos filtros -->
+                        <!-- Botones compartidos para todos los filtros -->
                         <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4 pt-3 border-top">
                             <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary">
                                 <i class="fas fa-eraser me-2"></i>Limpiar Filtro
@@ -124,7 +137,8 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light border-0 text-end py-2">
-                    <button class="btn btn-sm btn-outline-primary view-details-summary-btn" data-categoria="emprendedores">
+                    <button class="btn btn-sm btn-outline-primary view-details-summary-btn"
+                        data-categoria="emprendedores">
                         <i class="fas fa-eye me-1"></i> Ver detalles
                     </button>
                 </div>
@@ -146,7 +160,8 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light border-0 text-end py-2">
-                    <button class="btn btn-sm btn-outline-success view-details-summary-btn" data-categoria="capacitacion">
+                    <button class="btn btn-sm btn-outline-success view-details-summary-btn"
+                        data-categoria="capacitacion">
                         <i class="fas fa-eye me-1"></i> Ver detalles
                     </button>
                 </div>
@@ -461,3 +476,15 @@
         </div>
     </div>
 </div>
+
+<style>
+    #detalles-table ul {
+    list-style-type: disc !important;
+    padding-left: 1.5em !important;
+    margin-bottom: 0 !important;
+}
+#detalles-table li {
+    list-style-type: disc !important;
+}
+</style>
+

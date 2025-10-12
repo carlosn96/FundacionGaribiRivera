@@ -6,19 +6,19 @@ class EstadisticasAPI extends API
 
     public function filtrarEstadisticas()
     {
-
         $fechaFin = empty($d = $this->getData("fechaFin")) ? $d : Util::obtenerFechaEstandar($d);
         $fechaInicio = empty($d = $this->getData("fechaInicio")) ? $d : Util::obtenerFechaEstandar($d);
         $etapa = intval($this->getData("etapa"));
-        Util::error_log("Pasando etapa=$etapa" . " fechaInicio=$fechaInicio" . " fechaFin=$fechaFin");
-        $this->enviarRespuesta(getAdminEstadisticas()->obtenerEstadisticasLineaBase($etapa, $fechaInicio, $fechaFin));
+        $this->enviarRespuesta(getAdminEstadisticas()->obtenerEstadisticasLineaBase($this->getData('campos'), $etapa, $fechaInicio, $fechaFin));
     }
 
     public function init()
     {
+        $adminEst = getAdminEstadisticas();
         $this->enviarRespuesta([
-            "estadistica" => getAdminEstadisticas()->obtenerEstadisticasLineaBase(),
-            "listaEtapas" => getAdminEtapaFormacion()->listarEtapasFormacion()
+            "estadistica" => $adminEst->obtenerEstadisticasLineaBase(array_keys($campos = $adminEst->camposDisponiblesReporte())),
+            "listaEtapas" => getAdminEtapaFormacion()->listarEtapasFormacion(),
+            "campos" => $campos
         ]);
     }
 }

@@ -3,20 +3,36 @@
 class EstadisticasDAO extends DAO
 {
     private const RECUPERAR_ESTADISTICAS_LINEA_BASE = "CALL consultar_estadisticas_linea_base (?,?,?)";
-    private const RECUPERAR_ESTADISTICAS_LINEA_BASE_DETALLES = "SELECT * FROM estadisticas_linea_base_detalles lb";
+    private const RECUPERAR_ESTADISTICAS_LINEA_BASE_DETALLES = "SELECT CAMPOS FROM estadisticas_linea_base_detalles lb";
 
     /**
      * Obtiene las estadísticas agregadas para el dashboard de línea base.
      *
-     * @return array Un arreglo con los datos para cada pregunta.
+     * @return array Un arreglo con los datos para cada pregunta y la lista de emprendedores filtrados.
      */
-    public function obtenerEstadisticasLineaBase($etapa, $fechaInicio, $fechaFin)
+    public function obtenerEstadisticasLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin)
     {
         return [
             "categorias" => $this->consultarCategoriasLineaBase($etapa, $fechaInicio, $fechaFin),
-            "detalle" => $this->obtenerDetalleLineaBase($etapa, $fechaInicio, $fechaFin)
+            "detalle" => $this->obtenerDetalleLineaBase($seleccion,$etapa, $fechaInicio, $fechaFin)
         ];
 
+    }
+
+    public function camposDisponiblesReporte()
+    {
+        return [
+            "referencia" => ["campo" => "Referencia", "obligatorio" => true],
+            "emprendedor" => ["campo" => "Emprendedor", "obligatorio" => true],
+            "etapaNombre" => ["campo" => "Etapa", "obligatorio" => false],
+            "correo" => ["campo" => "Correo", "obligatorio" => false],
+            "tel" => ["campo" => "Celular", "obligatorio" => false],
+            "razonRecurreDescripcion" => ["campo" => "Recurre a la Fundación para", "obligatorio" => false],
+            "solicitaCreditoDescripcion" => ["campo" => "El crédito lo solicitarías para", "obligatorio" => false],
+            "utilizaCreditoDescripcion" => ["campo" => "El crédito lo utilizarías para", "obligatorio" => false],
+            "mediosConocimiento" => ["campo" => "¿Cómo te enteraste de la Fundación?", "obligatorio" => false],
+            "fechaCreacion" => ["campo" => "Fecha de registro", "obligatorio" => true]
+        ];
     }
 
     /**
@@ -28,7 +44,7 @@ class EstadisticasDAO extends DAO
      * 
      * @return array Un arreglo con los datos filtrados.
      */
-    private function obtenerDetalleLineaBase($etapa, $fechaInicio, $fechaFin)
+    private function obtenerDetalleLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin)
     {
         // Inicializar el array de condiciones
         $condiciones = [];
@@ -49,10 +65,8 @@ class EstadisticasDAO extends DAO
             $where = 'WHERE ' . implode(' AND ', $condiciones);
         }
         $sql = self::RECUPERAR_ESTADISTICAS_LINEA_BASE_DETALLES . " $where";
-        return $this->ejecutarInstruccionResult($sql);
+        return $this->ejecutarInstruccionResult(str_replace("CAMPOS", $seleccion, $sql));
     }
-
-
 
     private function consultarCategoriasLineaBase($etapa, $fechaInicio, $fechaFin)
     {
