@@ -98,10 +98,12 @@ function mostrarMensajeInfo(msg, reloading = true, fnthen = () => {}) {
     return mostrarMensajeReload("Información:", "info", msg, reloading, fnthen);
 }
 
-function mostrarMensajeThen(title, type, msg, then, moreOptions = {}) {
+function mostrarMensajeThen(title, type, msg, then, moreOptions = {}, thenCancel = () => {}) {
     mostrarMensaje(title, type, msg, moreOptions).then((rs) => {
         if (rs.isConfirmed) {
             then();
+        } else if (rs.isDismissed) {
+            thenCancel();
         }
     });
 }
@@ -207,6 +209,7 @@ function alertaEliminar(opcionesPeticion) {
     var url = opcionesPeticion.url;
     var data = opcionesPeticion.data;
     var fn = opcionesPeticion.fnSuccess ? opcionesPeticion.fnSuccess : mostrarMensajeResultado;
+    var fnCancel = opcionesPeticion.fnCancel ? opcionesPeticion.fnCancel : () => {};
     mostrarMensajeThen("¿Estás seguro?", "warning", msg, function () {
         //crearPeticion(url, data, print);
         crearPeticion(url, data, fn);
@@ -216,7 +219,7 @@ function alertaEliminar(opcionesPeticion) {
         cancelButtonColor: "#F1C84A",
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "No, cancelar"
-    });
+    }, fnCancel);
 }
 
 function crearColumnaTablaCentrada(value, clase = "") {
