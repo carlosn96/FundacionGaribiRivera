@@ -1,13 +1,14 @@
-//CONTENIDO DE estadisticas.js
-// Descripción: Dashboard de estadísticas mejorado con Chart.js y jQuery
-// CDN Requerido: https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js
+// Dashboard de estadísticas mejorado con ApexCharts y jQuery
+// CDN Requerido: https://cdn.jsdelivr.net/npm/apexcharts
 
 const urlAPI = "api/EstadisticasAPI.php";
 
 // Almacenar instancias de gráficas y datos
 let chartInstances = {};
 let chartData = {};
-let rawData = {};
+let currentModalChart = '';
+let animationTimers = {};
+let fullDetalleList = [];
 
 // Paleta de colores moderna y vibrante
 const chartColors = {
@@ -19,55 +20,51 @@ const chartColors = {
     mixed: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69', '#6610f2', '#e83e8c', '#fd7e14']
 };
 
-// Verificar si Chart.js está cargado
-function isChartJsLoaded() {
-    return typeof Chart !== 'undefined';
-}
-
-// Inicializar configuración global de Chart.js
-function initializeChartDefaults() {
-    if (!isChartJsLoaded()) return;
-    
-    Chart.defaults.font.family = "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
-    Chart.defaults.plugins.legend.labels.padding = 15;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    
-    detectDarkMode();
+function getEmptyEstadisticas() {
+    return {
+        categorias: {
+            mediosConocimiento: [],
+            razonRecurre: [],
+            solicitaCredito: [],
+            utilizaCredito: []
+        },
+        detalle: []
+    };
 }
 
 function ready() {
-    // Esperar a que el DOM esté completamente cargado
-    $(document).ready(function() {
-        // Verificar que los canvas existen antes de continuar
-        const canvasIds = ['chartMedioConocimiento', 'chartRazonRecurre', 'chartSolicitaCredito', 'chartUtilizaCredito'];
-        const allCanvasExist = canvasIds.every(id => document.getElementById(id) !== null);
-        
-        if (!allCanvasExist) {
-            console.error('Algunos canvas no están disponibles en el DOM');
-            // Reintentar después de un breve delay
-            setTimeout(function() {
-                initializeApp();
-            }, 500);
-        } else {
-            initializeApp();
-        }
-    });
-}
-
-function initializeApp() {
-    // Cargar Chart.js y luego inicializar el dashboard
-    loadChartJs(function() {
+    loadApexCharts(function () {
         initializeDashboard();
     });
+    configurarEventosFiltros();
+    configurarEventosModales();
+    setViewDetailsSummaryHandlers();
+}
+
+// Verificar si ApexCharts está cargado
+function isApexChartsLoaded() {
+    return typeof ApexCharts !== 'undefined';
+}
+
+
+function loadApexCharts(callback) {
+    if (isApexChartsLoaded()) {
+        callback();
+        return;
+    }
+    const script = document.createElement('script');
+    script.src = '../../../assets/libs/apexcharts/dist/apexcharts.min.js';
+    script.onload = callback;
+    document.head.appendChild(script);
 }
 
 function initializeDashboard() {
     // Inicializar fecha actual
     const lastUpdateEl = document.getElementById('lastUpdate');
     if (lastUpdateEl) {
-        lastUpdateEl.textContent = new Date().toLocaleDateString('es-MX', { 
-            year: 'numeric', 
-            month: 'long', 
+        lastUpdateEl.textContent = new Date().toLocaleDateString('es-MX', {
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -78,12 +75,16 @@ function initializeDashboard() {
     showLoaders();
 
     // Cargar datos
-    crearPeticion(urlAPI, { case: 'obtenerEstadisticasLineaBase' }, function (respuesta) {
-        print(respuesta);
+    crearPeticion(urlAPI, { case: 'init' }, function (respuesta) {
+        //print(respuesta);
+        const estadistica = respuesta.estadistica;
+        const etapas = respuesta.listaEtapas;
         if (respuesta) {
-            rawData = respuesta;
-            procesarDatosDashboard(respuesta);
+            fullDetalleList = estadistica.detalle;
             hideLoaders();
+            procesarDatosDashboard(estadistica.categorias, estadistica.detalle);
+            cargarEtapas(etapas);
+            setupSummaryCardButtons();
         } else {
             hideLoaders();
             mostrarMensajeAdvertencia('Error al cargar las estadísticas', false);
@@ -93,42 +94,65 @@ function initializeDashboard() {
     // Configurar manejadores de eventos
     setDownloadHandlers();
     setChartTypeToggles();
+    setPrintHandlers();
+    setViewDetailsHandlers();
+}
+
+function cargarEtapas(etapas) {
+    $selector = $("#etapa");
+    etapas.forEach(function (it) {
+        crearOpcionSelector($selector, it.idEtapa, it.nombre);
+    });
 }
 
 // Mostrar indicadores de carga
 function showLoaders() {
-    $('.chart-wrapper').each(function() {
-        const canvasId = $(this).find('canvas').attr('id');
-        if (canvasId) {
-            $(this).html(`
+    const chartIds = [
+        'chartMedioConocimiento',
+        'chartRazonRecurre',
+        'chartSolicitaCredito',
+        'chartUtilizaCredito'
+    ];
+
+    chartIds.forEach(chartId => {
+        const container = document.getElementById(chartId);
+        if (container) {
+            container.innerHTML = `
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Cargando...</span>
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
-                    <p class="mt-2 text-muted">Cargando datos...</p>
+                    <p class="mt-3 text-muted">Cargando datos...</p>
                 </div>
-            `);
+            `;
         }
     });
 }
 
-// Ocultar indicadores de carga y restaurar canvas
+// Ocultar indicadores de carga y restaurar contenedores de gráficas
 function hideLoaders() {
-    $('.chart-wrapper').each(function() {
-        const $wrapper = $(this);
-        const cardBody = $wrapper.closest('.card-body');
-        const chartId = cardBody.closest('.card').find('.download-btn').data('chart');
-        
-        if (chartId) {
-            $wrapper.html(`<canvas id="${chartId}"></canvas>`);
+    // Mapeo directo de los IDs de las gráficas
+    const chartIds = [
+        'chartMedioConocimiento',
+        'chartRazonRecurre',
+        'chartSolicitaCredito',
+        'chartUtilizaCredito'
+    ];
+
+    chartIds.forEach(chartId => {
+        const container = document.getElementById(chartId);
+        if (container && container.parentElement) {
+            // Limpiar el contenedor padre (chart-wrapper) y restaurar el div con el ID correcto
+            const wrapper = container.parentElement;
+            wrapper.innerHTML = `<div id="${chartId}"></div>`;
         }
     });
 }
 
 // Procesar datos y renderizar dashboard
-function procesarDatosDashboard(data) {
-    if (!isChartJsLoaded()) {
-        console.error('Chart.js no está disponible');
+function procesarDatosDashboard(data, detalle) {
+    if (!isApexChartsLoaded()) {
+        console.error('ApexCharts no está disponible');
         return;
     }
 
@@ -139,98 +163,114 @@ function procesarDatosDashboard(data) {
     chartData.chartUtilizaCredito = data.utilizaCredito;
 
     // Calcular estadísticas resumidas
-    calcularEstadisticasResumen(data);
+    calcularEstadisticasResumen(detalle);
 
     // Renderizar gráficas con animación escalonada
     setTimeout(() => {
-        renderChart('chartMedioConocimiento', 'pie', data.mediosConocimiento, '# de Emprendedores', chartColors.primary);
+        renderApexChart('chartMedioConocimiento', 'pie', data.mediosConocimiento, '# de Emprendedores', chartColors.primary);
         updateChartStats('Medio', data.mediosConocimiento);
     }, 200);
 
     setTimeout(() => {
-        renderChart('chartRazonRecurre', 'doughnut', data.razonRecurre, '# de Emprendedores', chartColors.success);
+        renderApexChart('chartRazonRecurre', 'donut', data.razonRecurre, '# de Emprendedores', chartColors.success);
         updateChartStats('Razon', data.razonRecurre);
     }, 400);
 
     setTimeout(() => {
-        renderChart('chartSolicitaCredito', 'bar', data.solicitaCredito, '# de Emprendedores', chartColors.info);
+        renderApexChart('chartSolicitaCredito', 'bar', data.solicitaCredito, '# de Emprendedores', chartColors.info);
         updateChartStats('Solicita', data.solicitaCredito);
     }, 600);
 
     setTimeout(() => {
-        renderChart('chartUtilizaCredito', 'bar', data.utilizaCredito, '# de Emprendedores', chartColors.warning);
+        renderApexChart('chartUtilizaCredito', 'bar', data.utilizaCredito, '# de Emprendedores', chartColors.warning);
         updateChartStats('Utiliza', data.utilizaCredito);
     }, 800);
 }
 
 // Calcular y mostrar estadísticas resumidas
-function calcularEstadisticasResumen(data) {
-    const totalMedios = data.mediosConocimiento.reduce((sum, item) => sum + parseInt(item.total), 0);
-    const totalCapacitacion = data.razonRecurre
-        .filter(item => item.descripcion.toLowerCase().includes('capacitación'))
-        .reduce((sum, item) => sum + parseInt(item.total), 0);
-    const totalCreditos = data.solicitaCredito.reduce((sum, item) => sum + parseInt(item.total), 0);
+function calcularEstadisticasResumen(detalle) {
+    const totalEmprendedores = detalle.length;
+    const totalCapacitacion = detalle.filter(item => item.referencia === null).length;
+    const totalCreditos = detalle.filter(item => item.referencia !== null).length;
 
     // Animar contadores
-    animateValue('totalEmprendedores', 0, totalMedios, 1500);
-    animateValue('totalCapacitacion', 0, totalCapacitacion, 1500);
-    animateValue('totalCreditos', 0, totalCreditos, 1500);
+    animateValue('totalEmprendedores', totalEmprendedores, 1500);
+    animateValue('totalCapacitacion', totalCapacitacion, 1500);
+    animateValue('totalCreditos', totalCreditos, 1500);
 }
 
 // Animar valores numéricos
-function animateValue(id, start, end, duration, suffix = '') {
+function animateValue(id, end, duration, suffix = '') {
     const obj = document.getElementById(id);
     if (!obj) return;
-    
+
+    if (animationTimers[id]) {
+        clearInterval(animationTimers[id]);
+    }
+
+    const start = parseInt(obj.textContent.replace(suffix, '')) || 0;
+
     const range = end - start;
+    if (range === 0) {
+        obj.textContent = end + suffix;
+        return;
+    }
+
     const increment = range / (duration / 16);
     let current = start;
-    
+
     const timer = setInterval(() => {
         current += increment;
         if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
             current = end;
             clearInterval(timer);
+            delete animationTimers[id];
         }
         obj.textContent = Math.round(current) + suffix;
     }, 16);
+
+    animationTimers[id] = timer;
 }
 
 // Actualizar estadísticas de cada gráfica
 function updateChartStats(prefix, data) {
     const total = data.reduce((sum, item) => sum + parseInt(item.total), 0);
-    const topItem = data.reduce((max, item) => parseInt(item.total) > parseInt(max.total) ? item : max, data[0]);
-    
+    const topItem = data.length > 0 ? data.reduce((max, item) => parseInt(item.total) > parseInt(max.total) ? item : max, data[0]) : null;
+
     const totalEl = document.getElementById(`stat${prefix}Total`);
     const topEl = document.getElementById(`stat${prefix}Top`);
-    
+
     if (totalEl) totalEl.textContent = total;
     if (topEl) {
-        const shortDesc = topItem.descripcion.substring(0, 20) + (topItem.descripcion.length > 20 ? '...' : '');
-        topEl.textContent = shortDesc;
-        topEl.title = topItem.descripcion; // Tooltip con descripción completa
+        if (topItem) {
+            const shortDesc = topItem.descripcion.substring(0, 20) + (topItem.descripcion.length > 20 ? '...' : '');
+            topEl.textContent = shortDesc;
+            topEl.title = topItem.descripcion; // Tooltip con descripción completa
+        } else {
+            topEl.textContent = 'No disponible';
+            topEl.title = 'No hay datos';
+        }
     }
 }
 
-// Crear y renderizar gráfica
-function renderChart(chartId, chartType, data, label, colors) {
+// Crear y renderizar gráfica con ApexCharts
+function renderApexChart(chartId, chartType, data, label, colors) {
     const labels = data.map(item => item.descripcion);
-    const dataValues = data.map(item => parseInt(item.total));
-    
-    createChart(chartId, chartType, labels, dataValues, label, colors);
+    const seriesData = data.map(item => parseInt(item.total));
+
+    createApexChart(chartId, chartType, labels, seriesData, label, colors);
 }
 
-// Crear instancia de Chart.js
-function createChart(chartId, chartType, labels, data, label, colors) {
-    // Verificar que el canvas existe en el DOM
-    const ctx = document.getElementById(chartId);
-    if (!ctx) {
-        console.error(`Canvas con id ${chartId} no encontrado`);
+// Crear instancia de ApexCharts
+function createApexChart(chartId, chartType, labels, data, label, colors) {
+    const container = document.getElementById(chartId);
+    if (!container) {
+        console.error(`Contenedor con id ${chartId} no encontrado`);
         return;
     }
 
-    if (!isChartJsLoaded()) {
-        console.error('Chart.js no está cargado');
+    if (!isApexChartsLoaded()) {
+        console.error('ApexCharts no está cargado');
         return;
     }
 
@@ -238,155 +278,158 @@ function createChart(chartId, chartType, labels, data, label, colors) {
     if (chartInstances[chartId]) {
         chartInstances[chartId].destroy();
     }
+    // Forzar la limpieza del contenedor para evitar problemas al cambiar de tipo de gráfica
+    container.innerHTML = '';
 
-    const isHorizontal = chartType === 'horizontalBar';
-    const actualType = isHorizontal ? 'bar' : chartType;
-
-    const config = {
-        type: actualType,
-        data: {
-            labels: labels,
-            datasets: [{
-                label: label,
-                data: data,
-                backgroundColor: colors,
-                borderColor: '#ffffff',
-                borderWidth: 2,
-                borderRadius: chartType === 'bar' || isHorizontal ? 6 : 0,
-                hoverOffset: chartType === 'pie' || chartType === 'doughnut' ? 15 : 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: isHorizontal ? 'y' : 'x',
-            animation: {
-                duration: 1500,
-                easing: 'easeInOutQuart'
-            },
-            plugins: {
-                legend: {
-                    display: chartType === 'pie' || chartType === 'doughnut',
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: {
-                            size: 11
-                        },
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map((label, i) => {
-                                    const value = data.datasets[0].data[i];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    // Acortar etiquetas largas
-                                    const shortLabel = label.length > 25 ? label.substring(0, 25) + '...' : label;
-                                    return {
-                                        text: `${shortLabel}: ${value} (${percentage}%)`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        hidden: false,
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.parsed.y || context.parsed;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return ` ${context.dataset.label}: ${value} (${percentage}%)`;
-                        }
-                    }
-                }
-            },
-            scales: (chartType === 'bar' || isHorizontal) ? {
-                [isHorizontal ? 'x' : 'y']: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0,
-                        font: {
-                            size: 11
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                [isHorizontal ? 'y' : 'x']: {
-                    ticks: {
-                        font: {
-                            size: 10
-                        },
-                        callback: function(value) {
-                            // Acortar etiquetas del eje
-                            const label = this.getLabelForValue(value);
-                            return label.length > 15 ? label.substring(0, 15) + '...' : label;
-                        }
-                    },
-                    grid: {
-                        display: false
-                    }
-                }
-            } : {}
-        }
-    };
-
-    try {
-        chartInstances[chartId] = new Chart(ctx, config);
-        console.log(`Gráfica ${chartId} creada exitosamente`);
-    } catch (error) {
-        console.error(`Error al crear gráfica ${chartId}:`, error);
+    if (data.length === 0) {
+        container.innerHTML = '<div class="text-center py-5"><p class="text-muted">No hay datos disponibles.</p></div>';
+        return;
     }
+
+    // Introducir un pequeño retraso para evitar condiciones de carrera en la renderización
+    setTimeout(() => {
+        const isHorizontal = chartType === 'horizontalBar';
+        const actualType = isHorizontal ? 'bar' : chartType;
+
+        let options = {
+            series: (actualType === 'pie' || actualType === 'donut') ? data : [{ name: label, data: data }],
+            chart: {
+                type: actualType,
+                height: 350,
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                }
+            },
+            labels: labels,
+            colors: colors,
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }],
+            dataLabels: {
+                enabled: (actualType === 'pie' || actualType === 'donut'),
+            },
+            legend: {
+                position: 'bottom',
+                formatter: function (seriesName, opts) {
+                    if (actualType === 'pie' || actualType === 'donut') {
+                        const total = opts.w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                        const percentage = ((opts.w.globals.series[opts.seriesIndex] / total) * 100).toFixed(1);
+                        return `${labels[opts.seriesIndex]}: ${opts.w.globals.series[opts.seriesIndex]} (${percentage}%)`;
+                    }
+                    return seriesName;
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " " + (label.split(' ').slice(2).join(' ') || '');
+                    }
+                }
+            }
+        };
+
+        // Opciones específicas para gráficos de barras y cartesianos
+        if (actualType === 'bar') {
+            options.plotOptions = {
+                bar: {
+                    horizontal: isHorizontal,
+                    borderRadius: 6,
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            };
+            options.xaxis = {
+                categories: !isHorizontal ? labels : [],
+                labels: {
+                    formatter: function (value) {
+                        if (typeof value === 'string' && value.length > 15) {
+                            return value.substring(0, 15) + '...';
+                        }
+                        return value;
+                    }
+                }
+            };
+            options.yaxis = {
+                labels: {
+                    formatter: function (value) {
+                        if (typeof value === 'string' && value.length > 15) {
+                            return value.substring(0, 15) + '...';
+                        }
+                        return value;
+                    }
+                }
+            };
+            if (isHorizontal) {
+                options.yaxis.categories = labels;
+            }
+        }
+
+        try {
+            const chart = new ApexCharts(container, options);
+            chart.render();
+            chartInstances[chartId] = chart;
+            //console.log(`Gráfica ${chartId} creada exitosamente con ApexCharts`);
+        } catch (error) {
+            console.error(`Error al crear gráfica ${chartId} con ApexCharts:`, error);
+        }
+    }, 50);
 }
 
 // Configurar toggles de tipo de gráfica
 function setChartTypeToggles() {
-    $(document).on('click', '.chart-type-toggle button', function() {
+    $(document).on('click', '.btn-group[data-chart] button', function () {
         const $btn = $(this);
-        const chartId = $btn.closest('.chart-type-toggle').data('chart');
+        const chartId = $btn.closest('.btn-group').data('chart');
         const newType = $btn.data('type');
-        
+
         // Actualizar botones activos
         $btn.siblings().removeClass('btn-light').addClass('btn-outline-light');
         $btn.removeClass('btn-outline-light').addClass('btn-light');
-        
+
         // Obtener datos originales
         const data = chartData[chartId];
         if (!data) {
             console.error(`No hay datos para ${chartId}`);
             return;
         }
-        
+
         // Determinar colores según el chartId
         let colors;
         if (chartId.includes('Medio')) colors = chartColors.primary;
         else if (chartId.includes('Razon')) colors = chartColors.success;
         else if (chartId.includes('Solicita')) colors = chartColors.info;
         else colors = chartColors.warning;
-        
+
         // Re-renderizar con nuevo tipo
-        renderChart(chartId, newType, data, '# de Emprendedores', colors);
+        renderApexChart(chartId, newType, data, '# de Emprendedores', colors);
     });
 }
 
 // Configurar descarga de CSV
 function setDownloadHandlers() {
-    $(document).on('click', '.download-btn', function() {
+    $(document).on('click', '.download-btn', function () {
         const chartId = $(this).data('chart');
         const title = $(this).data('title');
         const data = chartData[chartId];
@@ -394,16 +437,232 @@ function setDownloadHandlers() {
         if (data && data.length > 0) {
             const csv = convertToCSV(data);
             downloadCSV(csv, `${title}_${new Date().toISOString().split('T')[0]}.csv`);
-            
+
             // Feedback visual
             const $btn = $(this);
             const originalHtml = $btn.html();
-            $btn.html('<i class="fas fa-check mr-1"></i>Descargado').prop('disabled', true);
+            $btn.html('<i class="fas fa-check-circle me-1"></i>Descargado').prop('disabled', true);
             setTimeout(() => {
                 $btn.html(originalHtml).prop('disabled', false);
             }, 2000);
         } else {
             alert("No hay datos disponibles para descargar.");
+        }
+    });
+}
+
+// Configurar manejadores de impresión
+function setPrintHandlers() {
+    $(document).on('click', '.print-chart-btn', function () {
+        const chartId = $(this).data('chart');
+        printChart(chartId);
+    });
+}
+
+// Configurar manejadores de ver detalles
+function setViewDetailsHandlers() {
+    $(document).on('click', '.view-details-btn', function () {
+        const chartId = $(this).data('chart');
+        const title = $(this).data('title');
+        showChartDetails(chartId, title);
+    });
+}
+
+function setupSummaryCardButtons() {
+   /* const cards = {
+        'totalEmprendedores': 'emprendedores',
+        'totalCapacitacion': 'capacitacion',
+        'totalCreditos': 'creditos'
+    };
+
+    for (const id in cards) {
+        const el = document.getElementById(id);
+        if (el) {
+            const cardBody = el.closest('.card-body');
+            if (cardBody) {
+                let footer = cardBody.querySelector('.card-footer-custom');
+                if (!footer) {
+                    footer = document.createElement('div');
+                    footer.className = 'card-footer-custom text-end p-3';
+                    cardBody.appendChild(footer);
+                }
+                // Avoid adding button if it already exists
+                if (!footer.querySelector('.view-details-summary-btn')) {
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-sm btn-outline-primary view-details-summary-btn';
+                    button.dataset.categoria = cards[id];
+                    button.innerHTML = '<i class="fas fa-eye me-1"></i> Ver detalles';
+                    footer.appendChild(button);
+                }
+            }
+        }
+    }*/
+}
+
+function setViewDetailsSummaryHandlers() {
+    $(document).on('click', '.view-details-summary-btn', function () {
+        const categoria = $(this).data('categoria');
+        mostrarDetalles(categoria, fullDetalleList);
+    });
+}
+
+function mostrarDetalles(categoria, detalleList) {
+    let filteredData = [];
+    let title = '';
+
+    switch (categoria) {
+        case 'emprendedores':
+            filteredData = detalleList;
+            title = 'Detalle de Emprendedores';
+            break;
+        case 'capacitacion':
+            filteredData = detalleList.filter(item => item.referencia === null);
+            title = 'Detalle de Emprendedores en Capacitación';
+            break;
+        case 'creditos':
+            filteredData = detalleList.filter(item => item.referencia !== null);
+            title = 'Detalle de Emprendedores con Crédito';
+            break;
+    }
+
+    let container = document.getElementById('detalles-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'detalles-container';
+        const summaryRow = document.getElementById('totalEmprendedores').closest('.row');
+        if (summaryRow && summaryRow.parentElement) {
+            summaryRow.parentElement.insertBefore(container, summaryRow.nextSibling);
+        }
+    }
+
+    container.innerHTML = `
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">${title}</h5>
+                <button type="button" class="btn-close" aria-label="Close" onclick="document.getElementById('detalles-container').style.display = 'none';"></button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="detalles-table" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Referencia</th>
+                                <th>Emprendedor</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Etapa</th>
+                                <th>Razón Recurre</th>
+                                <th>Solicita Crédito</th>
+                                <th>Utiliza Crédito</th>
+                                <th>Medios Conocimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const tableBody = container.querySelector('#detalles-table tbody');
+    let rows = '';
+    filteredData.forEach(item => {
+        const medios = item.medios_conocimiento ? item.medios_conocimiento.split('^').join('<br>') : 'N/A';
+        rows += `
+            <tr>
+                <td>${item.referencia || 'N/A'}</td>
+                <td>${item.emprendedor}</td>
+                <td>${item.correo}</td>
+                <td>${item.tel}</td>
+                <td>${item.etapaNombre}</td>
+                <td>${item.razonRecurreDescripcion || 'N/A'}</td>
+                <td>${item.solicitaCreditoDescripcion || 'N/A'}</td>
+                <td>${item.utilizaCreditoDescripcion || 'N/A'}</td>
+                <td>${medios}</td>
+            </tr>
+        `;
+    });
+    tableBody.innerHTML = rows;
+
+    if ($.fn.DataTable.isDataTable('#detalles-table')) {
+        $('#detalles-table').DataTable().destroy();
+    }
+    $('#detalles-table').DataTable({
+        responsive: true,
+        language: {
+            url: '../../../assets/libs/datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js',
+        },
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+
+    container.style.display = 'block';
+    $('html, body').animate({
+        scrollTop: $(container).offset().top
+    }, 500);
+}
+
+// Mostrar detalles de la gráfica en modal
+function showChartDetails(chartId, title) {
+    const data = chartData[chartId];
+    if (!data || data.length === 0) {
+        alert('No hay datos disponibles para mostrar.');
+        return;
+    }
+
+    // Guardar el chartId actual para descarga desde el modal
+    currentModalChart = chartId;
+
+    // Actualizar título del modal
+    $('#chartDetailsModalLabel').html(`<i class="fas fa-chart-line me-2"></i>${title}`);
+
+    // Calcular total para porcentajes
+    const total = data.reduce((sum, item) => sum + parseInt(item.total), 0);
+
+    // Generar filas de la tabla
+    const tbody = $('#chartDetailsTable tbody');
+    tbody.empty();
+
+    data.forEach((item, index) => {
+        const percentage = ((parseInt(item.total) / total) * 100).toFixed(2);
+        const row = `
+            <tr>
+                <th scope="row">${index + 1}</th>
+                <td>${item.descripcion}</td>
+                <td class="text-end fw-bold">${item.total}</td>
+                <td class="text-end">
+                    <span class="badge bg-primary">${percentage}%</span>
+                </td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('chartDetailsModal'));
+    modal.show();
+}
+
+// Configurar eventos de modales
+function configurarEventosModales() {
+    // Descargar datos desde el modal
+    $(document).on('click', '#downloadModalData', function () {
+        if (currentModalChart && chartData[currentModalChart]) {
+            const data = chartData[currentModalChart];
+            const title = $('#chartDetailsModalLabel').text().replace(/\s+/g, '_');
+            const csv = convertToCSV(data);
+            downloadCSV(csv, `${title}_${new Date().toISOString().split('T')[0]}.csv`);
+
+            // Feedback visual
+            const $btn = $(this);
+            const originalHtml = $btn.html();
+            $btn.html('<i class="fas fa-check-circle me-1"></i>Descargado').prop('disabled', true);
+            setTimeout(() => {
+                $btn.html(originalHtml).prop('disabled', false);
+            }, 2000);
         }
     });
 }
@@ -432,17 +691,18 @@ function downloadCSV(csvContent, fileName) {
 }
 
 // Función para imprimir gráfica individual
-function printChart(chartId) {
+async function printChart(chartId) {
     if (!chartInstances[chartId]) {
         console.error(`Gráfica ${chartId} no disponible`);
         return;
     }
-    
+
     const chart = chartInstances[chartId];
-    const canvas = chart.canvas;
-    const win = window.open('', '_blank');
     const chartTitle = $(`#${chartId}`).closest('.card').find('.card-header h6').text();
-    
+
+    const dataUrl = await chart.dataURI();
+
+    const win = window.open('', '_blank');
     win.document.write(`
         <!DOCTYPE html>
         <html>
@@ -473,7 +733,7 @@ function printChart(chartId) {
         <body>
             <h2>Dashboard de Línea Base</h2>
             <h3>${chartTitle}</h3>
-            <img src="${canvas.toDataURL('image/png')}" />
+            <img src="${dataUrl.imgURI}" />
             <div class="footer">
                 <p>Generado el: ${new Date().toLocaleString('es-MX')}</p>
             </div>
@@ -481,7 +741,7 @@ function printChart(chartId) {
         </html>
     `);
     win.document.close();
-    
+
     setTimeout(() => {
         win.print();
     }, 500);
@@ -489,24 +749,14 @@ function printChart(chartId) {
 
 // Detectar theme oscuro
 function detectDarkMode() {
-    if (!isChartJsLoaded()) return;
-    
+    if (!isApexChartsLoaded()) return;
+
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        Chart.defaults.color = '#fff';
-        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        Apex.tooltip.theme = 'dark';
     }
 }
 
-// Responsive: Ajustar gráficas en resize
-$(window).on('resize', debounce(function() {
-    Object.keys(chartInstances).forEach(chartId => {
-        if (chartInstances[chartId]) {
-            chartInstances[chartId].resize();
-        }
-    });
-}, 250));
-
-// Función debounce
+// Función debounce (si es necesaria para otras cosas)
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -519,3 +769,27 @@ function debounce(func, wait) {
     };
 }
 
+function configurarEventosFiltros() {
+    $('#limpiarFiltros').click(refresh);
+    const $form = $('#filtrosEstadisticasForm');
+
+    if ($form) {
+        $form.on('submit', function (e) {
+            e.preventDefault();
+            showLoaders();
+            crearPeticion(urlAPI, { case: "filtrarEstadisticas", data: $form.serialize() }, function (respuesta) {
+                //print(respuesta);
+                if (respuesta.categorias && respuesta.detalle.length > 0) {
+                    fullDetalleList = respuesta.detalle;
+                    procesarDatosDashboard(respuesta.categorias, respuesta.detalle);
+                } else {
+                    fullDetalleList = [];
+                    const emptyData = getEmptyEstadisticas();
+                    procesarDatosDashboard(emptyData.categorias, emptyData.detalle);
+                    mostrarMensajeAdvertencia('El filtro aplicado no arrojó resultados', false);
+                }
+                hideLoaders();
+            });
+        });
+    }
+}

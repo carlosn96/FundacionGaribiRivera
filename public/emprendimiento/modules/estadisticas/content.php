@@ -1,16 +1,17 @@
 <!-- Dashboard de Estadísticas - Línea Base -->
-<div class="container-fluid px-4 py-4">
+<div class="container-fluid px-3 px-md-4 py-4">
     <!-- Header con estadísticas resumidas -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <div>
-                    <h2 class="h3 font-weight-bold text-dark mb-1">Dashboard de Línea Base</h2>
-                    <p class="text-muted mb-0">Análisis del seguimiento a emprendedores</p>
+                    <h2 class="h3 fw-bold text-dark mb-2">Dashboard de Línea Base</h2>
+                    <p class="text-muted mb-0 fs-6">Análisis del seguimiento a emprendedores</p>
                 </div>
-                <div class="text-right">
-                    <small class="text-muted d-block">Última actualización</small>
-                    <strong class="text-primary" id="lastUpdate"></strong>
+                <div class="text-start text-md-end">
+                    <small class="text-muted d-block mb-1">Última actualización</small>
+                    <span class="badge bg-primary fs-6" id="lastUpdate"></span>
                 </div>
             </div>
         </div>
@@ -19,35 +20,87 @@
     <!-- Filtros -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">
+                        <i class="fas fa-sliders-h me-2 text-primary"></i>Filtros de Búsqueda
+                    </h5>
+                </div>
                 <div class="card-body">
-                    <form id="filtrosEstadisticasForm" class="form-inline">
-                        <div class="form-group mr-3 mb-2">
-                            <label for="fechaInicio" class="mr-2">Fecha Inicio:</label>
-                            <input type="date" class="form-control" id="fechaInicio" name="fecha_inicio">
+                    <form id="filtrosEstadisticasForm">
+                        <!-- Tabs para cambiar entre los filtros -->
+                        <ul class="nav nav-pills nav-fill mb-4" id="filterTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="fecha-tab" data-bs-toggle="tab"
+                                    data-bs-target="#filtro-fecha" type="button" role="tab" aria-controls="filtro-fecha"
+                                    aria-selected="true">
+                                    <i class="fas fa-calendar-alt me-2"></i>Por Fecha
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="etapa-tab" data-bs-toggle="tab"
+                                    data-bs-target="#filtro-etapa" type="button" role="tab" aria-controls="filtro-etapa"
+                                    aria-selected="false">
+                                    <i class="fas fa-layer-group me-2"></i>Por Etapa
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="filterTabsContent">
+                            <!-- Filtro por Fecha -->
+                            <div class="tab-pane fade show active" id="filtro-fecha" role="tabpanel"
+                                aria-labelledby="fecha-tab">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold text-dark mb-2">
+                                            <i class="fas fa-calendar-week me-2 text-primary"></i>Rango de Fechas
+                                        </label>
+                                        <div class="input-daterange input-group" id="date-range">
+                                            <input type="text" class="form-control form-control-lg" name="fechaInicio"
+                                                placeholder="Fecha inicio" readonly>
+                                            <span class="input-group-text bg-primary border-primary text-white px-3">
+                                                <i class="fas fa-arrows-alt-h"></i>
+                                            </span>
+                                            <input type="text" class="form-control form-control-lg" name="fechaFin"
+                                                placeholder="Fecha fin" readonly>
+                                        </div>
+                                        <small class="form-text text-muted mt-2 d-block">
+                                            <i class="fas fa-info-circle me-1"></i>Seleccione el rango de fechas para
+                                            filtrar los resultados
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Filtro por Etapa -->
+                            <div class="tab-pane fade" id="filtro-etapa" role="tabpanel" aria-labelledby="etapa-tab">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-12 col-md-8 col-lg-6">
+                                        <label for="etapa" class="form-label fw-semibold text-dark mb-2">
+                                            <i class="fas fa-tasks me-2 text-success"></i>Seleccionar Etapa
+                                        </label>
+                                        <select class="form-select form-select-lg" id="etapa" name="etapa">
+                                            <option value="" selected>Todas las etapas</option>
+                                            <!-- Opciones dinámicas se agregarán aquí -->
+                                        </select>
+                                        <small class="form-text text-muted mt-2 d-block">
+                                            <i class="fas fa-info-circle me-1"></i>Filtre los emprendedores por su etapa
+                                            actual
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group mr-3 mb-2">
-                            <label for="fechaFin" class="mr-2">Fecha Fin:</label>
-                            <input type="date" class="form-control" id="fechaFin" name="fecha_fin">
+
+                        <!-- Botones compartidos para ambos filtros -->
+                        <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary">
+                                <i class="fas fa-eraser me-2"></i>Limpiar Filtro
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-search me-2"></i>Aplicar Filtro
+                            </button>
                         </div>
-                        <div class="form-group mr-3 mb-2">
-                            <label for="etapa" class="mr-2">Etapa:</label>
-                            <select class="form-control" id="etapa" name="etapa">
-                                <option value="">Todas</option>
-                                <?php
-                                /*
-                                require_once 'c:/Users/HP/Documents/Workspace/Web/FundacionGaribiRivera/dao/EtapaDAO.php';
-                                $etapaDAO = new EtapaDAO();
-                                $etapas = $etapaDAO->getAllEtapas(); // This is a hypothetical method name
-                                foreach ($etapas as $etapa) {
-                                    echo '<option value="' . htmlspecialchars($etapa->getId()) . '">' . htmlspecialchars($etapa->getNombre()) . '</option>';
-                                }
-                                */
-                                ?>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary mb-2">Aplicar Filtros</button>
-                        <button type="button" id="limpiarFiltros" class="btn btn-secondary mb-2 ml-2">Limpiar</button>
                     </form>
                 </div>
             </div>
@@ -55,438 +108,356 @@
     </div>
 
     <!-- Cards de resumen -->
-    <div class="row mb-4" id="summaryCards">
+    <div class="row g-3 g-md-4 mb-4" id="summaryCards">
         <!-- Tarjeta de Emprendedores -->
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2 card-hover">
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 border-start border-primary border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Emprendedores</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalEmprendedores">0</div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-uppercase fw-bold text-primary small mb-2">Emprendedores</div>
+                            <div class="h3 fw-bold text-dark mb-0" id="totalEmprendedores">0</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-users fa-2x text-primary"></i>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer bg-light border-0 text-end py-2">
+                    <button class="btn btn-sm btn-outline-primary view-details-summary-btn" data-categoria="emprendedores">
+                        <i class="fas fa-eye me-1"></i> Ver detalles
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Tarjeta de Capacitación -->
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <div class="card border-left-success shadow h-100 py-2 card-hover">
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 border-start border-success border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Capacitación</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalCapacitacion">0</div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-uppercase fw-bold text-success small mb-2">Capacitación</div>
+                            <div class="h3 fw-bold text-dark mb-0" id="totalCapacitacion">0</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-graduation-cap fa-2x text-success"></i>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer bg-light border-0 text-end py-2">
+                    <button class="btn btn-sm btn-outline-success view-details-summary-btn" data-categoria="capacitacion">
+                        <i class="fas fa-eye me-1"></i> Ver detalles
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Tarjeta de Créditos -->
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <div class="card border-left-info shadow h-100 py-2 card-hover">
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 border-start border-info border-4 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Créditos</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalCreditos">0</div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-uppercase fw-bold text-info small mb-2">Créditos</div>
+                            <div class="h3 fw-bold text-dark mb-0" id="totalCreditos">0</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-dollar-sign fa-2x text-info"></i>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer bg-light border-0 text-end py-2">
+                    <button class="btn btn-sm btn-outline-info view-details-summary-btn" data-categoria="creditos">
+                        <i class="fas fa-eye me-1"></i> Ver detalles
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-
     <!-- Gráficas principales -->
-    <div class="row">
+    <div class="row g-4">
         <!-- Medio de Conocimiento -->
-        <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card shadow-lg border-0 chart-card">
-                <div
-                    class="card-header bg-gradient-primary text-white py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="m-0 font-weight-bold">
-                            <i class="fas fa-bullhorn mr-2"></i>¿Cómo te enteraste de la Fundación?
-                        </h6>
-                        <small class="opacity-75">Pregunta 12 - Canales de difusión</small>
-                    </div>
-                    <div class="chart-type-toggle" data-chart="chartMedioConocimiento">
-                        <button class="btn btn-sm btn-light" data-type="pie" title="Gráfico Circular">
-                            <i class="fas fa-chart-pie"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-light" data-type="bar" title="Gráfico de Barras">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-primary text-white border-0 py-3">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div>
+                            <h6 class="mb-1 fw-bold">
+                                <i class="fas fa-bullhorn me-2"></i>¿Cómo te enteraste de la Fundación?
+                            </h6>
+                            <small class="opacity-75">Canales de difusión</small>
+                        </div>
+                        <div class="btn-group btn-group-sm" role="group" data-chart="chartMedioConocimiento">
+                            <button type="button" class="btn btn-light" data-type="pie" title="Gráfico Circular">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light" data-type="bar"
+                                title="Gráfico de Barras">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-wrapper">
-                        <canvas id="chartMedioConocimiento"></canvas>
+                        <div id="chartMedioConocimiento"></div>
                     </div>
-                    <div class="chart-stats mt-3">
-                        <div class="row text-center">
+                    <div class="border-top mt-3 pt-3">
+                        <div class="row text-center g-3">
                             <div class="col-6">
-                                <small class="text-muted">Más popular</small>
-                                <div class="font-weight-bold" id="statMedioTop">-</div>
+                                <small class="text-muted d-block mb-1">Más popular</small>
+                                <div class="fw-bold text-truncate" id="statMedioTop" title="">-</div>
                             </div>
                             <div class="col-6">
-                                <small class="text-muted">Total respuestas</small>
-                                <div class="font-weight-bold" id="statMedioTotal">0</div>
+                                <small class="text-muted d-block mb-1">Total respuestas</small>
+                                <div class="fw-bold" id="statMedioTotal">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <button class="btn btn-sm btn-outline-primary download-btn" data-chart="chartMedioConocimiento"
-                        data-title="Medio_de_Conocimiento">
-                        <i class="fas fa-download mr-1"></i>Exportar CSV
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ml-2"
-                        onclick="printChart('chartMedioConocimiento')">
-                        <i class="fas fa-print mr-1"></i>Imprimir
-                    </button>
+                <div class="card-footer bg-light border-0">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary download-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartMedioConocimiento" data-title="Medio_de_Conocimiento">
+                            <i class="fas fa-download me-1"></i>Exportar CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary print-chart-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartMedioConocimiento">
+                            <i class="fas fa-print me-1"></i>Imprimir
+                        </button>
+                        <button class="btn btn-sm btn-outline-info view-details-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartMedioConocimiento" data-title="¿Cómo te enteraste de la Fundación?">
+                            <i class="fas fa-eye me-1"></i>Ver Detalles
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Razón Recurre -->
-        <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card shadow-lg border-0 chart-card">
-                <div
-                    class="card-header bg-gradient-success text-white py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="m-0 font-weight-bold">
-                            <i class="fas fa-question-circle mr-2"></i>Recurres a la Fundación para:
-                        </h6>
-                        <small class="opacity-75">Pregunta 13 - Motivación principal</small>
-                    </div>
-                    <div class="chart-type-toggle" data-chart="chartRazonRecurre">
-                        <button class="btn btn-sm btn-outline-light" data-type="pie" title="Gráfico Circular">
-                            <i class="fas fa-chart-pie"></i>
-                        </button>
-                        <button class="btn btn-sm btn-light" data-type="doughnut" title="Gráfico Dona">
-                            <i class="fas fa-circle-notch"></i>
-                        </button>
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white border-0 py-3">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div>
+                            <h6 class="mb-1 fw-bold">
+                                <i class="fas fa-question-circle me-2"></i>Recurres a la Fundación para:
+                            </h6>
+                            <small class="opacity-75">Motivación principal</small>
+                        </div>
+                        <div class="btn-group btn-group-sm" role="group" data-chart="chartRazonRecurre">
+                            <button type="button" class="btn btn-outline-light" data-type="pie"
+                                title="Gráfico Circular">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button type="button" class="btn btn-light" data-type="donut" title="Gráfico Dona">
+                                <i class="fas fa-circle-notch"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-wrapper">
-                        <canvas id="chartRazonRecurre"></canvas>
+                        <div id="chartRazonRecurre"></div>
                     </div>
-                    <div class="chart-stats mt-3">
-                        <div class="row text-center">
+                    <div class="border-top mt-3 pt-3">
+                        <div class="row text-center g-3">
                             <div class="col-6">
-                                <small class="text-muted">Más solicitado</small>
-                                <div class="font-weight-bold" id="statRazonTop">-</div>
+                                <small class="text-muted d-block mb-1">Más solicitado</small>
+                                <div class="fw-bold text-truncate" id="statRazonTop" title="">-</div>
                             </div>
                             <div class="col-6">
-                                <small class="text-muted">Total respuestas</small>
-                                <div class="font-weight-bold" id="statRazonTotal">0</div>
+                                <small class="text-muted d-block mb-1">Total respuestas</small>
+                                <div class="fw-bold" id="statRazonTotal">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <button class="btn btn-sm btn-outline-success download-btn" data-chart="chartRazonRecurre"
-                        data-title="Razon_Recurre">
-                        <i class="fas fa-download mr-1"></i>Exportar CSV
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ml-2" onclick="printChart('chartRazonRecurre')">
-                        <i class="fas fa-print mr-1"></i>Imprimir
-                    </button>
+                <div class="card-footer bg-light border-0">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-success download-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartRazonRecurre" data-title="Razon_Recurre">
+                            <i class="fas fa-download me-1"></i>Exportar CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary print-chart-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartRazonRecurre">
+                            <i class="fas fa-print me-1"></i>Imprimir
+                        </button>
+                        <button class="btn btn-sm btn-outline-info view-details-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartRazonRecurre" data-title="Recurres a la Fundación para:">
+                            <i class="fas fa-eye me-1"></i>Ver Detalles
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
         <!-- Solicita Crédito -->
-        <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card shadow-lg border-0 chart-card">
-                <div
-                    class="card-header bg-gradient-info text-white py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="m-0 font-weight-bold">
-                            <i class="fas fa-hand-holding-usd mr-2"></i>El crédito lo solicitarías para:
-                        </h6>
-                        <small class="opacity-75">Pregunta 14 - Propósito del crédito</small>
-                    </div>
-                    <div class="chart-type-toggle" data-chart="chartSolicitaCredito">
-                        <button class="btn btn-sm btn-light" data-type="bar" title="Gráfico de Barras">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-light" data-type="horizontalBar"
-                            title="Barras Horizontales">
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-info text-white border-0 py-3">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div>
+                            <h6 class="mb-1 fw-bold">
+                                <i class="fas fa-hand-holding-usd me-2"></i>El crédito lo solicitarías para:
+                            </h6>
+                            <small class="opacity-75">Propósito del crédito</small>
+                        </div>
+                        <div class="btn-group btn-group-sm" role="group" data-chart="chartSolicitaCredito">
+                            <button type="button" class="btn btn-light" data-type="bar" title="Gráfico de Barras">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light" data-type="horizontalBar"
+                                title="Barras Horizontales">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-wrapper">
-                        <canvas id="chartSolicitaCredito"></canvas>
+                        <div id="chartSolicitaCredito"></div>
                     </div>
-                    <div class="chart-stats mt-3">
-                        <div class="row text-center">
+                    <div class="border-top mt-3 pt-3">
+                        <div class="row text-center g-3">
                             <div class="col-6">
-                                <small class="text-muted">Principal uso</small>
-                                <div class="font-weight-bold" id="statSolicitaTop">-</div>
+                                <small class="text-muted d-block mb-1">Principal uso</small>
+                                <div class="fw-bold text-truncate" id="statSolicitaTop" title="">-</div>
                             </div>
                             <div class="col-6">
-                                <small class="text-muted">Total respuestas</small>
-                                <div class="font-weight-bold" id="statSolicitaTotal">0</div>
+                                <small class="text-muted d-block mb-1">Total respuestas</small>
+                                <div class="fw-bold" id="statSolicitaTotal">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <button class="btn btn-sm btn-outline-info download-btn" data-chart="chartSolicitaCredito"
-                        data-title="Solicita_Credito">
-                        <i class="fas fa-download mr-1"></i>Exportar CSV
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ml-2" onclick="printChart('chartSolicitaCredito')">
-                        <i class="fas fa-print mr-1"></i>Imprimir
-                    </button>
+                <div class="card-footer bg-light border-0">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-info download-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartSolicitaCredito" data-title="Solicita_Credito">
+                            <i class="fas fa-download me-1"></i>Exportar CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary print-chart-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartSolicitaCredito">
+                            <i class="fas fa-print me-1"></i>Imprimir
+                        </button>
+                        <button class="btn btn-sm btn-outline-info view-details-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartSolicitaCredito" data-title="El crédito lo solicitarías para:">
+                            <i class="fas fa-eye me-1"></i>Ver Detalles
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Utiliza Crédito -->
-        <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card shadow-lg border-0 chart-card">
-                <div
-                    class="card-header bg-gradient-warning text-white py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="m-0 font-weight-bold">
-                            <i class="fas fa-shopping-cart mr-2"></i>El crédito lo utilizarías para:
-                        </h6>
-                        <small class="opacity-75">Pregunta 15 - Destino de inversión</small>
-                    </div>
-                    <div class="chart-type-toggle" data-chart="chartUtilizaCredito">
-                        <button class="btn btn-sm btn-light" data-type="bar" title="Gráfico de Barras">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-light" data-type="horizontalBar"
-                            title="Barras Horizontales">
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-warning text-white border-0 py-3">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div>
+                            <h6 class="mb-1 fw-bold">
+                                <i class="fas fa-shopping-cart me-2"></i>El crédito lo utilizarías para:
+                            </h6>
+                            <small class="opacity-75">Destino de inversión</small>
+                        </div>
+                        <div class="btn-group btn-group-sm" role="group" data-chart="chartUtilizaCredito">
+                            <button type="button" class="btn btn-light" data-type="bar" title="Gráfico de Barras">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light" data-type="horizontalBar"
+                                title="Barras Horizontales">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-wrapper">
-                        <canvas id="chartUtilizaCredito"></canvas>
+                        <div id="chartUtilizaCredito"></div>
                     </div>
-                    <div class="chart-stats mt-3">
-                        <div class="row text-center">
+                    <div class="border-top mt-3 pt-3">
+                        <div class="row text-center g-3">
                             <div class="col-6">
-                                <small class="text-muted">Principal inversión</small>
-                                <div class="font-weight-bold" id="statUtilizaTop">-</div>
+                                <small class="text-muted d-block mb-1">Principal inversión</small>
+                                <div class="fw-bold text-truncate" id="statUtilizaTop" title="">-</div>
                             </div>
                             <div class="col-6">
-                                <small class="text-muted">Total respuestas</small>
-                                <div class="font-weight-bold" id="statUtilizaTotal">0</div>
+                                <small class="text-muted d-block mb-1">Total respuestas</small>
+                                <div class="fw-bold" id="statUtilizaTotal">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <button class="btn btn-sm btn-outline-warning download-btn" data-chart="chartUtilizaCredito"
-                        data-title="Utiliza_Credito">
-                        <i class="fas fa-download mr-1"></i>Exportar CSV
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary ml-2" onclick="printChart('chartUtilizaCredito')">
-                        <i class="fas fa-print mr-1"></i>Imprimir
-                    </button>
+                <div class="card-footer bg-light border-0">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-warning download-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartUtilizaCredito" data-title="Utiliza_Credito">
+                            <i class="fas fa-download me-1"></i>Exportar CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary print-chart-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartUtilizaCredito">
+                            <i class="fas fa-print me-1"></i>Imprimir
+                        </button>
+                        <button class="btn btn-sm btn-outline-info view-details-btn flex-grow-1 flex-sm-grow-0"
+                            data-chart="chartUtilizaCredito" data-title="El crédito lo utilizarías para:">
+                            <i class="fas fa-eye me-1"></i>Ver Detalles
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .border-left-primary {
-        border-left: 4px solid #4e73df !important;
-    }
-
-    .border-left-success {
-        border-left: 4px solid #1cc88a !important;
-    }
-
-    .border-left-info {
-        border-left: 4px solid #36b9cc !important;
-    }
-
-    .border-left-warning {
-        border-left: 4px solid #f6c23e !important;
-    }
-
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    }
-
-    .bg-gradient-success {
-        background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%);
-    }
-
-    .bg-gradient-info {
-        background: linear-gradient(135deg, #36b9cc 0%, #2c9faf 100%);
-    }
-
-    .bg-gradient-warning {
-        background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
-    }
-
-    .card-hover {
-        transition: all 0.3s ease;
-    }
-
-    .card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .chart-card {
-        transition: all 0.3s ease;
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
-
-    .chart-card:hover {
-        transform: translateY(-3px);
-    }
-
-    .chart-wrapper {
-        position: relative;
-        height: 320px;
-        padding: 10px;
-    }
-
-    .chart-stats {
-        border-top: 1px solid #e3e6f0;
-        padding-top: 15px;
-    }
-
-    .chart-type-toggle button {
-        padding: 4px 8px;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-
-    .chart-type-toggle button:hover {
-        transform: scale(1.1);
-    }
-
-    .opacity-75 {
-        opacity: 0.75;
-    }
-
-    .text-xs {
-        font-size: 0.7rem;
-    }
-
-    .text-gray-800 {
-        color: #5a5c69 !important;
-    }
-
-    .text-gray-300 {
-        color: #dddfeb !important;
-    }
-
-    @media print {
-
-        .card-footer,
-        .chart-type-toggle {
-            display: none !important;
-        }
-    }
-
-    /* Animación de carga */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .chart-card {
-        animation: fadeIn 0.5s ease-out;
-    }
-
-    .card-hover {
-        animation: fadeIn 0.3s ease-out;
-    }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('filtrosEstadisticasForm');
-    const limpiarButton = document.getElementById('limpiarFiltros');
-
-    // Function to apply filters
-    const applyFilters = () => {
-        const fechaInicio = document.getElementById('fechaInicio').value;
-        const fechaFin = document.getElementById('fechaFin').value;
-        const etapa = document.getElementById('etapa').value;
-
-        const params = new URLSearchParams(window.location.search);
-        if (fechaInicio) {
-            params.set('fecha_inicio', fechaInicio);
-        } else {
-            params.delete('fecha_inicio');
-        }
-        if (fechaFin) {
-            params.set('fecha_fin', fechaFin);
-        } else {
-            params.delete('fecha_fin');
-        }
-        if (etapa) {
-            params.set('etapa', etapa);
-        } else {
-            params.delete('etapa');
-        }
-
-        window.location.search = params.toString();
-    };
-
-    // Function to clear filters
-    const clearFilters = () => {
-        const params = new URLSearchParams(window.location.search);
-        params.delete('fecha_inicio');
-        params.delete('fecha_fin');
-        params.delete('etapa');
-        window.location.search = params.toString();
-    };
-
-    // Set initial values from URL
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById('fechaInicio').value = params.get('fecha_inicio') || '';
-    document.getElementById('fechaFin').value = params.get('fecha_fin') || '';
-    document.getElementById('etapa').value = params.get('etapa') || '';
-
-    // Add event listeners
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        applyFilters();
-    });
-
-    limpiarButton.addEventListener('click', function () {
-        clearFilters();
-    });
-});
-</script>
+<!-- Modal para Ver Detalles -->
+<div class="modal fade" id="chartDetailsModal" tabindex="-1" aria-labelledby="chartDetailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="chartDetailsModalLabel">
+                    <i class="fas fa-chart-line me-2"></i>Detalles de la Gráfica
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                    <i class="fas fa-info-circle me-2 fs-5"></i>
+                    <div>
+                        <strong>Información:</strong> A continuación se muestran los datos detallados de la gráfica
+                        seleccionada.
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle" id="chartDetailsTable">
+                        <thead class="table-primary">
+                            <tr>
+                                <th scope="col" class="fw-bold">#</th>
+                                <th scope="col" class="fw-bold">Descripción</th>
+                                <th scope="col" class="fw-bold text-end">Total</th>
+                                <th scope="col" class="fw-bold text-end">Porcentaje</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="downloadModalData">
+                    <i class="fas fa-download me-1"></i>Descargar Datos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -24,6 +24,9 @@
 <script src="../../../assets/libs/select2/dist/js/select2.min.js"></script>
 <script src="../../../assets/libs/block-ui/jquery.blockUI.js"></script> 
 <script src="../../../assets/libs/inputmask/dist/jquery.inputmask.min.js"></script>
+<script src="../../../assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="../../../assets/libs/bootstrap-datepicker/dist/js/locales/bootstrap-datepicker.es.js"></script>
+<script src="../../../assets/js/forms/datepicker-init.js"></script>
 
 <!-- solar icons -->
 <script src="../../../assets/libs/iconify/iconify-icon.min.js"></script>

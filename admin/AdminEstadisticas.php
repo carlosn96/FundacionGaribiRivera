@@ -12,8 +12,8 @@ class AdminEstadisticas extends Admin
     /**
      * Orquesta la obtención de datos estadísticos y los devuelve como Array.
      */
-    public function obtenerEstadisticasLineaBase()
+    public function obtenerEstadisticasLineaBase($etapa = 0, $fechaInicio = '', $fechaFin = '')
     {
-        return $this->dao->obtenerEstadisticasLineaBase();
+        return $this->dao->obtenerEstadisticasLineaBase($etapa, $fechaInicio, $fechaFin);
     }
 }
