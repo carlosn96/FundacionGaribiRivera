@@ -88,6 +88,45 @@ Cada uno de estos módulos sigue una estructura similar:
 
 La comunicación entre el frontend y el backend se realiza a través de peticiones AJAX, utilizando la función `crearPeticion()` definida en `public/assets/js/util.js`. Esta función envía las peticiones al archivo `API.php` en el directorio `/controller`, que actúa como un controlador principal para dirigir las peticiones a las clases administrativas correspondientes.
 
+## Funcionalidades por Módulo
+
+A continuación se describen las funcionalidades accesibles desde la página de inicio de cada módulo principal.
+
+### Módulo de Administración General (`/public/administracionGeneral/`)
+
+- **Gestión de Usuarios**
+  - **Lista de usuarios:** Visualiza una tabla con todos los usuarios registrados en el sistema.
+  - **Nuevo usuario:** Acceso para registrar un nuevo usuario en el sistema.
+- **Chat Interno**
+  - **Lista de contactos:** Muestra una lista de contactos para la comunicación interna.
+  - **Búsqueda de contactos:** Permite buscar un contacto por su nombre.
+  - **Detalles de contacto:** Muestra información detallada de un contacto.
+
+### Módulo de Difusión (`/public/difusion/`)
+
+- **Etapas:** Acceso a la gestión de las etapas de formación.
+- **Talleres:**
+  - **Gestión de Talleres:** Permite administrar los talleres ofrecidos.
+  - **Gestión de Instructores:** Permite administrar los instructores de los talleres.
+  - **Registro de Asistencia:** Acceso al registro de asistencia de los emprendedores a los talleres.
+- **Emprendedores:**
+  - **Nuevo Emprendedor:** Formulario para dar de alta a un nuevo emprendedor.
+  - **Historial de Registros:** Visualiza un historial de los emprendedores registrados.
+  - **Línea Base:** Acceso a la evaluación inicial de los emprendedores.
+
+### Módulo de Emprendimiento (`/public/emprendimiento/`)
+
+- **Medición de Impactos:**
+  - **Crédito:** Acceso a la medición de impactos relacionada con los créditos.
+  - **Capacitación:** Acceso a la medición de impactos relacionada con la capacitación.
+
+### Módulo de Trabajo Social (`/public/trabajoSocial/`)
+
+- **Ficha de Seguimiento:** Acceso a la ficha de seguimiento de los emprendedores.
+- **Estudio Socioeconómico:** Permite realizar y consultar los estudios socioeconómicos de los emprendedores.
+- **Reportes:** Acceso a la generación de reportes del área de trabajo social.
+- **Configuración:** Permite configurar parámetros específicos del módulo.
+
 ## Universo de Discurso
 
 El sistema gestiona el ciclo de vida de los participantes en los programas de la Fundación Garibi Rivera. El universo de discurso se centra en el seguimiento y desarrollo de los emprendedores.
