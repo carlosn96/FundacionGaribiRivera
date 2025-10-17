@@ -8,6 +8,11 @@ class AdminEmprendedor extends Admin
         parent::__construct(new EmprendedorDAO());
     }
 
+    public function insertarEmprendedor($nombre, $apellidos, $correo, $numeroCelular, $contrasena)
+    {
+        return $this->dao->insertarEmprendedor($nombre, $apellidos, $correo, $numeroCelular, $contrasena);
+    }
+
     public function listar()
     {
         return $this->dao->listar();

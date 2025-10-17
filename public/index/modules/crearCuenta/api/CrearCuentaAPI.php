@@ -20,7 +20,9 @@ class CrearCuentaAPI extends API {
             $correo = $dataPreregistro["correo"];
             $numeroCelular = $dataPreregistro["numero_celular"];
             $contrasena = $dataPreregistro["contrasena"];
-            $respuesta["success"] = (new AdminUsuario())->insertarUsuario($nombre, $apellidos, $correo, $numeroCelular, $contrasena, TipoUsuario::EMPRENDEDOR);
+            $respuesta["success"] = getAdminEmprendedor()->insertarEmprendedor(
+                $nombre, $apellidos, $correo, $numeroCelular, $contrasena
+            );
             $respuesta["mensaje"] = $respuesta["success"] ? "Registro exitoso" : "Ha ocurrido un error, intenta más tarde";
         } else {
             $respuesta["mensaje"] = "El codigo ingresado no es correcto";

@@ -40,6 +40,23 @@ class EmprendedorDAO extends DAO
         return $this->eliminarPorId("seguimiento_caso_lista_fotografias_caso", "id_fotografia", $idImagen);
     }
 
+    public function insertarEmprendedor($nombre, $apellidos, $correo, $numeroCelular, $contrasena)
+    {
+        $daoUsuario = new UsuarioDAO();
+        $id = $daoUsuario->insertarUsuario(
+            $nombre,
+            $apellidos,
+            $correo,
+            $numeroCelular,
+            Util::encriptarContrasenia($contrasena),
+            TipoUsuario::EMPRENDEDOR,
+            file_get_contents(Util::obtenerFotografiaRand())
+        );
+        $stmt = $this->prepararInstruccion(self::INSERTAR_NUEVO);
+        $stmt->agregarInt(intval($id));
+        return $id && $stmt->ejecutar();
+    }
+
     public function eliminarEmprendedor($id)
     {
         return $this->eliminarPorId("usuario", "id", $id);
@@ -59,10 +76,10 @@ class EmprendedorDAO extends DAO
                 $where = " WHERE id_etapa IN ($ids)";
             } else {
                 // Si el array está vacío, no devolver ningún resultado.
-                $where = " WHERE 1 = 0"; 
+                $where = " WHERE 1 = 0";
             }
         } else {
-            $condicion = $idEtapa === '-' ? "IS NULL" : "= ".intval($idEtapa);
+            $condicion = $idEtapa === '-' ? "IS NULL" : "= " . intval($idEtapa);
             $where = " WHERE id_etapa $condicion";
         }
         return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES_ETAPA . $where);
@@ -75,7 +92,7 @@ class EmprendedorDAO extends DAO
 
     public function eliminarMultipleEmprendedores(array $ids)
     {
-        $ids = implode(",",  $ids);
+        $ids = implode(",", $ids);
         $sql = "DELETE FROM usuario WHERE id IN ($ids)";
         return $this->ejecutarInstruccion($sql);
     }

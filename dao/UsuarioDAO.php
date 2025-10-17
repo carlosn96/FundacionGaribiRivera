@@ -56,7 +56,11 @@ class UsuarioDAO extends DAO {
         $stmt->agregarString($contrasena);
         $stmt->agregarInt($id_tipo_usuario);
         $stmt->agregarBlob($fotografia);
-        return $stmt->ejecutar();
+        if($stmt->ejecutar()) {
+            return $this->obtenerIdAutogenerado();
+        } else {
+            return 0;
+        }
     }
 
     public function actualizarFotoPerfil($usuario, $foto) {
