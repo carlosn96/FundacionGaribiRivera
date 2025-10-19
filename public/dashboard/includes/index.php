@@ -945,13 +945,13 @@
                     </h5>
                     <p class="text-white-50 mb-3">Realiza acciones comunes con un click</p>
                     <div class="action-buttons">
-                        <a href="/public/difusion/emprendedores/nuevo" class="btn btn-action btn-primary-action">
+                        <a href="#" class="btn btn-action btn-primary-action">
                             <i class="fas fa-user-plus"></i>Nuevo Emprendedor
                         </a>
-                        <a href="/public/difusion/talleres" class="btn btn-action btn-secondary-action">
+                        <a href="#" class="btn btn-action btn-secondary-action">
                             <i class="fas fa-calendar-plus"></i>Programar Taller
                         </a>
-                        <a href="/public/trabajoSocial/seguimiento" class="btn btn-action btn-secondary-action">
+                        <a href="#" class="btn btn-action btn-secondary-action">
                             <i class="fas fa-clipboard-check"></i>Ficha Seguimiento
                         </a>
                     </div>
@@ -1038,15 +1038,15 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="/public/administracionGeneral/usuarios" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-table"></i>
                             <span>Lista de usuarios</span>
                         </a>
-                        <a href="/public/administracionGeneral/usuarios/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-user-plus"></i>
                             <span>Nuevo usuario</span>
                         </a>
-                        <a href="/public/administracionGeneral/chat" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-comments"></i>
                             <span>Chat interno</span>
                         </a>
@@ -1068,23 +1068,23 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="/public/difusion/emprendedores" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-list"></i>
                             <span>Lista de emprendedores</span>
                         </a>
-                        <a href="/public/difusion/emprendedores/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-user-plus"></i>
                             <span>Registrar emprendedor</span>
                         </a>
-                        <a href="/public/difusion/talleres" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Gestión de talleres</span>
                         </a>
-                        <a href="/public/difusion/talleres/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-plus-circle"></i>
                             <span>Crear taller</span>
                         </a>
-                        <a href="/public/difusion/etapas" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-layer-group"></i>
                             <span>Gestión de etapas</span>
                         </a>
@@ -1106,19 +1106,19 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="/public/emprendimiento/creditos" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-money-bill-wave"></i>
                             <span>Gestión de créditos</span>
                         </a>
-                        <a href="/public/emprendimiento/creditos/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-hand-holding-usd"></i>
                             <span>Solicitar crédito</span>
                         </a>
-                        <a href="/public/emprendimiento/impactos" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-chart-bar"></i>
                             <span>Medición de impactos</span>
                         </a>
-                        <a href="/public/emprendimiento/reportes" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-file-alt"></i>
                             <span>Reportes de impacto</span>
                         </a>
@@ -1140,27 +1140,27 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="/public/trabajoSocial/seguimiento" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-tasks"></i>
                             <span>Fichas de seguimiento</span>
                         </a>
-                        <a href="/public/trabajoSocial/seguimiento/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-file-medical"></i>
                             <span>Nueva ficha</span>
                         </a>
-                        <a href="/public/trabajoSocial/estudios" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-folder-open"></i>
                             <span>Gestión de estudios</span>
                         </a>
-                        <a href="/public/trabajoSocial/estudios/nuevo" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-file-invoice"></i>
                             <span>Nuevo estudio</span>
                         </a>
-                        <a href="/public/trabajoSocial/reportes" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-file-pdf"></i>
                             <span>Generar reportes</span>
                         </a>
-                        <a href="/public/trabajoSocial/apoyos" class="modal-link">
+                        <a href="#" class="modal-link">
                             <i class="fas fa-hand-holding-heart"></i>
                             <span>Gestión de apoyos</span>
                         </a>
