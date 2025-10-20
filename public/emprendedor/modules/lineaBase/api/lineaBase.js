@@ -159,7 +159,6 @@ function configurarCampoCodigoPostal($campoCodigo, fnLlenadoCampos) {
             url: urlAPI,
             dataType: "json",
             delay: 250,
-            type: 'POST',
             data: function (params) {
                 return {
                     case: "buscarCodigoPostal",
@@ -189,7 +188,8 @@ function configurarCampoCodigoPostal($campoCodigo, fnLlenadoCampos) {
                 fnLlenadoCampos(cp.id, cp.item.nombre_estado, cp.item.nombre_municipio, cp.item.colonia);
             }
             return cp.codigoPostal;
-        }
+        },
+        dropdownParent: $("#lineaBaseForm")
     });
 }
 
@@ -212,7 +212,6 @@ function configurarCampoComunidadParroquial() {
             url: urlAPI,
             dataType: "json",
             delay: 250,
-            type: 'POST',
             data: function (params) {
                 return {
                     case: "buscarParroquia",
@@ -240,6 +239,7 @@ function configurarCampoComunidadParroquial() {
         templateSelection: function (data) {
             $("#idComunidad").val(data.idComunidad);
             return data.text;
-        }
+        },
+        dropdownParent: $("#lineaBaseForm")
     });
 }

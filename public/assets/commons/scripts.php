@@ -20,7 +20,6 @@
 
 <!-- Utilidades -->
 <script src="../../../assets/libs/dropzone/dist/min/dropzone.min.js"></script>
-<script src="../../../assets/libs/select2/dist/js/select2.full.min.js"></script>
 <script src="../../../assets/libs/select2/dist/js/select2.min.js"></script>
 <script src="../../../assets/libs/block-ui/jquery.blockUI.js"></script> 
 <script src="../../../assets/libs/inputmask/dist/jquery.inputmask.min.js"></script>
