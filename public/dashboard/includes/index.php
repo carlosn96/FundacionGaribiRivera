@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include '../../../assets/commons/head.php'; ?>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="index.css" rel="stylesheet">
     <style>
         :root {
             --primary: #183f37;

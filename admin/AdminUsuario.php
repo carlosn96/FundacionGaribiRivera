@@ -42,8 +42,9 @@ class AdminUsuario extends Admin {
 
     public function listarAsistentes($idActual) {
         $lista = [];
-        foreach ($this->dao->listarAsistentes($idActual) as $row) {
-            $lista[] = $this->construirAsistente($row);
+        foreach ($this->dao->listarAsistentes($idActual) as &$row) {
+            $row["fotografia"] = Util::binToBase64($row["fotografia"]);
+            $lista[] = /*$this->construirAsistente($row);*/ $row;
         }
         return $lista;
     }

@@ -23,4 +23,11 @@ class TipoUsuario
     {
         return self::$tiposUsuario[$tipo] ?? 'Desconocido';
     }
+    public static function getAllUserRoles()
+    {
+        return array_map(function($tipoUsuario) {
+            return $tipoUsuario['rol'];
+        }, self::$tiposUsuario);
+    }
+
 }
