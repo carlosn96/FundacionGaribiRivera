@@ -71,8 +71,12 @@ class Util
 
     public static function iniciarAPI($nombre)
     {
-        (new $nombre($_POST["case"] ?? "", isset($_POST["data"]) ? $_POST["data"] : ""));
+        $case = $_POST['case'] ?? $_GET['case'] ?? "";
+        $data = $_POST['data'] ?? $_GET['data'] ?? "";
+
+        new $nombre($case, $data);
     }
+
 
     public static function getCodigoValidacionCuenta()
     {
