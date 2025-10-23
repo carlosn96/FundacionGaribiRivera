@@ -4,7 +4,7 @@ class UsuarioDAO extends DAO
 {
 
     private const NOMBRE_TABLA = "usuario";
-    private const BUSCAR_USUARIO_CORREO = "SELECT * FROM " . self::NOMBRE_TABLA . " WHERE correo_electronico = ?";
+    private const BUSCAR_USUARIO_CORREO = "CALL recuperar_usuario_por_correo(?)";
     private const BUSCAR_USUARIO_ID = "SELECT * FROM " . self::NOMBRE_TABLA . " WHERE id = ?";
     private const ACTUALIZAR_CONTRASENA = "UPDATE " . self::NOMBRE_TABLA . " SET contrasena = ? WHERE correo_electronico = ?";
     private const INSERTAR_USUARIO = "INSERT INTO " . self::NOMBRE_TABLA . " "
@@ -20,23 +20,27 @@ class UsuarioDAO extends DAO
     {
         $prep = $this->prepararInstruccion(self::BUSCAR_USUARIO_CORREO);
         $prep->agregarString($correo);
-        if (($consulta = $prep->ejecutarConsulta())) {
-            $consulta["fotografia"] = base64_encode($consulta["fotografia"]);
-            $consulta["tipo_usuario"] = TipoUsuario::get($consulta["tipo_usuario"]);
+        $consulta = $prep->ejecutarConsulta();
+        if (!is_array($consulta) || empty($consulta)) {
+            return false;
         }
+        $consulta["fotografia"] = !empty($consulta["fotografia"])
+            ? base64_encode($consulta["fotografia"])
+            : null;
+        $consulta["tipo_usuario"] = isset($consulta["tipo_usuario"])
+            ? TipoUsuario::get($consulta["tipo_usuario"])
+            : null;
         return $consulta;
     }
 
     public function existeCorreo($correo)
     {
-        $consulta = $this->consultarUsuarioCorreo($correo);
-        return count($consulta) > 0;
+        return (bool) $this->consultarUsuarioCorreo($correo);
     }
 
     public function buscarUsuarioPorCorreo($correo)
     {
-        $result = $this->consultarUsuarioCorreo($correo);
-        return count($result) > 0 ? $result : false;
+        return $this->consultarUsuarioCorreo($correo);
     }
 
     public function buscarUsuarioPorID($id)
