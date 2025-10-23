@@ -30,6 +30,10 @@ class UsuarioDAO extends DAO
         $consulta["tipo_usuario"] = isset($consulta["tipo_usuario"])
             ? TipoUsuario::get($consulta["tipo_usuario"])
             : null;
+        if (isset($consulta["permisos"])) {
+            $consulta["permisos"] = json_decode($consulta["permisos"]);
+        }
+
         return $consulta;
     }
 

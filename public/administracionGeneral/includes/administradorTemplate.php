@@ -9,4 +9,5 @@ function renderizarPlantillaAdministrador($dir, $scripts = []) {
     inicializarPlantilla($dir, $aside, $scripts);
 }
 
-Sesion::controlarAccesoUbicacion("administracionGeneral");
+//Sesion::controlarAccesoUbicacion("administracionGeneral");
+Sesion::controlarPermisosAcceso(TipoUsuario::ADMINISTRADOR_GENERAL);

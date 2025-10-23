@@ -10,13 +10,15 @@ class TipoUsuario
     public const AUXILIAR_DIFUSION = 2;
     public const EMPRENDEDOR = 1;
 
+    private const ASISTENTE_ADMINISTRATIVO = ["rol" => "Asistente Administrativo", "url" => "dashboard"];
+
     private static $tiposUsuario = [
         self::EMPRENDEDOR => ["rol" => "Emprendedor", "url" => "emprendedor"],
-        self::AUXILIAR_DIFUSION => ["rol" => "Aux. Difusión", "url" => "difusion"],
-        self::TRABABAJOR_SOCIAL => ["rol" => "Trabajador Social", "url" => "trabajoSocial"],
-        self::ADMINISTRADOR_GENERAL => ["rol" => "Adm. General", "url" => "administracionGeneral"],
-        self::COORDINADOR_EMPRENDIMIENTO => ["rol" => "Coord. Emprendimiento", "url" => "emprendimiento"],
-        self::ENCARGADO_CREDITO_COBRANZA => ["rol" => "Encargado Crédito y Cobranza", "url" => "cobranza"]
+        self::AUXILIAR_DIFUSION => self::ASISTENTE_ADMINISTRATIVO,
+        self::TRABABAJOR_SOCIAL => self::ASISTENTE_ADMINISTRATIVO,
+        self::ADMINISTRADOR_GENERAL => self::ASISTENTE_ADMINISTRATIVO,
+        self::COORDINADOR_EMPRENDIMIENTO => self::ASISTENTE_ADMINISTRATIVO,
+        self::ENCARGADO_CREDITO_COBRANZA => self::ASISTENTE_ADMINISTRATIVO
     ];
 
     public static function get($tipo)

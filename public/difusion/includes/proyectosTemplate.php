@@ -9,4 +9,5 @@ function renderizarPlantillaProyectos($dir, $scripts = [])
     inicializarPlantilla($dir, $aside, $scripts);
 }
 
-Sesion::controlarAccesoUbicacion("difusion");
+//Sesion::controlarAccesoUbicacion("difusion");
+Sesion::controlarPermisosAcceso(TipoUsuario::AUXILIAR_DIFUSION);

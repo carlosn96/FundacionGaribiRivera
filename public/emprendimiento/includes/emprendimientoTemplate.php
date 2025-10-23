@@ -9,4 +9,5 @@ function renderizarPlantillaEmprendimiento($dir, $scripts = [])
     inicializarPlantilla($dir, $aside, $scripts);
 }
 
-Sesion::controlarAccesoUbicacion("emprendimiento");
+//Sesion::controlarAccesoUbicacion("emprendimiento");
+Sesion::controlarPermisosAcceso(TipoUsuario::COORDINADOR_EMPRENDIMIENTO);

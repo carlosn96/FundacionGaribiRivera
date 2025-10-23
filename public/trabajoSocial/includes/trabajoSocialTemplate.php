@@ -8,4 +8,5 @@ function renderizarPlantillaTrabajoSocial($dir, $scripts = []) {
     inicializarPlantilla($dir, "../../includes/aside.php", $scripts);
 }
 
-Sesion::controlarAccesoUbicacion("trabajoSocial");
+//Sesion::controlarAccesoUbicacion("trabajoSocial");
+Sesion::controlarPermisosAcceso(TipoUsuario::TRABABAJOR_SOCIAL);
