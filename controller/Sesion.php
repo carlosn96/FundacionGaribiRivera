@@ -18,6 +18,21 @@ class Sesion {
             }
         }
     }
+    public static function controlarPermisosAcceso($permisoOrigen) {
+        if(self::esActiva()) {
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+            $serverName = $_SERVER['SERVER_NAME'];
+            $redirigir = "{$protocol}://{$serverName}/";
+            if (strpos($serverName, 'localhost') !== false || $serverName === '127.0.0.1') {
+                $rootPath = explode('/', trim($_SERVER['REQUEST_URI'], '/'))[0] ?? '';
+                $redirigir .= "{$rootPath}";
+            }
+            $usuario = self::obtenerUsuarioActual();
+            if(!in_array($permisoOrigen, $usuario["permisos"])) {
+                Util::redirigir($redirigir . "/public/" . $usuario["tipo_usuario"]["url"]);
+            }
+        }
+    }
 
     public static function setUsuarioActual($usuario) {
         $_SESSION["usuario"] = $usuario;
