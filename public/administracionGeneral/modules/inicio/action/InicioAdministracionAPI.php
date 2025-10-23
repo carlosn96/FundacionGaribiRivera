@@ -17,12 +17,6 @@ class InicioAdministracionAPI extends API
         );
     }
 
-    function eliminarUsuario()
-    {
-        $this->enviarRespuesta(getAdminUsuario()->eliminarUsuario($this->getData("id")) ?
-            OPERACION_COMPLETA : OPERACION_INCOMPLETA);
-    }
-
     function crearUsuario()
     {
         $datos = $this->obtenerDatosUsuarioBase();
@@ -79,6 +73,11 @@ class InicioAdministracionAPI extends API
         ]);
     }
 
+    function eliminarUsuario()
+    {
+        $this->enviarRespuesta(getAdminUsuario()->eliminarUsuario($this->getData("id")) ?
+            OPERACION_COMPLETA : OPERACION_INCOMPLETA);
+    }
 
     private function obtenerDatosUsuarioBase(): array
     {
