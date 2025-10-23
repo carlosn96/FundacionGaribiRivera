@@ -98,7 +98,7 @@ class InstruccionPreparada {
      * @link http://php.net/manual/es/mysqli-result.fetch-assoc.php
      * @see mysqli_fetch_array(), mysqli_fetch_row(), mysqli_fetch_object(), mysqli_query(), mysqli_data_seek()
      */
-    public function ejecutarConsulta(): array {
+    public function ejecutarConsulta(): array|bool {
         return $this->compilar(self::MODO_EJECUCION_RESULTSET_UNA_FILA);
     }
 
@@ -110,7 +110,7 @@ class InstruccionPreparada {
      * @link http://php.net/manual/es/mysqli-result.fetch-all.php
      * @see mysqli_fetch_array(), mysqli_query()
      */
-    public function ejecutarConsultaMultiple(): array {
+    public function ejecutarConsultaMultiple(): array|bool {
         return $this->compilar(self::MODO_EJECUCION_RESULTSET_TODAS_FILAS);
     }
 }
