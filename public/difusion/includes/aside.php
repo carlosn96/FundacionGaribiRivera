@@ -16,6 +16,20 @@
         <nav class="sidebar-nav">
             <ul id="sidebarnav" class="mb-0">
                 <!-- ============================= -->
+                <!-- Dashboard -->
+                <!-- ============================= -->
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Inicio</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link info-hover-bg" href="../../../dashboard" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-info-subtle rounded-1">
+                            <iconify-icon icon="mdi:view-dashboard-outline" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Dashboard</span>
+                    </a>
+                </li>
+                <!-- ============================= -->
                 <!-- Inicio -->
                 <!-- ============================= -->
                 <li class="nav-small-cap">
