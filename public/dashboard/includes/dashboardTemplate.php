@@ -7,3 +7,5 @@ function renderizarPlantillaDashboard($dir)
 {
     include 'index.php';
 }
+
+Sesion::controlarPermisosAccesoEmprendedor();
