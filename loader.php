@@ -87,19 +87,23 @@ class Util
     {
         $archivos = [];
         $files = $_FILES[$nombreInputFile] ?? null;
-        if (!$files) {
-            return $archivos;  // Si no hay archivos, devolvemos un arreglo vacío
+
+        if (!$files || $files['error'] === UPLOAD_ERR_NO_FILE) {
+            return $archivos; 
         }
-        // Si el archivo es un solo archivo (no un array)
+
         $fileTmpNames = is_array($files['tmp_name']) ? $files['tmp_name'] : [$files['tmp_name']];
+
         foreach ($fileTmpNames as $file) {
-            if ($file) {
+            if ($file && is_uploaded_file($file)) {
                 $content = file_get_contents($file);
                 $archivos[] = $toBase64 ? self::binToBase64($content) : $content;
             }
         }
+
         return $archivos;
     }
+
 
     public static function binToBase64($fileContents)
     {
