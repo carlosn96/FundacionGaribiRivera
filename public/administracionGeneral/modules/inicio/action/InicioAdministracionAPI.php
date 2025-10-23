@@ -20,20 +20,18 @@ class InicioAdministracionAPI extends API
     function crearUsuario()
     {
         $datos = $this->obtenerDatosUsuarioBase();
-        $contrasena = trim($this->getData("contrasena", ""));
+        $contrasena = trim($this->getData("contrasena"));
         $contrasena = $contrasena !== "" ? $contrasena : Contrasenia::generarContrasenaRand(4);
         $datos["contrasena"] = Util::encriptarContrasenia($contrasena);
-
         if (!isset($datos["fotografia"])) {
             $datos["fotografia"] = file_get_contents(Util::obtenerFotografiaRand());
         }
-
         $resultado = getAdminUsuario()->agregarAsistente(
             $datos["nombre"],
             $datos["apellidos"],
             $datos["numero_celular"],
             $datos["correo_electronico"],
-            $contrasena,
+            $datos["contrasena"],
             $datos["permisos"],
             $datos["fotografia"]
         );
