@@ -37,7 +37,7 @@
                     <span class="hide-menu">Configuración</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../informacionGeneral/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <!-- Ícono actualizado para "Información General" -->
                             <iconify-icon icon="mdi:information-outline" class="fs-6"></iconify-icon>
@@ -46,7 +46,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../actualizacionParametros/" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
                             <!-- Ícono actualizado para "Actualización de parámetros" -->
                             <iconify-icon icon="mdi:cogs" class="fs-6"></iconify-icon>

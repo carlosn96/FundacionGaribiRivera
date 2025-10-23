@@ -1,12 +1,17 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <?php include("../includes/header.php"); ?>
+    <head>
+        <?php
+        // Incluir archivo de la cabecera
+        include '../../../assets/commons/head.php';
+        ?>
+    </head>
     <body data-background-color="bg3">
         <div class="wrapper">
             <?php
-            include("../includes/main-header.php");
-            include("../includes/sidebar.php");
+            include("../../../assets/commons/header.php");
+            
             ?>
 
             <div class="main-panel">
@@ -139,9 +144,11 @@
                         </div>
                     </div>
                 </div>
-                <?php include("../includes/footer.php") ?>
+                <?php include("../../../assets/commons/footer.php") ?>
             </div>
-            <?php include("../includes/lib-footer.php") ?>
+            <?php
+        include '../../../assets/commons/scripts.php';
+        ?>
             <script src="action/perfil.js"></script>
 
     </body>
