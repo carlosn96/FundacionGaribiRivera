@@ -759,6 +759,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#creditoModal"
+                            title="Crédito y cobranza">
+                            <i class="fas fa-credit-card"></i><span class="d-none d-lg-inline ms-2">Crédito y
+                                cobranza</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#" title="Reportes">
                             <i class="fas fa-file-pdf"></i><span class="d-none d-lg-inline ms-2">Reportes</span>
                         </a>
@@ -793,14 +800,18 @@
                     <p>Gestiona emprendedores, talleres y actividades en un solo lugar</p>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <button class="btn btn-action btn-primary-action" style="width: 100%;">
-                        <i class="fas fa-plus"></i>Nuevo Registro
-                    </button>
+                    <a href="../../../difusion/modules/altaEmprendedores/" class="btn btn-action btn-primary-action" style="width: 100%;">
+                        <i class="fas fa-plus"></i>Nuevo Emprendedor
+                    </a>
                 </div>
             </div>
         </div>
 
         <!-- STATS -->
+        <p class="text-muted small mb-3 text-center">
+            <i class="fas fa-info-circle"></i>
+            <strong>Función en desarrollo:</strong> La información mostrada es con fines ilustrativos. Próximamente se mostrará el conteo y estadísticas reales.
+        </p>
         <div class="stats-grid">
             <div class="stat-card primary">
                 <div class="stat-header">
@@ -931,7 +942,23 @@
                 <p class="module-desc">Seguimiento, estudios socioeconómicos y reportes</p>
                 <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
             </div>
+
+            <!-- Crédito y cobranza -->
+            <div class="module-card" id="creditoCard" data-bs-toggle="modal" data-bs-target="#creditoModal">
+                <div class="module-header">
+                    <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <div class="module-title">Crédito y cobranza</div>
+                        <span class="module-count">1 módulo</span>
+                    </div>
+                </div>
+                <p class="module-desc">Gestión de créditos y cobranza.</p>
+                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
+
 
 
         <div class="row g-3">
@@ -944,13 +971,13 @@
                     </h5>
                     <p class="text-white-50 mb-3">Realiza acciones comunes con un click</p>
                     <div class="action-buttons">
-                        <a href="#" class="btn btn-action btn-primary-action">
+                        <a href="../../../difusion/modules/altaEmprendedores/" class="btn btn-action btn-primary-action">
                             <i class="fas fa-user-plus"></i>Nuevo Emprendedor
                         </a>
-                        <a href="#" class="btn btn-action btn-secondary-action">
+                        <a href="../../../difusion/modules/taller/" class="btn btn-action btn-secondary-action">
                             <i class="fas fa-calendar-plus"></i>Programar Taller
                         </a>
-                        <a href="#" class="btn btn-action btn-secondary-action">
+                        <a href="../../../trabajoSocial/modules/lineaBaseAdministracion/" class="btn btn-action btn-secondary-action">
                             <i class="fas fa-clipboard-check"></i>Ficha Seguimiento
                         </a>
                     </div>
@@ -958,9 +985,9 @@
             </div>
         </div>
 
-        <div class="row g-3">
+        <!--<div class="row g-3">
             <div class="col">
-                <!-- Progress Card -->
+                
                 <div class="sidebar-box">
                     <h5 class="sidebar-title">
                         <i class="fas fa-chart-pie me-2"></i>Progreso de Registro de Línea Base
@@ -988,7 +1015,6 @@
                 </div>
             </div>
             <div class="col">
-                <!-- Notifications -->
                 <div class="sidebar-box">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="sidebar-title m-0">
@@ -1019,7 +1045,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
 
     </main>
 
@@ -1037,17 +1063,17 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-table"></i>
-                            <span>Lista de usuarios</span>
-                        </a>
-                        <a href="#" class="modal-link">
+                        <a href="../../../administracionGeneral/" class="modal-link">
                             <i class="fas fa-user-plus"></i>
-                            <span>Nuevo usuario</span>
+                            <span>Administración de usuarios</span>
                         </a>
                         <a href="#" class="modal-link">
-                            <i class="fas fa-comments"></i>
-                            <span>Chat interno</span>
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Información general</span>
+                        </a>
+                        <a href="#" class="modal-link">
+                            <i class="fas fa-tasks"></i>
+                            <span>Parámetros de Línea base</span>
                         </a>
                     </div>
                 </div>
@@ -1067,25 +1093,33 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-list"></i>
-                            <span>Lista de emprendedores</span>
-                        </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Registrar emprendedor</span>
-                        </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Gestión de talleres</span>
-                        </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Crear taller</span>
-                        </a>
-                        <a href="#" class="modal-link">
+                        <a href="../../../difusion/modules/etapa/" class="modal-link">
                             <i class="fas fa-layer-group"></i>
-                            <span>Gestión de etapas</span>
+                            <span>Etapas</span>
+                        </a>
+                        <a href="../../../difusion/modules/taller/" class="modal-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Talleres</span>
+                        </a>
+                        <a href="../../../difusion/modules/instructores/" class="modal-link">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Instructores</span>
+                        </a>
+                        <a href="../../../difusion/modules/asistenciaTaller/" class="modal-link">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Asistencia</span>
+                        </a>
+                        <a href="../../../difusion/modules/altaEmprendedores/" class="modal-link">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Nuevo Emprendedor</span>
+                        </a>
+                        <a href="../../../difusion/modules/listadoGeneralEmprendedores/" class="modal-link">
+                            <i class="fas fa-history"></i>
+                            <span>Historial de Emprendedores</span>
+                        </a>
+                        <a href="../../../difusion/modules/lineaBaseAdministracion/" class="modal-link">
+                            <i class="fas fa-tasks"></i>
+                            <span>Administración de la Linea Base</span>
                         </a>
                     </div>
                 </div>
@@ -1105,21 +1139,21 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="#" class="modal-link">
+                        <a href="../../../emprendimiento/modules/medicionImpactosCapacitacion/" class="modal-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Medición de Impacto: Capacitación</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/medicionImpactosCredito/" class="modal-link">
                             <i class="fas fa-money-bill-wave"></i>
-                            <span>Gestión de créditos</span>
+                            <span>Medición de Impacto: Crédito</span>
                         </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-hand-holding-usd"></i>
-                            <span>Solicitar crédito</span>
-                        </a>
-                        <a href="#" class="modal-link">
+                        <a href="../../../emprendimiento/modules/estadisticas/" class="modal-link">
                             <i class="fas fa-chart-bar"></i>
-                            <span>Medición de impactos</span>
+                            <span>Estadísticas</span>
                         </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-file-alt"></i>
-                            <span>Reportes de impacto</span>
+                        <a href="../../../emprendimiento/modules/historialEmprendedores/" class="modal-link">
+                            <i class="fas fa-history"></i>
+                            <span>Historial de Emprendedores</span>
                         </a>
                     </div>
                 </div>
@@ -1139,29 +1173,39 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-tasks"></i>
-                            <span>Fichas de seguimiento</span>
+                        <a href="../../../trabajoSocial/modules/lineaBaseAdministracion/" class="modal-link">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Ficha de Seguimiento</span>
                         </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-file-medical"></i>
-                            <span>Nueva ficha</span>
+                        <a href="../../../trabajoSocial/modules/estudioSocioeconomico/" class="modal-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Estudio Socioeconómico</span>
                         </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-folder-open"></i>
-                            <span>Gestión de estudios</span>
+                        <a href="../../../trabajoSocial/modules/configuracionConeval/" class="modal-link">
+                            <i class="fas fa-cogs"></i>
+                            <span>Configuración de Parámetros (CONEVAL)</span>
                         </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-file-invoice"></i>
-                            <span>Nuevo estudio</span>
-                        </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-file-pdf"></i>
-                            <span>Generar reportes</span>
-                        </a>
-                        <a href="#" class="modal-link">
-                            <i class="fas fa-hand-holding-heart"></i>
-                            <span>Gestión de apoyos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crédito y cobranza -->
+    <div class="modal fade" id="creditoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" style="color: var(--primary);">
+                        <i class="fas fa-credit-card me-2"></i>Crédito y cobranza
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-links">
+                        <a href="../../../cobranza/" class="modal-link">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Cobranza</span>
                         </a>
                     </div>
                 </div>
