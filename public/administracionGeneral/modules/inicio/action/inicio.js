@@ -10,6 +10,7 @@ var permisosDisponibles = [];
 
 // Creates HTML for the contact list items
 function createChatUsersList(contacts) {
+    //print(contacts);
     const chatUsersHtml = contacts.map(contact => `
         <li class="border-bottom">
             <a href="javascript:void(0)"
@@ -575,50 +576,7 @@ function setEvents() {
             }
         })
         .off("click.password.save")
-        .on("click.password.save", "#btnGuardarNuevaContrasena", function () {
-            const userId = $('#cambiarContrasenaUsuarioId').val();
-            const nuevaContrasena = $('#nuevaContrasena');
-            const confirmarContrasena = $('#confirmarContrasena');
-            let isValid = true;
-
-            // Reset validation
-            $('#formCambiarContrasena').removeClass('was-validated');
-            nuevaContrasena.removeClass('is-invalid');
-            confirmarContrasena.removeClass('is-invalid');
-
-            // Validate new password length
-            if (nuevaContrasena.val().length < 8) {
-                nuevaContrasena.addClass('is-invalid');
-                isValid = false;
-            }
-
-            // Validate passwords match
-            if (nuevaContrasena.val() !== confirmarContrasena.val() || confirmarContrasena.val() === '') {
-                confirmarContrasena.addClass('is-invalid');
-                isValid = false;
-            }
-
-            if (!isValid) {
-                return;
-            }
-
-            // AJAX call to update password
-            crearPeticion(urlAction, {
-                case: 'cambiarContrasena',
-                data: $.param({ 
-                    id: userId, 
-                    contrasena: nuevaContrasena.val() 
-                })
-            }, function (res) {
-                if (res.msg.es_valor_error) {
-                    mostrarMensajeError(res.msg.mensaje || "Error al cambiar la contraseña.");
-                } else {
-                    mostrarMensajeOk("Contraseña actualizada correctamente.");
-                    var myModal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarContrasena'));
-                    myModal.hide();
-                }
-            });
-        });
+        .on("click.password.save", "#btnGuardarNuevaContrasena", guardarContrasena);
 
     initializeTooltips();
 }
@@ -631,10 +589,78 @@ function cambiarContrasena(userId) {
 
     // Set the user ID in the hidden input of the modal
     $('#cambiarContrasenaUsuarioId').val(userId);
-    
+
     // Open the modal
     var myModal = new bootstrap.Modal(document.getElementById('modalCambiarContrasena'));
     myModal.show();
+}
+
+function guardarContrasena() {
+    const form = document.getElementById('formCambiarContrasena');
+    const userId = $('#cambiarContrasenaUsuarioId').val();
+    const nuevaContrasena = $('#nuevaContrasena');
+    const confirmarContrasena = $('#confirmarContrasena');
+    const btnGuardar = $('#btnGuardarNuevaContrasena');
+
+    // Resetear validaciones anteriores
+    $(form).removeClass('was-validated');
+    nuevaContrasena.removeClass('is-invalid');
+    confirmarContrasena.removeClass('is-invalid');
+    // Limpiar el mensaje de validación personalizado
+    confirmarContrasena[0].setCustomValidity('');
+
+    let isValid = true;
+
+    // Validación de coincidencia de contraseñas
+    if (nuevaContrasena.val() !== confirmarContrasena.val()) {
+        confirmarContrasena.addClass('is-invalid');
+        // Este mensaje se mostrará en el tooltip de validación del navegador si no hay un div `invalid-feedback`
+        confirmarContrasena[0].setCustomValidity('Las contraseñas no coinciden.');
+        isValid = false;
+    }
+
+    // Forzar la validación de Bootstrap y del navegador para campos con `required`, `minlength`, etc.
+    if (form.checkValidity() === false) {
+        isValid = false;
+    }
+
+    // Añadir clase para mostrar los mensajes de validación de Bootstrap
+    $(form).addClass('was-validated');
+
+    if (!isValid) {
+        return; // Detener la ejecución si hay errores de validación
+    }
+
+    // Deshabilitar botón y mostrar spinner
+    const originalButtonHtml = btnGuardar.html();
+    btnGuardar.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...');
+
+    // Llamada AJAX para actualizar la contraseña
+    crearPeticion(urlAction, {
+        case: 'cambiarContrasena',
+        data: $.param({
+            id: userId,
+            contrasena: nuevaContrasena.val()
+        })
+    }, function (res) {
+        // Restaurar botón
+        btnGuardar.prop('disabled', false).html(originalButtonHtml);
+
+        if (res.msg.es_valor_error) {
+            mostrarMensajeError(res.msg.mensaje || "Error al cambiar la contraseña.");
+        } else {
+            mostrarMensajeOk("Contraseña actualizada correctamente.");
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarContrasena'));
+            myModal.hide();
+            // Resetear el formulario del modal para la próxima vez que se abra
+            $(form).removeClass('was-validated');
+            form.reset();
+        }
+    }, function () {
+        // Función de error para la petición AJAX en caso de fallo de comunicación
+        btnGuardar.prop('disabled', false).html(originalButtonHtml);
+        mostrarMensajeError("Ocurrió un error de comunicación. Intente de nuevo.");
+    });
 }
 
 function ready() {

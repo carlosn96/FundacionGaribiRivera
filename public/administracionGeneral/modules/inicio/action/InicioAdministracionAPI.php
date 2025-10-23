@@ -67,6 +67,19 @@ class InicioAdministracionAPI extends API
         ]);
     }
 
+    public function cambiarContrasena()
+    {
+
+        $admin = getAdminUsuario();
+        $id = $this->getData("id");
+        $contrasena = $this->getData("contrasena");
+        $correo = $admin->buscarUsuarioPorID($id)["correo_electronico"];
+        $this->enviarRespuesta([
+            "msg" => $admin->cambiarContrasena($correo, $contrasena) ? OPERACION_COMPLETA : OPERACION_INCOMPLETA
+        ]);
+    }
+
+
     private function obtenerDatosUsuarioBase(): array
     {
         $datos = [

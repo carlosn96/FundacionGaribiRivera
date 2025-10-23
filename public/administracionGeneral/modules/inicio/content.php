@@ -422,7 +422,7 @@
                     
                     <div class="mb-3">
                         <label for="nuevaContrasena" class="form-label fw-semibold small">Nueva Contraseña</label>
-                        <div class="input-group">
+                        <div class="input-group has-validation">
                             <input type="password" 
                                    class="form-control" 
                                    id="nuevaContrasena" 
@@ -431,13 +431,13 @@
                             <button class="btn btn-outline-secondary" type="button" id="toggleNuevaContrasena">
                                 <i class="ti ti-eye"></i>
                             </button>
+                            <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
                         </div>
-                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="confirmarContrasena" class="form-label fw-semibold small">Confirmar Contraseña</label>
-                        <div class="input-group">
+                        <div class="input-group has-validation">
                             <input type="password" 
                                    class="form-control" 
                                    id="confirmarContrasena" 
@@ -445,8 +445,8 @@
                             <button class="btn btn-outline-secondary" type="button" id="toggleConfirmarContrasena">
                                 <i class="ti ti-eye"></i>
                             </button>
+                            <div class="invalid-feedback">Este campo es requerido y debe coincidir con la nueva contraseña.</div>
                         </div>
-                        <div class="invalid-feedback">Las contraseñas no coinciden.</div>
                     </div>
                 </form>
             </div>

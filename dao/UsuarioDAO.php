@@ -139,8 +139,8 @@ class UsuarioDAO extends DAO
     public function actualizarPermisosUsuarioAsistente($permisos, $id)
     {
         $prep = $this->prepararInstruccion(self::ACTUALIZAR_PERMISOS_USUARIO_ASISTENTE);
-        $prep->agregarJSON($permisos);
         $prep->agregarInt($id);
+        $prep->agregarJSON($permisos);
         return $prep->ejecutar();
     }
 
