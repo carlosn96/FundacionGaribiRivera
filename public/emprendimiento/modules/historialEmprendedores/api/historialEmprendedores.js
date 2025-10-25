@@ -112,7 +112,7 @@ function cargarDatos() {
 
     crearPeticion(urlAPI, { case: "getHistorialEmprendedores" }, function (res) {
         console.log('Respuesta recibida:', res);
-        
+
         historialData = res.historial || [];
         filteredData = [...historialData];
 
@@ -125,7 +125,7 @@ function cargarDatos() {
         aplicarFiltros();
     }, function (xhr, status, error) {
         mostrarError();
-        
+
         // Log detallado del error
         console.error('=== Error en la petición ===');
         console.error('Status:', status);
@@ -133,7 +133,7 @@ function cargarDatos() {
         console.error('Response Status:', xhr.status);
         console.error('Response Text:', xhr.responseText);
         console.error('Ready State:', xhr.readyState);
-        
+
         // Intentar parsear la respuesta como JSON
         try {
             const errorResponse = JSON.parse(xhr.responseText);
@@ -143,7 +143,7 @@ function cargarDatos() {
         }
     });
 }
-function exportarDatos() {    
+function exportarDatos() {
     const activeTab = $('.nav-link.active').attr('id');
     let dataToExport = filteredData;
     let nombreArchivo = 'emprendedores_todos';
@@ -377,7 +377,7 @@ function generarTabla(data) {
                     <th scope="col" class="text-center">
                         <i class="fas fa-graduation-cap me-2"></i>Graduación
                     </th>
-                    <th scope="col" class="text-center" style="width: 120px;">Acciones</th>
+                    <th scope="col" class="text-center" style="width: 120px;">Seguimiento a graduados</th>
                 </tr>
             </thead>
             <tbody>
@@ -404,6 +404,8 @@ function generarTabla(data) {
             </div>
             ${fechaGraduacion}
         `;
+
+        const botonesSeguimientoHabilitados = item.graduado === '1' ? '' : 'disabled';
 
         tabla += `
             <tr>
@@ -432,10 +434,10 @@ function generarTabla(data) {
                 <td class="text-center">${graduacionSwitch}</td>
                 <td class="text-center">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button disabled type="button" class="btn btn-outline-primary" title="Ver detalles">
+                        <button onclick=verDetallesSeguimientoGraduacion(${item.id_emprendedor}) ${botonesSeguimientoHabilitados} type="button" class="btn btn-outline-primary" title="Ver detalles">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button disabled type="button" class="btn btn-outline-secondary" title="Editar">
+                        <button onclick=realizarSeguimientoGraduacion(${item.id_emprendedor}) ${botonesSeguimientoHabilitados} type="button" class="btn btn-outline-secondary" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
                     </div>
@@ -521,4 +523,44 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
         fn = mostrarMensajeOk;
     }
     fn(mensaje, false);
+}
+
+
+function verDetallesSeguimientoGraduacion(emprendedorId) {
+    print(emprendedorId);
+    const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
+    if (emprendedor) {
+        crearPeticion(urlAPI, {
+            case: "getSeguimientoGraduado",
+            data: $.param({ emprendedor: emprendedorId })
+        }, function (res) {
+            print(res);
+            if (res.success) {
+                redireccionar("../verSeguimientoGraduado/");
+            } else {
+                mostrarNotificacion('No se pudo obtener el seguimiento del graduado', false);
+            }
+        });
+    } else {
+        mostrarNotificacion('No se encontró el emprendedor', 'warning');
+    }
+}
+
+function realizarSeguimientoGraduacion(emprendedorId) {
+    const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
+    print(emprendedor);
+    if (emprendedor) {
+        crearPeticion(urlAPI, {
+            case: "realizarSeguimientoGraduado",
+            data: $.param({ emprendedor: emprendedorId, usuario: emprendedor.id })
+        }, function (res) {
+            if (res.success) {
+                redireccionar("../seguimientoGraduado/");
+            } else {
+                mostrarNotificacion(res.msg, false);
+            }
+        });
+    } else {
+        mostrarNotificacion('No se encontró el emprendedor', 'warning');
+    }
 }

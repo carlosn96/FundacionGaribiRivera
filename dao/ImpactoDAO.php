@@ -1,6 +1,7 @@
 <?php
 
-class ImpactoDAO extends DAO {
+class ImpactoDAO extends DAO
+{
 
     private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto';
     private const RECUPERAR_RANGOS_FECHAS_LINEA_BASE = "SELECT * FROM recuperar_linea_base_rangos_fechas_registrados WHERE id_usuario = ?";
@@ -125,6 +126,10 @@ class ImpactoDAO extends DAO {
         ]
     ];
 
+    private const GUARDAR_SEGUIMIENTO_GRADUADO = 'CALL guardar_seguimiento_graduado(?)';
+    private const ACTUALIZAR_SEGUIMIENTO_GRADUADO = 'CALL actualizar_seguimiento_graduado(?)';
+    private const RECUPERAR_SEGUIMIENTO_GRADUADO = 'SELECT * FROM recuperar_seguimiento_graduado WHERE idEmprendedor = ?';
+    private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_seguimiento_graduado_lista_estrategias_inc_ventas WHERE idSeguimiento = ?";
     /**
      * Método genérico para recuperar el impacto de cualquier sección
      *
@@ -132,7 +137,8 @@ class ImpactoDAO extends DAO {
      * @param int $usuario ID del usuario
      * @return array
      */
-    private function recuperarImpactoPorTipo(string $tipo, int $usuario): array {
+    private function recuperarImpactoPorTipo(string $tipo, int $usuario): array
+    {
         // Arreglo de mapeo de tipo de impacto con las constantes correspondientes
         $impactoMap = [
             'estabilidadEconomica' => self::RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA
@@ -158,7 +164,8 @@ class ImpactoDAO extends DAO {
      * @param array $data Datos de la consulta ejecutada
      * @return array
      */
-    private function recuperarImpacto(array $secciones, array $data): array {
+    private function recuperarImpacto(array $secciones, array $data): array
+    {
         $seccionesArray = [];
         foreach ($secciones as $key => $seccion) {
             $mediciones = [];
@@ -179,11 +186,13 @@ class ImpactoDAO extends DAO {
      * @param int $usuario ID del usuario
      * @return array
      */
-    public function recuperarEstabilidadEconomica(int $usuario): array {
+    public function recuperarEstabilidadEconomica(int $usuario): array
+    {
         return $this->recuperarImpactoPorTipo('estabilidadEconomica', $usuario);
     }
 
-    public function getMedicionImpacto($usuario): array {
+    public function getMedicionImpacto($usuario): array
+    {
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
         $medicionesEE = $estabilidadEconomica["mediciones"];
         $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
@@ -195,21 +204,28 @@ class ImpactoDAO extends DAO {
                     "nombre" => "Estabilidad económica",
                     "data" => $medicionesEE,
                     "narrativa" =>
-                    $this->getNarrativa("estabilizar la economia",
-                            $estabilidadEconomica["total_registros"], $sumaPromediosEstabilidad, $fechas["inicioSelected"], $fechas["finSelected"])
+                        $this->getNarrativa(
+                            "estabilizar la economia",
+                            $estabilidadEconomica["total_registros"],
+                            $sumaPromediosEstabilidad,
+                            $fechas["inicioSelected"],
+                            $fechas["finSelected"]
+                        )
                 ]
             ]
         ];
     }
 
-    private function getNarrativa($tipoImpacto, $cantFamilias, $porcentaje, $anioInicio, $anioFin) {
+    private function getNarrativa($tipoImpacto, $cantFamilias, $porcentaje, $anioInicio, $anioFin)
+    {
         return "Contribuimos a $tipoImpacto de <b> $cantFamilias </b> familias catalogadas 
         como poblaciones vulnerables con un cambio porcentual del ↑ $porcentaje% entre $anioInicio-$anioFin 
         a través de los proyectos de intervención social que amplían el acceso a la formación 
         y el impulso de créditos transparentes y deuda sana.";
     }
 
-    private function getAniosLineaBase($usuario) {
+    private function getAniosLineaBase($usuario)
+    {
         $prep = $this->prepararInstruccion(self::RECUPERAR_RANGOS_FECHAS_LINEA_BASE);
         $prep->agregarInt($usuario);
         $rs = $prep->ejecutarConsulta();
@@ -225,7 +241,8 @@ class ImpactoDAO extends DAO {
         }
     }
 
-    public function actualizarConfiguracionAnios($inicio, $fin, $usuario) {
+    public function actualizarConfiguracionAnios($inicio, $fin, $usuario)
+    {
         $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_ANIOS);
         $prep->agregarInt($usuario);
         $prep->agregarInt($inicio);
@@ -233,14 +250,16 @@ class ImpactoDAO extends DAO {
         return $prep->ejecutar();
     }
 
-    public function actualizarConfiguracionListaEmprendedores(array $lista, $id) {
+    public function actualizarConfiguracionListaEmprendedores(array $lista, $id)
+    {
         $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_LISTA);
         $prep->agregarInt($id);
         $prep->agregarJSON($lista);
         return $prep->ejecutar();
     }
 
-    public function recuperarVistaGeneral($tipo) {
+    public function recuperarVistaGeneral($tipo)
+    {
         $tabla = self::VISTA_ANALISIS_IMPACTO . "_" . $tipo;
         $rset = $this->selectPorCamposEspecificos("*", $tabla, "", true);
         $preguntas = array_merge(self::CAMPOS_ADM_RECURSOS, self::CAMPOS_MEJORA_RECURSOS, self::CAMPOS_MEJORA_AHORROS);
@@ -255,5 +274,73 @@ class ImpactoDAO extends DAO {
             $vista[] = $rowVista;
         }
         return $vista;
+    }
+
+    public function recuperarSeguimientoGraduado($emprendedor)
+    {
+        $prep = $this->prepararInstruccion(self::RECUPERAR_SEGUIMIENTO_GRADUADO);
+        $prep->agregarInt($emprendedor);
+        $seg = $this->agruparSeguimientoGraduado($prep->ejecutarConsulta());
+        $seg['analisisNegocio']["listaEstrategiaVentas"] = $this->selectAllPorId(self::CONSULTAR_LISTA_ESTRATEGIAS_VENTAS, $seg["idSeguimiento"]);
+        
+        return $seg;
+    }
+
+    private function agruparSeguimientoGraduado($result)
+    {
+        $seguimiento = [];
+        $seguimiento['idEmprendedor'] = $result['idEmprendedor'];
+        $seguimiento['idSeguimiento'] = $result['idSeguimiento'];
+        $seguimiento['fechaCreacion'] = $result['fechaCreacion'];
+        $seguimiento['analisisNegocio'] = [
+            'registraEntradaSalida' => Util::getArrayBool($result['negocioRegistraEntradaSalida']),
+            'competencia' => [
+                'identifica' => Util::getArrayBool($result['negocioIdentificaCompetencia']),
+                "quien" => boolval($result['negocioIdentificaCompetencia']) ? $result['negocioQuienCompetencia'] : "No identificada"
+            ],
+            'conoceUtilidades' => Util::getArrayBool($result['negocioConoceUtilidades']),
+            'ahorro' => [
+                "asigna" => Util::getArrayBool($result['negocioLlevaAhorro']),
+                "detalles" => (boolval($result['negocioLlevaAhorro']) ? $result['negocioCuantoAhorro'] : $result['negocioRazonesNoAhorro'])
+            ],
+            'conocePuntoEquilibrio' => Util::getArrayBool($result['negocioConocePuntoEquilibrio']),
+            'conoceProductosMayorUtilidad' => [
+                "conoce" => Util::getArrayBool($result['negocioConoceProductosMayorUtilidad']),
+                "porcentaje" => $result['negocioConoceProductosMayorUtilidad'] ? $result['negocioPorcentajeGanancias'] : "No identifica productos con mayor utilidad",
+            ],
+            'separaGastos' => Util::getArrayBool($result['negocioSeparaGastos']),
+            'elaboraPresupuesto' => Util::getArrayBool($result['negocioElaboraPresupuesto']),
+            "listaEmpleoGanancias" => [json_decode($result["listaEmpleoGanancias"])]
+        ];
+        $seguimiento['administracionIngresos'] = [
+            'sueldoMensual' => $result['sueldoMensual'],
+            'montoMensualUtilidades' => $result['montoMensualUtilidades'],
+            'montoAhorroMensual' => $result['montoAhorroMensual']
+        ];
+        return $seguimiento;
+    }
+
+    public function existeSeguimientoGraduado($emprendedor)
+    {
+        $prep = $this->prepararInstruccion("SELECT COUNT(*) AS existe FROM seguimiento_graduados WHERE id_emprendedor = ?");
+        $prep->agregarInt($emprendedor);
+        return $prep->ejecutarConsulta()["existe"];
+    }
+
+    public function guardarSeguimientoGraduado(SeguimientoGraduado $seguimientoGraduado)
+    {
+        return $this->insertarSeguimientoGraduado($seguimientoGraduado, self::GUARDAR_SEGUIMIENTO_GRADUADO);
+    }
+
+    public function actualizarSeguimientoGraduado(SeguimientoGraduado $seguimientoGraduado)
+    {
+        return $this->insertarSeguimientoGraduado($seguimientoGraduado, self::ACTUALIZAR_SEGUIMIENTO_GRADUADO);
+    }
+
+    private function insertarSeguimientoGraduado(SeguimientoGraduado $seguimientoGraduado, $instruccion)
+    {
+        $prep = $this->prepararInstruccion($instruccion);
+        $prep->agregarEntidad($seguimientoGraduado);
+        return $prep->ejecutar();
     }
 }

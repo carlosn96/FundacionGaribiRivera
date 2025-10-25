@@ -333,10 +333,7 @@ class LineaBaseDAO extends DAO {
     }
 
     private function getArrayBool($res) {
-        return [
-            "res" => Util::respuestaBoolToStr($res),
-            "val" => $res
-        ];
+        return Util::getArrayBool($res);
     }
 
     public function actualizarEtapaEnLineaBase($idLineaBase, $idEtapa) {

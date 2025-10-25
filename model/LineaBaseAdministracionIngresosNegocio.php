@@ -1,6 +1,7 @@
 <?php
 
-class LineaBaseAdministracionIngresosNegocio {
+class LineaBaseAdministracionIngresosNegocio
+{
 
     use Entidad;
 
@@ -16,7 +17,19 @@ class LineaBaseAdministracionIngresosNegocio {
     private array $objetivosAhorro;
     private $ahorroMensual;
 
-    public function __construct($sueldoMensual, $ventasMensuales, $gastosMensuales, $utilidadesMensuales, $esIngresoPrincipalPersonal, $esIngresoPrincipalFamiliar, $tieneHabitoAhorro, $cuentaConSistemaAhorro, $detallesSistemaAhorro, array $objetivosAhorro, $ahorroMensual) {
+    public function __construct(
+        $sueldoMensual = null,
+        $ventasMensuales = null,
+        $gastosMensuales = null,
+        $utilidadesMensuales = null,
+        $esIngresoPrincipalPersonal = null,
+        $esIngresoPrincipalFamiliar = null,
+        $tieneHabitoAhorro = null,
+        $cuentaConSistemaAhorro = null,
+        $detallesSistemaAhorro = null,
+        array $objetivosAhorro = [],
+        $ahorroMensual = null
+    ) {
         $this->sueldoMensual = $sueldoMensual;
         $this->ventasMensuales = $ventasMensuales;
         $this->gastosMensuales = $gastosMensuales;

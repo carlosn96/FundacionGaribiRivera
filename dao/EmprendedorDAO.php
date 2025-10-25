@@ -62,9 +62,10 @@ class EmprendedorDAO extends DAO
         return $this->eliminarPorId("usuario", "id", $id);
     }
 
-    public function listar()
+    public function listar($id = "")
     {
-        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES);
+        $where = empty($id) ? "" : " WHERE id_emprendedor = $id";
+        return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES, $where);
     }
 
     public function listarPorEtapa($idEtapa)
@@ -87,7 +88,12 @@ class EmprendedorDAO extends DAO
 
     private function listarEmprendedores($tabla, $where = "")
     {
-        return $this->selectPorCamposEspecificos("*", $tabla, $where, true);
+
+        $lista = $this->selectPorCamposEspecificos("*", $tabla, $where, true);
+        foreach($lista as &$row) {
+            $row["fotografia"] = Util::binToBase64($row["fotografia"]);
+        }
+        return $lista;
     }
 
     public function eliminarMultipleEmprendedores(array $ids)
@@ -104,5 +110,10 @@ class EmprendedorDAO extends DAO
         $prep->agregarInt($graduado);
         $prep->agregarInt($idEmprendedor);
         return $prep->ejecutar();
+    }
+
+    public function recuperaPorIDUsuario($idUsuario)
+    {
+        return $this->selectAllPorId("SELECT * FROM " . self::LISTAR_EMPRENDEDORES . " WHERE id = ?", $idUsuario)[0];
     }
 }

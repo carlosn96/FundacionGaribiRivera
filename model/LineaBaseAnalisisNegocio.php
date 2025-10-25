@@ -1,6 +1,7 @@
 <?php
 
-class LineaBaseAnalisisNegocio {
+class LineaBaseAnalisisNegocio
+{
 
     use Entidad;
 
@@ -13,7 +14,7 @@ class LineaBaseAnalisisNegocio {
     private string $ventajasNegocio;
     private string $problemasNegocio;
     private array $estrategiasIncrementarVentas;
-    private array $comoEmpleaGanancias;
+    private int $comoEmpleaGanancias;
     private $conoceProductosMayorUtilidad;
     private $ahorro;
     private ?float $cuantoAhorro;
@@ -23,13 +24,26 @@ class LineaBaseAnalisisNegocio {
     private $separaGastos;
     private $elaboraPresupuesto;
 
-    public function __construct($registraEntradaSalida, $asignaSueldo,
-            $conoceUtilidades, $identificaCompetencia, ?string $quienCompetencia,
-            string $clientesNegocio, string $ventajasNegocio,
-            string $problemasNegocio, array $estrategiasIncrementarVentas,
-            array $comoEmpleaGanancias, int $conoceProductosMayorUtilidad, ?float $porcentajeGanancias,
-            $ahorro, ?float $cuantoAhorro, ?string $razonesNoAhorro, $conocePuntoEquilibrio,
-            $separaGastos, $elaboraPresupuesto) {
+    public function __construct(
+        $registraEntradaSalida = null,
+        $asignaSueldo = null,
+        $conoceUtilidades = null,
+        $identificaCompetencia = null,
+        ?string $quienCompetencia = null,
+        string $clientesNegocio = '',
+        string $ventajasNegocio = '',
+        string $problemasNegocio = '',
+        array $estrategiasIncrementarVentas = [],
+        int $comoEmpleaGanancias,
+        int $conoceProductosMayorUtilidad = 0,
+        ?float $porcentajeGanancias,
+        $ahorro = null,
+        ?float $cuantoAhorro = null,
+        ?string $razonesNoAhorro = null,
+        $conocePuntoEquilibrio = null,
+        $separaGastos = null,
+        $elaboraPresupuesto = null
+    ) {
         $this->registraEntradaSalida = $registraEntradaSalida;
         $this->asignaSueldo = $asignaSueldo;
         $this->conoceUtilidades = $conoceUtilidades;

@@ -18,6 +18,14 @@ class AdminEmprendedor extends Admin
         return $this->dao->listar();
     }
 
+    public function get($id)
+    {
+        $emprendedor = $this->dao->listar($id)[0];
+        $emprendedor["idEmprendedor"] = $emprendedor["id_emprendedor"];
+        unset($emprendedor["id_emprendedor"]);
+        return $emprendedor;
+    }
+
     public function listarPorEtapa($idEtapa)
     {
         return $this->dao->listarPorEtapa($idEtapa);
@@ -49,8 +57,12 @@ class AdminEmprendedor extends Admin
         $fotografiasCaso = $data["fotografiasCaso"];
         $idSeguimientoCaso = $data["idSeguimiento"] ?? 0;
         return new SeguimientoCaso(
-            $idLineaBase, $numeroCaso, $etapasFormacion,
-            $observacionesGenerales, $fotografiasCaso, $idSeguimientoCaso
+            $idLineaBase,
+            $numeroCaso,
+            $etapasFormacion,
+            $observacionesGenerales,
+            $fotografiasCaso,
+            $idSeguimientoCaso
         );
     }
 
@@ -77,5 +89,10 @@ class AdminEmprendedor extends Admin
     public function actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor)
     {
         return $this->dao->actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor);
+    }
+
+    public function recuperaPorIDUsuario($idUsuario)
+    {
+        return $this->dao->recuperaPorIDUsuario($idUsuario);
     }
 }

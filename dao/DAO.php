@@ -70,6 +70,7 @@ abstract class DAO
 
     public function selectPorCamposEspecificos($seleccion, $tabla, $where = "", $fetchassoc = false)
     {
+        //Util::error_log("SELECT " . $seleccion . " FROM " . $tabla . " " . $where);
         $result = $this->ejecutarInstruccion("SELECT " . $seleccion . " FROM " . $tabla . " " . $where);
         if ($result) {
             return $fetchassoc ? $result->fetch_all(MYSQLI_ASSOC) : $result->fetch_all();
