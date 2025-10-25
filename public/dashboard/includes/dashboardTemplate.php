@@ -1,11 +1,11 @@
 <?php
 
 include '../../../../loader.php';
-include '../../../assets/commons/template.php';
 
-function renderizarPlantillaDashboard($dir)
+function renderizarPlantillaDashboard()
 {
-    include 'index.php';
+    include __DIR__ . '/plantilla.php';
+
 }
 
 Sesion::controlarPermisosAccesoEmprendedor();
