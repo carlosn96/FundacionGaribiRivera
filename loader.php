@@ -24,6 +24,13 @@ if (file_exists($dotenv_path)) {
 class Util
 {
 
+    public static function getArrayBool($res)
+    {
+        return [
+            "res" => self::respuestaBoolToStr($res),
+            "val" => $res
+        ];
+    }
     public static function redirigir($url, $permanent = false)
     {
         if (headers_sent()) {
@@ -89,7 +96,7 @@ class Util
         $files = $_FILES[$nombreInputFile] ?? null;
 
         if (!$files || $files['error'] === UPLOAD_ERR_NO_FILE) {
-            return $archivos; 
+            return $archivos;
         }
 
         $fileTmpNames = is_array($files['tmp_name']) ? $files['tmp_name'] : [$files['tmp_name']];
