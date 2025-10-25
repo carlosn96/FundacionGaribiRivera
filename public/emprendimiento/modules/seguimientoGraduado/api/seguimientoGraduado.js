@@ -26,6 +26,9 @@ function completarCamposFormulario(rs) {
     const esSeguimiento = rs.seguimientoGraduado.existeSeguimientoGraduado;
     let data = esSeguimiento ? rs.seguimientoGraduado.data : rs.lineaBase.data;
     $('#data-source-badge').append(esSeguimiento ? 'Seguimiento de Graduado' : 'Línea Base');
+    if (esSeguimiento) {
+        $('#seguimiento-toolbar').show();
+    }
 
     $("#fechaLineaBase").append(" " + data.fechaCreacion);
     $.each(rs.checkbox, (idx, elementos) => {

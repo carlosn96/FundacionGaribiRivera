@@ -434,9 +434,6 @@ function generarTabla(data) {
                 <td class="text-center">${graduacionSwitch}</td>
                 <td class="text-center">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button onclick=verDetallesSeguimientoGraduacion(${item.id_emprendedor}) ${botonesSeguimientoHabilitados} type="button" class="btn btn-outline-primary" title="Ver detalles">
-                            <i class="fas fa-eye"></i>
-                        </button>
                         <button onclick=realizarSeguimientoGraduacion(${item.id_emprendedor}) ${botonesSeguimientoHabilitados} type="button" class="btn btn-outline-secondary" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -525,27 +522,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
     fn(mensaje, false);
 }
 
-
-function verDetallesSeguimientoGraduacion(emprendedorId) {
-    print(emprendedorId);
-    const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
-    if (emprendedor) {
-        crearPeticion(urlAPI, {
-            case: "getSeguimientoGraduado",
-            data: $.param({ emprendedor: emprendedorId })
-        }, function (res) {
-            print(res);
-            if (res.success) {
-                redireccionar("../verSeguimientoGraduado/");
-            } else {
-                mostrarNotificacion('No se pudo obtener el seguimiento del graduado', false);
-            }
-        });
-    } else {
-        mostrarNotificacion('No se encontró el emprendedor', 'warning');
-    }
-}
-
 function realizarSeguimientoGraduacion(emprendedorId) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
     print(emprendedor);
@@ -556,8 +532,6 @@ function realizarSeguimientoGraduacion(emprendedorId) {
         }, function (res) {
             if (res.success) {
                 redireccionar("../seguimientoGraduado/");
-            } else {
-                mostrarNotificacion(res.msg, false);
             }
         });
     } else {
