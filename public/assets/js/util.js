@@ -52,22 +52,29 @@ function crearPeticion(url, data, fnSuccess = mostrarMensajeResultado, fnError =
 }
 
 function procesarRespuestaError(jqXHR, textStatus, errorThrown) {
-    //print(errorThrown);
-    print(jqXHR.responseText);
+    // Mostrar error en consola para depuración
+    console.error("Error en la petición AJAX:", {
+        status: jqXHR.status,
+        statusText: textStatus,
+        error: errorThrown,
+        responseText: jqXHR.responseText
+    });
+
+    // Manejo de errores con mensajes personalizados
     if (jqXHR.status === 0) {
-        mostrarMensajeError("Sesión caducada");
+        mostrarMensajeError("Sesión caducada.");
     } else if (jqXHR.status === 404) {
-        mostrarMensajeAdvertencia('Solicitud denegada: recurso no encontrado');
+        mostrarMensajeAdvertencia('Recurso no encontrado (404).');
     } else if (jqXHR.status === 500) {
-        mostrarMensajeError(JSON.stringify(jqXHR));
+        mostrarMensajeError("Error interno del servidor (500): " + jqXHR.responseText);
     } else if (textStatus === 'parsererror') {
-        mostrarMensajeError("Error en la presentación de datos " + errorThrown);
+        mostrarMensajeError("Error al procesar los datos: " + errorThrown);
     } else if (textStatus === 'timeout') {
-        mostrarMensajeError('Time out error.');
+        mostrarMensajeError('La petición ha superado el tiempo de espera.');
     } else if (textStatus === 'abort') {
-        mostrarMensajeError('Petición abortada');
+        mostrarMensajeError('La petición fue abortada.');
     } else {
-        mostrarMensajeError('Uncaught Error: ' + jqXHR.responseText);
+        mostrarMensajeError('Error desconocido: ' + jqXHR.responseText);
     }
 }
 
