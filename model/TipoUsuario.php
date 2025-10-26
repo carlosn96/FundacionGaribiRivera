@@ -5,9 +5,9 @@ class TipoUsuario
 
     public const ENCARGADO_CREDITO_COBRANZA = 6;
     public const COORDINADOR_EMPRENDIMIENTO = 5;
-    public const ADMINISTRADOR_GENERAL = 4;
+    public const ADMINISTRADOR_GENERAL = 2;
     public const TRABABAJOR_SOCIAL = 3;
-    public const AUXILIAR_DIFUSION = 2;
+    public const AUXILIAR_DIFUSION = 4;
     public const EMPRENDEDOR = 1;
 
     private const ASISTENTE_ADMINISTRATIVO = ["rol" => "Asistente Administrativo", "url" => "dashboard"];

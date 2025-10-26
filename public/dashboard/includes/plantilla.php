@@ -1,3 +1,7 @@
+<?php
+include_once "controlPermisos.php";
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -874,6 +878,8 @@
             </div>
         </div>
 
+        
+
         <!-- MODULES SECTION -->
         <div class="section-header">
             <i class="fas fa-th"></i>
@@ -881,82 +887,7 @@
         </div>
 
         <div class="modules-grid">
-            <!-- Admin Module -->
-            <div class="module-card" id="adminCard" data-bs-toggle="modal" data-bs-target="#adminModal">
-                <div class="module-header">
-                    <div class="module-icon" style="background: linear-gradient(135deg, var(--primary), #2a5f54);">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <div>
-                        <div class="module-title">Administración General</div>
-                        <span class="module-count">3 módulos</span>
-                    </div>
-                </div>
-                <p class="module-desc">Gestión de usuarios y comunicación interna del sistema</p>
-                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Difusion Module -->
-            <div class="module-card" id="difusionCard" data-bs-toggle="modal" data-bs-target="#difusionModal">
-                <div class="module-header">
-                    <div class="module-icon" style="background: var(--success);">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <div>
-                        <div class="module-title">Difusión</div>
-                        <span class="module-count">7 módulos</span>
-                    </div>
-                </div>
-                <p class="module-desc">Gestión de talleres, etapas y registro de emprendedores</p>
-                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Emprendimiento Module -->
-            <div class="module-card" id="emprendimientoCard" data-bs-toggle="modal"
-                data-bs-target="#emprendimientoModal">
-                <div class="module-header">
-                    <div class="module-icon"
-                        style="background: linear-gradient(135deg, var(--accent), #d4b534); color: var(--primary);">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div>
-                        <div class="module-title">Emprendimiento</div>
-                        <span class="module-count">4 módulos</span>
-                    </div>
-                </div>
-                <p class="module-desc">Medición de impactos en créditos y capacitación</p>
-                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Social Work Module -->
-            <div class="module-card" id="socialCard" data-bs-toggle="modal" data-bs-target="#socialModal">
-                <div class="module-header">
-                    <div class="module-icon" style="background: var(--info);">
-                        <i class="fas fa-people-carry"></i>
-                    </div>
-                    <div>
-                        <div class="module-title">Trabajo Social</div>
-                        <span class="module-count">3 módulos</span>
-                    </div>
-                </div>
-                <p class="module-desc">Seguimiento, estudios socioeconómicos y reportes</p>
-                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Crédito y cobranza -->
-            <div class="module-card" id="creditoCard" data-bs-toggle="modal" data-bs-target="#creditoModal">
-                <div class="module-header">
-                    <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <div>
-                        <div class="module-title">Crédito y cobranza</div>
-                        <span class="module-count">1 módulo</span>
-                    </div>
-                </div>
-                <p class="module-desc">Gestión de créditos y cobranza.</p>
-                <a class="module-link"><span>Acceder</span><i class="fas fa-arrow-right"></i></a>
-            </div>
+            <?=renderizarPermisos()?>
         </div>
 
 
@@ -1222,7 +1153,6 @@
 
     <script>
         function ready() {
-
         }
     </script>
 
