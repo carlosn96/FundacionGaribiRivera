@@ -1,4 +1,3 @@
-
 const urlAPI = "api/HistoricoEmprendedoresAPI.php";
 
 let historialData = [];
@@ -7,7 +6,7 @@ let sortConfig = {
     column: null,
     direction: 'asc'
 };
-let emprendedorActual = null; // Para guardar temporalmente el emprendedor en proceso
+let emprendedorActual = null;
 
 function ready() {
     cargarDatos();
@@ -27,10 +26,14 @@ function inicializarEventos() {
 
     // Botón actualizar
     $('#btn-refresh').on('click', function () {
+        $(this).find('i').addClass('fa-spin');
         cargarDatos();
+        setTimeout(() => {
+            $(this).find('i').removeClass('fa-spin');
+        }, 1000);
     });
 
-    // Botón exportar (placeholder)
+    // Botón exportar
     $('#btn-export').on('click', function () {
         exportarDatos();
     });
@@ -52,27 +55,22 @@ function inicializarEventos() {
         const isGraduado = $(this).is(':checked');
 
         if (isGraduado) {
-            // Si se está marcando como graduado, mostrar modal para fecha
             emprendedorActual = {
                 id: emprendedorId,
                 switch: $(this)
             };
 
-            // Buscar el emprendedor en los datos
             const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
             if (emprendedor) {
                 $('#nombreEmprendedor').text(`${emprendedor.nombre} ${emprendedor.apellidos}`);
 
-                // Establecer fecha actual por defecto
                 const today = new Date().toISOString().split('T')[0];
                 $('#fechaGraduacion').val(today);
 
-                // Mostrar modal
                 const modal = new bootstrap.Modal(document.getElementById('modalFechaGraduacion'));
                 modal.show();
             }
         } else {
-            // Si se está desmarcando como graduado, confirmar acción
             confirmarDesgraduacion(emprendedorId, $(this));
         }
     });
@@ -82,14 +80,13 @@ function inicializarEventos() {
         const fecha = $('#fechaGraduacion').val();
 
         if (!fecha) {
-            alert('Por favor, selecciona una fecha de graduación');
+            mostrarNotificacion('Por favor, selecciona una fecha de graduación', 'warning');
             return;
         }
 
         if (emprendedorActual) {
             actualizarGraduacion(emprendedorActual.id, true, fecha);
 
-            // Cerrar modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaGraduacion'));
             modal.hide();
 
@@ -99,7 +96,6 @@ function inicializarEventos() {
 
     // Evento al cerrar el modal sin guardar
     $('#modalFechaGraduacion').on('hidden.bs.modal', function () {
-        // Si se cierra el modal sin guardar, revertir el switch
         if (emprendedorActual) {
             emprendedorActual.switch.prop('checked', false);
             emprendedorActual = null;
@@ -125,16 +121,6 @@ function cargarDatos() {
         aplicarFiltros();
     }, function (xhr, status, error) {
         mostrarError();
-
-        // Log detallado del error
-        console.error('=== Error en la petición ===');
-        console.error('Status:', status);
-        console.error('Error:', error);
-        console.error('Response Status:', xhr.status);
-        console.error('Response Text:', xhr.responseText);
-        console.error('Ready State:', xhr.readyState);
-
-        // Intentar parsear la respuesta como JSON
         try {
             const errorResponse = JSON.parse(xhr.responseText);
             console.error('Error parseado:', errorResponse);
@@ -143,10 +129,12 @@ function cargarDatos() {
         }
     });
 }
+
 function exportarDatos() {
     const activeTab = $('.nav-link.active').attr('id');
     let dataToExport = filteredData;
     let nombreArchivo = 'emprendedores_todos';
+    
     if (activeTab === 'pills-capacitacion-tab') {
         dataToExport = filteredData.filter(item => !item.referencia || item.referencia === null || item.referencia === '');
         nombreArchivo = 'emprendedores_capacitacion';
@@ -154,11 +142,14 @@ function exportarDatos() {
         dataToExport = filteredData.filter(item => item.referencia && item.referencia !== null && item.referencia !== '');
         nombreArchivo = 'emprendedores_credito';
     }
+    
     if (dataToExport.length === 0) {
         mostrarNotificacion('No hay datos para exportar', 'warning');
         return;
     }
+    
     let csv = 'ID Emprendedor,Nombre Completo,Correo Electrónico,Número Celular,Estado Graduación,Fecha Graduación,Referencia\n';
+    
     function escapeCsvValue(value) {
         if (typeof value === 'string') {
             value = value.replace(/"/g, '""');
@@ -168,15 +159,16 @@ function exportarDatos() {
         }
         return value;
     }
+    
     dataToExport.forEach(function (item) {
         const nombreCompleto = `${item.nombre} ${item.apellidos}`;
         const estadoGraduacion = item.graduado === '1' ? 'Graduado' : 'En Capacitación';
         const fechaGraduacion = item.fecha_graduacion || 'N/A';
         const referencia = item.referencia || 'Sin referencia';
 
-        // Usamos la función para escapar los valores antes de agregarlos al CSV
         csv += `${escapeCsvValue(item.id_emprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correo_electronico)},${escapeCsvValue(item.numero_celular)},${escapeCsvValue(estadoGraduacion)},${escapeCsvValue(fechaGraduacion)},${escapeCsvValue(referencia)}\n`;
     });
+    
     const bom = "\uFEFF";
     const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -187,16 +179,17 @@ function exportarDatos() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
     mostrarNotificacion(`Se exportaron ${dataToExport.length} registros correctamente`, 'success');
 }
 
 function mostrarCargando() {
     const spinnerHTML = `
         <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;">
                 <span class="visually-hidden">Cargando...</span>
             </div>
-            <p class="mt-3 text-muted">Cargando información...</p>
+            <p class="mt-3 text-muted mb-0">Cargando información...</p>
         </div>
     `;
     $('#tabla-all-container, #tabla-capacitacion-container, #tabla-credito-container').html(spinnerHTML);
@@ -204,12 +197,12 @@ function mostrarCargando() {
 
 function mostrarMensajeVacio() {
     const emptyHTML = `
-        <div class="alert alert-info border-0 d-flex align-items-center" role="alert">
-            <i class="fas fa-info-circle fa-2x me-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">No hay datos disponibles</h5>
-                <p class="mb-0">No se encontraron registros de emprendedores.</p>
+        <div class="text-center py-5">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <i class="fas fa-inbox fa-2x text-muted"></i>
             </div>
+            <h5 class="text-muted mb-2">No hay datos disponibles</h5>
+            <p class="text-muted small mb-0">No se encontraron registros de emprendedores.</p>
         </div>
     `;
     $('#tabla-all-container, #tabla-capacitacion-container, #tabla-credito-container').html(emptyHTML);
@@ -217,11 +210,11 @@ function mostrarMensajeVacio() {
 
 function mostrarError() {
     const errorHTML = `
-        <div class="alert alert-danger border-0 d-flex align-items-center" role="alert">
-            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+        <div class="alert alert-danger border-0 d-flex align-items-start" role="alert">
+            <i class="fas fa-exclamation-circle fa-lg me-3 mt-1"></i>
             <div>
-                <h5 class="alert-heading mb-1">Error al cargar datos</h5>
-                <p class="mb-0">Ocurrió un error al obtener la información. Por favor, intenta nuevamente.</p>
+                <h6 class="alert-heading mb-1">Error al cargar datos</h6>
+                <p class="mb-0 small">Ocurrió un error al obtener la información. Por favor, intenta nuevamente.</p>
             </div>
         </div>
     `;
@@ -250,7 +243,6 @@ function aplicarFiltros() {
         return matchSearch && matchGraduado && matchReferencia;
     });
 
-    // Aplicar ordenamiento si existe
     if (sortConfig.column) {
         ordenarDatos();
     }
@@ -260,10 +252,8 @@ function aplicarFiltros() {
 
 function ordenarPor(column) {
     if (sortConfig.column === column) {
-        // Si es la misma columna, cambiar dirección
         sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
     } else {
-        // Nueva columna, ordenar ascendente
         sortConfig.column = column;
         sortConfig.direction = 'asc';
     }
@@ -280,15 +270,11 @@ function ordenarDatos() {
             valueA = `${a.nombre} ${a.apellidos}`.toLowerCase();
             valueB = `${b.nombre} ${b.apellidos}`.toLowerCase();
         } else if (sortConfig.column === 'referencia') {
-            // Ordenar referencias: primero las que tienen valor, luego las que no
             valueA = a.referencia || '';
             valueB = b.referencia || '';
 
-            // Si ambas están vacías, son iguales
             if (!valueA && !valueB) return 0;
-            // Si A está vacía, va después
             if (!valueA) return 1;
-            // Si B está vacía, va después
             if (!valueB) return -1;
 
             valueA = valueA.toLowerCase();
@@ -306,37 +292,27 @@ function ordenarDatos() {
 }
 
 function actualizarContadores() {
-    // Contador total
     $('#badge-all').text(historialData.length);
 
-    // Contador capacitación (sin número de referencia)
     const enCapacitacion = historialData.filter(item => !item.referencia || item.referencia === null || item.referencia === '').length;
     $('#badge-capacitacion').text(enCapacitacion);
 
-    // Contador crédito (con número de referencia)
     const conCredito = historialData.filter(item => item.referencia && item.referencia !== null && item.referencia !== '').length;
     $('#badge-credito').text(conCredito);
 }
 
 function renderizarTablas() {
-    // Pestaña activa
     const activeTab = $('.nav-link.active').attr('id');
-
     let dataToShow = filteredData;
 
-    // Filtrar según pestaña activa
     if (activeTab === 'pills-capacitacion-tab') {
-        // Capacitación: sin número de referencia
         dataToShow = filteredData.filter(item => !item.referencia || item.referencia === null || item.referencia === '');
     } else if (activeTab === 'pills-credito-tab') {
-        // Crédito: con número de referencia
         dataToShow = filteredData.filter(item => item.referencia && item.referencia !== null && item.referencia !== '');
     }
 
-    // Generar tabla
     const tablaHTML = generarTabla(dataToShow);
 
-    // Insertar en el contenedor correspondiente
     if (activeTab === 'pills-all-tab') {
         $('#tabla-all-container').html(tablaHTML);
     } else if (activeTab === 'pills-capacitacion-tab') {
@@ -349,106 +325,125 @@ function renderizarTablas() {
 function generarTabla(data) {
     if (data.length === 0) {
         return `
-            <div class="alert alert-warning border-0 d-flex align-items-center" role="alert">
-                <i class="fas fa-search fa-2x me-3"></i>
-                <div>
-                    <h5 class="alert-heading mb-1">Sin resultados</h5>
-                    <p class="mb-0">No se encontraron emprendedores con los filtros aplicados.</p>
+            <div class="text-center py-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                    <i class="fas fa-search fa-2x text-muted"></i>
                 </div>
+                <h5 class="text-muted mb-2">Sin resultados</h5>
+                <p class="text-muted small mb-0">No se encontraron emprendedores con los filtros aplicados.</p>
             </div>
         `;
     }
 
     let tabla = `
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col" class="text-center sortable" data-column="referencia" style="width: 150px; cursor: pointer;">
-                        <i class="fas fa-hashtag text-muted me-2"></i>Referencia
-                        ${sortConfig.column === 'referencia' ? (sortConfig.direction === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>') : '<i class="fas fa-sort text-muted"></i>'}
-                    </th>
-                    <th scope="col" class="sortable" data-column="nombre" style="cursor: pointer;">
-                        <i class="fas fa-user me-2"></i>Emprendedor
-                        ${sortConfig.column === 'nombre' ? (sortConfig.direction === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>') : '<i class="fas fa-sort text-muted"></i>'}
-                    </th>
-                    <th scope="col">
-                        <i class="fas fa-envelope me-2"></i>Contacto
-                    </th>
-                    <th scope="col" class="text-center">
-                        <i class="fas fa-graduation-cap me-2"></i>Graduación
-                    </th>
-                    <th scope="col" class="text-center" style="width: 120px;">Seguimiento a graduados</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th scope="col" class="border-0 text-center sortable" data-column="referencia" style="width: 140px; cursor: pointer;">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <span class="text-muted small">Referencia</span>
+                                ${sortConfig.column === 'referencia' ? (sortConfig.direction === 'asc' ? '<i class="fas fa-sort-up text-primary"></i>' : '<i class="fas fa-sort-down text-primary"></i>') : '<i class="fas fa-sort text-muted opacity-50"></i>'}
+                            </div>
+                        </th>
+                        <th scope="col" class="border-0 sortable" data-column="nombre" style="cursor: pointer;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted small">Emprendedor</span>
+                                ${sortConfig.column === 'nombre' ? (sortConfig.direction === 'asc' ? '<i class="fas fa-sort-up text-primary"></i>' : '<i class="fas fa-sort-down text-primary"></i>') : '<i class="fas fa-sort text-muted opacity-50"></i>'}
+                            </div>
+                        </th>
+                        <th scope="col" class="border-0">
+                            <span class="text-muted small">Contacto</span>
+                        </th>
+                        <th scope="col" class="border-0 text-center">
+                            <span class="text-muted small">Graduación</span>
+                        </th>
+                        <th scope="col" class="border-0 text-center" style="width: 120px;">
+                            <span class="text-muted small">Seguimiento</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
 
     data.forEach(function (item) {
         const referenciaDisplay = item.referencia && item.referencia !== null && item.referencia !== ''
-            ? `<span class="badge bg-primary fs-6"><i class="fas fa-credit-card me-1"></i>${item.referencia}</span>`
+            ? `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+                   <i class="fas fa-credit-card me-1"></i>${item.referencia}
+               </span>`
             : '<span class="text-muted"><i class="fas fa-minus"></i></span>';
 
-        // Switch para graduación
         const graduadoChecked = item.graduado === '1' ? 'checked' : '';
         const fechaGraduacion = item.graduado === '1' && item.fecha_graduacion
-            ? `<small class="text-success d-block mt-1"><i class="fas fa-calendar-check me-1"></i>${item.fecha_graduacion}</small>`
+            ? `<small class="text-success d-block mt-2">
+                   <i class="fas fa-calendar-check me-1"></i>${formatearFecha(item.fecha_graduacion)}
+               </small>`
             : '';
 
+        const estadoBadge = item.graduado === '1'
+            ? '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 mt-1">Graduado</span>'
+            : '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 mt-1">En Capacitación</span>';
+
         const graduacionSwitch = `
-            <div class="form-check form-switch d-flex justify-content-center align-items-center">
-                <input class="form-check-input switch-graduado" type="checkbox" role="switch" 
-                       id="switch-grad-${item.id_emprendedor}" data-id="${item.id_emprendedor}" ${graduadoChecked}>
-                <label class="form-check-label ms-2" for="switch-grad-${item.id_emprendedor}">
-                    ${item.graduado === '1' ? '<i class="fas fa-graduation-cap text-success"></i>' : '<i class="fas fa-hourglass-half text-warning"></i>'}
-                </label>
+            <div class="d-flex flex-column align-items-center">
+                <div class="form-check form-switch">
+                    <input class="form-check-input switch-graduado" type="checkbox" role="switch"
+                           id="switch-grad-${item.id_emprendedor}" data-id="${item.id_emprendedor}" ${graduadoChecked}
+                           style="width: 3rem; height: 1.5rem; cursor: pointer;">
+                </div>
+                ${estadoBadge}
+                ${fechaGraduacion}
             </div>
-            ${fechaGraduacion}
         `;
 
         const botonesSeguimientoHabilitados = item.graduado === '1' ? '' : 'disabled';
+
+        const fotografiaDisplay = item.fotografia
+            ? `<img src="data:image/jpeg;base64,${item.fotografia}" alt="Fotografía" class="rounded-circle me-3" style="width: 44px; height: 44px; min-width: 44px; object-fit: cover;">`
+            : `<div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 44px; width: 44px; height: 44px;">
+                   <i class="fas fa-user text-primary"></i>
+               </div>`;
 
         tabla += `
             <tr>
                 <td class="text-center">${referenciaDisplay}</td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                            <i class="fas fa-user text-primary"></i>
-                        </div>
+                        ${fotografiaDisplay}
                         <div>
-                            <div class="fw-bold">${item.nombre} ${item.apellidos}</div>
-                            <small class="text-muted">ID: ${item.id_emprendedor}</small>
+                            <div class="fw-semibold text-dark">${item.nombre} ${item.apellidos}</div>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <div>
-                        <a href="mailto:${item.correo_electronico}" class="text-decoration-none d-block mb-1">
-                            <i class="fas fa-envelope text-primary me-2"></i>${item.correo_electronico}
+                    <div class="small">
+                        <a href="mailto:${item.correo_electronico}" class="text-decoration-none text-dark d-flex align-items-center mb-1">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <span class="text-truncate" style="max-width: 200px;">${item.correo_electronico}</span>
                         </a>
-                        <a href="tel:${item.numero_celular}" class="text-decoration-none d-block">
+                        <a href="tel:${item.numero_celular}" class="text-decoration-none text-dark d-flex align-items-center">
                             <i class="fas fa-phone text-success me-2"></i>${item.numero_celular}
                         </a>
                     </div>
                 </td>
                 <td class="text-center">${graduacionSwitch}</td>
                 <td class="text-center">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button onclick=realizarSeguimientoGraduacion(${item.id_emprendedor}) ${botonesSeguimientoHabilitados} type="button" class="btn btn-outline-secondary" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
+                    <button onclick="realizarSeguimientoGraduacion(${item.id_emprendedor})" ${botonesSeguimientoHabilitados}
+                            type="button" class="btn btn-sm btn-outline-primary" title="Realizar seguimiento">
+                        <i class="fas fa-edit"></i>
+                    </button>
                 </td>
             </tr>
         `;
     });
 
     tabla += `
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <p class="text-muted mb-0">
-                <i class="fas fa-info-circle me-2"></i>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3 px-2">
+            <p class="text-muted small mb-0">
+                <i class="fas fa-info-circle me-1"></i>
                 Mostrando <strong>${data.length}</strong> registro${data.length !== 1 ? 's' : ''}
             </p>
         </div>
@@ -457,8 +452,23 @@ function generarTabla(data) {
     return tabla;
 }
 
-function actualizarGraduacion(emprendedorId, isGraduado, fechaGraduacion = null) {
+function formatearFecha(fecha) {
+    if (!fecha) return '';
+    
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const partes = fecha.split('-');
+    
+    if (partes.length === 3) {
+        const año = partes[0];
+        const mes = meses[parseInt(partes[1]) - 1];
+        const dia = parseInt(partes[2]);
+        return `${dia} ${mes} ${año}`;
+    }
+    
+    return fecha;
+}
 
+function actualizarGraduacion(emprendedorId, isGraduado, fechaGraduacion = null) {
     crearPeticion(urlAPI, {
         case: "actualizarGraduacion",
         data: $.param({
@@ -492,8 +502,9 @@ function actualizarGraduacion(emprendedorId, isGraduado, fechaGraduacion = null)
 function confirmarDesgraduacion(emprendedorId, switchElement) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
     const nombre = emprendedor ? `${emprendedor.nombre} ${emprendedor.apellidos}` : 'este emprendedor';
+    
     alertaEliminar({
-        mensajeAlerta: `Se regresará a ${nombre} al estado de capacitación?\n\nEsta acción removerá la fecha de graduación.`,
+        mensajeAlerta: `¿Regresar a ${nombre} al estado de capacitación?\n\nEsta acción removerá la fecha de graduación.`,
         url: urlAPI,
         data: {
             case: "actualizarGraduacion",
@@ -509,7 +520,6 @@ function confirmarDesgraduacion(emprendedorId, switchElement) {
     });
 }
 
-// Función para mostrar notificaciones temporales
 function mostrarNotificacion(mensaje, tipo = 'success') {
     var fn = mostrarMensajeInfo;
     if (tipo === 'danger') {
@@ -525,6 +535,7 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
 function realizarSeguimientoGraduacion(emprendedorId) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
     print(emprendedor);
+    
     if (emprendedor) {
         crearPeticion(urlAPI, {
             case: "realizarSeguimientoGraduado",
