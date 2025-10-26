@@ -4,8 +4,8 @@
             <h4 class="card-title">Seguimiento de Graduados</h4>
             <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" id="seguimiento-toolbar" style="display: none;">
                 <div class="btn-group" role="group" aria-label="First group">
-                    <button id="btn-imprimir-seguimiento" type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Imprimir">
-                        <i class="ti ti-printer fs-4"></i>
+                    <button id="btn-descargar-seguimiento" type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Descargar">
+                        <i class="ti ti-download fs-4"></i>
                     </button>
                     <button id="btn-eliminar-seguimiento" type="button" class="btn btn-danger" data-bs-toggle="tooltip" title="Eliminar">
                         <i class="ti ti-trash fs-4"></i>
@@ -19,8 +19,8 @@
         <div class="d-flex align-items-center gap-4 flex-wrap">
             <img alt="emprendedor" class="rounded-circle" width="40" height="40" id="fotografiaEmprendedor">
             <h6 class="mb-0" id="nombreEmprendedor"></h6>
-            <span class="fs-2 hstack gap-2" id="fechaLineaBase">
-                <span class="round-10 text-bg-light rounded-circle d-inline-block"></span> Fecha de registro:
+            <span class="fs-2 hstack gap-2" id="fecha">
+                <span class="round-10 text-bg-light rounded-circle d-inline-block"></span> Fecha de actualización:
             </span>
         </div>
 

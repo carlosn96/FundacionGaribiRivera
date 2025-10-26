@@ -9,9 +9,12 @@ class SeguimientoGraduadoAPI extends API
         $adminLineaBase = getAdminLineaBase();
         $emprendedor = getAdminEmprendedor()->get($id = Sesion::getInfoTemporal("emprendedor"));
         $lineaBase = $adminLineaBase->getLineaBase(Sesion::getInfoTemporal("usuarioEmprendedor"));
+        $seguimientoGraduado = $this->getSeguimiento($id);
+        Sesion::setInfoTemporal("seguimientoGraduado", $seguimientoGraduado);
+        Sesion::setInfoTemporal("emprendedorData", $emprendedor);
         $this->enviarRespuesta([
             "emprendedor" => $emprendedor,
-            "seguimientoGraduado" => $this->getSeguimiento($id),
+            "seguimientoGraduado" => $seguimientoGraduado,
             "lineaBase" => $lineaBase["inicial"],
             "checkbox" => [
                 "estrategiasIncrementarVentas" => $adminLineaBase->recuperarListaEstrategiasIncrementarVentas()
@@ -29,7 +32,7 @@ class SeguimientoGraduadoAPI extends API
         );
     }
 
-    public function eliminarSeguimiento() 
+    public function eliminarSeguimiento()
     {
         $this->enviarResultadoOperacion(
             getAdminImpacto()->eliminarSeguimientoGraduado($this->getData("emprendedor"))

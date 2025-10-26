@@ -26,13 +26,13 @@ function completarCamposFormulario(rs) {
     const esSeguimiento = rs.seguimientoGraduado.existeSeguimientoGraduado;
     let data = esSeguimiento ? rs.seguimientoGraduado.data : rs.lineaBase.data;
     $('#data-source-badge').append(esSeguimiento ? 'Seguimiento de Graduado' : 'Línea Base');
-    $("#btn-imprimir-seguimiento").click(imprimirSeguimiento);
+    $("#btn-descargar-seguimiento").click(descargarSeguimiento);
     $("#btn-eliminar-seguimiento").click(eliminarSeguimiento);
     if (esSeguimiento) {
         $('#seguimiento-toolbar').show();
     }
 
-    $("#fechaLineaBase").append(" " + data.fechaCreacion);
+    $("#fecha").append(" " + data.fechaCreacion);
     $.each(rs.checkbox, (idx, elementos) => {
         crearGroupCheckbox($("#" + idx), elementos, idx);
     });
@@ -122,12 +122,11 @@ function configurarSeccionAnalisisNegocio(lineaBase) {
     }
 }
 
-function imprimirSeguimiento() {
-    print($("#idEmprendedor").val());
+function descargarSeguimiento() {
+    redireccionar("../seguimientoGraduadoDescargar");
 }
 
 function eliminarSeguimiento() {
-    print($("#idEmprendedor").val());
     alertaEliminar({
         mensajeAlerta: "Se tendrá que registrar un nuevo seguimiento",
         url: urlAPI,
