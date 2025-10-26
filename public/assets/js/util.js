@@ -72,14 +72,22 @@ function procesarRespuestaError(jqXHR, textStatus, errorThrown) {
 }
 
 function mostrarMensajeResultado(result) {
-    //print(result);
-    var mensajeRespuesta = typeof result === "string" ? JSON.parse(result) : result;
-    if (mensajeRespuesta.es_valor_error) {
-        mostrarMensajeError(mensajeRespuesta.mensaje);
+    let mensajeRespuesta;
+    try {
+        mensajeRespuesta = typeof result === "string" ? JSON.parse(result) : result;
+    } catch (error) {
+        console.error("Error al parsear el resultado:", error, "\nValor recibido:", result);
+        mostrarMensajeError("Ocurrió un error al procesar la respuesta del servidor.");
+        return;
+    }
+
+    if (mensajeRespuesta && mensajeRespuesta.es_valor_error) {
+        mostrarMensajeError(mensajeRespuesta.mensaje || "Se produjo un error desconocido.");
     } else {
-        mostrarMensajeOk(mensajeRespuesta.mensaje);
+        mostrarMensajeOk(mensajeRespuesta?.mensaje || "Operación completada correctamente.");
     }
 }
+
 
 function mostrarMensajeOk(msg = "OK", reloading = true, fnthen = () => {}) {
     mostrarMensajeReload("Operación completa", "success", msg, reloading, fnthen);
