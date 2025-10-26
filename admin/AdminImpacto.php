@@ -51,7 +51,7 @@ class AdminImpacto extends Admin
             estrategiasIncrementarVentas: $data["estrategiasIncrementarVentas"] ?? [],
             comoEmpleaGanancias: intval($data["comoEmpleaGanancias"]),
             conoceProductosMayorUtilidad: $data["conoceProductosMayorUtilidad"] ?? 0,
-            porcentajeGanancias: floatval($data["porcentajeGanancias"]),
+            porcentajeGanancias: floatval($data["porcentajeGanancias"] ?? 0),
             ahorro: $data["ahorro"] ?? null,
             cuantoAhorro: floatval($data["cuantoAhorro"] ?? 0),
             razonesNoAhorro: $data["razonesNoAhorro"] ?? null,
@@ -73,5 +73,10 @@ class AdminImpacto extends Admin
         return $this->existeSeguimientoGraduado($idEmprendedor)
             ? $this->dao->actualizarSeguimientoGraduado($seguimiento)
             : $this->dao->guardarSeguimientoGraduado($seguimiento);
+    }
+
+    public function eliminarSeguimientoGraduado($idEmprendedor)
+    {
+        return $this->dao->eliminarSeguimientoGraduado($idEmprendedor);
     }
 }

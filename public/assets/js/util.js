@@ -68,7 +68,7 @@ function procesarRespuestaError(jqXHR, textStatus, errorThrown) {
     } else if (jqXHR.status === 500) {
         mostrarMensajeError("Error interno del servidor (500): " + jqXHR.responseText);
     } else if (textStatus === 'parsererror') {
-        mostrarMensajeError("Error al procesar los datos: " + errorThrown);
+        mostrarMensajeError("Error al procesar el formato de la respuesta del servidor.");
     } else if (textStatus === 'timeout') {
         mostrarMensajeError('La petición ha superado el tiempo de espera.');
     } else if (textStatus === 'abort') {

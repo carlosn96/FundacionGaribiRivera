@@ -29,6 +29,13 @@ class SeguimientoGraduadoAPI extends API
         );
     }
 
+    public function eliminarSeguimiento() 
+    {
+        $this->enviarResultadoOperacion(
+            getAdminImpacto()->eliminarSeguimientoGraduado($this->getData("emprendedor"))
+        );
+    }
+
     private function getSeguimiento($id)
     {
         $adminImpacto = getAdminImpacto();

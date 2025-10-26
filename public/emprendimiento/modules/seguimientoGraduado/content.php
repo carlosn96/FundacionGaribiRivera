@@ -4,10 +4,10 @@
             <h4 class="card-title">Seguimiento de Graduados</h4>
             <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" id="seguimiento-toolbar" style="display: none;">
                 <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Imprimir">
+                    <button id="btn-imprimir-seguimiento" type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Imprimir">
                         <i class="ti ti-printer fs-4"></i>
                     </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="tooltip" title="Eliminar">
+                    <button id="btn-eliminar-seguimiento" type="button" class="btn btn-danger" data-bs-toggle="tooltip" title="Eliminar">
                         <i class="ti ti-trash fs-4"></i>
                     </button>
                 </div>

@@ -337,6 +337,14 @@ class ImpactoDAO extends DAO
         return $this->insertarSeguimientoGraduado($seguimientoGraduado, self::ACTUALIZAR_SEGUIMIENTO_GRADUADO);
     }
 
+    public function eliminarSeguimientoGraduado($idEmprendedor) {
+        return $this->eliminarPorId(
+            "seguimiento_graduados",
+            "id_emprendedor",
+            $idEmprendedor,
+        );
+    }
+
     private function insertarSeguimientoGraduado(SeguimientoGraduado $seguimientoGraduado, $instruccion)
     {
         $prep = $this->prepararInstruccion($instruccion);

@@ -4,7 +4,7 @@ const urlAPI = "api/SeguimientoGraduadoAPI.php";
 function ready() {
     bloquearSeccion($("#contenido"));
     crearPeticion(urlAPI, { case: "recuperarCamposInformacion" }, (rs) => {
-        print(rs);
+        //print(rs);
         if (rs.lineaBase.existeLineaBase) {
             completarInfoEmprendedor(rs.emprendedor);
             completarCamposFormulario(rs);
@@ -26,6 +26,8 @@ function completarCamposFormulario(rs) {
     const esSeguimiento = rs.seguimientoGraduado.existeSeguimientoGraduado;
     let data = esSeguimiento ? rs.seguimientoGraduado.data : rs.lineaBase.data;
     $('#data-source-badge').append(esSeguimiento ? 'Seguimiento de Graduado' : 'Línea Base');
+    $("#btn-imprimir-seguimiento").click(imprimirSeguimiento);
+    $("#btn-eliminar-seguimiento").click(eliminarSeguimiento);
     if (esSeguimiento) {
         $('#seguimiento-toolbar').show();
     }
@@ -118,4 +120,20 @@ function configurarSeccionAnalisisNegocio(lineaBase) {
         // Elabora presupuesto
         $(`#elaboraPresupuesto${analisisNegocio.elaboraPresupuesto.val === 1 ? 'Si' : 'No'}`).prop('checked', true);
     }
+}
+
+function imprimirSeguimiento() {
+    print($("#idEmprendedor").val());
+}
+
+function eliminarSeguimiento() {
+    print($("#idEmprendedor").val());
+    alertaEliminar({
+        mensajeAlerta: "Se tendrá que registrar un nuevo seguimiento",
+        url: urlAPI,
+        data: {
+            case: "eliminarSeguimiento",
+            data: $.param({ emprendedor: $("#idEmprendedor").val() })
+        }
+    });
 }
