@@ -803,11 +803,7 @@ include_once "controlPermisos.php";
                     <h1>¡Bienvenido <span class="profile-name-full"></span>!</h1>
                     <p>Gestiona emprendedores, talleres y actividades en un solo lugar</p>
                 </div>
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="../../../difusion/modules/altaEmprendedores/" class="btn btn-action btn-primary-action" style="width: 100%;">
-                        <i class="fas fa-plus"></i>Nuevo Emprendedor
-                    </a>
-                </div>
+                <?=renderizarAccionPrincipal()?>
             </div>
         </div>
 
@@ -887,34 +883,11 @@ include_once "controlPermisos.php";
         </div>
 
         <div class="modules-grid">
-            <?=renderizarPermisos()?>
+            <?=renderizarModulosAcceso()?>
         </div>
 
 
-
-        <div class="row g-3">
-            <div class="col">
-                <!-- Quick Actions -->
-                <div class="sidebar-box"
-                    style="background: linear-gradient(135deg, var(--primary) 0%, #2a5f54 100%); border: none;">
-                    <h5 class="sidebar-title text-white" style="color: white !important;">
-                        <i class="fas fa-bolt me-2"></i>Accesos Directos
-                    </h5>
-                    <p class="text-white-50 mb-3">Realiza acciones comunes con un click</p>
-                    <div class="action-buttons">
-                        <a href="../../../difusion/modules/altaEmprendedores/" class="btn btn-action btn-primary-action">
-                            <i class="fas fa-user-plus"></i>Nuevo Emprendedor
-                        </a>
-                        <a href="../../../difusion/modules/taller/" class="btn btn-action btn-secondary-action">
-                            <i class="fas fa-calendar-plus"></i>Programar Taller
-                        </a>
-                        <a href="../../../trabajoSocial/modules/lineaBaseAdministracion/" class="btn btn-action btn-secondary-action">
-                            <i class="fas fa-clipboard-check"></i>Ficha Seguimiento
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?=renderizarCajaAccesosDirectos()?>
 
         <!--<div class="row g-3">
             <div class="col">
