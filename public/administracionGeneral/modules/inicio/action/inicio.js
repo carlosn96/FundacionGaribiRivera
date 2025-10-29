@@ -517,13 +517,15 @@ function setEvents() {
             $('.chat-list.chat').removeClass('active-chat');
             $('.chat-list.chat[data-user-id="' + userId + '"]').addClass('active-chat');
 
-            // --- Responsive logic ---
+            // --- Responsive logic using Bootstrap classes ---
             if ($(window).width() < 992) { // Mobile view
-                $('.user-chat-box').closest('.border-end').hide();
-                $('.chat-container').closest('.flex-grow-1').show();
+                var listPanel = $('.user-chat-box').closest('.border-end');
+                listPanel.addClass('d-none');
+                listPanel.removeClass('w-100'); // Reset width
+
+                $('.chat-container').closest('.flex-grow-1').removeClass('d-none');
             }
-            // Show the inner content
-            $(".chatting-box.app-email-chatting-box").show();
+            $(".chatting-box.app-email-chatting-box").removeClass('d-none');
 
 
             // Update onclick attributes and enable buttons
@@ -558,10 +560,11 @@ function setEvents() {
         })
         .off("click.chat.back")
         .on("click.chat.back", ".back-btn", function () {
-            // We are certainly in mobile view if this is clicked
-            $('.user-chat-box').closest('.border-end').show();
-            // Hide the details panel
-            $('.chat-container').closest('.flex-grow-1').hide();
+            var listPanel = $('.user-chat-box').closest('.border-end');
+            listPanel.removeClass('d-none');
+            listPanel.addClass('w-100'); // Make it full-width
+
+            $('.chat-container').closest('.flex-grow-1').addClass('d-none');
         })
         .off("click.password.toggle")
         .on("click.password.toggle", "#toggleNuevaContrasena, #toggleConfirmarContrasena", function () {
