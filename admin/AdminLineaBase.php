@@ -60,7 +60,7 @@ class AdminLineaBase extends Admin {
         $ventajasNegocio = $data["ventajasNegocio"];
         $problemasNegocio = $data["problemasNegocio"];
         $estrategiasIncrementarVentas = $data["estrategiasIncrementarVentas"] ?? [];
-        $comoEmpleaGanancias = [$data["comoEmpleaGanancias"]];
+        $comoEmpleaGanancias = $data["comoEmpleaGanancias"];
         $conoceProductosMayorUtilidad = intval($data["conoceProductosMayorUtilidad"]);
         $porcentajeGanancias = boolval($conoceProductosMayorUtilidad) ? $data["porcentajeGanancias"] : null;
         $ahorro = intval($data["ahorro"]);
