@@ -106,7 +106,7 @@
                             </div>
 
                             <div class="message-body">
-                                <a id="urlPerfil" href="../perfil/" class="dropdown-item px-7 d-flex align-items-center py-6">
+                                <a id="urlPerfil" href="../../../configuracionUsuario/" class="dropdown-item px-7 d-flex align-items-center py-6">
                                     <span class="btn px-3 py-2 bg-warning-subtle rounded-1 text-warning shadow-none">
                                         <iconify-icon icon="solar:wallet-2-line-duotone" class="fs-7"></iconify-icon>
                                     </span>
