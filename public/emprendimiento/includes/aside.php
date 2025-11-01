@@ -31,19 +31,19 @@
                 </li>
                 <!-- ============================= -->
                 <!-- Inicio -->
-                <!-- ============================= -->
+                <!-- =============================
                 <li class="nav-small-cap">
                     <span class="hide-menu">Inicio</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link warning-hover-bg" href="../inicio/" aria-expanded="false">
                         <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <!-- Icono de Dashboard (Inicio) -->
+
                             <iconify-icon icon="mdi:view-dashboard" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
-                </li>
+                </li> -->
 
                 <!-- ============================= -->
                 <!-- Medición de Impacto -->

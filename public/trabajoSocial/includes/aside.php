@@ -28,7 +28,7 @@
                 </li>
                 <!-- ============================= -->
                 <!-- Inicio -->
-                <!-- ============================= -->
+                <!-- ============================= 
                 <li class="nav-small-cap">
                     <span class="hide-menu">Inicio</span>
                 </li>
@@ -39,7 +39,7 @@
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
-                </li>
+                </li>-->
 
                 <!-- ============================= -->
                 <!-- Seguimiento -->
