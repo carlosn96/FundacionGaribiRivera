@@ -31,7 +31,7 @@
                 </li>
                 <!-- ============================= -->
                 <!-- Inicio -->
-                <!-- ============================= -->
+                <!-- ============================= 
                 <li class="nav-small-cap">
                     <span class="hide-menu">Inicio</span>
                 </li>
@@ -42,7 +42,7 @@
                         </span>
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
-                </li>
+                </li>-->
                 <!-- ============================= -->
                 <!-- Configuraciones -->
                 <!-- ============================= -->
@@ -125,7 +125,7 @@
                         </span>
                         <span class="hide-menu ps-1">Medición de Impactos</span>
                     </a>
-                </li -->
+                </li 
 
                 <li class="nav-small-cap">
                     <span class="hide-menu">Reportes</span>
@@ -137,7 +137,7 @@
                         </span>
                         <span class="hide-menu ps-1">Reportes</span>
                     </a>
-                </li>
+                </li>-->
             </ul>
         </nav>
         <!-- End Sidebar navigation -->
