@@ -785,8 +785,14 @@ include_once "controlPermisos.php";
                             <span class="d-none d-md-inline small"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="javascript:cerrarSesion()"><i
-                                        class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                            <li>
+                                <a class="dropdown-item" href="../../../configuracionUsuario">
+                                    <i class="fas fa-tools me-2"></i>Configuración de perfil</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:cerrarSesion()">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
