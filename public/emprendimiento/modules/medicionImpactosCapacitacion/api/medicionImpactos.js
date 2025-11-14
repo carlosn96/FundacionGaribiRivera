@@ -1,6 +1,5 @@
-// Mostrar mensaje de error
+// Configuración global
 const urlAPI = "api/MedicionImpactosCapacitacionAPI.php";
-const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
 
 function ready() {
     crearPeticion(urlAPI, {case: "consultarMedicionImpactos"}, (res) => {
@@ -20,186 +19,184 @@ function mostrarMensajeNoHayInformacion() {
 }
 
 function generarImpactoHTML(data, emprendedores) {
-    // Limpia el contenedor principal antes de generar las nuevas tarjetas.
     $("#impacto-container").empty();
 
-    // Contenedor principal con diseño de columnas responsivo
-    const mainContainer = $("<div>", {class: "container-fluid"});
-    const row = $("<div>", {class: "row g-4"});
+    // Contenedor principal
+    const contenedorPrincipal = $("<div>", {class: "container-fluid py-4"});
+    const fila = $("<div>", {class: "row g-4"});
 
     // === SIDEBAR DE NAVEGACIÓN ===
-    const sidebarCol = $("<div>", {class: "col-lg-3 col-md-4"});
-    const sidebarCard = $("<div>", {class: "card sticky-top", style: "top: 1rem;"});
-    const sidebarHeader = $("<div>", {class: "card-header"});
-    sidebarHeader.append($("<h5>", {class: "card-title mb-0", text: "Navegación"}));
+    const columnaSidebar = $("<div>", {class: "col-lg-3 col-md-4"});
+    const navCard = $("<div>", {class: "card shadow-sm position-sticky", style: "top: 1rem;"});
     
-    const sidebarBody = $("<div>", {class: "card-body p-0"});
-    const navList = $("<div>", {class: "list-group list-group-flush", id: "navigationList"});
+    const navHeader = $("<div>", {class: "card-header bg-white border-bottom"});
+    navHeader.append($("<h5>", {class: "mb-0 fw-semibold", text: "Navegación"}));
+    
+    const navBody = $("<div>", {class: "card-body p-0"});
+    const listaNav = $("<ul>", {class: "nav nav-pills flex-column", role: "tablist", id: "navigationList"});
 
-    // Botones de navegación principal
-    const navItems = [
-        {id: "nav-medicion", icon: "ti ti-chart-bar", text: "Medición de Impactos", target: "section-medicion"},
-        {id: "nav-configuracion", icon: "ti ti-settings", text: "Configuración", target: "section-configuracion"},
-        {id: "nav-vista-general", icon: "ti ti-file-analytics", text: "Vista General", target: "section-vista-general"}
+    const itemsNav = [
+        {id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Medición de Impactos", target: "section-medicion"},
+        {id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion"},
+        {id: "nav-vista-general", icon: "ti ti-file-analytics", texto: "Vista General", target: "section-vista-general"}
     ];
 
-    navItems.forEach((item, index) => {
-        const navItem = $("<button>", {
+    itemsNav.forEach((item, idx) => {
+        const navItem = $("<li>", {class: "nav-item"});
+        const navLink = $("<button>", {
             type: "button",
-            class: `list-group-item list-group-item-action d-flex align-items-center ${index === 0 ? 'active bg-light text-dark' : ''}`,
+            class: `nav-link ${idx === 0 ? 'active' : ''} d-flex align-items-center w-100 text-start`,
             id: item.id,
             "data-target": item.target,
+            role: "tab",
             "aria-controls": item.target,
-            "aria-selected": index === 0 ? "true" : "false"
+            "aria-selected": idx === 0 ? "true" : "false"
         });
         
-        navItem.append(
-            $("<i>", {class: `${item.icon} me-3`}),
-            $("<span>", {text: item.text})
+        navLink.append(
+            $("<i>", {class: `${item.icon} me-2`}),
+            $("<span>", {text: item.texto})
         );
         
-        navItem.on("click", function() {
-            // Actualizar estado activo
-            navList.find(".list-group-item").removeClass("active bg-light text-dark").attr("aria-selected", "false");
-            $(this).addClass("active bg-light text-dark").attr("aria-selected", "true");
+        navLink.on("click", function() {
+            listaNav.find(".nav-link").removeClass("active").attr("aria-selected", "false");
+            $(this).addClass("active").attr("aria-selected", "true");
             
-            // Mostrar sección correspondiente
             $("#main-content").find(".content-section").addClass("d-none");
             $(`#${item.target}`).removeClass("d-none");
             
-            // Scroll suave a la sección
             $(`#${item.target}`)[0].scrollIntoView({behavior: 'smooth', block: 'start'});
         });
         
-        navList.append(navItem);
+        navItem.append(navLink);
+        listaNav.append(navItem);
     });
 
-    sidebarBody.append(navList);
-    sidebarCard.append(sidebarHeader, sidebarBody);
-    sidebarCol.append(sidebarCard);
+    navBody.append(listaNav);
+    navCard.append(navHeader, navBody);
+    columnaSidebar.append(navCard);
 
     // === CONTENIDO PRINCIPAL ===
-    const contentCol = $("<div>", {class: "col-lg-9 col-md-8"});
-    const mainContent = $("<div>", {id: "main-content"});
+    const columnaContenido = $("<div>", {class: "col-lg-9 col-md-8"});
+    const contenidoPrincipal = $("<div>", {id: "main-content"});
 
     // === SECCIÓN 1: MEDICIÓN DE IMPACTOS ===
-    const seccionMedicion = $("<div>", {
+    const seccionMedicion = $("<section>", {
         id: "section-medicion",
-        class: "content-section"
+        class: "content-section",
+        role: "tabpanel",
+        "aria-labelledby": "nav-medicion"
     });
 
-    const medicionHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-primary"});
-    medicionHeader.append(
-        $("<h2>", {class: "h3 mb-0"}).append(
-            $("<i>", {class: "ti ti-chart-bar me-2"}),
-            $("<span>", {text: "Medición de Impactos"})
-        ),
-        $("<div>", {class: "text-muted small"}).append(
-            $("<span>", {text: `Período: ${data.fechas.inicioSelected} - ${data.fechas.finSelected}`})
+    const headerMedicion = $("<div>", {class: "mb-4"});
+    const cardHeader = $("<div>", {class: "card shadow-sm border-start border-4 border-primary"});
+    const cardHeaderBody = $("<div>", {class: "card-body"});
+    
+    const rowHeader = $("<div>", {class: "row align-items-center"});
+    rowHeader.append(
+        $("<div>", {class: "col"}).append(
+            $("<h2>", {class: "h4 mb-1 d-flex align-items-center"}).append(
+                $("<i>", {class: "ti ti-chart-bar me-2"}),
+                $("<span>", {text: "Medición de Impactos (Capacitación)"})
+            ),
+            $("<p>", {class: "text-muted mb-0 small", text: `Período: ${data.fechas.inicioSelected} - ${data.fechas.finSelected}`})
         )
     );
+    
+    cardHeaderBody.append(rowHeader);
+    cardHeader.append(cardHeaderBody);
+    headerMedicion.append(cardHeader);
+    seccionMedicion.append(headerMedicion);
 
-    seccionMedicion.append(medicionHeader);
+    // Accordion de impactos
+    const accordionImpactos = $("<div>", {class: "accordion", id: "impactosAccordion"});
 
-    // Accordion para cada tipo de impacto
-    const impactosAccordion = $("<div>", {class: "accordion", id: "impactosAccordion"});
-
-    // --- INICIO: Ocultar temporalmente el indicador de Calidad de Vida ---
-    // Se filtra el array de impactos para mostrar únicamente "Estabilidad económica".
-    // Para volver a mostrar el indicador de "Calidad de Vida" (si el backend lo proporciona),
-    // simplemente elimine la siguiente línea de filtro y use "data.impactos" directamente en el forEach.
     const impactosVisibles = data.impactos.filter(p => p.nombre === 'Estabilidad económica');
-    // --- FIN: Ocultar temporalmente el indicador de Calidad de Vida ---
 
-    impactosVisibles.forEach((impacto, index) => {
-        const accordionItem = $("<div>", {class: "accordion-item border-0 shadow-sm mb-3 border-start border-5 border-info"});
+    impactosVisibles.forEach((impacto, idx) => {
+        const itemAccordion = $("<div>", {class: "accordion-item shadow-sm mb-3"});
         
-        // Header del accordion
-        const accordionHeader = $("<h2>", {class: "accordion-header", id: `heading-${index}`});
-        const accordionButton = $("<button>", {
-            class: `accordion-button ${index === 0 ? '' : 'collapsed'}`,
+        const headerAccordion = $("<h3>", {class: "accordion-header", id: `heading-${idx}`});
+        const botonAccordion = $("<button>", {
+            class: `accordion-button ${idx === 0 ? '' : 'collapsed'}`,
             type: "button",
             "data-bs-toggle": "collapse",
-            "data-bs-target": `#collapse-${index}`,
-            "aria-expanded": index === 0 ? "true" : "false",
-            "aria-controls": `collapse-${index}`
+            "data-bs-target": `#collapse-${idx}`,
+            "aria-expanded": idx === 0 ? "true" : "false",
+            "aria-controls": `collapse-${idx}`
         });
         
-        accordionButton.append(
+        botonAccordion.append(
             $("<div>", {class: "d-flex align-items-center w-100"}).append(
-                $("<div>", {class: "me-3"}).append(
-                    $("<span>", {class: "badge bg-info text-white fs-6", text: index + 1})
-                ),
-                $("<div>", {class: "flex-grow-1"}).append(
-                    $("<h5>", {class: "mb-1", text: impacto.nombre}),
-                    $("<small>", {class: "text-muted", text: "Ver detalles y cálculos"})
+                $("<span>", {class: "badge bg-primary me-3 fs-6", text: idx + 1}),
+                $("<div>").append(
+                    $("<strong>", {text: impacto.nombre}),
+                    $("<div>", {class: "text-muted small", text: "Ver análisis detallado"})
                 )
             )
         );
         
-        accordionHeader.append(accordionButton);
+        headerAccordion.append(botonAccordion);
 
-        // Contenido del accordion
-        const accordionCollapse = $("<div>", {
-            id: `collapse-${index}`,
-            class: `accordion-collapse collapse ${index === 0 ? 'show' : ''}`,
-            "aria-labelledby": `heading-${index}`,
+        const collapseAccordion = $("<div>", {
+            id: `collapse-${idx}`,
+            class: `accordion-collapse collapse ${idx === 0 ? 'show' : ''}`,
+            "aria-labelledby": `heading-${idx}`,
             "data-bs-parent": "#impactosAccordion"
         });
 
-        const accordionBody = $("<div>", {class: "accordion-body p-4"});
+        const bodyAccordion = $("<div>", {class: "accordion-body"});
 
-        // Resumen del impacto en cards
-        const impactSummary = $("<div>", {class: "row mb-4"});
-        let totalImpacto = 0;
+        // Calcular impacto total
+        let impactoTotal = 0;
         impacto.data.forEach(seccion => {
-            totalImpacto += parseFloat(seccion.contribucionImpacto);
+            impactoTotal += parseFloat(seccion.contribucionImpacto);
         });
 
-        const summaryCard = $("<div>", {class: "col-12 mb-3"});
-        const summaryAlert = $("<div>", {
-            class: `alert ${totalImpacto >= 70 ? 'alert-success border-success' : totalImpacto >= 40 ? 'alert-warning border-warning' : 'alert-danger border-danger'} border-start border-5`,
+        // Card de resumen
+        const cardResumen = $("<div>", {class: "card mb-4 border-0"});
+        const alertClass = impactoTotal >= 70 ? 'alert-success' : impactoTotal >= 40 ? 'alert-warning' : 'alert-danger';
+        const iconClass = impactoTotal >= 70 ? 'ti-check' : impactoTotal >= 40 ? 'ti-alert-triangle' : 'ti-x';
+        
+        const alertResumen = $("<div>", {
+            class: `alert ${alertClass} d-flex align-items-center mb-0`,
             role: "alert"
         });
         
-        summaryAlert.append(
-            $("<div>", {class: "d-flex align-items-center"}).append(
-                $("<div>", {class: "me-3"}).append(
-                    $("<i>", {class: `ti ${totalImpacto >= 70 ? 'ti-check text-success' : totalImpacto >= 40 ? 'ti-alert-triangle text-warning' : 'ti-x text-danger'} fs-2`})
-                ),
-                $("<div>").append(
-                    $("<h5>", {class: "alert-heading mb-1", text: "Impacto Total"}),
-                    $("<h3>", {class: "mb-0", text: `${totalImpacto.toFixed(2)}%`})
-                )
+        alertResumen.append(
+            $("<i>", {class: `ti ${iconClass} fs-2 me-3`}),
+            $("<div>").append(
+                $("<h5>", {class: "alert-heading mb-1", text: "Impacto Total"}),
+                $("<p>", {class: "h3 mb-0", text: `${impactoTotal.toFixed(2)}%`})
             )
         );
         
-        summaryCard.append(summaryAlert);
-        impactSummary.append(summaryCard);
+        cardResumen.append(alertResumen);
 
-        // Tabla de cálculos ponderados
-        const tableContainer = $("<div>", {class: "table-responsive mb-4"});
-        const table = $("<table>", {class: "table table-hover"});
+        // Tabla de cálculos
+        const divTabla = $("<div>", {class: "table-responsive mb-4"});
+        const tabla = $("<table>", {class: "table table-hover align-middle"});
         
-        const tableHeader = $("<thead>", {class: "table-light"});
-        tableHeader.append(
+        const thead = $("<thead>", {class: "table-light"});
+        thead.append(
             $("<tr>").append(
                 $("<th>", {scope: "col", text: "Sección"}),
-                $("<th>", {scope: "col", text: "Obtenido", class: "text-center"}),
-                $("<th>", {scope: "col", text: "Peso", class: "text-center"}),
-                $("<th>", {scope: "col", text: "Contribución", class: "text-center"})
+                $("<th>", {scope: "col", class: "text-center", text: "Obtenido"}),
+                $("<th>", {scope: "col", class: "text-center", text: "Peso"}),
+                $("<th>", {scope: "col", class: "text-center", text: "Contribución"})
             )
         );
 
-        const tableBody = $("<tbody>");
+        const tbody = $("<tbody>");
         impacto.data.forEach(seccion => {
-            const row = $("<tr>");
-            row.append(
+            const fila = $("<tr>");
+            const contribucion = parseFloat(seccion.contribucionImpacto);
+            const badgeClass = contribucion >= 15 ? 'bg-success' : contribucion >= 10 ? 'bg-warning text-dark' : 'bg-danger';
+            
+            fila.append(
                 $("<td>").append(
-                    $("<div>", {class: "d-flex align-items-center"}).append(
-                        $("<i>", {class: "ti ti-clipboard-data me-2"}),
-                        $("<span>", {text: seccion.titulo})
-                    )
+                    $("<i>", {class: "ti ti-clipboard-data me-2"}),
+                    $("<span>", {text: seccion.titulo})
                 ),
                 $("<td>", {class: "text-center"}).append(
                     $("<span>", {class: "badge bg-secondary", text: `${seccion.obtenido}%`})
@@ -208,409 +205,396 @@ function generarImpactoHTML(data, emprendedores) {
                     $("<span>", {class: "badge bg-dark", text: `${seccion.peso}%`})
                 ),
                 $("<td>", {class: "text-center"}).append(
-                    $("<span>", {
-                        class: `badge ${parseFloat(seccion.contribucionImpacto) >= 15 ? 'bg-success' : parseFloat(seccion.contribucionImpacto) >= 10 ? 'bg-warning text-dark' : 'bg-danger'}`,
-                        text: `${seccion.contribucionImpacto}%`
-                    })
+                    $("<span>", {class: `badge ${badgeClass}`, text: `${seccion.contribucionImpacto}%`})
                 )
             );
-            tableBody.append(row);
+            tbody.append(fila);
         });
 
-        // Fila de total
-        const totalRow = $("<tr>", {class: "table-active fw-bold"});
-        totalRow.append(
+        const filaTotal = $("<tr>", {class: "table-active fw-bold"});
+        filaTotal.append(
             $("<td>", {text: "Total", colspan: 3}),
             $("<td>", {class: "text-center"}).append(
-                $("<span>", {class: "badge bg-primary fs-6", text: `${totalImpacto.toFixed(2)}%`})
+                $("<span>", {class: "badge bg-primary fs-6", text: `${impactoTotal.toFixed(2)}%`})
             )
         );
-        tableBody.append(totalRow);
+        tbody.append(filaTotal);
 
-        table.append(tableHeader, tableBody);
-        tableContainer.append(table);
+        tabla.append(thead, tbody);
+        divTabla.append(tabla);
 
-        // Narrativa en card separada
-        const narrativaCard = $("<div>", {class: "card border-0 bg-light shadow-sm mb-4"});
-        const narrativaHeader = $("<div>", {class: "card-header bg-transparent border-0 border-bottom border-2 border-info"});
-        narrativaHeader.append(
-            $("<h6>", {class: "card-title mb-0"}).append(
+        // Card de narrativa
+        const cardNarrativa = $("<div>", {class: "card mb-4 bg-light border-0 shadow-sm"});
+        const headerNarrativa = $("<div>", {class: "card-header bg-transparent border-bottom"});
+        headerNarrativa.append(
+            $("<h6>", {class: "mb-0"}).append(
                 $("<i>", {class: "ti ti-file-text me-2"}),
                 $("<span>", {text: "Narrativa"})
             )
         );
         
-        const narrativaBody = $("<div>", {class: "card-body"});
-        narrativaBody.append($("<div>", {class: "text-muted", html: impacto.narrativa}));
-        narrativaCard.append(narrativaHeader, narrativaBody);
+        const bodyNarrativa = $("<div>", {class: "card-body"});
+        bodyNarrativa.append($("<div>", {class: "text-muted", html: impacto.narrativa}));
+        cardNarrativa.append(headerNarrativa, bodyNarrativa);
 
-        // Accordion anidado para variaciones por sección
-        const variacionesAccordion = $("<div>", {class: "accordion accordion-flush", id: `variaciones-${index}`});
+        // Accordion anidado para detalles
+        const accordionDetalles = $("<div>", {class: "accordion accordion-flush", id: `variaciones-${idx}`});
         
-        impacto.data.forEach((seccion, secIndex) => {
-            const varItem = $("<div>", {class: "accordion-item"});
-            const varHeader = $("<h2>", {class: "accordion-header", id: `var-heading-${index}-${secIndex}`});
-            const varButton = $("<button>", {
+        impacto.data.forEach((seccion, secIdx) => {
+            const itemDetalle = $("<div>", {class: "accordion-item"});
+            const headerDetalle = $("<h4>", {class: "accordion-header", id: `var-heading-${idx}-${secIdx}`});
+            const botonDetalle = $("<button>", {
                 class: "accordion-button collapsed",
                 type: "button",
                 "data-bs-toggle": "collapse",
-                "data-bs-target": `#var-collapse-${index}-${secIndex}`,
+                "data-bs-target": `#var-collapse-${idx}-${secIdx}`,
                 "aria-expanded": "false",
-                "aria-controls": `var-collapse-${index}-${secIndex}`,
+                "aria-controls": `var-collapse-${idx}-${secIdx}`,
                 text: `Detalles: ${seccion.titulo}`
             });
 
-            const varCollapse = $("<div>", {
-                id: `var-collapse-${index}-${secIndex}`,
+            const collapseDetalle = $("<div>", {
+                id: `var-collapse-${idx}-${secIdx}`,
                 class: "accordion-collapse collapse",
-                "aria-labelledby": `var-heading-${index}-${secIndex}`,
-                "data-bs-parent": `#variaciones-${index}`
+                "aria-labelledby": `var-heading-${idx}-${secIdx}`,
+                "data-bs-parent": `#variaciones-${idx}`
             });
 
-            const varBody = $("<div>", {class: "accordion-body"});
-            const varTable = $("<div>", {class: "table-responsive"});
-            const detailTable = $("<table>", {class: "table table-sm"});
+            const bodyDetalle = $("<div>", {class: "accordion-body"});
+            const tablaDetalle = $("<div>", {class: "table-responsive"});
+            const tableDetalle = $("<table>", {class: "table table-sm table-striped"});
             
-            const detailHeader = $("<thead>", {class: "table-light"});
-            detailHeader.append(
+            const theadDetalle = $("<thead>");
+            theadDetalle.append(
                 $("<tr>").append(
                     $("<th>", {text: "Pregunta"}),
-                    $("<th>", {text: "Inicial", class: "text-center"}),
-                    $("<th>", {text: "Final", class: "text-center"}),
-                    $("<th>", {text: "Variación", class: "text-center"})
+                    $("<th>", {class: "text-center", text: "Inicial"}),
+                    $("<th>", {class: "text-center", text: "Final"}),
+                    $("<th>", {class: "text-center", text: "Variación"})
                 )
             );
 
-            const detailBody = $("<tbody>");
+            const tbodyDetalle = $("<tbody>");
             Object.entries(seccion.mediciones).forEach(([pregunta, medicion]) => {
                 const variacion = medicion.variacionPorcentual.toFixed(2);
-                const row = $("<tr>");
-                row.append(
+                const badgeVar = parseFloat(variacion) > 0 ? 'bg-success' : parseFloat(variacion) < 0 ? 'bg-danger' : 'bg-secondary';
+                
+                const filaDetalle = $("<tr>");
+                filaDetalle.append(
                     $("<td>", {text: pregunta}),
                     $("<td>", {class: "text-center", text: medicion.inicial}),
                     $("<td>", {class: "text-center", text: medicion.final}),
                     $("<td>", {class: "text-center"}).append(
-                        $("<span>", {
-                            class: `badge ${parseFloat(variacion) > 0 ? 'bg-success' : parseFloat(variacion) < 0 ? 'bg-danger' : 'bg-secondary'}`,
-                            text: `${variacion}%`
-                        })
+                        $("<span>", {class: `badge ${badgeVar}`, text: `${variacion}%`})
                     )
                 );
-                detailBody.append(row);
+                tbodyDetalle.append(filaDetalle);
             });
 
-            detailTable.append(detailHeader, detailBody);
-            varTable.append(detailTable);
-            varBody.append(varTable);
-            varHeader.append(varButton);
-            varItem.append(varHeader, varCollapse.append(varBody));
-            variacionesAccordion.append(varItem);
+            tableDetalle.append(theadDetalle, tbodyDetalle);
+            tablaDetalle.append(tableDetalle);
+            bodyDetalle.append(tablaDetalle);
+            headerDetalle.append(botonDetalle);
+            collapseDetalle.append(bodyDetalle);
+            itemDetalle.append(headerDetalle, collapseDetalle);
+            accordionDetalles.append(itemDetalle);
         });
 
-        accordionBody.append(impactSummary, tableContainer, narrativaCard, variacionesAccordion);
-        accordionCollapse.append(accordionBody);
-        accordionItem.append(accordionHeader, accordionCollapse);
-        impactosAccordion.append(accordionItem);
+        bodyAccordion.append(cardResumen, divTabla, cardNarrativa, accordionDetalles);
+        collapseAccordion.append(bodyAccordion);
+        itemAccordion.append(headerAccordion, collapseAccordion);
+        accordionImpactos.append(itemAccordion);
     });
 
-    seccionMedicion.append(impactosAccordion);
+    seccionMedicion.append(accordionImpactos);
 
     // === SECCIÓN 2: CONFIGURACIÓN ===
-    const seccionConfiguracion = $("<div>", {
+    const seccionConfig = $("<section>", {
         id: "section-configuracion",
-        class: "content-section d-none"
+        class: "content-section d-none",
+        role: "tabpanel",
+        "aria-labelledby": "nav-configuracion"
     });
 
-    const configHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-info"});
-    configHeader.append(
-        $("<h2>", {class: "h3 mb-0"}).append(
+    const headerConfig = $("<div>", {class: "mb-4"});
+    const cardHeaderConfig = $("<div>", {class: "card shadow-sm border-start border-4 border-info"});
+    const cardHeaderBodyConfig = $("<div>", {class: "card-body"});
+    cardHeaderBodyConfig.append(
+        $("<h2>", {class: "h4 mb-0 d-flex align-items-center"}).append(
             $("<i>", {class: "ti ti-settings me-2"}),
             $("<span>", {text: "Configuración de Parámetros"})
         )
     );
-    seccionConfiguracion.append(configHeader);
+    cardHeaderConfig.append(cardHeaderBodyConfig);
+    headerConfig.append(cardHeaderConfig);
+    seccionConfig.append(headerConfig);
 
-    // Card de configuración temporal
-    const configCard = $("<div>", {class: "card shadow-sm mb-4"});
-    const configCardHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-info"});
-    configCardHeader.append(
-        $("<h5>", {class: "card-title mb-0"}).append(
+    // Card temporal
+    const cardTemporal = $("<div>", {class: "card shadow-sm mb-4"});
+    const headerTemporal = $("<div>", {class: "card-header bg-white border-bottom"});
+    headerTemporal.append(
+        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
             $("<i>", {class: "ti ti-calendar me-2"}),
             $("<span>", {text: "Configuración Temporal"})
         )
     );
 
-    const configCardBody = $("<div>", {class: "card-body"});
-    const configRow = $("<div>", {class: "row g-3"});
+    const bodyTemporal = $("<div>", {class: "card-body"});
+    const formFechas = $("<form>", {id: "form-fechas", class: "needs-validation", novalidate: true});
+    const rowTemporal = $("<div>", {class: "row g-3"});
 
-    // Año de inicio
-    const inicioCol = $("<div>", {class: "col-md-6"});
-    inicioCol.append(
-        $("<label>", {for: "añoInicio", class: "form-label fw-semibold", text: "Año de Inicio"}),
-        $("<select>", {class: "form-select", id: "añoInicio", "aria-describedby": "inicioHelp"}).append(
-            ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
-                const yearValue = data.fechas.inicio + yearOffset;
-                return $("<option>", {value: yearValue, text: yearValue});
-            })
-        ),
-        $("<div>", {id: "inicioHelp", class: "form-text", text: "Seleccione el año de inicio del análisis"})
-    );
+    const colInicio = $("<div>", {class: "col-md-6"});
+    const labelInicio = $("<label>", {for: "fechaInicio", class: "form-label", text: "Fecha de Inicio"});
+    const inputInicio = $("<input>", {
+        type: "date",
+        class: "form-control",
+        id: "fechaInicio",
+        name: "fechaInicio",
+        min: `${data.fechas.inicio}`,
+        max: `${data.fechas.fin}`,
+        value: `${data.fechas.inicioSelected}`,
+        required: true
+    });
+    colInicio.append(labelInicio, inputInicio);
 
-    // Año final
-    const finalCol = $("<div>", {class: "col-md-6"});
-    finalCol.append(
-        $("<label>", {for: "añoFinal", class: "form-label fw-semibold", text: "Año Final"}),
-        $("<select>", {class: "form-select", id: "añoFinal", "aria-describedby": "finalHelp"}).append(
-            ...Array(data.fechas.fin - data.fechas.inicio + 1).keys().map(yearOffset => {
-                const yearValue = data.fechas.inicio + yearOffset;
-                return $("<option>", {value: yearValue, text: yearValue});
-            })
-        ),
-        $("<div>", {id: "finalHelp", class: "form-text", text: "Seleccione el año final del análisis"})
-    );
+    const colFinal = $("<div>", {class: "col-md-6"});
+    const labelFinal = $("<label>", {for: "fechaFinal", class: "form-label", text: "Fecha Final"});
+    const inputFinal = $("<input>", {
+        type: "date",
+        class: "form-control",
+        id: "fechaFinal",
+        name: "fechaFinal",
+        min: `${data.fechas.inicio}`,
+        max: `${data.fechas.fin}`,
+        value: `${data.fechas.finSelected}`,
+        required: true
+    });
+    colFinal.append(labelFinal, inputFinal);
 
-    configRow.append(inicioCol, finalCol);
-    configCardBody.append(configRow);
-    configCard.append(configCardHeader, configCardBody);
+    rowTemporal.append(colInicio, colFinal);
 
-    // Card de gestión de emprendedores
-    const emprendedoresCard = $("<div>", {class: "card shadow-sm"});
-    const emprendedoresHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-primary d-flex justify-content-between align-items-center"});
-    emprendedoresHeader.append(
-        $("<h5>", {class: "card-title mb-0"}).append(
+    const divBoton = $("<div>", {class: "mt-3 text-end"});
+    const botonSubmit = $("<button>", {
+        type: "submit",
+        class: "btn btn-primary"
+    });
+    botonSubmit.append($("<i>", {class: "ti ti-device-floppy me-2"}), $("<span>", {text: "Actualizar Período"}));
+    divBoton.append(botonSubmit);
+
+    formFechas.append(rowTemporal, divBoton);
+    bodyTemporal.append(formFechas);
+    cardTemporal.append(headerTemporal, bodyTemporal);
+
+    // Card emprendedores
+    const cardEmprendedores = $("<div>", {class: "card shadow-sm"});
+    const headerEmprendedores = $("<div>", {class: "card-header bg-white border-bottom d-flex justify-content-between align-items-center"});
+    headerEmprendedores.append(
+        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
             $("<i>", {class: "ti ti-users me-2"}),
             $("<span>", {text: "Gestión de Emprendedores"})
         ),
-        $("<span>", {class: "badge bg-dark text-white", id: "emprendedores-count", text: `${emprendedores.length} total`})
+        $("<span>", {class: "badge bg-dark", id: "emprendedores-count", text: `${emprendedores.length} total`})
     );
 
-    const emprendedoresBody = $("<div>", {class: "card-body"});
+    const bodyEmprendedores = $("<div>", {class: "card-body"});
 
     // Filtros
-    const filtrosRow = $("<div>", {class: "row g-3 mb-3"});
-    const etapaCol = $("<div>", {class: "col-md-6"});
+    const rowFiltros = $("<div>", {class: "row g-3 mb-3"});
+    const colEtapa = $("<div>", {class: "col-md-6"});
     
-    etapaCol.append(
-        $("<label>", {for: "etapaSelector", class: "form-label fw-semibold", text: "Filtrar por etapa"}),
-        $("<select>", {
-            class: "form-select",
-            id: "etapaSelector",
-            "aria-describedby": "etapaHelp",
-            change: function() {
-                const selectedEtapa = $(this).val();
-                filtrarEmprendedores(selectedEtapa, emprendedores);
-                actualizarContadorSeleccionados();
-            }
-        }).append(
-            $("<option>", {value: "", text: "Todas las etapas"}),
-            [...new Set(emprendedores.map(emp => emp.etapa))].map(etapa => 
-                $("<option>", {value: etapa, text: etapa})
-            )
-        ),
-        $("<div>", {id: "etapaHelp", class: "form-text", text: "Filtre emprendedores por su etapa actual"})
-    );
-
-    const accionesCol = $("<div>", {class: "col-md-6 d-flex align-items-end"});
-    const btnGroup = $("<div>", {class: "btn-group w-100", role: "group"});
-    btnGroup.append(
-        $("<button>", {
-            class: "btn btn-outline-primary",
-            type: "button",
-            id: "select-all-btn",
-            text: "Seleccionar Todos"
-        }),
-        $("<button>", {
-            class: "btn btn-outline-secondary",
-            type: "button",
-            id: "deselect-all-btn",
-            text: "Deseleccionar Todos"
-        })
-    );
-    accionesCol.append(btnGroup);
-
-    filtrosRow.append(etapaCol, accionesCol);
-
-    // Tabla de emprendedores
-    const tablaContainer = $("<div>", {class: "table-responsive"});
-    const tabla = $("<table>", {class: "table table-hover", id: "tablaEmprendedores"});
+    const labelEtapa = $("<label>", {for: "etapaSelector", class: "form-label", text: "Filtrar por etapa"});
+    const selectEtapa = $("<select>", {class: "form-select", id: "etapaSelector", "aria-describedby": "etapaHelp"});
+    selectEtapa.append($("<option>", {value: "", text: "Todas las etapas"}));
     
-    const tablaHead = $("<thead>", {class: "table-light"});
-    tablaHead.append(
+    const etapasUnicas = [...new Set(emprendedores.map(emp => emp.etapa))];
+    etapasUnicas.forEach(etapa => {
+        selectEtapa.append($("<option>", {value: etapa, text: etapa}));
+    });
+    
+    selectEtapa.on('change', function() {
+        const etapaSelec = $(this).val();
+        filtrarEmprendedores(etapaSelec, emprendedores);
+        actualizarContadorSeleccionados();
+    });
+    
+    const helpEtapa = $("<div>", {id: "etapaHelp", class: "form-text", text: "Filtre emprendedores por su etapa actual"});
+    colEtapa.append(labelEtapa, selectEtapa, helpEtapa);
+
+    const colAcciones = $("<div>", {class: "col-md-6 d-flex align-items-end gap-2"});
+    const btnSelTodos = $("<button>", {
+        type: "button",
+        class: "btn btn-outline-primary flex-fill",
+        id: "select-all-btn",
+        text: "Seleccionar Todos"
+    });
+    const btnDeselTodos = $("<button>", {
+        type: "button",
+        class: "btn btn-outline-secondary flex-fill",
+        id: "deselect-all-btn",
+        text: "Deseleccionar Todos"
+    });
+    colAcciones.append(btnSelTodos, btnDeselTodos);
+
+    rowFiltros.append(colEtapa, colAcciones);
+
+    // Tabla emprendedores
+    const divTablaEmp = $("<div>", {class: "table-responsive"});
+    const tablaEmp = $("<table>", {class: "table table-hover align-middle", id: "tablaEmprendedores"});
+    
+    const theadEmp = $("<thead>", {class: "table-light"});
+    const checkAll = $("<input>", {
+        class: "form-check-input",
+        type: "checkbox",
+        id: "select-all",
+        "aria-label": "Seleccionar todos"
+    });
+    
+    theadEmp.append(
         $("<tr>").append(
             $("<th>", {scope: "col", class: "text-center"}).append(
-                $("<div>", {class: "form-check"}).append(
-                    $("<input>", {
-                        class: "form-check-input",
-                        type: "checkbox",
-                        id: "select-all",
-                        "aria-label": "Seleccionar todos los emprendedores"
-                    })
-                )
+                $("<div>", {class: "form-check d-flex justify-content-center"}).append(checkAll)
             ),
             $("<th>", {scope: "col", text: "Nombre Completo"}),
             $("<th>", {scope: "col", text: "Correo Electrónico"}),
-            $("<th>", {scope: "col", text: "Etapa", class: "text-center"})
+            $("<th>", {scope: "col", class: "text-center", text: "Etapa"})
         )
     );
 
-    const tablaBody = $("<tbody>");
-    emprendedores.forEach(emprendedor => {
-        const row = $("<tr>");
-        row.append(
+    const tbodyEmp = $("<tbody>");
+    emprendedores.forEach(emp => {
+        const iniciales = emp.nombre.charAt(0) + emp.apellidos.charAt(0);
+        const checkEmp = $("<input>", {
+            checked: emp.enLineaBase,
+            class: "form-check-input emprendedor-checkbox",
+            type: "checkbox",
+            value: emp.idLineaBase,
+            id: `checkbox-${emp.idUsuario}`,
+            "aria-label": `Seleccionar ${emp.nombre} ${emp.apellidos}`
+        });
+        
+        const fila = $("<tr>");
+        fila.append(
             $("<td>", {class: "text-center"}).append(
-                $("<div>", {class: "form-check"}).append(
-                    $("<input>", {
-                        checked: emprendedor.enLineaBase,
-                        class: "form-check-input emprendedor-checkbox",
-                        type: "checkbox",
-                        value: emprendedor.idLineaBase,
-                        id: `checkbox-${emprendedor.idUsuario}`,
-                        "aria-label": `Seleccionar ${emprendedor.nombre} ${emprendedor.apellidos}`
-                    })
-                )
+                $("<div>", {class: "form-check d-flex justify-content-center"}).append(checkEmp)
             ),
             $("<td>").append(
                 $("<div>", {class: "d-flex align-items-center"}).append(
-                    $("<div>", {class: "me-3"}).append(
-                        $("<div>", {
-                            class: "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center border border-2 border-light",
-                            style: "width: 40px; height: 40px; font-weight: bold;",
-                            text: emprendedor.nombre.charAt(0) + emprendedor.apellidos.charAt(0)
-                        })
-                    ),
+                    $("<div>", {
+                        class: "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3",
+                        style: "width: 40px; height: 40px; font-weight: 600;",
+                        text: iniciales
+                    }),
                     $("<div>").append(
-                        $("<div>", {class: "fw-semibold", text: `${emprendedor.nombre} ${emprendedor.apellidos}`})
+                        $("<div>", {class: "fw-semibold", text: `${emp.nombre} ${emp.apellidos}`})
                     )
                 )
             ),
-            $("<td>", {text: emprendedor.correo}),
+            $("<td>", {text: emp.correo}),
             $("<td>", {class: "text-center"}).append(
-                $("<span>", {
-                    class: "badge bg-light text-dark border border-secondary",
-                    text: emprendedor.etapa
-                })
+                $("<span>", {class: "badge bg-light text-dark border", text: emp.etapa})
             )
         );
-        tablaBody.append(row);
+        tbodyEmp.append(fila);
     });
 
-    tabla.append(tablaHead, tablaBody);
-    tablaContainer.append(tabla);
+    tablaEmp.append(theadEmp, tbodyEmp);
+    divTablaEmp.append(tablaEmp);
 
-    // Botón de aplicar filtro
-    const aplicarContainer = $("<div>", {class: "d-flex justify-content-between align-items-center mt-3"});
-    aplicarContainer.append(
-        $("<div>").append(
-            $("<span>", {class: "text-muted", id: "seleccionados-info", text: "0 emprendedores seleccionados"})
-        ),
+    // Footer con contador y botón
+    const divFooterEmp = $("<div>", {class: "d-flex justify-content-between align-items-center mt-3"});
+    divFooterEmp.append(
+        $("<span>", {class: "text-muted", id: "seleccionados-info", text: "0 emprendedores seleccionados"}),
         $("<button>", {
-            class: "btn btn-primary",
             type: "button",
-            id: "apply-filter",
-            click: aplicarFiltro
+            class: "btn btn-primary",
+            id: "apply-filter"
         }).append(
             $("<i>", {class: "ti ti-check me-2"}),
             $("<span>", {text: "Aplicar Configuración"})
         )
     );
 
-    emprendedoresBody.append(filtrosRow, tablaContainer, aplicarContainer);
-    emprendedoresCard.append(emprendedoresHeader, emprendedoresBody);
+    /*bodyEmprendedores.append(rowFiltros, divTablaEmp, divFooterEmp); // descomentar para mejorar el filtro de emprendedores
+    cardEmprendedores.append(headerEmprendedores, bodyEmprendedores);*/
     
-    seccionConfiguracion.append(configCard, emprendedoresCard);
+    seccionConfig.append(cardTemporal, cardEmprendedores);
 
     // === SECCIÓN 3: VISTA GENERAL ===
-    const seccionVistaGeneral = $("<div>", {
+    const seccionVista = $("<section>", {
         id: "section-vista-general",
-        class: "content-section d-none"
+        class: "content-section d-none",
+        role: "tabpanel",
+        "aria-labelledby": "nav-vista-general"
     });
 
-    const vistaHeader = $("<div>", {class: "d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border-start border-5 border-success"});
-    vistaHeader.append(
-        $("<h2>", {class: "h3 mb-0"}).append(
+    const headerVista = $("<div>", {class: "mb-4"});
+    const cardHeaderVista = $("<div>", {class: "card shadow-sm border-start border-4 border-success"});
+    const cardHeaderBodyVista = $("<div>", {class: "card-body"});
+    cardHeaderBodyVista.append(
+        $("<h2>", {class: "h4 mb-0 d-flex align-items-center"}).append(
             $("<i>", {class: "ti ti-file-analytics me-2"}),
             $("<span>", {text: "Vista General"})
         )
     );
-    seccionVistaGeneral.append(vistaHeader);
+    cardHeaderVista.append(cardHeaderBodyVista);
+    headerVista.append(cardHeaderVista);
+    seccionVista.append(headerVista);
 
-    const vistaCard = $("<div>", {class: "card shadow-sm"});
-    const vistaCardHeader = $("<div>", {class: "card-header bg-light border-bottom border-2 border-success"});
-    vistaCardHeader.append(
-        $("<h5>", {class: "card-title mb-0"}).append(
+    const cardExport = $("<div>", {class: "card shadow-sm"});
+    const headerExport = $("<div>", {class: "card-header bg-white border-bottom"});
+    headerExport.append(
+        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
             $("<i>", {class: "ti ti-download me-2"}),
             $("<span>", {text: "Exportación de Datos"})
         )
     );
 
-    const vistaCardBody = $("<div>", {class: "card-body text-center"});
+    const bodyExport = $("<div>", {class: "card-body text-center py-5"});
     
-    const exportDescription = $("<p>", {
-        class: "text-muted mb-4",
-        text: "Exporte los datos de la línea base en formato Excel para análisis externos."
-    });
-
-    const btnGroupExport = $("<div>", {class: "btn-group", role: "group", "aria-label": "Opciones de exportación"});
-    btnGroupExport.append(
-        $("<button>", {
-            type: "button",
-            class: "btn btn-outline-info btn-lg",
-            id: "btnInicial",
-            "data-tipo": "inicial",
-            click: recuperarVistaImpacto
-        }).append(
-            $("<i>", {class: "ti ti-download me-2"}),
-            $("<span>", {text: "Exportar Línea Base Inicial"})
+    bodyExport.append(
+        $("<p>", {class: "text-muted mb-4", text: "Exporte los datos de la línea base en formato Excel para análisis externos."}),
+        $("<div>", {class: "d-grid gap-3 d-md-flex justify-content-md-center"}).append(
+            $("<button>", {
+                type: "button",
+                class: "btn btn-outline-info btn-lg",
+                id: "btnInicial",
+                "data-tipo": "inicial"
+            }).append(
+                $("<i>", {class: "ti ti-download me-2"}),
+                $("<span>", {text: "Exportar Línea Base Inicial"})
+            ),
+            $("<button>", {
+                type: "button",
+                class: "btn btn-outline-success btn-lg",
+                id: "btnFinal",
+                "data-tipo": "final"
+            }).append(
+                $("<i>", {class: "ti ti-upload me-2"}),
+                $("<span>", {text: "Exportar Línea Base Final"})
+            )
         ),
-        $("<button>", {
-            type: "button",
-            class: "btn btn-outline-success btn-lg",
-            id: "btnFinal",
-            "data-tipo": "final",
-            click: recuperarVistaImpacto
-        }).append(
-            $("<i>", {class: "ti ti-upload me-2"}),
-            $("<span>", {text: "Exportar Línea Base Final"})
+        $("<div>", {id: "loadingSpinnerContainer", class: "mt-4 d-none"}).append(
+            $("<div>", {class: "alert alert-info d-flex align-items-center justify-content-center", role: "alert"}).append(
+                $("<div>", {class: "spinner-border spinner-border-sm me-3", role: "status"}).append(
+                    $("<span>", {class: "visually-hidden", text: "Cargando..."})
+                ),
+                $("<span>", {text: "Preparando exportación..."})
+            )
         )
     );
 
-    // Spinner de carga
-    const loadingContainer = $("<div>", {
-        id: "loadingSpinnerContainer",
-        class: "mt-4",
-        style: "display: none;"
-    });
+    cardExport.append(headerExport, bodyExport);
+    seccionVista.append(cardExport);
+
+    // === ENSAMBLADO ===
+    contenidoPrincipal.append(seccionMedicion, seccionConfig, seccionVista);
+    columnaContenido.append(contenidoPrincipal);
+    fila.append(columnaSidebar, columnaContenido);
+    contenedorPrincipal.append(fila);
+    $("#impacto-container").append(contenedorPrincipal);
+
+    // === EVENTOS ===
     
-    const loadingAlert = $("<div>", {class: "alert alert-info border-info border-2 d-flex align-items-center", role: "alert"});
-    loadingAlert.append(
-        $("<div>", {
-            class: "spinner-border spinner-border-sm me-3",
-            role: "status",
-            "aria-hidden": "true"
-        }),
-        $("<div>", {text: "Preparando exportación..."})
-    );
-    
-    loadingContainer.append(loadingAlert);
-
-    vistaCardBody.append(exportDescription, btnGroupExport, loadingContainer);
-    vistaCard.append(vistaCardHeader, vistaCardBody);
-    seccionVistaGeneral.append(vistaCard);
-
-    // === ENSAMBLADO FINAL ===
-    mainContent.append(seccionMedicion, seccionConfiguracion, seccionVistaGeneral);
-    contentCol.append(mainContent);
-    row.append(sidebarCol, contentCol);
-    mainContainer.append(row);
-    $("#impacto-container").append(mainContainer);
-
-    // Configurar valores iniciales
-    $('#añoInicio').val(data.fechas.inicioSelected);
-    $('#añoFinal').val(data.fechas.finSelected);
-
-    // === EVENTOS Y FUNCIONALIDAD ===
-    
-    // Función para actualizar contador de seleccionados
     function actualizarContadorSeleccionados() {
         const seleccionados = $('.emprendedor-checkbox:checked').length;
         const total = emprendedores.length;
@@ -618,7 +602,6 @@ function generarImpactoHTML(data, emprendedores) {
         $("#emprendedores-count").text(`${seleccionados}/${total} seleccionados`);
     }
 
-    // Eventos de selección
     $("#select-all").on("change", function() {
         const isChecked = $(this).prop("checked");
         const table = $('#tablaEmprendedores').DataTable();
@@ -642,11 +625,9 @@ function generarImpactoHTML(data, emprendedores) {
         actualizarContadorSeleccionados();
     });
 
-    // Event listener para checkboxes individuales
     $(document).on('change', '.emprendedor-checkbox', function() {
         actualizarContadorSeleccionados();
         
-        // Actualizar estado del checkbox "seleccionar todos"
         const totalCheckboxes = $('.emprendedor-checkbox').length;
         const checkedCheckboxes = $('.emprendedor-checkbox:checked').length;
         
@@ -659,11 +640,12 @@ function generarImpactoHTML(data, emprendedores) {
         }
     });
 
-    // Inicializar contador
+    $("#apply-filter").on("click", aplicarFiltro);
+    $("#btnInicial").on("click", recuperarVistaImpacto);
+    $("#btnFinal").on("click", recuperarVistaImpacto);
+
     actualizarContadorSeleccionados();
     
-    // Inicializar DataTable después de que la sección esté visible
-    // Para resolver el bug de renderización cuando el elemento no está visible
     $(document).on('shown.bs.tab shown.bs.collapse', function (e) {
         const table = $('#tablaEmprendedores');
         if (table.length && $.fn.DataTable.isDataTable(table)) {
@@ -671,7 +653,6 @@ function generarImpactoHTML(data, emprendedores) {
         }
     });
     
-    // Inicializar DataTable cuando se hace clic en la sección de configuración
     $(document).on('click', '#nav-configuracion', function() {
         setTimeout(() => {
             if (!$.fn.DataTable.isDataTable('#tablaEmprendedores')) {
@@ -687,7 +668,6 @@ function aplicarFiltro() {
     const seleccionados = [];
     const table = $('#tablaEmprendedores').DataTable();
     
-    // Mostrar loading en el botón
     const btnAplicar = $("#apply-filter");
     const btnText = btnAplicar.html();
     btnAplicar.prop('disabled', true).html(
@@ -706,29 +686,26 @@ function aplicarFiltro() {
         data: $.param({seleccionados: seleccionados})
     }, (res) => {
         if (!res.es_valor_error) {
-            // Mostrar mensaje de éxito
-            const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
+            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
             alertSuccess.append(
-                '<i class="ti ti-check text-success me-2"></i>',
+                '<i class="ti ti-check me-2"></i>',
                 '<strong>¡Éxito!</strong> La configuración se ha aplicado correctamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
             
             $("#section-configuracion").prepend(alertSuccess);
             
-            // Auto-hide después de 5 segundos
             setTimeout(() => {
                 alertSuccess.alert('close');
             }, 5000);
             
             refresh();
         } else {
-            // Mostrar mensaje de error
-            const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
+            const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
             alertError.append(
-                '<i class="ti ti-x text-danger me-2"></i>',
+                '<i class="ti ti-x me-2"></i>',
                 '<strong>Error:</strong> No se pudo aplicar la configuración. Intente nuevamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
             
             $("#section-configuracion").prepend(alertError);
@@ -738,7 +715,6 @@ function aplicarFiltro() {
             }, 5000);
         }
         
-        // Restaurar botón
         btnAplicar.prop('disabled', false).html(btnText);
     });
 }
@@ -747,7 +723,6 @@ function filtrarEmprendedores(etapaSeleccionada) {
     const table = $('#tablaEmprendedores').DataTable();
     
     if (etapaSeleccionada === "") {
-        // Si no hay etapa seleccionada, mostrar todos
         table.search('').draw();
         return;
     }
@@ -761,89 +736,125 @@ function filtrarEmprendedores(etapaSeleccionada) {
         checkbox.prop('checked', etapaText === etapaSeleccionada);
     });
     
-    // Filtrar la tabla por la etapa seleccionada
     table.column(3).search(etapaSeleccionada).draw();
     
     $("#select-all").prop("checked", false).prop('indeterminate', false);
 }
 
 function completarParametrosConfiguracion() {
-    // Validar que el año final no sea menor que el año de inicio
-    $('#añoInicio, #añoFinal').change(function() {
-        let añoInicio = parseInt($('#añoInicio').val());
-        let añoFinal = parseInt($('#añoFinal').val());
+    $('#form-fechas').on('submit', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const form = $(this);
+        const fechaInicioInput = $('#fechaInicio');
+        const fechaFinalInput = $('#fechaFinal');
         
-        if (añoInicio > añoFinal) {
-            // Mostrar mensaje de advertencia con mejor UX
-            const alertWarning = $('<div class="alert alert-warning border-warning border-2 alert-dismissible fade show" role="alert">');
-            alertWarning.append(
-                '<i class="ti ti-alert-triangle text-warning me-2"></i>',
-                '<strong>Advertencia:</strong> El año de inicio no puede ser mayor que el año final.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-            );
-            
-            $("#section-configuracion").prepend(alertWarning);
-            
-            // Corregir automáticamente
-            if ($(this).attr('id') === 'añoInicio') {
-                $('#añoInicio').val(añoFinal);
-            } else {
-                $('#añoFinal').val(añoInicio);
+        // --- Reset Validation State ---
+        form.find('.is-invalid').removeClass('is-invalid');
+        form.find('.invalid-feedback').remove();
+        
+        const fechaInicio = fechaInicioInput.val();
+        const fechaFinal = fechaFinalInput.val();
+        const minDate = fechaInicioInput.attr('min');
+        const maxDate = fechaFinalInput.attr('max');
+
+        let isValid = true;
+
+        const showError = (input, message) => {
+            if(isValid) isValid = false; // Only set to false, never back to true
+            input.addClass('is-invalid');
+            const feedback = $('<div>', { class: 'invalid-feedback', text: message });
+            // Prevent adding duplicate messages
+            if(input.parent().find('.invalid-feedback').length === 0) {
+                input.after(feedback);
             }
-            
-            setTimeout(() => {
-                alertWarning.alert('close');
-            }, 5000);
-            
+        };
+
+        // --- Validation ---
+        if (!fechaInicio) {
+            showError(fechaInicioInput, 'La fecha de inicio es obligatoria.');
+        } else if (isNaN(new Date(fechaInicio).getTime())) {
+            showError(fechaInicioInput, 'El formato de la fecha de inicio no es válido.');
+        }
+
+        if (!fechaFinal) {
+            showError(fechaFinalInput, 'La fecha final es obligatoria.');
+        } else if (isNaN(new Date(fechaFinal).getTime())) {
+            showError(fechaFinalInput, 'El formato de la fecha final no es válido.');
+        }
+
+        // Proceed with date-based checks only if formats are valid and fields are not empty
+        if (isValid) {
+            const minDateObj = new Date(minDate + 'T00:00:00');
+            const maxDateObj = new Date(maxDate + 'T00:00:00');
+            const fechaInicioDate = new Date(fechaInicio + 'T00:00:00');
+            const fechaFinalDate = new Date(fechaFinal + 'T00:00:00');
+
+            if (fechaInicioDate < minDateObj) {
+                showError(fechaInicioInput, `La fecha no puede ser anterior a ${minDate}.`);
+            }
+            if (fechaInicioDate > maxDateObj) {
+                showError(fechaInicioInput, `La fecha no puede ser posterior a ${maxDate}.`);
+            }
+            if (fechaFinalDate < minDateObj) {
+                showError(fechaFinalInput, `La fecha no puede ser anterior a ${minDate}.`);
+            }
+            if (fechaFinalDate > maxDateObj) {
+                showError(fechaFinalInput, `La fecha no puede ser posterior a ${maxDate}.`);
+            }
+
+            if (fechaInicioDate > fechaFinalDate) {
+                showError(fechaFinalInput, 'La fecha final no puede ser anterior a la fecha de inicio.');
+            }
+        }
+
+        if (!isValid) {
             return;
         }
-        
-        // Mostrar loading visual
-        const configCard = $("#section-configuracion .card:first");
-        const overlay = $('<div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light bg-opacity-75" style="z-index: 10;">');
+
+        // --- AJAX CALL ---
+        const submitButton = form.find('button[type="submit"]');
+        const originalButtonContent = submitButton.html();
+        submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Actualizando...');
+
+        const configCard = form.closest('.card');
+        const overlay = $('<div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10;">');
         overlay.append(
-            '<div class="spinner-border text-primary" role="status">',
-            '<span class="visually-hidden">Actualizando configuración...</span>',
-            '</div>'
+            $('<div class="spinner-border text-primary" role="status">').append(
+                '<span class="visually-hidden">Actualizando configuración...</span>'
+            )
         );
-        
         configCard.addClass('position-relative').append(overlay);
         
-        let data = {anioInicio: añoInicio, anioFin: añoFinal};
+        let data = {fechaInicio: fechaInicio, fechaFin: fechaFinal};
         crearPeticion(urlAPI, {
-            case: "actualizarConfiguracionAnios", 
+            case: "actualizarConfiguracionFechas", 
             data: $.param(data)
         }, (res) => {
             overlay.remove();
             configCard.removeClass('position-relative');
-            
+            submitButton.prop('disabled', false).html(originalButtonContent);
+
             if (!res.es_valor_error) {
-                // Mostrar mensaje de éxito
-                const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
+                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
                 alertSuccess.append(
-                    '<i class="ti ti-check text-success me-2"></i>',
-                    '<strong>¡Actualizado!</strong> La configuración temporal se ha guardado correctamente.',
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                    '<i class="ti ti-check me-2"></i>',
+                    '<strong>¡Actualizado!</strong> El período se ha guardado. La página se recargará para aplicar los cambios.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
-                
                 $("#section-configuracion").prepend(alertSuccess);
-                
                 setTimeout(() => {
-                    alertSuccess.alert('close');
+                    refresh();
                 }, 3000);
-                
-                refresh();
             } else {
-                // Mostrar mensaje de error
-                const alertError = $('<div class="alert alert-danger border-danger border-2 alert-dismissible fade show" role="alert">');
+                const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
                 alertError.append(
-                    '<i class="ti ti-x text-danger me-2"></i>',
-                    '<strong>Error:</strong> No se pudo actualizar la configuración.',
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                    '<i class="ti ti-x me-2"></i>',
+                    '<strong>Error:</strong> No se pudo actualizar el período.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
-                
                 $("#section-configuracion").prepend(alertError);
-                
                 setTimeout(() => {
                     alertError.alert('close');
                 }, 5000);
@@ -857,24 +868,20 @@ function recuperarVistaImpacto() {
     const tipo = button.data("tipo");
     const originalContent = button.html();
     
-    // Deshabilitar botón y mostrar loading
     button.prop("disabled", true).html(
         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
         `Exportando ${tipo}...`
     );
     
-    // Mostrar spinner global
-    $("#loadingSpinnerContainer").show();
+    $("#loadingSpinnerContainer").removeClass("d-none");
     
     crearPeticion(urlAPI, {
         case: 'recuperarVistaGeneral',
         data: $.param({tipo: tipo})
     }, (registros) => {
-        // Ocultar spinner
-        $("#loadingSpinnerContainer").hide();
+        $("#loadingSpinnerContainer").addClass("d-none");
         
         if (registros.length !== 0) {
-            // Crear tabla temporal para DataTables
             const tempTable = $('<table>').DataTable({
                 data: registros,
                 columns: Object.keys(registros[0]).map(key => ({
@@ -885,18 +892,14 @@ function recuperarVistaImpacto() {
                 buttons: ['excel']
             });
             
-            // Trigger download
             tempTable.button('.buttons-excel').trigger();
-            
-            // Destroy tabla temporal
             tempTable.destroy();
             
-            // Mostrar mensaje de éxito
-            const alertSuccess = $('<div class="alert alert-success border-success border-2 alert-dismissible fade show" role="alert">');
+            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
             alertSuccess.append(
-                '<i class="ti ti-download text-success me-2"></i>',
+                '<i class="ti ti-download me-2"></i>',
                 `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
             
             $("#section-vista-general").prepend(alertSuccess);
@@ -906,12 +909,11 @@ function recuperarVistaImpacto() {
             }, 5000);
             
         } else {
-            // Mostrar mensaje informativo
-            const alertInfo = $('<div class="alert alert-info border-info border-2 alert-dismissible fade show" role="alert">');
+            const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
             alertInfo.append(
                 '<i class="ti ti-info-circle me-2"></i>',
                 '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
             
             $("#section-vista-general").prepend(alertInfo);
@@ -921,7 +923,6 @@ function recuperarVistaImpacto() {
             }, 5000);
         }
         
-        // Restaurar botón
         button.prop("disabled", false).html(originalContent);
     });
 }

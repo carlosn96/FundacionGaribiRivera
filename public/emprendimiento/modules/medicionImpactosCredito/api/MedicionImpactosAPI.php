@@ -13,12 +13,8 @@ class MedicionImpactosAPI extends API {
     }
 
     function actualizarConfiguracionFechas() {
-        $this->enviarRespuesta($this->data);
-    }
-
-    function actualizarConfiguracionAnios() {
-        $inicio = $this->getData("anioInicio");
-        $fin = $this->getData("anioFin");
+        $inicio = $this->getData("fechaInicio");
+        $fin = $this->getData("fechaFin");
         $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionAnios(
                         $inicio,
                         $fin,

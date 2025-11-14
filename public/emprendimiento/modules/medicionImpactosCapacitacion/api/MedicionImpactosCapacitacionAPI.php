@@ -4,17 +4,18 @@ include_once '../../../../../loader.php';
 
 class MedicionImpactosCapacitacionAPI extends API {
 
+
     function consultarMedicionImpactos() {
         $idUsuario = $this->getUsuarioActual();
         $this->enviarRespuesta([
-            "impactos" => getAdminImpacto()->getMedicionImpacto($idUsuario),
+            "impactos" => getAdminImpactoCapacitacion()->getMedicionImpacto($idUsuario),
             "emprendedores" => getAdminLineaBase()->listarEmprendedoresParaImpactos($idUsuario),
         ]);
     }
 
-    function actualizarConfiguracionAnios() {
-        $inicio = $this->getData("anioInicio");
-        $fin = $this->getData("anioFin");
+    function actualizarConfiguracionFechas() {
+        $inicio = $this->getData("fechaInicio");
+        $fin = $this->getData("fechaFin");
         $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionAnios(
                         $inicio,
                         $fin,

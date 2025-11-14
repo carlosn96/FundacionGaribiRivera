@@ -54,6 +54,10 @@ class AdminFactory
     {
         return self::getOrCreateInstance(AdminImpacto::class);
     }
+    public static function getAdminImpactoCapacitacion(): AdminImpactoCapacitacion
+    {
+        return self::getOrCreateInstance(AdminImpactoCapacitacion::class);
+    }
     public static function getAdminLog(): AdminLog
     {
         return self::getOrCreateInstance(AdminLog::class);

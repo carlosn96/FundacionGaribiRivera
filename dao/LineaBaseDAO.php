@@ -57,14 +57,14 @@ class LineaBaseDAO extends DAO {
         return $this->listarEmprendedores(self::LISTAR_EMPRENDEDOR_LINEA_BASE_INICIAL_FINAL);
     }
 
-    public function listarEmprendedoresParaImpactos($idUsuario) {
-        $instruccion = "SELECT lista_registros_filtrados FROM linea_base_impacto_configuracion WHERE id_usuario = ?";
+    public function listarEmprendedoresParaImpactos($idUsuario) { //Se comentan las lineas sig para mejorar el filtro posteriormente
+       /* $instruccion = "SELECT lista_registros_filtrados FROM linea_base_impacto_configuracion WHERE id_usuario = ?";
         $prep = $this->prepararInstruccion($instruccion);
         $prep->agregarInt($idUsuario);
-        $idLineasBaseFiltrados = json_decode($prep->ejecutarConsulta()["lista_registros_filtrados"] ?? "") ?? [];
+        $idLineasBaseFiltrados = json_decode($prep->ejecutarConsulta()["lista_registros_filtrados"] ?? "") ?? [];*/
         $emprendedoresLineaBase = $this->listarEmprendedoresLineaBaseInicialFinal();
         foreach ($emprendedoresLineaBase as &$emprendedor) {
-            $emprendedor['enLineaBase'] = empty($idLineasBaseFiltrados) || in_array($emprendedor['idLineaBase'], $idLineasBaseFiltrados);
+            $emprendedor['enLineaBase'] = true; /*empty($idLineasBaseFiltrados) || in_array($emprendedor['idLineaBase'], $idLineasBaseFiltrados);*/
         }
         return $emprendedoresLineaBase;
     }

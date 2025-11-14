@@ -1,6 +1,6 @@
 <?php
 
-class ImpactoDAO extends DAO
+class ImpactoCapacitacionDAO extends DAO
 {
 
     private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto';
@@ -19,12 +19,8 @@ class ImpactoDAO extends DAO
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
-    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)";
+    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL recuperar_impacto_seguimiento_graduados(?)";
     private const CAMPOS_ADM_RECURSOS = [
-        [
-            "columna" => "cantEmpleados",
-            "pregunta" => "Cantidad de empleados que trabajan en tu negocio"
-        ],
         [
             "columna" => "registraEntradaSalida",
             "pregunta" => "¿Llevas registros de entradas y salidas de dinero?"
@@ -40,10 +36,6 @@ class ImpactoDAO extends DAO
         [
             "columna" => "identificaCompetencia",
             "pregunta" => "¿Identiﬁcas quién es tu competencia?"
-        ],
-        [
-            "columna" => "existenEstrategias",
-            "pregunta" => "¿Qué estrategias utilizas para incrementar tus ventas?"
         ],
         [
             "columna" => "conoceProductosMayorUtilidad",
@@ -192,6 +184,30 @@ class ImpactoDAO extends DAO
     }
 
     public function getMedicionImpacto($usuario): array
+    {
+        $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
+        $medicionesEE = $estabilidadEconomica["mediciones"];
+        $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
+        $fechas = $this->getAniosLineaBase($usuario);
+        return [
+            "fechas" => $fechas,
+            "impactos" => [
+                [
+                    "nombre" => "Estabilidad económica",
+                    "data" => $medicionesEE,
+                    "narrativa" =>
+                        $this->getNarrativa(
+                            "estabilizar la economia",
+                            $estabilidadEconomica["total_registros"],
+                            $sumaPromediosEstabilidad,
+                            $fechas["inicioSelected"],
+                            $fechas["finSelected"]
+                        )
+                ]
+            ]
+        ];
+    }
+    public function getMedicionImpactoCapacitacion($usuario): array
     {
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
         $medicionesEE = $estabilidadEconomica["mediciones"];

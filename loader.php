@@ -317,6 +317,10 @@ function getAdminImpacto(): AdminImpacto
 {
     return AdminFactory::getAdminImpacto();
 }
+function getAdminImpactoCapacitacion(): AdminImpactoCapacitacion
+{
+    return AdminFactory::getAdminImpactoCapacitacion();
+}
 
 function getAdminLog(): AdminLog
 {

@@ -97,7 +97,7 @@ function generarImpactoHTML(data, emprendedores) {
         $("<div>", {class: "col"}).append(
             $("<h2>", {class: "h4 mb-1 d-flex align-items-center"}).append(
                 $("<i>", {class: "ti ti-chart-bar me-2"}),
-                $("<span>", {text: "Medición de Impactos"})
+                $("<span>", {text: "Medición de Impactos (Crédito)"})
             ),
             $("<p>", {class: "text-muted mb-0 small", text: `Período: ${data.fechas.inicioSelected} - ${data.fechas.finSelected}`})
         )
@@ -340,6 +340,7 @@ function generarImpactoHTML(data, emprendedores) {
     );
 
     const bodyTemporal = $("<div>", {class: "card-body"});
+    const formFechas = $("<form>", {id: "form-fechas", class: "needs-validation", novalidate: true});
     const rowTemporal = $("<div>", {class: "row g-3"});
 
     const colInicio = $("<div>", {class: "col-md-6"});
@@ -348,13 +349,13 @@ function generarImpactoHTML(data, emprendedores) {
         type: "date",
         class: "form-control",
         id: "fechaInicio",
-        "aria-describedby": "inicioHelp",
-        min: `${data.fechas.inicio}-01-01`,
-        max: `${data.fechas.fin}-12-31`
+        name: "fechaInicio",
+        min: `${data.fechas.inicio}`,
+        max: `${data.fechas.fin}`,
+        value: `${data.fechas.inicioSelected}`,
+        required: true
     });
-    
-    const helpInicio = $("<div>", {id: "inicioHelp", class: "form-text", text: "Seleccione la fecha de inicio del rango para el análisis"});
-    colInicio.append(labelInicio, inputInicio, helpInicio);
+    colInicio.append(labelInicio, inputInicio);
 
     const colFinal = $("<div>", {class: "col-md-6"});
     const labelFinal = $("<label>", {for: "fechaFinal", class: "form-label", text: "Fecha Final"});
@@ -362,16 +363,26 @@ function generarImpactoHTML(data, emprendedores) {
         type: "date",
         class: "form-control",
         id: "fechaFinal",
-        "aria-describedby": "finalHelp",
-        min: `${data.fechas.inicio}-01-01`,
-        max: `${data.fechas.fin}-12-31`
+        name: "fechaFinal",
+        min: `${data.fechas.inicio}`,
+        max: `${data.fechas.fin}`,
+        value: `${data.fechas.finSelected}`,
+        required: true
     });
-    
-    const helpFinal = $("<div>", {id: "finalHelp", class: "form-text", text: "Seleccione la fecha final del rango para el análisis"});
-    colFinal.append(labelFinal, inputFinal, helpFinal);
+    colFinal.append(labelFinal, inputFinal);
 
     rowTemporal.append(colInicio, colFinal);
-    bodyTemporal.append(rowTemporal);
+
+    const divBoton = $("<div>", {class: "mt-3 text-end"});
+    const botonSubmit = $("<button>", {
+        type: "submit",
+        class: "btn btn-primary"
+    });
+    botonSubmit.append($("<i>", {class: "ti ti-device-floppy me-2"}), $("<span>", {text: "Actualizar Período"}));
+    divBoton.append(botonSubmit);
+
+    formFechas.append(rowTemporal, divBoton);
+    bodyTemporal.append(formFechas);
     cardTemporal.append(headerTemporal, bodyTemporal);
 
     // Card emprendedores
@@ -503,8 +514,8 @@ function generarImpactoHTML(data, emprendedores) {
         )
     );
 
-    bodyEmprendedores.append(rowFiltros, divTablaEmp, divFooterEmp);
-    cardEmprendedores.append(headerEmprendedores, bodyEmprendedores);
+    /*bodyEmprendedores.append(rowFiltros, divTablaEmp, divFooterEmp); // descomentar para mejorar el filtro de emprendedores
+    cardEmprendedores.append(headerEmprendedores, bodyEmprendedores);*/
     
     seccionConfig.append(cardTemporal, cardEmprendedores);
 
@@ -581,10 +592,6 @@ function generarImpactoHTML(data, emprendedores) {
     fila.append(columnaSidebar, columnaContenido);
     contenedorPrincipal.append(fila);
     $("#impacto-container").append(contenedorPrincipal);
-
-    // Establecer valores iniciales
-    $('#fechaInicio').val(`${data.fechas.inicioSelected}-01-01`);
-    $('#fechaFinal').val(`${data.fechas.finSelected}-12-31`);
 
     // === EVENTOS ===
     
@@ -735,41 +742,89 @@ function filtrarEmprendedores(etapaSeleccionada) {
 }
 
 function completarParametrosConfiguracion() {
-    $('#fechaInicio, #fechaFinal').change(function() {
-        let fechaInicio = $('#fechaInicio').val();
-        let fechaFinal = $('#fechaFinal').val();
+    $('#form-fechas').on('submit', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const form = $(this);
+        const fechaInicioInput = $('#fechaInicio');
+        const fechaFinalInput = $('#fechaFinal');
         
-        if (new Date(fechaInicio) > new Date(fechaFinal)) {
-            const alertWarning = $('<div class="alert alert-warning alert-dismissible fade show" role="alert">');
-            alertWarning.append(
-                '<i class="ti ti-alert-triangle me-2"></i>',
-                '<strong>Advertencia:</strong> La fecha de inicio no puede ser mayor que la fecha final.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            
-            $("#section-configuracion").prepend(alertWarning);
-            
-            if ($(this).attr('id') === 'fechaInicio') {
-                $('#fechaInicio').val(fechaFinal);
-            } else {
-                $('#fechaFinal').val(fechaInicio);
+        // --- Reset Validation State ---
+        form.find('.is-invalid').removeClass('is-invalid');
+        form.find('.invalid-feedback').remove();
+        
+        const fechaInicio = fechaInicioInput.val();
+        const fechaFinal = fechaFinalInput.val();
+        const minDate = fechaInicioInput.attr('min');
+        const maxDate = fechaFinalInput.attr('max');
+
+        let isValid = true;
+
+        const showError = (input, message) => {
+            if(isValid) isValid = false; // Only set to false, never back to true
+            input.addClass('is-invalid');
+            const feedback = $('<div>', { class: 'invalid-feedback', text: message });
+            // Prevent adding duplicate messages
+            if(input.parent().find('.invalid-feedback').length === 0) {
+                input.after(feedback);
             }
-            
-            setTimeout(() => {
-                alertWarning.alert('close');
-            }, 5000);
-            
+        };
+
+        // --- Validation ---
+        if (!fechaInicio) {
+            showError(fechaInicioInput, 'La fecha de inicio es obligatoria.');
+        } else if (isNaN(new Date(fechaInicio).getTime())) {
+            showError(fechaInicioInput, 'El formato de la fecha de inicio no es válido.');
+        }
+
+        if (!fechaFinal) {
+            showError(fechaFinalInput, 'La fecha final es obligatoria.');
+        } else if (isNaN(new Date(fechaFinal).getTime())) {
+            showError(fechaFinalInput, 'El formato de la fecha final no es válido.');
+        }
+
+        // Proceed with date-based checks only if formats are valid and fields are not empty
+        if (isValid) {
+            const minDateObj = new Date(minDate + 'T00:00:00');
+            const maxDateObj = new Date(maxDate + 'T00:00:00');
+            const fechaInicioDate = new Date(fechaInicio + 'T00:00:00');
+            const fechaFinalDate = new Date(fechaFinal + 'T00:00:00');
+
+            if (fechaInicioDate < minDateObj) {
+                showError(fechaInicioInput, `La fecha no puede ser anterior a ${minDate}.`);
+            }
+            if (fechaInicioDate > maxDateObj) {
+                showError(fechaInicioInput, `La fecha no puede ser posterior a ${maxDate}.`);
+            }
+            if (fechaFinalDate < minDateObj) {
+                showError(fechaFinalInput, `La fecha no puede ser anterior a ${minDate}.`);
+            }
+            if (fechaFinalDate > maxDateObj) {
+                showError(fechaFinalInput, `La fecha no puede ser posterior a ${maxDate}.`);
+            }
+
+            if (fechaInicioDate > fechaFinalDate) {
+                showError(fechaFinalInput, 'La fecha final no puede ser anterior a la fecha de inicio.');
+            }
+        }
+
+        if (!isValid) {
             return;
         }
-        
-        const configCard = $("#section-configuracion .card:first");
+
+        // --- AJAX CALL ---
+        const submitButton = form.find('button[type="submit"]');
+        const originalButtonContent = submitButton.html();
+        submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Actualizando...');
+
+        const configCard = form.closest('.card');
         const overlay = $('<div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10;">');
         overlay.append(
             $('<div class="spinner-border text-primary" role="status">').append(
                 '<span class="visually-hidden">Actualizando configuración...</span>'
             )
         );
-        
         configCard.addClass('position-relative').append(overlay);
         
         let data = {fechaInicio: fechaInicio, fechaFin: fechaFinal};
@@ -779,32 +834,27 @@ function completarParametrosConfiguracion() {
         }, (res) => {
             overlay.remove();
             configCard.removeClass('position-relative');
-            
+            submitButton.prop('disabled', false).html(originalButtonContent);
+
             if (!res.es_valor_error) {
                 const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
                 alertSuccess.append(
                     '<i class="ti ti-check me-2"></i>',
-                    '<strong>¡Actualizado!</strong> La configuración temporal se ha guardado correctamente.',
+                    '<strong>¡Actualizado!</strong> El período se ha guardado. La página se recargará para aplicar los cambios.',
                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
-                
                 $("#section-configuracion").prepend(alertSuccess);
-                
                 setTimeout(() => {
-                    alertSuccess.alert('close');
+                    refresh();
                 }, 3000);
-                
-                refresh();
             } else {
                 const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
                 alertError.append(
                     '<i class="ti ti-x me-2"></i>',
-                    '<strong>Error:</strong> No se pudo actualizar la configuración.',
+                    '<strong>Error:</strong> No se pudo actualizar el período.',
                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
-                
                 $("#section-configuracion").prepend(alertError);
-                
                 setTimeout(() => {
                     alertError.alert('close');
                 }, 5000);
