@@ -343,26 +343,32 @@ function generarImpactoHTML(data, emprendedores) {
     const rowTemporal = $("<div>", {class: "row g-3"});
 
     const colInicio = $("<div>", {class: "col-md-6"});
-    const labelInicio = $("<label>", {for: "añoInicio", class: "form-label", text: "Año de Inicio"});
-    const selectInicio = $("<select>", {class: "form-select", id: "añoInicio", "aria-describedby": "inicioHelp"});
+    const labelInicio = $("<label>", {for: "fechaInicio", class: "form-label", text: "Fecha de Inicio"});
+    const inputInicio = $("<input>", {
+        type: "date",
+        class: "form-control",
+        id: "fechaInicio",
+        "aria-describedby": "inicioHelp",
+        min: `${data.fechas.inicio}-01-01`,
+        max: `${data.fechas.fin}-12-31`
+    });
     
-    for (let year = data.fechas.inicio; year <= data.fechas.fin; year++) {
-        selectInicio.append($("<option>", {value: year, text: year}));
-    }
-    
-    const helpInicio = $("<div>", {id: "inicioHelp", class: "form-text", text: "Seleccione el año de inicio del análisis"});
-    colInicio.append(labelInicio, selectInicio, helpInicio);
+    const helpInicio = $("<div>", {id: "inicioHelp", class: "form-text", text: "Seleccione la fecha de inicio del rango para el análisis"});
+    colInicio.append(labelInicio, inputInicio, helpInicio);
 
     const colFinal = $("<div>", {class: "col-md-6"});
-    const labelFinal = $("<label>", {for: "añoFinal", class: "form-label", text: "Año Final"});
-    const selectFinal = $("<select>", {class: "form-select", id: "añoFinal", "aria-describedby": "finalHelp"});
+    const labelFinal = $("<label>", {for: "fechaFinal", class: "form-label", text: "Fecha Final"});
+    const inputFinal = $("<input>", {
+        type: "date",
+        class: "form-control",
+        id: "fechaFinal",
+        "aria-describedby": "finalHelp",
+        min: `${data.fechas.inicio}-01-01`,
+        max: `${data.fechas.fin}-12-31`
+    });
     
-    for (let year = data.fechas.inicio; year <= data.fechas.fin; year++) {
-        selectFinal.append($("<option>", {value: year, text: year}));
-    }
-    
-    const helpFinal = $("<div>", {id: "finalHelp", class: "form-text", text: "Seleccione el año final del análisis"});
-    colFinal.append(labelFinal, selectFinal, helpFinal);
+    const helpFinal = $("<div>", {id: "finalHelp", class: "form-text", text: "Seleccione la fecha final del rango para el análisis"});
+    colFinal.append(labelFinal, inputFinal, helpFinal);
 
     rowTemporal.append(colInicio, colFinal);
     bodyTemporal.append(rowTemporal);
@@ -577,8 +583,8 @@ function generarImpactoHTML(data, emprendedores) {
     $("#impacto-container").append(contenedorPrincipal);
 
     // Establecer valores iniciales
-    $('#añoInicio').val(data.fechas.inicioSelected);
-    $('#añoFinal').val(data.fechas.finSelected);
+    $('#fechaInicio').val(`${data.fechas.inicioSelected}-01-01`);
+    $('#fechaFinal').val(`${data.fechas.finSelected}-12-31`);
 
     // === EVENTOS ===
     
@@ -729,24 +735,24 @@ function filtrarEmprendedores(etapaSeleccionada) {
 }
 
 function completarParametrosConfiguracion() {
-    $('#añoInicio, #añoFinal').change(function() {
-        let añoInicio = parseInt($('#añoInicio').val());
-        let añoFinal = parseInt($('#añoFinal').val());
+    $('#fechaInicio, #fechaFinal').change(function() {
+        let fechaInicio = $('#fechaInicio').val();
+        let fechaFinal = $('#fechaFinal').val();
         
-        if (añoInicio > añoFinal) {
+        if (new Date(fechaInicio) > new Date(fechaFinal)) {
             const alertWarning = $('<div class="alert alert-warning alert-dismissible fade show" role="alert">');
             alertWarning.append(
                 '<i class="ti ti-alert-triangle me-2"></i>',
-                '<strong>Advertencia:</strong> El año de inicio no puede ser mayor que el año final.',
+                '<strong>Advertencia:</strong> La fecha de inicio no puede ser mayor que la fecha final.',
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
             
             $("#section-configuracion").prepend(alertWarning);
             
-            if ($(this).attr('id') === 'añoInicio') {
-                $('#añoInicio').val(añoFinal);
+            if ($(this).attr('id') === 'fechaInicio') {
+                $('#fechaInicio').val(fechaFinal);
             } else {
-                $('#añoFinal').val(añoInicio);
+                $('#fechaFinal').val(fechaInicio);
             }
             
             setTimeout(() => {
@@ -766,9 +772,9 @@ function completarParametrosConfiguracion() {
         
         configCard.addClass('position-relative').append(overlay);
         
-        let data = {anioInicio: añoInicio, anioFin: añoFinal};
+        let data = {fechaInicio: fechaInicio, fechaFin: fechaFinal};
         crearPeticion(urlAPI, {
-            case: "actualizarConfiguracionAnios", 
+            case: "actualizarConfiguracionFechas", 
             data: $.param(data)
         }, (res) => {
             overlay.remove();
