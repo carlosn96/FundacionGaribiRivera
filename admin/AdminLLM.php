@@ -1,11 +1,17 @@
 <?php
 class AdminLLM extends Admin
 {
+    private const MAX_RETRIES = 2;
+    private const RETRY_DELAY_MS = 1000;
+    
     public function __construct()
     {
         parent::__construct(new LogDAO());
     }
 
+    /**
+     * Realiza una llamada optimizada a la API de Z.AI con reintentos automáticos
+     */
     public function callTextZAI($msg)
     {
         // Verificar constantes necesarias
@@ -19,66 +25,166 @@ class AdminLLM extends Admin
             "messages" => [
                 ["role" => "user", "content" => $msg]
             ],
-            "temperature" => 0.3,  // Para respuestas más consistentes
-            "max_tokens" => 4000   // Aumentar límite para textos largos
+            "temperature" => 0.3,
+            "max_tokens" => 4000
         ];
 
-        // Configurar cabeceras
+        $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        
+        // Configurar cabeceras optimizadas
         $headers = [
             "Authorization: Bearer " . Z_AI_KEY,
-            "Content-Type: application/json",
-            "Accept-Language: es-MX,es",
+            "Content-Type: application/json; charset=utf-8",
+            "Accept: application/json",
+            "Accept-Language: es-MX,es;q=0.9",
+            "Accept-Encoding: gzip, deflate",
+            "Content-Length: " . strlen($payload),
+            "Connection: keep-alive",
             "User-Agent: PHP-App/1.0"
         ];
 
-        // Inicializar cURL
-        $ch = curl_init(REQUEST_URL_Z_AI);
-        curl_setopt_array(
-            $ch, [
+        // Intentar la llamada con reintentos
+        $lastError = null;
+        for ($attempt = 0; $attempt <= self::MAX_RETRIES; $attempt++) {
+            if ($attempt > 0) {
+                usleep(self::RETRY_DELAY_MS * 1000 * $attempt); // Backoff exponencial
+            }
+
+            $result = $this->_executeCurlRequest(REQUEST_URL_Z_AI, $payload, $headers);
+            
+            if (!$result['error']) {
+                return Util::enum($result['content'], false);
+            }
+            
+            $lastError = $result['message'];
+            
+            // No reintentar en errores 4xx (client errors)
+            if ($result['http_code'] >= 400 && $result['http_code'] < 500) {
+                break;
+            }
+        }
+
+        return Util::enum("Error en la API de Z.AI: {$lastError}", true);
+    }
+
+    /**
+     * Ejecuta la petición cURL optimizada
+     */
+    private function _executeCurlRequest(string $url, string $payload, array $headers): array
+    {
+        $ch = curl_init($url);
+        
+        curl_setopt_array($ch, [
+            // Configuración básica
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_TIMEOUT => 90,        // Aumentar timeout para textos largos
-            CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_SSL_VERIFYPEER => true, // No deshabilitar en producción
-            CURLOPT_SSL_VERIFYHOST => 2,   // No deshabilitar en producción
+            
+            // Timeouts optimizados
+            CURLOPT_TIMEOUT => 90,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            
+            // Seguridad SSL
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             
             // Optimizaciones de red
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2_0, // Intentar usar HTTP/2
-            CURLOPT_TCP_KEEPALIVE => 1, // Habilitar TCP Keep-Alive
-            ]
-        );
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2_0,
+            CURLOPT_TCP_KEEPALIVE => 1,
+            CURLOPT_TCP_KEEPIDLE => 120,
+            CURLOPT_TCP_KEEPINTVL => 60,
+            
+            // Compresión automática
+            CURLOPT_ENCODING => '', // Acepta todas las codificaciones soportadas
+            
+            // No seguir redirecciones para APIs
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXREDIRS => 0,
+            
+            // Información detallada para debugging
+            CURLOPT_VERBOSE => false,
+            
+            // Deshabilitar señales (para PHP en servidores con señales)
+            CURLOPT_NOSIGNAL => 1,
+        ]);
 
         // Ejecutar solicitud
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
+        $curlErrno = curl_errno($ch);
         curl_close($ch);
 
         // Manejar errores de cURL
         if ($response === false) {
-            return Util::enum("Error de conexión con Z.AI: {$curlError}", true);
+            return [
+                'error' => true,
+                'message' => "Error de conexión: {$curlError} (código {$curlErrno})",
+                'http_code' => 0,
+                'content' => null
+            ];
         }
 
         // Verificar respuesta HTTP
         if ($httpCode < 200 || $httpCode >= 300) {
-            return Util::enum("Error en la API de Z.AI (HTTP {$httpCode}): {$response}", true);
+            $errorMsg = $this->_parseErrorResponse($response, $httpCode);
+            return [
+                'error' => true,
+                'message' => $errorMsg,
+                'http_code' => $httpCode,
+                'content' => null
+            ];
         }
 
         // Decodificar respuesta JSON
         $json = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return Util::enum("Error al decodificar respuesta JSON: " . json_last_error_msg(), true);
+            return [
+                'error' => true,
+                'message' => "Error al decodificar JSON: " . json_last_error_msg(),
+                'http_code' => $httpCode,
+                'content' => null
+            ];
         }
 
         // Verificar contenido de la respuesta
         $content = $json['choices'][0]['message']['content'] ?? null;
         if (!$content) {
-            return Util::enum("Respuesta inesperada de Z.AI. Estructura inválida.", true);
+            return [
+                'error' => true,
+                'message' => "Respuesta de Z.AI con estructura inválida",
+                'http_code' => $httpCode,
+                'content' => null
+            ];
         }
 
-        return Util::enum($content, false);
+        return [
+            'error' => false,
+            'message' => 'success',
+            'http_code' => $httpCode,
+            'content' => $content
+        ];
+    }
+
+    /**
+     * Parsea mensajes de error de la API
+     */
+    private function _parseErrorResponse(string $response, int $httpCode): string
+    {
+        $json = json_decode($response, true);
+        
+        if (isset($json['error']['message'])) {
+            return "Error HTTP {$httpCode}: {$json['error']['message']}";
+        }
+        
+        if (isset($json['message'])) {
+            return "Error HTTP {$httpCode}: {$json['message']}";
+        }
+        
+        // Truncar respuesta larga para el mensaje de error
+        $truncated = strlen($response) > 200 ? substr($response, 0, 200) . '...' : $response;
+        return "Error HTTP {$httpCode}: {$truncated}";
     }
 
     /**
@@ -93,16 +199,12 @@ class AdminLLM extends Admin
             return '';
         }
 
-        // Llamar al método existente que maneja la comunicación con la IA
         $resultado = $this->callTextZAI($instruccion);
 
-        // Suponiendo que Util::enum devuelve un array como ['data' => ..., 'error' => ...]
-        // Devolver el contenido solo si no hay error.
         if (isset($resultado['mensaje']) && !$resultado['es_valor_error']) {
             return $resultado['mensaje'];
         }
 
-        // En caso de error o formato inesperado, devolver una cadena vacía.
         return '';
     }
 
@@ -128,14 +230,14 @@ class AdminLLM extends Admin
      * @param string $texto El texto original a mejorar.
      * @param array $opciones Un array asociativo con las configuraciones. Ej:
      *  [
-     *      'tipo_escrito' => 'Nota para Expediente', // Valor de PROMPT_TIPOS_ESCRITO
-     *      'anonimizar' => true,                     // Valor de PROMPT_AJUSTES
+     *      'tipo_escrito' => 'Nota para Expediente',
+     *      'anonimizar' => true,
      *  ]
      * @return array El resultado de la operación, encapsulado por Util::enum.
      */
     public function mejorarTextoAI(string $texto, array $opciones = [])
     {
-        // 1. Validar entrada
+        // Validar entrada
         if (empty(trim($texto))) {
             return Util::enum("El texto a mejorar no puede estar vacío.", true);
         }
@@ -143,7 +245,7 @@ class AdminLLM extends Admin
             return Util::enum("El texto es demasiado largo (máximo 15000 caracteres).", true);
         }
 
-        // 2. Construir el prompt y llamar a la IA
+        // Construir el prompt y llamar a la IA
         $promptFinal = $this->_construirPromptParaTrabajoSocial($texto, $opciones);
         return $this->callTextZAI($promptFinal);
     }
@@ -157,8 +259,7 @@ class AdminLLM extends Admin
      */
     private function _construirPromptParaTrabajoSocial(string $texto, array $opciones): string
     {
-        $partesPrompt = [];
-        $partesPrompt[] = self::PROMPT_BASE;
+        $partesPrompt = [self::PROMPT_BASE];
 
         // Añadir instrucción principal basada en el tipo de escrito
         $tipoEscrito = $opciones['tipo_escrito'] ?? 'default';
