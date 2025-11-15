@@ -41,8 +41,12 @@ class AdminLLM extends Admin
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_TIMEOUT => 90,        // Aumentar timeout para textos largos
             CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2
+            CURLOPT_SSL_VERIFYPEER => true, // No deshabilitar en producción
+            CURLOPT_SSL_VERIFYHOST => 2,   // No deshabilitar en producción
+            
+            // Optimizaciones de red
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2_0, // Intentar usar HTTP/2
+            CURLOPT_TCP_KEEPALIVE => 1, // Habilitar TCP Keep-Alive
             ]
         );
 
