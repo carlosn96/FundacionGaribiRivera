@@ -173,7 +173,7 @@ function construirTablaEmprendedores(emprendedores) {
 }
 
 function crearBotonesAccion(id) {
-    return crearBotonEliminar({
+    const botonEliminar = crearBotonEliminar({
         idRegistro: id,
         url: urlAPI,
         tituloBoton: "Eliminar",
@@ -184,4 +184,23 @@ function crearBotonesAccion(id) {
             })
         }
     });
+
+    const botonEditar = $("<a>", {
+        href: "./../actualizarEmprendedores?id=" + id,
+        role: "button",
+        class: "btn btn-outline-warning btn-raised btn-sm btn-rounded position-relative"
+    }).attr({
+        "data-bs-toggle": "tooltip",
+        "data-bs-placement": "top",
+        "data-bs-title": "Editar"
+    }).append(
+        $("<span>", { class: "btn-label" }).append($("<i>", { class: "far fa-edit" }))
+    ).append(" Editar");
+
+    const group = $("<div>", {
+        class: "btn-group",
+        role: "group"
+    }).append(botonEditar).append(botonEliminar);
+
+    return group.prop("outerHTML");
 }
