@@ -134,7 +134,7 @@ function exportarDatos() {
     const activeTab = $('.nav-link.active').attr('id');
     let dataToExport = filteredData;
     let nombreArchivo = 'emprendedores_todos';
-    
+
     if (activeTab === 'pills-capacitacion-tab') {
         dataToExport = filteredData.filter(item => !item.referencia || item.referencia === null || item.referencia === '');
         nombreArchivo = 'emprendedores_capacitacion';
@@ -142,14 +142,14 @@ function exportarDatos() {
         dataToExport = filteredData.filter(item => item.referencia && item.referencia !== null && item.referencia !== '');
         nombreArchivo = 'emprendedores_credito';
     }
-    
+
     if (dataToExport.length === 0) {
         mostrarNotificacion('No hay datos para exportar', 'warning');
         return;
     }
-    
+
     let csv = 'ID Emprendedor,Nombre Completo,Correo Electrónico,Número Celular,Estado Graduación,Fecha Graduación,Referencia\n';
-    
+
     function escapeCsvValue(value) {
         if (typeof value === 'string') {
             value = value.replace(/"/g, '""');
@@ -159,7 +159,7 @@ function exportarDatos() {
         }
         return value;
     }
-    
+
     dataToExport.forEach(function (item) {
         const nombreCompleto = `${item.nombre} ${item.apellidos}`;
         const estadoGraduacion = item.graduado === '1' ? 'Graduado' : 'En Capacitación';
@@ -168,7 +168,7 @@ function exportarDatos() {
 
         csv += `${escapeCsvValue(item.id_emprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correo_electronico)},${escapeCsvValue(item.numero_celular)},${escapeCsvValue(estadoGraduacion)},${escapeCsvValue(fechaGraduacion)},${escapeCsvValue(referencia)}\n`;
     });
-    
+
     const bom = "\uFEFF";
     const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -179,7 +179,7 @@ function exportarDatos() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     mostrarNotificacion(`Se exportaron ${dataToExport.length} registros correctamente`, 'success');
 }
 
@@ -403,7 +403,6 @@ function generarTabla(data) {
             : `<div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 44px; width: 44px; height: 44px;">
                    <i class="fas fa-user text-primary"></i>
                </div>`;
-
         tabla += `
             <tr>
                 <td class="text-center">${referenciaDisplay}</td>
@@ -411,7 +410,9 @@ function generarTabla(data) {
                     <div class="d-flex align-items-center">
                         ${fotografiaDisplay}
                         <div>
-                            <div class="fw-semibold text-dark">${item.nombre} ${item.apellidos}</div>
+                           <a href="./../../../difusion/modules/actualizarEmprendedores?id=${item.id}" class="fw-semibold">
+                            ${item.nombre} ${item.apellidos}
+                           </a>
                         </div>
                     </div>
                 </td>
@@ -454,17 +455,17 @@ function generarTabla(data) {
 
 function formatearFecha(fecha) {
     if (!fecha) return '';
-    
+
     const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const partes = fecha.split('-');
-    
+
     if (partes.length === 3) {
         const año = partes[0];
         const mes = meses[parseInt(partes[1]) - 1];
         const dia = parseInt(partes[2]);
         return `${dia} ${mes} ${año}`;
     }
-    
+
     return fecha;
 }
 
@@ -502,7 +503,7 @@ function actualizarGraduacion(emprendedorId, isGraduado, fechaGraduacion = null)
 function confirmarDesgraduacion(emprendedorId, switchElement) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
     const nombre = emprendedor ? `${emprendedor.nombre} ${emprendedor.apellidos}` : 'este emprendedor';
-    
+
     alertaEliminar({
         mensajeAlerta: `¿Regresar a ${nombre} al estado de capacitación?\n\nEsta acción removerá la fecha de graduación.`,
         url: urlAPI,
@@ -535,7 +536,7 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
 function realizarSeguimientoGraduacion(emprendedorId) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
     print(emprendedor);
-    
+
     if (emprendedor) {
         crearPeticion(urlAPI, {
             case: "realizarSeguimientoGraduado",

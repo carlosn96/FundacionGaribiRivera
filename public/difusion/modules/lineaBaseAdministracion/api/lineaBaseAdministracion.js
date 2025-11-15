@@ -183,7 +183,7 @@ function construirTablaGenerica(data, columnas, contenedor, idTabla) {
 function construirTablaEmprendedores(data) {
     const columnas = [
         { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => generarListaEtapas(emprendedor.idEtapa, todasLasEtapas, emprendedor.idLineaBase) },
-        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="#" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
+        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
         { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo },
         { nombre: "Linea base", titulo: "Linea base", generar: (emprendedor) => crearBotonesLineaBase(emprendedor) }
     ];
