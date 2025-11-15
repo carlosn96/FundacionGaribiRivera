@@ -77,6 +77,31 @@ class AdminLLM extends Admin
         return Util::enum($content, false);
     }
 
+    /**
+     * Ejecuta una instrucción de texto simple en la IA y devuelve solo la respuesta.
+     *
+     * @param string $instruccion La instrucción o prompt para la IA.
+     * @return string La respuesta de texto de la IA, o una cadena vacía si hay un error.
+     */
+    public function generarTextoSimple(string $instruccion): string
+    {
+        if (empty(trim($instruccion))) {
+            return '';
+        }
+
+        // Llamar al método existente que maneja la comunicación con la IA
+        $resultado = $this->callTextZAI($instruccion);
+
+        // Suponiendo que Util::enum devuelve un array como ['data' => ..., 'error' => ...]
+        // Devolver el contenido solo si no hay error.
+        if (isset($resultado['mensaje']) && !$resultado['es_valor_error']) {
+            return $resultado['mensaje'];
+        }
+
+        // En caso de error o formato inesperado, devolver una cadena vacía.
+        return '';
+    }
+
     // --- Configuración de Prompts para IA ---
 
     private const PROMPT_BASE = "Actúa como un asistente experto en la redacción de informes para Trabajo Social en español. Tu tarea es reescribir el siguiente texto de observaciones según las directrices proporcionadas. Debes entregar únicamente el texto resultante, sin introducciones, explicaciones o acotaciones como 'Texto mejorado:'.";
