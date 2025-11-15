@@ -6,14 +6,14 @@ function ready() {
     const urlParams = new URLSearchParams(window.location.search);
     idEmprendedor = urlParams.get('id');
     if (idEmprendedor == null) {
-        $('#container').html('<div class="alert alert-danger" role="alert"><strong>Error:</strong> No se ha especificado un ID de emprendedor.</div>');
+        $('#container').html('<div class="alert alert-danger" role="alert"><strong>Error:</strong> No se ha especificado un ID de emprendedor.</div>')
         return;
     }
 
     // Cargar datos del emprendedor para poblar el formulario
     crearPeticion(urlAPI, { case: 'getEmprendedor', data: $.param({ id: idEmprendedor }) }, function (respuesta) {
         //print(respuesta);
-        if (respuesta.data) {
+        if (respuesta.data && !Array.isArray(respuesta.data)) {
             const emprendedor = respuesta.data;
             ajustarCampos(emprendedor);
             fijarSubmitFormulario("#configuracionForm", urlAPI, "actualizarContrasenia", validarConstrasenias);
@@ -40,6 +40,8 @@ function ajustarCampos(usuario) {
     $('#btnEstandarizarApellidos').on('click', function () {
         estandarizarCampo('apellidos');
     });
+
+    $('#btnEstandarizarAmbos').on('click', estandarizarAmbosCampos);
 
     $('#btnActualizarNombre, #btnActualizarApellidos, #btnActualizarTelefono').click(actualizarCampo);
 
@@ -97,7 +99,10 @@ function ajustarImagenPerfil(usuario) {
                 $img.attr('src', imgData);
                 crearPeticion('api/ConfigurarPerfilAPI.php', {
                     case: "actualizarImagen",
-                    data: "img=" + imgData
+                    data: $.param({
+                        "img": imgData,
+                        id: idEmprendedor
+                    })
                 });
             };
             reader.readAsDataURL(event.target.files[0]);
@@ -141,5 +146,41 @@ function estandarizarCampo(nombreCampo) {
         }
         boton.html(contenidoOriginal);
         boton.prop('disabled', false);
+    });
+}
+
+function estandarizarAmbosCampos() {
+    const nombreInput = $('#nombre');
+    const apellidosInput = $('#apellidos');
+    const nombreActual = nombreInput.val();
+    const apellidosActual = apellidosInput.val();
+
+    if (!nombreActual && !apellidosActual) {
+        if (typeof mostrarMensajeAdvertencia === 'function') {
+            mostrarMensajeAdvertencia("Ambos campos están vacíos.", false);
+        }
+        return;
+    }
+
+    const boton = $('#btnEstandarizarAmbos');
+    const contenidoOriginal = boton.html();
+    const spinner = '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>';
+
+    boton.html(spinner);
+    boton.prop('disabled', true);
+
+    crearPeticion(urlAPI, {
+        case: 'estandarizarNombreCompleto',
+        data: $.param({
+            id: idEmprendedor
+        })
+    }, function (respuesta) {
+        if (respuesta && !respuesta.es_resultado_error) {
+            mostrarMensajeOk("Campos estandarizados.");
+        } else {
+            mostrarMensajeError("Error al estandarizar.", false);
+            boton.html(contenidoOriginal);
+            boton.prop('disabled', false);
+        }
     });
 }

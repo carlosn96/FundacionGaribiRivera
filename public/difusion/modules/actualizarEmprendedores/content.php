@@ -21,27 +21,18 @@
             <div class="col-lg-3">
                 <div class="bg-white rounded-3 border shadow-sm overflow-hidden position-sticky" style="top: 20px;">
                     <div class="nav flex-column" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <a class="nav-link active d-flex align-items-center px-4 py-3 border-bottom" 
-                           id="v-pills-home-tab" 
-                           data-bs-toggle="pill" 
-                           href="#v-pills-home" 
-                           role="tab" 
-                           aria-controls="v-pills-home" 
-                           aria-selected="true">
+                        <a class="nav-link active d-flex align-items-center px-4 py-3 border-bottom"
+                            id="v-pills-home-tab" data-bs-toggle="pill" href="#v-pills-home" role="tab"
+                            aria-controls="v-pills-home" aria-selected="true">
                             <i class="ti ti-user-circle me-3 fs-5"></i>
                             <div>
                                 <div class="fw-semibold">Información general</div>
                                 <small class="text-muted">Datos personales</small>
                             </div>
                         </a>
-                        <a class="nav-link d-flex align-items-center px-4 py-3" 
-                           id="v-pills-profile-tab" 
-                           data-bs-toggle="pill" 
-                           href="#v-pills-profile" 
-                           role="tab" 
-                           aria-controls="v-pills-profile" 
-                           aria-selected="false" 
-                           tabindex="-1">
+                        <a class="nav-link d-flex align-items-center px-4 py-3" id="v-pills-profile-tab"
+                            data-bs-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
+                            aria-selected="false" tabindex="-1">
                             <i class="ti ti-shield-lock me-3 fs-5"></i>
                             <div>
                                 <div class="fw-semibold">Acceso</div>
@@ -56,22 +47,19 @@
             <div class="col-lg-9">
                 <div class="tab-content" id="v-pills-tabContent">
                     <!-- Tab: Información General -->
-                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                        aria-labelledby="v-pills-home-tab">
                         <div class="bg-white rounded-3 border shadow-sm p-4 mb-4">
                             <!-- Profile Picture Section -->
                             <div class="text-center pb-4 mb-4 border-bottom">
                                 <input type="file" id="uploadImage" hidden accept="image/jpeg">
                                 <div class="position-relative d-inline-block">
-                                    <img src="data:image/jpeg;base64," 
-                                         style="cursor: pointer; object-fit: cover;" 
-                                         id="imgPerfil" 
-                                         alt="Foto de perfil" 
-                                         class="rounded-circle border border-3 shadow-sm mb-3" 
-                                         width="140" 
-                                         height="140">
-                                    <div class="position-absolute bottom-0 end-0 bg-warning rounded-circle p-2 shadow" 
-                                         style="cursor: pointer; margin-bottom: 1rem; margin-right: 0.5rem;"
-                                         onclick="document.getElementById('uploadImage').click()">
+                                    <img src="data:image/jpeg;base64," style="cursor: pointer; object-fit: cover;"
+                                        id="imgPerfil" alt="Foto de perfil"
+                                        class="rounded-circle border border-3 shadow-sm mb-3" width="140" height="140">
+                                    <div class="position-absolute bottom-0 end-0 bg-warning rounded-circle p-2 shadow"
+                                        style="cursor: pointer; margin-bottom: 1rem; margin-right: 0.5rem;"
+                                        onclick="document.getElementById('uploadImage').click()">
                                         <i class="ti ti-camera text-white"></i>
                                     </div>
                                 </div>
@@ -82,9 +70,11 @@
                             <!-- Personal Information Form -->
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <h6 class="fw-bold mb-3 text-success">
-                                        <i class="ti ti-id me-2"></i>Datos personales
-                                    </h6>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="fw-bold text-success mb-0">
+                                            <i class="ti ti-id me-2"></i>Datos personales
+                                        </h6>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -92,19 +82,15 @@
                                         <i class="ti ti-user me-1"></i>Nombre
                                     </label>
                                     <div class="input-group">
-                                        <button id="btnEstandarizarNombre" class="btn bg-info-subtle text-info border" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Estandarizar">
+                                        <button id="btnEstandarizarNombre" class="btn bg-info-subtle text-info border"
+                                            type="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Estandarizar">
                                             <i class="ti ti-sparkles"></i>
                                         </button>
-                                        <input id="nombre" 
-                                               type="text" 
-                                               aria-label="Nombre" 
-                                               class="form-control" 
-                                               placeholder="Actualizar Nombre">
-                                        <button class="btn btn-outline-warning" 
-                                                type="button" 
-                                                id="btnActualizarNombre" 
-                                                aria-controls="nombre"
-                                                title="Actualizar nombre">
+                                        <input id="nombre" type="text" aria-label="Nombre" class="form-control"
+                                            placeholder="Actualizar Nombre">
+                                        <button class="btn btn-outline-warning" type="button" id="btnActualizarNombre"
+                                            aria-controls="nombre" title="Actualizar nombre">
                                             <i class="ti ti-reload"></i>
                                         </button>
                                     </div>
@@ -115,22 +101,27 @@
                                         <i class="ti ti-user me-1"></i>Apellidos
                                     </label>
                                     <div class="input-group">
-                                        <button id="btnEstandarizarApellidos" class="btn bg-info-subtle text-info border" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Estandarizar">
+                                        <button id="btnEstandarizarApellidos"
+                                            class="btn bg-info-subtle text-info border" type="button"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Estandarizar">
                                             <i class="ti ti-sparkles"></i>
                                         </button>
-                                        <input id="apellidos" 
-                                               type="text" 
-                                               aria-label="Apellidos" 
-                                               class="form-control" 
-                                               placeholder="Actualizar apellidos">
-                                        <button class="btn btn-outline-warning" 
-                                                type="button" 
-                                                id="btnActualizarApellidos" 
-                                                aria-controls="apellidos"
-                                                title="Actualizar apellidos">
+                                        <input id="apellidos" type="text" aria-label="Apellidos" class="form-control"
+                                            placeholder="Actualizar apellidos">
+                                        <button class="btn btn-outline-warning" type="button"
+                                            id="btnActualizarApellidos" aria-controls="apellidos"
+                                            title="Actualizar apellidos">
                                             <i class="ti ti-reload"></i>
                                         </button>
                                     </div>
+                                </div>
+
+                                <div class="col-12 pt-2 text-end">
+                                    <button id="btnEstandarizarAmbos" type="button"
+                                        class="btn btn-sm bg-info-subtle text-info border" data-bs-toggle="tooltip"
+                                        title="Estandarizar nombre y apellidos con IA">
+                                        <i class="ti ti-sparkles me-1"></i> Estandarizar nombre y apellidos
+                                    </button>
                                 </div>
 
                                 <div class="col-md-6">
@@ -138,16 +129,10 @@
                                         <i class="ti ti-phone me-1"></i>Número de celular
                                     </label>
                                     <div class="input-group">
-                                        <input type="tel" 
-                                               class="form-control" 
-                                               id="numero_celular" 
-                                               name="numero_celular"
-                                               placeholder="10 dígitos">
-                                        <button class="btn btn-outline-warning" 
-                                                type="button" 
-                                                id="btnActualizarTelefono" 
-                                                aria-controls="numero_celular"
-                                                title="Actualizar teléfono">
+                                        <input type="tel" class="form-control" id="numero_celular" name="numero_celular"
+                                            placeholder="10 dígitos">
+                                        <button class="btn btn-outline-warning" type="button" id="btnActualizarTelefono"
+                                            aria-controls="numero_celular" title="Actualizar teléfono">
                                             <i class="ti ti-reload"></i>
                                         </button>
                                     </div>
@@ -158,14 +143,16 @@
                             <div class="alert alert-info border d-flex align-items-start mt-4 mb-0">
                                 <i class="ti ti-info-circle me-3 fs-5"></i>
                                 <div class="small">
-                                    <strong>Importante:</strong> Presiona el botón <i class="ti ti-reload mx-1"></i> junto a cada campo para guardar los cambios realizados.
+                                    <strong>Importante:</strong> Presiona el botón <i class="ti ti-reload mx-1"></i>
+                                    junto a cada campo para guardar los cambios realizados.
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tab: Acceso -->
-                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                        aria-labelledby="v-pills-profile-tab">
                         <div class="bg-white rounded-3 border shadow-sm p-4">
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-3 text-success">
@@ -188,12 +175,8 @@
                                             <span class="input-group-text bg-white">
                                                 <i class="ti ti-at"></i>
                                             </span>
-                                            <input name="profileEmail" 
-                                                   type="email" 
-                                                   readonly 
-                                                   id="profileEmail" 
-                                                   class="form-control bg-white" 
-                                                   aria-label="Correo electrónico actual">
+                                            <input name="profileEmail" type="email" readonly id="profileEmail"
+                                                class="form-control bg-white" aria-label="Correo electrónico actual">
                                             <button class="btn btn-outline-warning" type="button" title="Editar correo">
                                                 <i class="ti ti-pencil me-2"></i>Editar
                                             </button>
@@ -216,16 +199,10 @@
                                             <span class="input-group-text bg-white">
                                                 <i class="ti ti-key"></i>
                                             </span>
-                                            <input type="password" 
-                                                   readonly 
-                                                   class="form-control bg-white" 
-                                                   value="••••••••" 
-                                                   aria-label="Contraseña">
-                                            <button class="btn btn-outline-warning" 
-                                                    type="button" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#modalCambiarContrasena"
-                                                    title="Cambiar contraseña">
+                                            <input type="password" readonly class="form-control bg-white"
+                                                value="••••••••" aria-label="Contraseña">
+                                            <button class="btn btn-outline-warning" type="button" data-bs-toggle="modal"
+                                                data-bs-target="#modalCambiarContrasena" title="Cambiar contraseña">
                                                 <i class="ti ti-pencil me-2"></i>Cambiar
                                             </button>
                                         </div>
@@ -241,7 +218,8 @@
 </div>
 
 <!-- Modal: Cambiar Contraseña -->
-<div class="modal fade" id="modalCambiarContrasena" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalCambiarContrasena" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-3">
             <div class="modal-header border-bottom">
@@ -253,7 +231,7 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
+
             <form id="configuracionForm" class="needs-validation" novalidate>
                 <input hidden id="idEmprendedor" name="idEmprendedor">
                 <div class="modal-body p-4">
@@ -265,12 +243,8 @@
                             <span class="input-group-text bg-light">
                                 <i class="ti ti-key"></i>
                             </span>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="newPassword" 
-                                   name="newPassword" 
-                                   required
-                                   placeholder="Mínimo 8 caracteres">
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required
+                                placeholder="Mínimo 8 caracteres">
                         </div>
                         <div class="invalid-feedback">Por favor ingresa una contraseña válida.</div>
                         <div class="form-text small">
@@ -287,12 +261,8 @@
                             <span class="input-group-text bg-light">
                                 <i class="ti ti-checks"></i>
                             </span>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="confirmPassword" 
-                                   name="confirmPassword" 
-                                   required
-                                   placeholder="Repite la contraseña">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                required placeholder="Repite la contraseña">
                         </div>
                         <div class="invalid-feedback" id="confirmPasswordFeedback">Las contraseñas no coinciden.</div>
                     </div>

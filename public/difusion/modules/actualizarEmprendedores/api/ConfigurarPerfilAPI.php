@@ -20,15 +20,12 @@ class ConfigurarPerfilAPI extends API
 
     function actualizarImagen()
     {
+        $admin = getAdminUsuario();
         $imgData = $this->data["img"];
         $imgData = str_replace('data:image/png;base64,', '', $imgData);
         $imgData = file_get_contents(str_replace(' ', '+', $imgData));
-        $usuario = $this->getUsuario();
-        if (($resultado = (new AdminUsuario)->actualizarFotoPerfil($usuario, $imgData))) {
-            $usuario['fotografia'] = Util::binToBase64($imgData);
-            Sesion::setUsuarioActual($usuario);
-        }
-        $this->enviarResultadoOperacion($resultado);
+        $usuario = $admin->buscarUsuarioPorID($this->getData("id"));
+        $this->enviarResultadoOperacion($admin->actualizarFotoPerfil($usuario, $imgData));
     }
 
     function actualizarContrasenia()
@@ -59,6 +56,25 @@ class ConfigurarPerfilAPI extends API
         $this->enviarRespuesta(["nombre" => trim(getAdminLLM()->generarTextoSimple($instruccion))]);
     }
 
+    public function estandarizarNombreCompleto()
+    {
+        $usuario = getAdminUsuario()->buscarUsuarioPorID($this->getData("id"));
+        $nombreActual = $usuario["nombre"];
+        $apellidosActual = $usuario["apellidos"];
+        $instruccion = "Corrige la ortografía del nombre ({$nombreActual}) y apellidos ({$apellidosActual})'. Aplicar mayúscula inicial y el resto en minúsculas, siguiendo la ortografía del español. Devuelve solo una cadena con ambos valores estandarizados y separados por '|', sin explicación adicional.";
+        $resultado = trim(getAdminLLM()->generarTextoSimple($instruccion));
+        [$nombre, $apellidos] = array_pad(array_map('trim', explode('|', $resultado)), 2, '');
+        if (empty($nombre) || empty($apellidos)) {
+            $this->enviarResultadoOperacion(false);
+        } else {
+            $this->enviarResultadoOperacion(
+                getAdminUsuario()->actualizarInfoPersonal([
+                    "nombre" => $nombre,
+                    "apellidos" => $apellidos
+                ], $this->getData("id"))
+            );
+        }
+    }
 }
 
 ConfigurarPerfilAPI::start();
