@@ -255,7 +255,7 @@
             </div>
             
             <form id="configuracionForm" class="needs-validation" novalidate>
-                <input id="idEmprendedor" name="idEmprendedor">
+                <input hidden id="idEmprendedor" name="idEmprendedor">
                 <div class="modal-body p-4">
                     <div class="mb-4">
                         <label for="newPassword" class="form-label fw-semibold small text-success mb-2">
