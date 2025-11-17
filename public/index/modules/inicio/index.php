@@ -44,7 +44,7 @@
                                         </span>
                                         <input type="email"
                                             class="form-control form-control-lg border-success border-start-0 ps-0"
-                                            id="correo" name="correo" placeholder="ejemplo@correo.com"
+                                            id="correo" name="correo"
                                             aria-label="Correo electrónico" aria-describedby="email-icon" required
                                             autocomplete="email">
                                     </div>
