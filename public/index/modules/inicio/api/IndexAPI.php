@@ -16,7 +16,7 @@ class IndexAPI extends API {
         $contrasena = $this->data["contrasena"];
         if ($this->adminUsuario->existeCorreo($correo)) {
             if (($usuario = $this->adminUsuario->buscarUsuarioPorCorreo($correo)) && Util::verificarContrasenia($contrasena, $usuario["contrasena"])) {
-                Sesion::iniciarSesionNueva($usuario);
+                Sesion::iniciarSesionNueva($usuario, boolval($this->data["recordar"]));
                 $this->enviarRespuesta(NO_ERROR);
             } else {
                 $this->enviarRespuesta(ERROR_ACCESO_PASSWORD);

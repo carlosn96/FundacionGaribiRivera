@@ -61,20 +61,82 @@ class Sesion
         $_SESSION["usuario"] = $usuario;
     }
 
-    public static function iniciarSesionNueva($usuario)
+    public static function iniciarSesionNueva($usuario, bool $recordar = false)
     {
-        self::setToken(bin2hex(random_bytes(16))); // Genera un token de 32 caracteres hexadecimal
         self::setUsuarioActual($usuario);
+        if ($recordar) {
+            self::setToken($usuario);
+        }
     }
 
-    public static function setToken($token)
+    public static function setToken($usuario)
     {
-        // Almacenar el token y el tiempo de expiración en la sesión del usuario
-        $_SESSION['token']["code"] = $token;
-        // Establecer el tiempo de expiración (20 minutos en el futuro)
-        date_default_timezone_set('America/Mexico_City');
-        $_SESSION['token']['tiempoExpiracion'] = date(strtotime('+35 minute'));
+        $token = bin2hex(random_bytes(32));
+        $selector = bin2hex(random_bytes(9));
+
+        // Detección automática del dominio
+        $domain = $_SERVER['SERVER_NAME'];
+        if ($domain === "localhost" || $domain === "127.0.0.1") {
+            // Para localhost NO se debe poner dominio
+            $domain = "";
+        }
+
+        setcookie(
+            "remember",
+            "{$selector}:{$token}",
+            [
+                'expires' => time() + (86400 * 5),
+                'path' => '/',            // IMPORTANTE
+                'domain' => $domain,        // IMPORTANTE
+                'secure' => false,          // true solo si usas https
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]
+        );
+
+        // Guardar token en archivo
+        $hashed = hash('sha256', $token);
+        $tokenPath = __DIR__ . "/remember_tokens/";
+        if (!is_dir($tokenPath))
+            mkdir($tokenPath, 0755, true);
+
+        file_put_contents($tokenPath . "{$selector}.dat", $usuario["id"] . "|" . $hashed);
     }
+    public static function intentarAutoLogin()
+    {
+        if (self::esActiva())
+            return;
+        if (!isset($_COOKIE["remember"]))
+            return;
+
+        $remember = $_COOKIE["remember"];
+        if (empty($remember) || strpos($remember, ":") === false)
+            return;
+
+        list($selector, $token) = explode(":", $remember);
+        if (empty($selector) || empty($token))
+            return;
+
+        $ruta = __DIR__ . "/remember_tokens/{$selector}.dat";
+        if (!file_exists($ruta))
+            return;
+
+        list($idUsuario, $hashGuardado) = explode("|", file_get_contents($ruta));
+
+        if (hash('sha256', $token) !== $hashGuardado)
+            return;
+
+        // TOKEN VÁLIDO → BORRAR ARCHIVO VIEJO
+        @unlink($ruta);
+
+        // Recuperar usuario
+        $usuario = getAdminUsuario()->buscarUsuarioPorID($idUsuario);
+        if ($usuario) {
+            // Rotar token (generar uno nuevo)
+            self::iniciarSesionNueva($usuario, true);
+        }
+    }
+
 
     public static function getToken()
     {
@@ -83,18 +145,22 @@ class Sesion
 
     public static function cerrar()
     {
+        // borrar cookie remember
+        if (isset($_COOKIE["remember"])) {
+            $remember = $_COOKIE["remember"];
+            if (strpos($remember, ":") !== false) {
+                list($selector) = explode(":", $remember);
+                $file = __DIR__ . "/remember_tokens/{$selector}.dat";
+                if (file_exists($file))
+                    @unlink($file);
+            }
+            setcookie("remember", "", time() - 3600, "/", "", false, true);
+        }
         $_SESSION = [];
-        //session_destroy();
     }
 
     public static function esActiva(): bool
     {
-        /* $token = self::getToken();
-          if (!isset($token) || $token["tiempoExpiracion"] < time()) {
-          self::cerrar();
-          return false; // El token ha expirado, la sesión no está activa
-          }
-          return true; */
         return self::obtenerUsuarioActual() !== null;
     }
 
