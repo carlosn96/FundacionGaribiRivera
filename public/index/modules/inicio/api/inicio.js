@@ -55,8 +55,22 @@ $('#loginForm').submit(function (event) {
     event.preventDefault();
     var correo = $('#correo').val();
     var contrasena = $('#contrasena').val();
-    $('#buttonText').addClass('visually-hidden');
-    $('#spinner').removeClass('d-none');
+
+    const submitButton = $(this).find('#submitButton');
+    const buttonText = $(this).find('#buttonText');
+    const spinner = $(this).find('#spinner');
+
+    // --- Start loading state ---
+    submitButton.prop('disabled', true);
+    buttonText.addClass('opacity-0');
+    spinner.removeClass('d-none');
+
+    const resetButtonState = () => {
+        submitButton.prop('disabled', false);
+        buttonText.removeClass('opacity-0');
+        spinner.addClass('d-none');
+    };
+
     crearPeticion('api/IndexAPI.php', {
         case: 'iniciarSesion',
         data: $.param({
@@ -65,9 +79,8 @@ $('#loginForm').submit(function (event) {
             "recordar": $('#rememberMe').is(':checked') ? 1 : 0
         })
     }, function (response) {
-        $('#buttonText').removeClass('visually-hidden');
-        $('#spinner').addClass('d-none');
         if (response.es_valor_error) {
+            resetButtonState();
             Swal.fire({
                 icon: 'error',
                 title: 'Inicio de sesión fallido',
@@ -76,13 +89,15 @@ $('#loginForm').submit(function (event) {
                 timer: 2000
             });
         } else {
+            // On successful login, the page will refresh, so no need to reset the button.
             refresh();
         }
     }, function (xhr, status, error) {
+        resetButtonState();
         Swal.fire({
             icon: 'error',
             title: 'Error en la solicitud',
             text: 'Hubo un problema al procesar la respuesta del servidor. Inténtalo de nuevo más tarde.'
-        }).then(refresh);
+        });
     });
 });
