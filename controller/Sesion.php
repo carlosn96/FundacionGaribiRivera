@@ -32,7 +32,8 @@ class Sesion
             }
             $usuario = self::obtenerUsuarioActual();
             if ($usuario["tipo_usuario"] !== 1 && (!isset($usuario["permisos"]) || !in_array($permisoOrigen, $usuario["permisos"]))) {
-                Util::redirigir($redirigir . "/public/" . $usuario["tipo_usuario"]["url"]);
+                //Util::redirigir($redirigir . "/public/" . $usuario["tipo_usuario"]["url"]);
+                Util::redirigir($redirigir . "/public/accesoDenegado");
             }
         }
     }

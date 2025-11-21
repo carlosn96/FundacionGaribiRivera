@@ -24,7 +24,7 @@ function ready() {
 function construirTablaEmprendedores(data) {
     const dataTabla = data.emprendedores.map(emprendedor => ({
             "Etapa": emprendedor.etapa,
-            "Nombre": `<a href="#" class="text-primary text-decoration-none hover-underline">${emprendedor.nombre} ${emprendedor.apellidos}</a>`,
+            "Nombre": `<a href="../../../difusion/modules/actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>`,
             "Seguimiento": crearMenuSeguimiento(emprendedor)
         }));
     if (dataTabla.length > 0) {

@@ -194,7 +194,7 @@ function construirTablaEmprendedores(data) {
 function construirTablaEmprendedoresSinLineaBase(data) {
     const columnas = [
         { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => emprendedor.etapa },
-        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="#" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
+        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
         { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo }/*,
         {
             nombre: "Seleccionar", titulo: "Seleccionar", generar: (emprendedor) =>

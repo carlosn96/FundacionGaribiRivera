@@ -36,7 +36,7 @@ function construirSelectorEtapas(etapas) {
 function construirTablaEmprendedores(data) {
     const dataTabla = data.emprendedores.map(emprendedor => {
         const nombreLink = $('<a>', {
-            href: '#',
+            href: `../../../difusion/modules/actualizarEmprendedores?id=${emprendedor.idUsuario}`,
             class: 'text-primary ms-2',
             text: `${emprendedor.nombre} ${emprendedor.apellidos}`
         });
