@@ -111,6 +111,14 @@ class EmprendedorDAO extends DAO
         $prep->agregarInt($idEmprendedor);
         return $prep->ejecutar();
     }
+    public function actualizarReferencia($referencia, $fechaOtorgamiento, $idEmprendedor)
+    {
+        $prep = $this->prepararInstruccion("UPDATE " . self::NOMBRE_TABLA_EMPRENDEDOR . " SET fecha_credito = ?, referencia = ? WHERE id_emprendedor = ?");
+        $prep->agregarString($fechaOtorgamiento);
+        $prep->agregarInt($referencia);
+        $prep->agregarInt($idEmprendedor);
+        return $prep->ejecutar();
+    }
 
     public function recuperaPorIDUsuario($idUsuario)
     {

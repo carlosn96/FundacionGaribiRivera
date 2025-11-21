@@ -90,6 +90,10 @@ class AdminEmprendedor extends Admin
     {
         return $this->dao->actualizarFechaGraduacion($graduado, $fechaGraduacion, $idEmprendedor);
     }
+    public function actualizarReferencia($referencia, $fechaOtorgamiento, $idEmprendedor)
+    {
+        return $this->dao->actualizarReferencia($referencia, $fechaOtorgamiento, $idEmprendedor);
+    }
 
     public function recuperaPorIDUsuario($idUsuario)
     {

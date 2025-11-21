@@ -20,7 +20,7 @@ function inicializarEventos() {
     });
 
     // Filtros
-    $('#filter-graduado, #filter-referencia').on('change', function () {
+    $('#filter-referencia').on('change', function () {
         aplicarFiltros();
     });
 
@@ -49,55 +49,37 @@ function inicializarEventos() {
         ordenarPor(column);
     });
 
-    // Evento para el switch de graduación
-    $(document).on('change', '.switch-graduado', function () {
+    // Evento para abrir el modal de edición de referencia
+    $(document).on('click', '.btn-editar-referencia', function () {
         const emprendedorId = $(this).data('id');
-        const isGraduado = $(this).is(':checked');
+        emprendedorActual = historialData.find(item => item.id_emprendedor == emprendedorId);
 
-        if (isGraduado) {
-            emprendedorActual = {
-                id: emprendedorId,
-                switch: $(this)
-            };
+        if (emprendedorActual) {
+            $('#nombreEmprendedorRef').text(`${emprendedorActual.nombre} ${emprendedorActual.apellidos}`);
+            $('#numeroReferencia').val(emprendedorActual.referencia || '');
+            
+            // Formatear la fecha para el input type="date" (YYYY-MM-DD)
+            const fechaCredito = emprendedorActual.fecha_credito ? emprendedorActual.fecha_credito.split(' ')[0] : '';
+            $('#fechaOtorgamiento').val(fechaCredito);
 
-            const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
-            if (emprendedor) {
-                $('#nombreEmprendedor').text(`${emprendedor.nombre} ${emprendedor.apellidos}`);
-
-                const today = new Date().toISOString().split('T')[0];
-                $('#fechaGraduacion').val(today);
-
-                const modal = new bootstrap.Modal(document.getElementById('modalFechaGraduacion'));
-                modal.show();
-            }
-        } else {
-            confirmarDesgraduacion(emprendedorId, $(this));
+            const modal = new bootstrap.Modal(document.getElementById('modalActualizarReferencia'));
+            modal.show();
         }
     });
 
-    // Evento para guardar la graduación desde el modal
-    $('#btnGuardarGraduacion').on('click', function () {
-        const fecha = $('#fechaGraduacion').val();
+    // Evento para guardar los cambios de referencia desde el modal
+    $('#form-actualizar-referencia').on('submit', function (e) {
+        e.preventDefault(); // Prevenir el envío tradicional del formulario
 
-        if (!fecha) {
-            mostrarNotificacion('Por favor, selecciona una fecha de graduación', 'warning');
-            return;
-        }
+        const numeroReferencia = $('#numeroReferencia').val();
+        const fechaOtorgamiento = $('#fechaOtorgamiento').val();
 
         if (emprendedorActual) {
-            actualizarGraduacion(emprendedorActual.id, true, fecha);
+            actualizarReferencia(emprendedorActual.id_emprendedor, numeroReferencia, fechaOtorgamiento);
 
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaGraduacion'));
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarReferencia'));
             modal.hide();
 
-            emprendedorActual = null;
-        }
-    });
-
-    // Evento al cerrar el modal sin guardar
-    $('#modalFechaGraduacion').on('hidden.bs.modal', function () {
-        if (emprendedorActual) {
-            emprendedorActual.switch.prop('checked', false);
             emprendedorActual = null;
         }
     });
@@ -107,7 +89,7 @@ function cargarDatos() {
     mostrarCargando();
 
     crearPeticion(urlAPI, { case: "getHistorialEmprendedores" }, function (res) {
-        console.log('Respuesta recibida:', res);
+        //console.log('Respuesta recibida:', res);
 
         historialData = res.historial || [];
         filteredData = [...historialData];
@@ -148,26 +130,25 @@ function exportarDatos() {
         return;
     }
 
-    let csv = 'ID Emprendedor,Nombre Completo,Correo Electrónico,Número Celular,Estado Graduación,Fecha Graduación,Referencia,Fecha Crédito\n';
+    let csv = 'ID Emprendedor,Nombre Completo,Correo Electrónico,Número Celular,Referencia,Fecha Crédito\n';
 
     function escapeCsvValue(value) {
-        if (typeof value === 'string') {
-            value = value.replace(/"/g, '""');
-            if (value.indexOf(',') !== -1 || value.indexOf('\n') !== -1) {
-                value = `"${value}"`;
-            }
+        if (value === null || value === undefined) {
+            return '';
+        }
+        value = String(value);
+        if (value.includes('"') || value.includes(',') || value.includes('\n')) {
+            value = '"' + value.replace(/"/g, '""') + '"';
         }
         return value;
     }
 
     dataToExport.forEach(function (item) {
         const nombreCompleto = `${item.nombre} ${item.apellidos}`;
-        const estadoGraduacion = item.graduado === '1' ? 'Graduado' : 'En Capacitación';
-        const fechaGraduacion = item.fecha_graduacion || 'N/A';
         const referencia = item.referencia || 'Sin referencia';
         const fechaCredito = item.fecha_credito || 'N/A';
 
-        csv += `${escapeCsvValue(item.id_emprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correo_electronico)},${escapeCsvValue(item.numero_celular)},${escapeCsvValue(estadoGraduacion)},${escapeCsvValue(fechaGraduacion)},${escapeCsvValue(referencia)},${escapeCsvValue(fechaCredito)}\n`;
+        csv += `${escapeCsvValue(item.id_emprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correo_electronico)},${escapeCsvValue(item.numero_celular)},${escapeCsvValue(referencia)},${escapeCsvValue(fechaCredito)}\n`;
     });
 
     const bom = "\uFEFF";
@@ -183,7 +164,6 @@ function exportarDatos() {
 
     mostrarNotificacion(`Se exportaron ${dataToExport.length} registros correctamente`, 'success');
 }
-
 
 function mostrarCargando() {
     const spinnerHTML = `
@@ -225,7 +205,6 @@ function mostrarError() {
 
 function aplicarFiltros() {
     const searchTerm = $('#search-input').val().toLowerCase();
-    const graduadoFilter = $('#filter-graduado').val();
     const referenciaFilter = $('#filter-referencia').val();
 
     filteredData = historialData.filter(item => {
@@ -236,13 +215,11 @@ function aplicarFiltros() {
             item.numero_celular.includes(searchTerm) ||
             (item.referencia && item.referencia.toLowerCase().includes(searchTerm));
 
-        const matchGraduado = !graduadoFilter || item.graduado === graduadoFilter;
-
         const matchReferencia = !referenciaFilter ||
             (referenciaFilter === 'con' && item.referencia && item.referencia !== null && item.referencia !== '') ||
             (referenciaFilter === 'sin' && (!item.referencia || item.referencia === null || item.referencia === ''));
 
-        return matchSearch && matchGraduado && matchReferencia;
+        return matchSearch && matchReferencia;
     });
 
     if (sortConfig.column) {
@@ -357,11 +334,8 @@ function generarTabla(data) {
                         <th scope="col" class="border-0">
                             <span class="text-muted small">Contacto</span>
                         </th>
-                        <th scope="col" class="border-0 text-center">
-                            <span class="text-muted small">Graduación</span>
-                        </th>
                         <th scope="col" class="border-0 text-center" style="width: 120px;">
-                            <span class="text-muted small">Seguimiento</span>
+                            <span class="text-muted small">Acciones</span>
                         </th>
                     </tr>
                 </thead>
@@ -369,43 +343,17 @@ function generarTabla(data) {
     `;
 
     data.forEach(function (item) {
-        const fechaCredito = item.fecha_credito
-            ? `<small class="text-info d-block mt-2">
-                   <i class="fas fa-calendar-alt me-1"></i>${formatearFecha(item.fecha_credito)}
-               </small>`
-            : '';
-
         const referenciaDisplay = item.referencia && item.referencia !== null && item.referencia !== ''
             ? `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
                    <i class="fas fa-credit-card me-1"></i>${item.referencia}
-               </span>
-               ${fechaCredito}`
+               </span>`
             : '<span class="text-muted"><i class="fas fa-minus"></i></span>';
-
-        const graduadoChecked = item.graduado === '1' ? 'checked' : '';
-        const fechaGraduacion = item.graduado === '1' && item.fecha_graduacion
-            ? `<small class="text-success d-block mt-2">
-                   <i class="fas fa-calendar-check me-1"></i>${formatearFecha(item.fecha_graduacion)}
+        
+        const fechaCredito = item.fecha_credito
+            ? `<small class="text-success d-block mt-1">
+                   <i class="fas fa-calendar-check me-1"></i>${formatearFecha(item.fecha_credito)}
                </small>`
             : '';
-
-        const estadoBadge = item.graduado === '1'
-            ? '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 mt-1">Graduado</span>'
-            : '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 mt-1">En Capacitación</span>';
-
-        const graduacionSwitch = `
-            <div class="d-flex flex-column align-items-center">
-                <div class="form-check form-switch">
-                    <input class="form-check-input switch-graduado" type="checkbox" role="switch"
-                           id="switch-grad-${item.id_emprendedor}" data-id="${item.id_emprendedor}" ${graduadoChecked}
-                           style="width: 3rem; height: 1.5rem; cursor: pointer;">
-                </div>
-                ${estadoBadge}
-                ${fechaGraduacion}
-            </div>
-        `;
-
-        const botonesSeguimientoHabilitados = item.graduado === '1' ? '' : 'disabled';
 
         const fotografiaDisplay = item.fotografia
             ? `<img src="data:image/jpeg;base64,${item.fotografia}" alt="Fotografía" class="rounded-circle me-3" style="width: 44px; height: 44px; min-width: 44px; object-fit: cover;">`
@@ -414,7 +362,10 @@ function generarTabla(data) {
                </div>`;
         tabla += `
             <tr>
-                <td class="text-center">${referenciaDisplay}</td>
+                <td class="text-center">
+                    ${referenciaDisplay}
+                    ${fechaCredito}
+                </td>
                 <td>
                     <div class="d-flex align-items-center">
                         ${fotografiaDisplay}
@@ -436,10 +387,10 @@ function generarTabla(data) {
                         </a>
                     </div>
                 </td>
-                <td class="text-center">${graduacionSwitch}</td>
                 <td class="text-center">
-                    <button onclick="realizarSeguimientoGraduacion(${item.id_emprendedor})" ${botonesSeguimientoHabilitados}
-                            type="button" class="btn btn-sm btn-outline-primary" title="Realizar seguimiento">
+                    <button type="button" class="btn btn-sm btn-outline-primary btn-editar-referencia" 
+                            title="Editar Referencia"
+                            data-id="${item.id_emprendedor}">
                         <i class="fas fa-edit"></i>
                     </button>
                 </td>
@@ -478,55 +429,31 @@ function formatearFecha(fecha) {
     return fecha;
 }
 
-function actualizarGraduacion(emprendedorId, isGraduado, fechaGraduacion = null) {
+function actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento) {
     crearPeticion(urlAPI, {
-        case: "actualizarGraduacion",
+        case: "actualizarReferencia",
         data: $.param({
             id: emprendedorId,
-            graduado: isGraduado ? '1' : '0',
-            fechaGraduacion: fechaGraduacion || null
+            referencia: referencia,
+            fechaOtorgamiento: fechaOtorgamiento
         })
     }, function (res) {
-        console.log('Respuesta:', res);
+        //console.log('Respuesta:', res);
 
         if (res.success) {
             const index = historialData.findIndex(item => item.id_emprendedor == emprendedorId);
             if (index !== -1) {
-                historialData[index].graduado = isGraduado ? '1' : '0';
-                historialData[index].fecha_graduacion = fechaGraduacion || null;
+                historialData[index].referencia = referencia;
+                historialData[index].fecha_credito = fechaOtorgamiento;
             }
             aplicarFiltros();
-            const mensaje = res.msg;
-            mostrarNotificacion(mensaje, 'success');
+            mostrarNotificacion(res.msg || 'Referencia actualizada correctamente', 'success');
         } else {
-            mostrarNotificacion(res.msg || 'Error al actualizar el estado', 'danger');
-            $('#switch-grad-' + emprendedorId).prop('checked', !isGraduado);
+            mostrarNotificacion(res.msg || 'Error al actualizar la referencia', 'danger');
         }
     }, function (err) {
         console.error('Error:', err);
-        mostrarNotificacion('Error al actualizar el estado', 'danger');
-        $('#switch-grad-' + emprendedorId).prop('checked', !isGraduado);
-    });
-}
-
-function confirmarDesgraduacion(emprendedorId, switchElement) {
-    const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
-    const nombre = emprendedor ? `${emprendedor.nombre} ${emprendedor.apellidos}` : 'este emprendedor';
-
-    alertaEliminar({
-        mensajeAlerta: `¿Regresar a ${nombre} al estado de capacitación?\n\nEsta acción removerá la fecha de graduación.`,
-        url: urlAPI,
-        data: {
-            case: "actualizarGraduacion",
-            data: $.param({
-                id: emprendedorId,
-                graduado: '0',
-                fechaGraduacion: null
-            })
-        },
-        fnCancel: function () {
-            switchElement.prop('checked', true);
-        }
+        mostrarNotificacion('Error de conexión al actualizar la referencia', 'danger');
     });
 }
 
@@ -540,22 +467,4 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
         fn = mostrarMensajeOk;
     }
     fn(mensaje, false);
-}
-
-function realizarSeguimientoGraduacion(emprendedorId) {
-    const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
-    print(emprendedor);
-
-    if (emprendedor) {
-        crearPeticion(urlAPI, {
-            case: "realizarSeguimientoGraduado",
-            data: $.param({ emprendedor: emprendedorId, usuario: emprendedor.id })
-        }, function (res) {
-            if (res.success) {
-                redireccionar("../seguimientoGraduado/");
-            }
-        });
-    } else {
-        mostrarNotificacion('No se encontró el emprendedor', 'warning');
-    }
 }
