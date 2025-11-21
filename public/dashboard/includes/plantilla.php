@@ -1117,9 +1117,9 @@ include_once "controlPermisos.php";
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="../../../cobranza/" class="modal-link">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Cobranza</span>
+                        <a href="../../../inicio/" class="modal-link">
+                            <i class="fas fa-history"></i>
+                            <span>Historial de emprendedores</span>
                         </a>
                     </div>
                 </div>
