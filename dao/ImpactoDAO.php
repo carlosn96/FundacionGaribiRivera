@@ -22,10 +22,6 @@ class ImpactoDAO extends DAO
     private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)";
     private const CAMPOS_ADM_RECURSOS = [
         [
-            "columna" => "cantEmpleados",
-            "pregunta" => "Cantidad de empleados que trabajan en tu negocio"
-        ],
-        [
             "columna" => "registraEntradaSalida",
             "pregunta" => "¿Llevas registros de entradas y salidas de dinero?"
         ],
