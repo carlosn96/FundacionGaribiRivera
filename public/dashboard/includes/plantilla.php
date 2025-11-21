@@ -1117,7 +1117,7 @@ include_once "controlPermisos.php";
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
-                        <a href="../../../inicio/" class="modal-link">
+                        <a href="../../../cobranza/modules/inicio/" class="modal-link">
                             <i class="fas fa-history"></i>
                             <span>Historial de emprendedores</span>
                         </a>
