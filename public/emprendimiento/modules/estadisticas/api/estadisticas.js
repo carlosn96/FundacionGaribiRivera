@@ -10,15 +10,103 @@ let currentModalChart = '';
 let animationTimers = {};
 let fullDetalleList = [];
 
-// Paleta de colores moderna y vibrante
-const chartColors = {
-    primary: ['#4e73df', '#3758d6', '#2e4db5', '#224abe', '#1a3a9e'],
-    success: ['#1cc88a', '#17b378', '#13a066', '#0f8c57', '#0c7848'],
-    info: ['#36b9cc', '#2da5b8', '#2592a4', '#1d7f90', '#166b7c'],
-    warning: ['#f6c23e', '#f4b925', '#e5a916', '#d69a0c', '#c78b08'],
-    danger: ['#e74a3b', '#e02d1e', '#c91f10', '#b11a0c', '#9a1608'],
-    mixed: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69', '#6610f2', '#e83e8c', '#fd7e14']
-};
+/**
+ * Genera una paleta de colores visualmente distintos a partir de un color base, ideal para gráficos.
+ * @param {string} baseColor - El color en formato hexadecimal (ej. '#4e73df').
+ * @param {number} count - El número de colores a generar en la paleta.
+ * @returns {string[]} - Un array de colores hexadecimales.
+ */
+function generateColorPalette(baseColor, count = 5) {
+    // Esta función genera una paleta variando el tono y la luminosidad para asegurar que los colores sean fácilmente distinguibles.
+    // Para conversiones de color más complejas, se podría usar una librería como tinycolor2.
+
+    // --- Helper functions for color conversion ---
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.toString());
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
+    function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h = 0, s = 0, l = (max + min) / 2;
+
+        if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        return { h, s, l };
+    }
+
+    function hslToRgb(h, s, l) {
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l; // achromatic
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+    }
+
+    function rgbToHex({ r, g, b }) {
+        return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+    }
+
+    // --- Palette Generation Logic ---
+
+    const palette = [];
+    const { r: baseR, g: baseG, b: baseB } = hexToRgb(baseColor);
+    const { h: baseH, s: baseS, l: baseL } = rgbToHsl(baseR, baseG, baseB);
+
+    palette.push(baseColor);
+
+    // Generar colores restantes con variación de tono y luminosidad
+    const hueStep = 360 / (count > 1 ? count : 2); // Distribuir tonos para maximizar la distancia
+    const lightnessStep = 0.15; // Paso para variar la luminosidad
+
+    for (let i = 1; i < count; i++) {
+        // Rotar el tono para obtener colores distintos
+        let newH = (baseH * 360 + i * hueStep) % 360 / 360;
+
+        // Variar la luminosidad para mejorar la separación visual.
+        // Alternar entre tonos más claros y más oscuros en relación con la luminosidad base.
+        let newL = baseL + (i % 2 === 0 ? -1 : 1) * Math.ceil(i / 2) * lightnessStep;
+        
+        // Limitar la luminosidad a un rango razonable [0.2, 0.85] para evitar negro/blanco puros
+        newL = Math.max(0.2, Math.min(0.85, newL));
+        
+        // Mantener la saturación relativamente alta para mayor viveza
+        const newS = Math.max(0.5, baseS > 0.1 ? baseS * 0.9 : 0.5);
+
+        const newRgb = hslToRgb(newH, newS, newL);
+        palette.push(rgbToHex(newRgb));
+    }
+
+    return palette;
+}
 
 function getEmptyEstadisticas() {
     return {
@@ -30,6 +118,24 @@ function getEmptyEstadisticas() {
         },
         detalle: []
     };
+}
+
+let chartColors = {};
+
+function initializeChartColors() {
+    const style = getComputedStyle(document.documentElement);
+    const primary = style.getPropertyValue('--bs-primary') || '#284dbdff';
+    const success = style.getPropertyValue('--bs-success') || '#1cc88a';
+    const info = style.getPropertyValue('--bs-info') || '#36b9cc';
+    const warning = style.getPropertyValue('--bs-warning') || '#f6c23e';
+    const danger = style.getPropertyValue('--bs-danger') || '#e74a3b';
+
+    chartColors.primary = generateColorPalette(primary.trim());
+    chartColors.success = generateColorPalette(success.trim());
+    chartColors.info = generateColorPalette(info.trim());
+    chartColors.warning = generateColorPalette(warning.trim());
+    chartColors.danger = generateColorPalette(danger.trim());
+    chartColors.mixed = [primary, success, info, warning, danger];
 }
 
 function ready() {
@@ -59,6 +165,9 @@ function loadApexCharts(callback) {
 }
 
 function initializeDashboard() {
+    // Inicializar colores para los gráficos basados en las variables CSS
+    initializeChartColors();
+
     // Inicializar fecha actual
     const lastUpdateEl = document.getElementById('lastUpdate');
     if (lastUpdateEl) {
