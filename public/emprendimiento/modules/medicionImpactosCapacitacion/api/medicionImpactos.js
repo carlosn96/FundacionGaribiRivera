@@ -567,10 +567,10 @@ function generarImpactoHTML(data, emprendedores) {
                 type: "button",
                 class: "btn btn-outline-success btn-lg",
                 id: "btnFinal",
-                "data-tipo": "final"
+                "data-tipo": "graduados"
             }).append(
                 $("<i>", {class: "ti ti-upload me-2"}),
-                $("<span>", {text: "Exportar Línea Base Final"})
+                $("<span>", {text: "Exportar Seguimiento Final de Graduados"})
             )
         ),
         $("<div>", {id: "loadingSpinnerContainer", class: "mt-4 d-none"}).append(
@@ -882,9 +882,38 @@ function recuperarVistaImpacto() {
         $("#loadingSpinnerContainer").addClass("d-none");
         
         if (registros.length !== 0) {
+
+            // Definir columnas esperadas según tu DataTable
+            const columnasEsperadas = [
+                "fecha",
+                "Nombre de emprendedor",
+                "¿Llevas registros de entradas y salidas de dinero?",
+                "¿Tienes asignado un sueldo?",
+                "¿Conoces cuál es la utilidad que te deja tu negocio?",
+                "¿Identiﬁcas quién es tu competencia?",
+                "¿Conoces los productos o servicios que te generan mayor utilidad?",
+                "¿Asignas ahorro mensual para mantenimiento de equipo o maquinaria?",
+                "¿Conoces el punto de equilibro?",
+                "¿Separas los gastos del negocio de tus gastos personales?",
+                "¿Elaboras un presupuesto mensual para tu negocio?",
+                "Ingreso mensual",
+                "¿Tienes el hábito de ahorrar de manera constante y a largo plazo?",
+                "¿Cuentas con algún sistema de ahorro?",
+                "¿Cómo empleas las ganancias generadas?"
+            ];
+
+            // Asegurar que todas las filas tengan las mismas columnas
+            registros.forEach(row => {
+                columnasEsperadas.forEach(col => {
+                    if (!(col in row)) {
+                        row[col] = "No disponible"; // valor por defecto
+                    }
+                });
+            });
+
             const tempTable = $('<table>').DataTable({
                 data: registros,
-                columns: Object.keys(registros[0]).map(key => ({
+                columns: columnasEsperadas.map(key => ({
                     title: key,
                     data: key
                 })),

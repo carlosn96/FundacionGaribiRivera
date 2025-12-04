@@ -282,7 +282,9 @@ class ImpactoCapacitacionDAO extends DAO
             $rowVista["fecha"] = $row["fechaCreacion"];
             $rowVista["Nombre de emprendedor"] = $row["nombreUsuario"];
             foreach ($preguntas as $pregunta) {
-                $rowVista[$pregunta["pregunta"]] = $row[$pregunta["columna"]];
+                if (isset($row[$pregunta["columna"]])) {
+                    $rowVista[$pregunta["pregunta"]] = $row[$pregunta["columna"]];
+                }
             }
             $vista[] = $rowVista;
         }

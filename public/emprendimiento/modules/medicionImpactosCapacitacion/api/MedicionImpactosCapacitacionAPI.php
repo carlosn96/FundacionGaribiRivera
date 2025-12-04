@@ -27,11 +27,7 @@ class MedicionImpactosCapacitacionAPI extends API {
     }
     
     function recuperarVistaGeneral() {
-        $this->enviarRespuesta($this->getVistaGeneral($this->getData("tipo")));
-    }
-    
-    private function getVistaGeneral($tipo) {
-        return getAdminImpacto()->recuperarVistaGeneral($tipo);
+        $this->enviarRespuesta(getAdminImpactoCapacitacion()->recuperarVistaGeneral($this->getData("tipo")));
     }
     
 }
