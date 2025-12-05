@@ -28,6 +28,12 @@ class MedicionImpactosAPI extends API {
     function recuperarVistaGeneral() {
         $this->enviarRespuesta($this->getVistaGeneral($this->getData("tipo")));
     }
+
+    function aplicarPreprocesamiento() {
+        $preprocesamiento = $this->getData("preprocesamiento");
+        $this->enviarRespuesta($preprocesamiento);
+        //$this->enviarResultadoOperacion(getAdminImpacto()->aplicarPreprocesamiento($this->getUsuarioActual()));
+    }
     
     private function getVistaGeneral($tipo) {
         return getAdminImpacto()->recuperarVistaGeneral($tipo);
