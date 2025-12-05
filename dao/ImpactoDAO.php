@@ -16,6 +16,13 @@ class ImpactoDAO extends DAO
     VALUES (?, ?)
     ON DUPLICATE KEY UPDATE
         lista_registros_filtrados = VALUES(lista_registros_filtrados)";
+
+    private const INSERTAR_O_ACTUALIZAR_CONFIG_PREPROCESAMIENTO = "
+        INSERT INTO linea_base_impacto_configuracion (id_usuario, preprocesamiento_credito)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE
+            preprocesamiento_credito = VALUES(preprocesamiento_credito)";
+
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
@@ -126,6 +133,7 @@ class ImpactoDAO extends DAO
     private const ACTUALIZAR_SEGUIMIENTO_GRADUADO = 'CALL actualizar_seguimiento_graduado(?)';
     private const RECUPERAR_SEGUIMIENTO_GRADUADO = 'SELECT * FROM recuperar_seguimiento_graduado WHERE idEmprendedor = ?';
     private const CONSULTAR_LISTA_ESTRATEGIAS_VENTAS = "SELECT * FROM recuperar_seguimiento_graduado_lista_estrategias_inc_ventas WHERE idSeguimiento = ?";
+    private const RECUPERAR_CONFIG_PREPROCESAMIENTO = "SELECT preprocesamiento_credito FROM linea_base_impacto_configuracion WHERE id_usuario = ?";
     /**
      * Método genérico para recuperar el impacto de cualquier sección
      *
@@ -193,8 +201,10 @@ class ImpactoDAO extends DAO
         $medicionesEE = $estabilidadEconomica["mediciones"];
         $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
         $fechas = $this->getAniosLineaBase($usuario);
+        $configuracionPreprocesamiento = $this->getConfiguracionPreprocesamiento($usuario);
         return [
             "fechas" => $fechas,
+            "preprocesamiento" => $configuracionPreprocesamiento,
             "impactos" => [
                 [
                     "nombre" => "Estabilidad económica",
@@ -234,6 +244,24 @@ class ImpactoDAO extends DAO
         ];
     }
 
+    private function getConfiguracionPreprocesamiento($usuario)
+    {
+        $prep = $this->prepararInstruccion(self::RECUPERAR_CONFIG_PREPROCESAMIENTO);
+        $prep->agregarInt($usuario);
+        $rs = $prep->ejecutarConsulta();
+        if ($rs && !empty($rs['preprocesamiento_credito'])) {
+            return json_decode($rs['preprocesamiento_credito'], true);
+        }
+        return [
+            "registraEntradaSalida" => "0",
+            "asignaSueldo" => "0",
+            "conocePuntoEquilibrio" => "0",
+            "llevaAhorro" => "0",
+            "separaGasto" => "0",
+            "elaboraPresupuesto" => "0"
+        ];
+    }
+
     public function actualizarConfiguracionAnios($inicio, $fin, $usuario)
     {
         $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_ANIOS);
@@ -248,6 +276,14 @@ class ImpactoDAO extends DAO
         $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_LISTA);
         $prep->agregarInt($id);
         $prep->agregarJSON($lista);
+        return $prep->ejecutar();
+    }
+
+    public function actualizarConfiguracionPreprocesamiento($preprocesamiento, $usuario)
+    {
+        $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_PREPROCESAMIENTO);
+        $prep->agregarInt($usuario);
+        $prep->agregarJSON($preprocesamiento);
         return $prep->ejecutar();
     }
 

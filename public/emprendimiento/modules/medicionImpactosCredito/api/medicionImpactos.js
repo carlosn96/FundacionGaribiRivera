@@ -18,7 +18,8 @@ function mostrarMensajeNoHayInformacion() {
     $("#msgImpacto").prop("hidden", false);
 }
 
-function crearPanelPreprocesamiento() {
+function crearPanelPreprocesamiento(preprocesamiento) {
+    print(preprocesamiento);
     const preguntas = [
         { name: 'registraEntradaSalida', text: '¿Llevas registros de entradas y salidas de dinero?' },
         { name: 'asignaSueldo', text: '¿Tienes asignado un sueldo?' },
@@ -42,10 +43,20 @@ function crearPanelPreprocesamiento() {
 
     const tabla = $("<table>", { class: "table table-hover" });
     const thead = $("<thead>", { class: "table-light" });
+
+    const checkAllSwitch = $("<input>", {
+        class: "form-check-input",
+        type: "checkbox",
+        role: "switch",
+        id: "preproc-select-all-switch",
+    });
+    const headerSwitchContainer = $("<div>", { class: "form-check form-switch d-flex justify-content-center" });
+    headerSwitchContainer.append(checkAllSwitch);
+
     thead.append(
         $("<tr>").append(
             $("<th>", { scope: "col", text: "Pregunta de Administración" }),
-            $("<th>", { scope: "col", class: "text-center", text: "Aplicar Preprocesamiento" })
+            $("<th>", { scope: "col", class: "text-center" }).append(headerSwitchContainer)
         )
     );
 
@@ -66,7 +77,7 @@ function crearPanelPreprocesamiento() {
                         role: "switch",
                         id: switchId,
                         name: pregunta.name,
-                        checked: true,
+                        checked: preprocesamiento[pregunta.name] === "1",
                     })
                 )
             )
@@ -75,6 +86,31 @@ function crearPanelPreprocesamiento() {
     });
 
     tabla.append(thead, tbody);
+
+    const allSwitches = tbody.find('.form-check-input');
+
+    function updateMasterSwitchState() {
+        const totalSwitches = allSwitches.length;
+        const checkedSwitches = tbody.find('.form-check-input:checked').length;
+
+        if (checkedSwitches === totalSwitches) {
+            checkAllSwitch.prop('checked', true);
+            checkAllSwitch.prop('indeterminate', false);
+        } else if (checkedSwitches === 0) {
+            checkAllSwitch.prop('checked', false);
+            checkAllSwitch.prop('indeterminate', false);
+        } else {
+            checkAllSwitch.prop('indeterminate', true);
+            checkAllSwitch.prop('checked', false); // When indeterminate, it should not be checked
+        }
+    }
+
+    checkAllSwitch.on('change', function() {
+        const isChecked = $(this).prop('checked');
+        allSwitches.prop('checked', isChecked);
+    });
+
+    allSwitches.on('change', updateMasterSwitchState);
 
     const divBoton = $("<div>", { class: "mt-3 text-end" });
     const botonSubmit = $("<button>", {
@@ -104,12 +140,10 @@ function crearPanelPreprocesamiento() {
             data[pregunta.name] = input.is(':checked') ? 1 : 0;
         });
 
-        crearPeticion(urlAPI, { case: "aplicarPreprocesamiento", data: $.param({ preprocesamiento: data }) }, (res) => {
-            print(res);
-        });
-
-
+        crearPeticion(urlAPI, { case: "aplicarPreprocesamiento", data: $.param({ preprocesamiento: data }) });
     });
+
+    updateMasterSwitchState(); // Set initial state
 
     return cardPreprocesamiento;
 }
@@ -613,7 +647,7 @@ function generarImpactoHTML(data, emprendedores) {
     /*bodyEmprendedores.append(rowFiltros, divTablaEmp, divFooterEmp); // descomentar para mejorar el filtro de emprendedores
     cardEmprendedores.append(headerEmprendedores, bodyEmprendedores);*/
 
-    const cardPreprocesamiento = crearPanelPreprocesamiento();
+    const cardPreprocesamiento = crearPanelPreprocesamiento(data.preprocesamiento);
     seccionConfig.append(cardTemporal, cardPreprocesamiento, cardEmprendedores);
 
     // === SECCIÓN 3: VISTA GENERAL ===

@@ -8,7 +8,7 @@ class MedicionImpactosAPI extends API {
         $idUsuario = $this->getUsuarioActual();
         $this->enviarRespuesta([
             "impactos" => getAdminImpacto()->getMedicionImpacto($idUsuario),
-            "emprendedores" => getAdminLineaBase()->listarEmprendedoresParaImpactos($idUsuario),
+            "emprendedores" => getAdminLineaBase()->listarEmprendedoresParaImpactos($idUsuario)
         ]);
     }
 
@@ -31,8 +31,7 @@ class MedicionImpactosAPI extends API {
 
     function aplicarPreprocesamiento() {
         $preprocesamiento = $this->getData("preprocesamiento");
-        $this->enviarRespuesta($preprocesamiento);
-        //$this->enviarResultadoOperacion(getAdminImpacto()->aplicarPreprocesamiento($this->getUsuarioActual()));
+        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionPreprocesamiento($preprocesamiento, $this->getUsuarioActual()));
     }
     
     private function getVistaGeneral($tipo) {
