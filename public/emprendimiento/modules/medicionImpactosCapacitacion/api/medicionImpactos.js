@@ -885,7 +885,8 @@ function recuperarVistaImpacto() {
 
             // Definir columnas esperadas según tu DataTable
             const columnasEsperadas = [
-                "fecha",
+                "Etapa",
+                "Fecha",
                 "Nombre de emprendedor",
                 "¿Llevas registros de entradas y salidas de dinero?",
                 "¿Tienes asignado un sueldo?",
