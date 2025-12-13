@@ -1009,36 +1009,83 @@ function recuperarVistaImpacto() {
     crearPeticion(urlAPI, {
         case: 'recuperarVistaGeneral',
         data: $.param({ tipo: tipo })
-    }, (registros) => {
+    }, async (registros) => {
         $("#loadingSpinnerContainer").addClass("d-none");
 
-        if (registros.length !== 0) {
-            const tempTable = $('<table>').DataTable({
-                data: registros,
-                columns: Object.keys(registros[0]).map(key => ({
-                    title: key,
-                    data: key
-                })),
-                dom: 'Bfrtip',
-                buttons: ['excel']
-            });
+        if (Array.isArray(registros) && registros.length > 0) {
+            // Crear contenedor temporal para la tabla
+            const tempContainer = $('<div>').css({ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' });
+            const tempTable = $('<table class="table">').appendTo(tempContainer);
+            tempContainer.appendTo('body');
 
-            tempTable.button('.buttons-excel').trigger();
-            tempTable.destroy();
+            let dataTable = null;
+            try {
+                // Inicializar DataTable con los datos
+                dataTable = tempTable.DataTable({
+                    data: registros,
+                    columns: Object.keys(registros[0]).map(key => ({
+                        title: key,
+                        data: key
+                    })),
+                    dom: 'Bfrtip',
+                    buttons: ['excel'],
+                    searching: false,
+                    paging: false,
+                    info: false
+                });
 
-            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-            alertSuccess.append(
-                '<i class="ti ti-download me-2"></i>',
-                `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
+                // Esperar a que el botón esté disponible y exportar
+                await new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    function tryExport() {
+                        const excelButton = tempContainer.find('.buttons-excel');
+                        if (excelButton.length > 0) {
+                            excelButton.one('click', function() {
+                                setTimeout(resolve, 500); // Espera a que termine la exportación
+                            });
+                            excelButton.click();
+                        } else if (++attempts < 10) {
+                            setTimeout(tryExport, 100);
+                        } else {
+                            reject(new Error('No se encontró el botón de exportación.'));
+                        }
+                    }
+                    tryExport();
+                });
 
-            $("#section-vista-general").prepend(alertSuccess);
+                // Limpiar DataTable y contenedor
+                dataTable.destroy();
+                tempContainer.remove();
 
-            setTimeout(() => {
-                alertSuccess.alert('close');
-            }, 5000);
-
+                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
+                alertSuccess.append(
+                    '<i class="ti ti-download me-2"></i>',
+                    `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-vista-general").prepend(alertSuccess);
+                setTimeout(() => {
+                    alertSuccess.alert('close');
+                }, 5000);
+            } catch (e) {
+                if (dataTable) {
+                    dataTable.destroy();
+                }
+                tempContainer.remove();
+                console.error('Error al exportar:', e);
+                const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
+                alertError.append(
+                    '<i class="ti ti-x me-2"></i>',
+                    '<strong>Error:</strong> Ocurrió un error al exportar los datos.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-vista-general").prepend(alertError);
+                setTimeout(() => {
+                    alertError.alert('close');
+                }, 5000);
+            } finally {
+                button.prop("disabled", false).html(originalContent);
+            }
         } else {
             const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
             alertInfo.append(
@@ -1046,14 +1093,11 @@ function recuperarVistaImpacto() {
                 '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
-
             $("#section-vista-general").prepend(alertInfo);
-
             setTimeout(() => {
                 alertInfo.alert('close');
             }, 5000);
+            button.prop("disabled", false).html(originalContent);
         }
-
-        button.prop("disabled", false).html(originalContent);
     });
 }

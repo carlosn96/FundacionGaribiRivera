@@ -878,11 +878,10 @@ function recuperarVistaImpacto() {
     crearPeticion(urlAPI, {
         case: 'recuperarVistaGeneral',
         data: $.param({tipo: tipo})
-    }, (registros) => {
+    }, async (registros) => {
         $("#loadingSpinnerContainer").addClass("d-none");
-        
-        if (registros.length !== 0) {
 
+        if (Array.isArray(registros) && registros.length > 0) {
             // Definir columnas esperadas según tu DataTable
             const columnasEsperadas = [
                 "Etapa",
@@ -907,37 +906,82 @@ function recuperarVistaImpacto() {
             registros.forEach(row => {
                 columnasEsperadas.forEach(col => {
                     if (!(col in row)) {
-                        row[col] = "No disponible"; // valor por defecto
+                        row[col] = "No disponible";
                     }
                 });
             });
 
-            const tempTable = $('<table>').DataTable({
-                data: registros,
-                columns: columnasEsperadas.map(key => ({
-                    title: key,
-                    data: key
-                })),
-                dom: 'Bfrtip',
-                buttons: ['excel']
-            });
-            
-            tempTable.button('.buttons-excel').trigger();
-            tempTable.destroy();
-            
-            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-            alertSuccess.append(
-                '<i class="ti ti-download me-2"></i>',
-                `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            
-            $("#section-vista-general").prepend(alertSuccess);
-            
-            setTimeout(() => {
-                alertSuccess.alert('close');
-            }, 5000);
-            
+            // Crear contenedor temporal oculto para la tabla
+            const tempContainer = $('<div>').css({ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' });
+            const tempTable = $('<table class="table">').appendTo(tempContainer);
+            tempContainer.appendTo('body');
+
+            let dataTable = null;
+            try {
+                dataTable = tempTable.DataTable({
+                    data: registros,
+                    columns: columnasEsperadas.map(key => ({
+                        title: key,
+                        data: key
+                    })),
+                    dom: 'Bfrtip',
+                    buttons: ['excel'],
+                    searching: false,
+                    paging: false,
+                    info: false
+                });
+
+                // Esperar a que el botón esté disponible y exportar
+                await new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    function tryExport() {
+                        const excelButton = tempContainer.find('.buttons-excel');
+                        if (excelButton.length > 0) {
+                            excelButton.one('click', function() {
+                                setTimeout(resolve, 500);
+                            });
+                            excelButton.click();
+                        } else if (++attempts < 10) {
+                            setTimeout(tryExport, 100);
+                        } else {
+                            reject(new Error('No se encontró el botón de exportación.'));
+                        }
+                    }
+                    tryExport();
+                });
+
+                dataTable.destroy();
+                tempContainer.remove();
+
+                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
+                alertSuccess.append(
+                    '<i class="ti ti-download me-2"></i>',
+                    `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-vista-general").prepend(alertSuccess);
+                setTimeout(() => {
+                    alertSuccess.alert('close');
+                }, 5000);
+            } catch (e) {
+                if (dataTable) {
+                    dataTable.destroy();
+                }
+                tempContainer.remove();
+                console.error('Error al exportar:', e);
+                const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
+                alertError.append(
+                    '<i class="ti ti-x me-2"></i>',
+                    '<strong>Error:</strong> Ocurrió un error al exportar los datos.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-vista-general").prepend(alertError);
+                setTimeout(() => {
+                    alertError.alert('close');
+                }, 5000);
+            } finally {
+                button.prop("disabled", false).html(originalContent);
+            }
         } else {
             const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
             alertInfo.append(
@@ -945,14 +989,11 @@ function recuperarVistaImpacto() {
                 '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
             );
-            
             $("#section-vista-general").prepend(alertInfo);
-            
             setTimeout(() => {
                 alertInfo.alert('close');
             }, 5000);
+            button.prop("disabled", false).html(originalContent);
         }
-        
-        button.prop("disabled", false).html(originalContent);
     });
 }
