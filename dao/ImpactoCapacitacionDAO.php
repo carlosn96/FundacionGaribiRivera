@@ -274,14 +274,14 @@ class ImpactoCapacitacionDAO extends DAO
     public function recuperarVistaGeneral($tipo)
     {
         $tabla = self::VISTA_ANALISIS_IMPACTO . "_" . $tipo;
-        Util::error_log("Recuperando vista general de impacto desde la tabla: $tabla");
         $rset = $this->selectPorCamposEspecificos("*", $tabla, "", true);
         $preguntas = array_merge(self::CAMPOS_ADM_RECURSOS, self::CAMPOS_MEJORA_RECURSOS, self::CAMPOS_MEJORA_AHORROS);
         $vista = [];
-        Util::error_log($rset[0]);
         foreach ($rset as $row) {
             $rowVista = [];
-            $rowVista["Etapa"] = $row["etapa"];
+            if(isset($row["etapa"])) {
+                $rowVista["Etapa"] = $row["etapa"];
+            }
             $rowVista["Fecha"] = $row["fechaCreacion"];
             $rowVista["Nombre de emprendedor"] = $row["nombreUsuario"];
             foreach ($preguntas as $pregunta) {
