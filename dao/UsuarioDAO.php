@@ -32,6 +32,9 @@ class UsuarioDAO extends DAO
             : null;
         if (isset($consulta["permisos"])) {
             $consulta["permisos"] = json_decode($consulta["permisos"]);
+        } else { // Es Emprendedor
+            $consulta["permisos"] = [TipoUsuario::EMPRENDEDOR];
+            $consulta["permisos_descripcion"] = ["Emprendedor"];
         }
 
         return $consulta;

@@ -46,5 +46,8 @@ $router->group(
         $router->post('logout', 'AuthController@logout');
         $router->post('refresh', ['middleware' => 'jwt.cookie', 'uses' => 'AuthController@refresh']);
         $router->get('me', 'AuthController@me');
+        // Bridge endpoint to verify/register bridge tokens coming from legacy app
+        $router->post('bridge', 'BridgeController@register');
+        $router->get('bridge/me', 'BridgeController@me');
     }
 );
