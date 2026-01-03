@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\TipoUsuario;
+use App\Models\LineaBase\LineaBase;
 
 class Usuario extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
@@ -115,5 +116,15 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
             return base64_encode($this->attributes['fotografia']);
         }
         return null;
+    }
+
+    /**
+     * Get the linea base for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function lineaBase()
+    {
+        return $this->hasOne(LineaBase::class, 'id_usuario');
     }
 }
