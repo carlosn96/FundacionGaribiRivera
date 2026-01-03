@@ -113,11 +113,12 @@ class RegisterController extends Controller
     private function sendCode($correo, $nombre)
     {
         $codigo = self::getAccountValidationCode();
-        if (($emailSent = MailService::enviarCorreoVerificacionCuenta(
-            $correo,
-            $nombre,
-            $codigo
-        ))
+        if (
+            ($emailSent = MailService::enviarCorreoVerificacionCuenta(
+                $correo,
+                $nombre,
+                $codigo
+            ))
         ) {
             SessionService::set($correo, $codigo);
         }
@@ -131,7 +132,7 @@ class RegisterController extends Controller
             $emailFromToken = $payload->get('email');
         } catch (JWTException $e) {
             return ApiResponse::error(
-                'Token inválido, expirado o no proporcionado. '.$e->getMessage(),
+                'Token inválido, expirado o no proporcionado. ' . $e->getMessage(),
                 ApiResponse::HTTP_UNAUTHORIZED
             );
         }
@@ -149,7 +150,7 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Los datos proporcionados no son válidos: '.$validator->errors()->toArray(),
+                'Los datos proporcionados no son válidos: ' . $validator->errors()->toArray(),
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
             );
         }
@@ -179,9 +180,8 @@ class RegisterController extends Controller
             return $this->respondWithToken($token, $user, 'Registro completo.', ApiResponse::HTTP_CREATED);
         } catch (\Exception $e) {
             return ApiResponse::error(
-                'No se pudo registrar al usuario.',
-                ApiResponse::HTTP_INTERNAL_SERVER_ERROR,
-                ['exception' => $e->getMessage()]
+                'No se pudo registrar al usuario. ' . $e->getMessage(),
+                ApiResponse::HTTP_INTERNAL_SERVER_ERROR
             );
         }
     }

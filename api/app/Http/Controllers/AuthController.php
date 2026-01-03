@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Http\Responses\ApiResponse;
+use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cookie;
 use Carbon\Carbon;
@@ -49,9 +50,9 @@ class AuthController extends Controller
         return $this->validate(
             $request,
             [
-            'correo' => 'required|email',
-            'contrasena' => 'required|string',
-            'rememberMe' => 'required|boolean'
+                'correo' => 'required|email',
+                'contrasena' => 'required|string',
+                'rememberMe' => 'required|boolean'
             ]
         );
     }
@@ -59,15 +60,55 @@ class AuthController extends Controller
 
     public function me()
     {
+       // Log::info('Fetching authenticated user info for user ID: ' . auth()->id());
         return ApiResponse::success(auth()->user(), "User retrieved successfully.");
     }
 
     public function logout()
     {
-        auth()->logout();
-        // Delete the access_token cookie
-        $cookie = Cookie::create('access_token', null, -1, '/', null, true, true, false, 'strict');
-        return ApiResponse::success(null, 'Successfully logged out')->withCookie($cookie);
+        try {
+            // Obtén el token si viene por cookie/Authorization
+            $token = null;
+            try {
+                $token = JWTAuth::getToken();
+            } catch (\Throwable $t) {
+                // Sin token o mal formado → continuar para limpiar estado del cliente
+            }
+
+            // Cerrar sesión del guard (si estuviera autenticado)
+            try {
+                auth()->logout();
+            } catch (\Throwable $t) {
+                // Guard ya estaba desconectado → continuar
+            }
+
+            // Invalidar token si existe (ignorar estados inválidos/expirados)
+            if ($token) {
+                try {
+                    JWTAuth::invalidate($token);
+                } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+                    // Ya expirado → considerado como cerrado
+                } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+                    // Token inválido → considerado como cerrado
+                } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+                    // No se pudo invalidar → continuar
+                }
+            }
+
+            // Eliminar cookie del token
+            try {
+                Cookie::queue(Cookie::forget('access_token'));
+            } catch (\Throwable $t) {
+                // Fallback manual si Cookie facade no puede
+                @setcookie('access_token', '', time() - 3600, '/', '', true, true);
+            }
+
+            return ApiResponse::success(null, 'Sesión cerrada correctamente');
+        } catch (\Throwable $e) {
+            // Fallback final: garantizar JSON y limpiar cookie
+            @setcookie('access_token', '', time() - 3600, '/', '', true, true);
+            return ApiResponse::success(null, 'Sesión cerrada');
+        }
     }
 
     public function refresh()
