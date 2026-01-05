@@ -112,7 +112,7 @@ class RegisterController extends Controller
 
     private function sendCode($correo, $nombre)
     {
-        $codigo = self::getAccountValidationCode();
+        $codigo = \App\Services\CodeService::generateVerificationCode();
         if (
             ($emailSent = MailService::enviarCorreoVerificacionCuenta(
                 $correo,
@@ -186,12 +186,6 @@ class RegisterController extends Controller
         }
     }
 
-
-    private static function getAccountValidationCode()
-    {
-        $dictionary = "0123456789";
-        return substr(str_shuffle($dictionary), 0, 4);
-    }
 
     private static function obtenerFotografiaRand()
     {

@@ -11,6 +11,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cookie;
 use Carbon\Carbon;
 use App\Http\Controllers\Traits\RespondsWithToken;
+use App\Services\MailService;
+use App\Services\SessionService;
 
 class AuthController extends Controller
 {
@@ -18,8 +20,8 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt.cookie', ['except' => ['login']]);
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('jwt.cookie', ['except' => ['login', 'forgotPassword', 'resetPassword']]);
+        $this->middleware('auth:api', ['except' => ['login', 'forgotPassword', 'resetPassword']]);
     }
 
     public function login(Request $request)
@@ -115,5 +117,53 @@ class AuthController extends Controller
     {
         $token = JWTAuth::refresh();
         return $this->respondWithToken($token, auth()->user());
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'correo' => 'required|email',
+            ]
+        );
+        $correo = $request->input('correo');
+        $user = Usuario::where('correo_electronico', $correo)->first();
+        if (!$user) {
+            return ApiResponse::error('Correo no encontrado.', 404);
+        }
+        $codigo = \App\Services\CodeService::generateVerificationCode();
+        if (!MailService::enviarCorreoRestablecerCuenta($correo, $user->nombre, $codigo)) {
+            return ApiResponse::error('Error al enviar el código de verificación.', 500);
+        }
+        SessionService::set('reset_' . $correo, $codigo);
+        return ApiResponse::success(['sent' => true], 'Código enviado exitosamente');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'correo' => 'required|email',
+                'codigo' => 'required|string|max:4',
+                'nueva_contrasena' => 'required|string|min:6',
+            ]
+        );
+        $correo = $request->input('correo');
+        $codigo = $request->input('codigo');
+        $nuevaContrasena = $request->input('nueva_contrasena');
+        $user = Usuario::where('correo_electronico', $correo)->first();
+        if (!$user) {
+            return ApiResponse::error('Correo no encontrado.', 404);
+        }
+        $storedCode = SessionService::get('reset_' . $correo);
+        if ($storedCode !== $codigo) {
+            return ApiResponse::error('Código incorrecto.', 400);
+        }
+        $user->contrasena = Hash::make($nuevaContrasena);
+        $user->save();
+        SessionService::unset('reset_' . $correo);
+        return ApiResponse::success(['reset' => true], 'Contraseña restablecida exitosamente');
     }
 }

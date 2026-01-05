@@ -31,6 +31,8 @@ $router->get(
                 'POST ' . $appUrl . '/auth/logout' => 'Cierra la sesión del usuario.',
                 'POST ' . $appUrl . '/auth/refresh' => 'Renueva el token de acceso del usuario.',
                 'GET ' . $appUrl . '/auth/me' => 'Obtiene la información del usuario autenticado.',
+                'POST ' . $appUrl . '/auth/forgot-password' => 'Solicita el envío de un código de verificación al correo electrónico del usuario para restablecer contraseña.',
+                'POST ' . $appUrl . '/auth/reset-password' => 'Verifica el código y actualiza la contraseña del usuario.',
                 'GET ' . $appUrl . '/linea-base/{idUsuario}' => 'Obtiene la línea base completa para un usuario.',
                 'POST ' . $appUrl . '/linea-base/{idUsuario}' => 'Guarda la línea base completa para un usuario.',
                 'POST ' . $appUrl . '/linea-base/preliminar/{idUsuario}' => 'Guarda la sección preliminar de la línea base.',
@@ -67,6 +69,8 @@ $router->group(
         $router->post('logout', 'AuthController@logout');
         $router->post('refresh', ['middleware' => 'jwt.cookie', 'uses' => 'AuthController@refresh']);
         $router->get('me', 'AuthController@me');
+        $router->post('forgot-password', 'AuthController@forgotPassword');
+        $router->post('reset-password', 'AuthController@resetPassword');
         // Bridge endpoint to verify/register bridge tokens coming from legacy app
         $router->post('bridge', 'BridgeController@register');
         $router->get('bridge/me', 'BridgeController@me');
