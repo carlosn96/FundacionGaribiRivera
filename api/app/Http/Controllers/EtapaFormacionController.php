@@ -54,5 +54,13 @@ class EtapaFormacionController extends Controller
         }
     }
 
+    public static function getCurrentEtapaId(): int
+    {
+        $etapa = EtapaFormacion::actual();
+        return $etapa
+            ? ($etapa->id_etapa ?? $etapa->idEtapa ?? 0)
+            : 0;
+    }
+
     // Otros métodos CRUD si se necesitan
 }

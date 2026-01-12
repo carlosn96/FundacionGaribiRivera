@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
-
+use Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -11,27 +12,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use App\Utils\StringHelper;
+
 use App\Models\Usuario;
 use App\Models\TipoUsuario;
-use App\Models\EtapaFormacion;
-use App\Models\LineaBase\Catalogos\EmpleoGanancia;
-use App\Models\LineaBase\Catalogos\TiempoDedicaFormacion;
-use App\Models\LineaBase\Catalogos\RazonRecurreFundacion;
-use App\Models\LineaBase\Catalogos\SolicitaCredito;
-use App\Models\LineaBase\Catalogos\UtilizaCredito;
-use App\Models\LineaBase\Catalogos\CantidadDependientesEconomicos;
-use App\Models\LineaBase\Catalogos\Ocupacion;
-use App\Models\LineaBase\Catalogos\RangoIngresoMensual;
-use App\Models\LineaBase\Catalogos\NegocioGiro;
-use App\Models\LineaBase\Catalogos\NegocioActividad;
-use App\Models\LineaBase\Catalogos\MedioConocimiento;
-use App\Models\LineaBase\Catalogos\EstrategiaIncrementarVentas;
-use App\Models\LineaBase\Catalogos\ObjetivoAhorro;
-use App\Models\LineaBase\Catalogos\EstadoCivil;
-use App\Models\LineaBase\Catalogos\Escolaridad;
-use App\Models\LineaBase\Catalogos\CodigoPostal;
-use App\Models\LineaBase\Catalogos\Municipio;
-use App\Models\LineaBase\Catalogos\ComunidadParroquial;
+
 use App\Models\LineaBase\LineaBase;
 use App\Models\LineaBase\LineaBasePreliminarInicial;
 use App\Models\LineaBase\LineaBaseIdentificacion;
@@ -42,86 +29,39 @@ use App\Models\LineaBase\LineaBaseAnalisisNegocio;
 use App\Models\LineaBase\LineaBaseAdministracionIngresosNegocio;
 use App\Models\LineaBase\LineaBaseListaMedioConocimiento;
 use App\Models\LineaBase\LineaBaseListaEstrategiasIncrementarVentas;
-use App\Models\LineaBase\LineaBaseListaEmpleoGanancias;
 use App\Models\LineaBase\LineaBaseListaObjetivosAhorro;
-
+use App\Models\LineaBase\LineaBaseListaEmpleoGanancias;
 class LineaBaseController extends Controller
 {
 
-    public function saveAll(Request $request, $idUsuario): JsonResponse
+    public function saveAll(Request $request): JsonResponse
     {
         try {
             $data = $request->all();
-            $idLineaBase = $this->getOrCreateLineaBaseId($idUsuario, $data['idEtapa'] ?? 1);
 
-            // Save preliminar
-            $this->saveSection($data, $idLineaBase, 'preliminar');
+            /*Validator::make($data, [
+                'idEtapa' => 'required|integer|exists:etapa_formacion,id_etapa'
+            ], [
+                'idEtapa.exists' => 'La etapa seleccionada no existe.'
+            ])->validate();*/
 
-            // Save medio conocimiento
-            if (isset($data['medioConoceFundacion']) && is_array($data['medioConoceFundacion'])) {
-                LineaBaseListaMedioConocimiento::where('id_linea_base', $idLineaBase)->delete();
-                foreach ($data['medioConoceFundacion'] as $medio) {
-                    LineaBaseListaMedioConocimiento::create([
-                        'id_linea_base' => $idLineaBase,
-                        'id_medio' => $medio
-                    ]);
-                }
+            $lb = $this->createLineaBase();
+
+            $idLineaBase = $lb->id_linea_base;
+
+            $this->savePreliminar($data, $idLineaBase);
+            $this->saveIdentificacion($data, $idLineaBase);
+            $this->saveDomicilio($data, $idLineaBase);
+            $this->saveSocioeconomico($data, $idLineaBase);
+            if (StringHelper::boolValue($data['tieneNegocio'])) {
+                $this->saveNegocio($data, $idLineaBase);
+                $this->saveAnalisisNegocio($data, $idLineaBase);
             }
+            $this->saveAdministracionIngresos($data, $idLineaBase);
 
-            // Save identificacion
-            $this->saveSection($data, $idLineaBase, 'identificacion');
-
-            // Save domicilio
-            $this->saveSection($data, $idLineaBase, 'domicilio');
-
-            // Save socioeconomico
-            $this->saveSection($data, $idLineaBase, 'socioeconomico');
-
-            // Save negocio if has negocio
-            if (isset($data['tieneNegocio']) && $data['tieneNegocio']) {
-                $this->saveSection($data, $idLineaBase, 'negocio');
-
-                // Save analisis negocio
-                $this->saveSection($data, $idLineaBase, 'analisis');
-
-                // Save estrategias
-                if (isset($data['estrategiasIncrementarVentas']) && is_array($data['estrategiasIncrementarVentas'])) {
-                    LineaBaseListaEstrategiasIncrementarVentas::where('id_linea_base', $idLineaBase)->delete();
-                    foreach ($data['estrategiasIncrementarVentas'] as $estrategia) {
-                        LineaBaseListaEstrategiasIncrementarVentas::create([
-                            'id_linea_base' => $idLineaBase,
-                            'id_estrategia' => $estrategia
-                        ]);
-                    }
-                }
-
-                // Save empleo ganancias
-                if (isset($data['comoEmpleaGanancias']) && is_array($data['comoEmpleaGanancias'])) {
-                    LineaBaseListaEmpleoGanancias::where('id_linea_base', $idLineaBase)->delete();
-                    foreach ($data['comoEmpleaGanancias'] as $empleo) {
-                        LineaBaseListaEmpleoGanancias::create([
-                            'id_linea_base' => $idLineaBase,
-                            'id_empleo_ganancia' => $empleo
-                        ]);
-                    }
-                }
-
-                // Save administracion ingresos
-                $this->saveSection($data, $idLineaBase, 'administracion');
-
-                // Save objetivos ahorro
-                if (isset($data['objetivosAhorro']) && is_array($data['objetivosAhorro'])) {
-                    LineaBaseListaObjetivosAhorro::where('id_linea_base', $idLineaBase)->delete();
-                    foreach ($data['objetivosAhorro'] as $objetivo) {
-                        LineaBaseListaObjetivosAhorro::create([
-                            'id_linea_base' => $idLineaBase,
-                            'id_objetivo' => $objetivo
-                        ]);
-                    }
-                }
-            }
-
-            return ApiResponse::success(null, 'Línea base guardada exitosamente');
+            return ApiResponse::success($lb->resource(), 'Línea base guardada exitosamente');
+        } catch (ValidationException $e) {
+            return ApiResponse::error($e->validator->errors()->first('idEtapa'));
         } catch (QueryException $e) {
             return ApiResponse::error('Error en la base de datos al guardar la línea base: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
@@ -133,598 +73,261 @@ class LineaBaseController extends Controller
     public function getLineaBase(): JsonResponse
     {
         try {
-            $usuario = auth()->user();
-            $lineaBase = $this->findLineaBase($usuario->id);
+            $lineaBase = JWTAuth::user()->lineaBase;
             if (!$lineaBase) {
                 return ApiResponse::notFound('El usuario aun no tiene una línea base creada.');
             }
-
-            $data = $lineaBase->load([
-                'usuario',
-                'preliminar',
-                'identificacion',
-                'domicilio',
-                'socioeconomico',
-                'negocio',
-                'analisisNegocio',
-                'administracionIngresos'
-            ]);
-
-            return ApiResponse::success($data, 'Línea base obtenida exitosamente');
+            return ApiResponse::success($lineaBase->resource(), 'Línea base obtenida exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al obtener la línea base: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function savePreliminar(Request $request, $idUsuario): JsonResponse
+    private function savePreliminar($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
 
             // Map camelCase to snake_case
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
-                'otro_medio_conocimiento' => $data['otroMedioConoceFundacion'] ?? null,
-                'otro_razon_recurre_fundacion' => $data['otraRazonRecurreFundacion'] ?? null,
-                'id_razon_recurre_fundacion' => $data['razonRecurreFundacion'] ?? null,
+                'id_linea_base' => $idLineaBase,
+                'otro_medio_conocimiento' => StringHelper::getValidValueOrNull($data, 'medioConocimiento_other'),
+                'otro_razon_recurre_fundacion' => StringHelper::getValidValueOrNull($data, 'razonRecurre_other'),
+                'id_razon_recurre_fundacion' => isset($data['razonRecurre']) && $data['razonRecurre'] !== "0" ? $data['razonRecurre'] : null,
                 'id_solicita_credito' => $data['solicitaCredito'] ?? null,
                 'id_utiliza_credito' => $data['utilizaCredito'] ?? null,
-                'id_tiempo_dedica_formacion' => $data['tiempoDedicaCapacitacion'] ?? null,
+                'id_tiempo_dedica_formacion' => $data['tiempoCapacitacion']
             ];
+            StringHelper::cleanArrayString($mappedData);
 
-            $preliminar = LineaBasePreliminarInicial::updateOrCreate(
+            LineaBasePreliminarInicial::updateOrCreate(
                 ['id_linea_base' => $mappedData['id_linea_base']],
                 $mappedData
             );
 
-            return ApiResponse::success($preliminar, 'Sección preliminar guardada exitosamente');
+            if (isset($data['medioConocimiento']) && is_array($data['medioConocimiento'])) {
+                if (isset($data['medioConocimiento_other']) && !empty($data['medioConocimiento_other'])) {
+                    $data['medioConocimiento'] = array_filter($data['medioConocimiento'], function ($value) {
+                        return $value !== "0" && $value !== 0;
+                    });
+                }
+                LineaBaseListaMedioConocimiento::where('id_linea_base', $idLineaBase)->delete();
+                foreach ($data['medioConocimiento'] as $medio) {
+                    LineaBaseListaMedioConocimiento::create([
+                        'id_linea_base' => $idLineaBase,
+                        'id_medio' => $medio
+                    ]);
+                }
+            }
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección preliminar: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección preliminar: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección preliminar: ' . $e->getMessage());
         }
     }
 
-    public function saveIdentificacion(Request $request, $idUsuario): JsonResponse
+    private function saveIdentificacion($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
+                'id_linea_base' => $idLineaBase,
                 'genero' => $data['genero'],
                 'edad' => $data['edad'],
                 'id_estado_civil' => $data['estadoCivil'],
                 'id_escolaridad' => $data['escolaridad'],
-                'discapacidad' => $data['discapacidad'] ?? null,
+                'discapacidad' => StringHelper::boolValue($data['discapacidad']) ? $data['tipoDiscapacidad'] : null,
             ];
-
-            $identificacion = LineaBaseIdentificacion::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($identificacion, 'Sección de identificación guardada exitosamente');
+            StringHelper::cleanArrayString($mappedData);
+            LineaBaseIdentificacion::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección de identificación: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección de identificación: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección de identificación: ' . $e->getMessage());
         }
     }
 
-    public function saveDomicilio(Request $request, $idUsuario): JsonResponse
+    private function saveDomicilio($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
+                'id_linea_base' => $idLineaBase,
                 'calle' => $data['calle'],
                 'calle_cruce_1' => $data['calleCruce1'],
                 'calle_cruce_2' => $data['calleCruce2'],
                 'numero_exterior' => $data['numeroExterior'],
-                'numero_interior' => $data['numeroInterior'] ?? null,
-                'id_codigo_postal' => $data['codigoPostal'],
+                'numero_interior' => StringHelper::getValidValueOrNull($data, 'numeroInterior'),
+                'id_codigo_postal' => StringHelper::intValue($data['codigoPostal']),
                 'colonia' => $data['colonia'],
                 'id_comunidad_parroquial' => $data['comunidadParroquial'],
             ];
-
-            $domicilio = LineaBaseDomicilio::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($domicilio, 'Sección de domicilio guardada exitosamente');
+            StringHelper::cleanArrayString($mappedData);
+            LineaBaseDomicilio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección de domicilio: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección de domicilio: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección de domicilio: ' . $e->getMessage());
         }
     }
 
-    public function saveSocioeconomico(Request $request, $idUsuario): JsonResponse
+    private function saveSocioeconomico($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
-                'cant_dependientes_economicos' => $data['cantidadDependientesEconomicos'],
-                'id_ocupacion' => $data['ocupacionActual'],
-                'id_rango_ingreso_mensual' => $data['ingresoMensual'],
+                'id_linea_base' => $idLineaBase,
+                'cant_dependientes_economicos' => StringHelper::intValue($data['cantidadDependientesEconomicos']),
+                'id_ocupacion' => StringHelper::intValue($data['ocupacionActual']),
+                'id_rango_ingreso_mensual' => StringHelper::intValue($data['ingresoMensual']),
             ];
-
-            $socioeconomico = LineaBaseSocioeconomico::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($socioeconomico, 'Sección socioeconómica guardada exitosamente');
+            LineaBaseSocioeconomico::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección socioeconómica: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección socioeconómica: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección socioeconómica: ' . $e->getMessage());
         }
     }
 
-    public function saveNegocio(Request $request, $idUsuario): JsonResponse
+    private function saveNegocio($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
+            $actividadNegocioVal = StringHelper::intValue($data['negocioActividad']);
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
-                'nombre' => $data['nombre'],
-                'telefono' => $data['telefono'],
-                'calle' => $data['calle'],
-                'calle_cruce_1' => $data['calleCruce1'],
-                'calle_cruce_2' => $data['calleCruce2'],
-                'numero_exterior' => $data['numExterior'],
-                'numero_interior' => $data['numInterior'] ?? null,
-                'id_codigo_postal' => $data['codigoPostal'],
-                'colonia' => $data['colonia'],
-                'antiguedad' => $data['antiguedad'],
-                'cant_empleados' => $data['cantEmpleados'],
-                'id_giro_negocio' => $data['giro'],
-                'otra_actividad' => $data['otraActividad'] ?? null,
-                'actividad' => $data['actividad'] ?? null,
+                'id_linea_base' => $idLineaBase,
+                'nombre' => $data['negocioNombre'],
+                'telefono' => $data['negocioTelefono'],
+                'calle' => $data['negocioCalle'],
+                'calle_cruce_1' => $data['negocioCalleCruce1'],
+                'calle_cruce_2' => $data['negocioCalleCruce2'],
+                'numero_exterior' => $data['negocioNumeroExterior'],
+                'numero_interior' => StringHelper::getValidValueOrNull($data, 'negocioNumeroInterior'),
+                'id_codigo_postal' => StringHelper::intValue($data['negocioCodigoPostal']),
+                'colonia' => $data['negocioColonia'],
+                'antiguedad' => StringHelper::intValue($data['negocioAntiguedad']),
+                'cant_empleados' => StringHelper::intValue($data['negocioCantidadEmpleados']),
+                'id_giro_negocio' => StringHelper::intValue($data['negocioGiro']),
+                'actividad' => $actividadNegocioVal !== 0 ? $actividadNegocioVal : null,
+                'otra_actividad' => StringHelper::getValidValueOrNull($data, 'negocioActividad_other'),
             ];
-
-            $negocio = LineaBaseNegocio::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($negocio, 'Sección de negocio guardada exitosamente');
+            StringHelper::cleanArrayString($mappedData);
+            LineaBaseNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección de negocio: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección de negocio: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección de negocio: ' . $e->getMessage());
         }
     }
 
-    public function saveAnalisisNegocio(Request $request, $idUsuario): JsonResponse
+    private function saveAnalisisNegocio($data, $idLineaBase): void
     {
         try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
+            $asignaAhorro = StringHelper::boolValue($data['asignaAhorroMensual']);
+            $identificaCompetencia = StringHelper::boolValue($data['identificaCompetencia']);
             $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
+                'id_linea_base' => $idLineaBase,
                 'problemas_negocio' => $data['problemasNegocio'],
-                'registra_entrada_salida' => $data['registraEntradaSalida'],
-                'asigna_sueldo' => $data['asignaSueldo'],
-                'conoce_utilidades' => $data['conoceUtilidades'],
-                'identifica_competencia' => $data['identificaCompetencia'],
-                'quien_competencia' => $data['quienCompetencia'] ?? null,
+                'registra_entrada_salida' => StringHelper::intValue($data['registraEntradaSalida']),
+                'asigna_sueldo' => StringHelper::intValue($data['asignaSueldo']),
+                'conoce_utilidades' => StringHelper::intValue($data['conoceUtilidades']),
+                'identifica_competencia' => StringHelper::intValue($data['identificaCompetencia']),
+                'quien_competencia' => $identificaCompetencia ? $data['quienCompetencia'] : null,
                 'clientes_negocio' => $data['clientesNegocio'],
                 'ventajas_negocio' => $data['ventajasNegocio'],
-                'conoce_productos_mayor_utilidad' => $data['conoceProductosMayorUtilidad'],
-                'porcentaje_ganancia' => $data['porcentajeGanancias'] ?? null,
-                'ahorro' => $data['ahorro'],
-                'cuanto_ahorro' => $data['cuantoAhorro'] ?? null,
-                'razones_no_ahorro' => $data['razonesNoAhorro'] ?? null,
-                'conoce_punto_equilibrio' => $data['conocePuntoEquilibrio'],
-                'separa_gastos' => $data['separaGastos'],
-                'elabora_presupuesto' => $data['elaboraPresupuesto'],
+                'conoce_productos_mayor_utilidad' => StringHelper::intValue($data['conoceProductosMayorUtilidad']),
+                'porcentaje_ganancia' => StringHelper::boolValue($data['conoceProductosMayorUtilidad']) ? StringHelper::floatValue($data['porcentajeGananciasProductos']) : null,
+                'ahorro' => StringHelper::intValue($data['asignaAhorroMensual']),
+                'cuanto_ahorro' => $asignaAhorro ? StringHelper::floatValue($data['cuantoAhorro']) : null,
+                'razones_no_ahorro' => !$asignaAhorro ? $data['razonesNoAhorro'] : null,
+                'conoce_punto_equilibrio' => StringHelper::intValue($data['conocePuntoEquilibrio']),
+                'separa_gastos' => StringHelper::intValue($data['separaGastos']),
+                'elabora_presupuesto' => StringHelper::intValue($data['elaboraPresupuesto'])
             ];
+            StringHelper::cleanArrayString($mappedData);
+            LineaBaseAnalisisNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
 
-            $analisis = LineaBaseAnalisisNegocio::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($analisis, 'Sección de análisis de negocio guardada exitosamente');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección de análisis de negocio: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function saveAdministracionIngresos(Request $request, $idUsuario): JsonResponse
-    {
-        try {
-            $data = $request->all();
-            $data['id_linea_base'] = $this->getOrCreateLineaBaseId($idUsuario);
-
-            $mappedData = [
-                'id_linea_base' => $data['id_linea_base'],
-                'sueldo_mensual' => $data['sueldoMensual'] ?? null,
-                'monto_mensual_ventas' => $data['ventasMensuales'] ?? null,
-                'monto_mensual_egresos' => $data['gastosMensuales'] ?? null,
-                'monto_mensual_utilidades' => $data['utilidadesMensuales'] ?? null,
-                'es_negocio_principal_fuente_personal' => $data['esIngresoPrincipalPersonal'] ?? null,
-                'es_negocio_principal_fuente_familiar' => $data['esIngresoPrincipalFamiliar'] ?? null,
-                'habito_ahorro' => $data['tieneHabitoAhorro'] ?? null,
-                'cuenta_sistema_ahorro' => $data['cuentaConSistemaAhorro'] ?? null,
-                'detalle_sistema_ahorro' => $data['detallesSistemaAhorro'] ?? null,
-                'monto_ahorro_mensual' => $data['ahorroMensual'] ?? null,
-            ];
-
-            $administracion = LineaBaseAdministracionIngresosNegocio::updateOrCreate(
-                ['id_linea_base' => $mappedData['id_linea_base']],
-                $mappedData
-            );
-
-            return ApiResponse::success($administracion, 'Sección de administración de ingresos guardada exitosamente');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar la sección de administración de ingresos: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    private function saveSection($data, $idLineaBase, $section)
-    {
-        switch ($section) {
-            case 'preliminar':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'otro_medio_conocimiento' => $data['otroMedioConoceFundacion'] ?? null,
-                    'otro_razon_recurre_fundacion' => $data['otraRazonRecurreFundacion'] ?? null,
-                    'id_razon_recurre_fundacion' => $data['razonRecurreFundacion'] ?? null,
-                    'id_solicita_credito' => $data['solicitaCredito'] ?? null,
-                    'id_utiliza_credito' => $data['utilizaCredito'] ?? null,
-                    'id_tiempo_dedica_formacion' => $data['tiempoDedicaCapacitacion'] ?? null,
-                ];
-                LineaBasePreliminarInicial::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'identificacion':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'genero' => $data['genero'],
-                    'edad' => $data['edad'],
-                    'id_estado_civil' => $data['estadoCivil'],
-                    'id_escolaridad' => $data['escolaridad'],
-                    'discapacidad' => $data['discapacidad'] ?? null,
-                ];
-                LineaBaseIdentificacion::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'domicilio':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'calle' => $data['calle'],
-                    'calle_cruce_1' => $data['calleCruce1'],
-                    'calle_cruce_2' => $data['calleCruce2'],
-                    'numero_exterior' => $data['numeroExterior'],
-                    'numero_interior' => $data['numeroInterior'] ?? null,
-                    'id_codigo_postal' => $data['codigoPostal'],
-                    'colonia' => $data['colonia'],
-                    'id_comunidad_parroquial' => $data['comunidadParroquial'],
-                ];
-                LineaBaseDomicilio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'socioeconomico':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'cant_dependientes_economicos' => $data['cantidadDependientesEconomicos'],
-                    'id_ocupacion' => $data['ocupacionActual'],
-                    'id_rango_ingreso_mensual' => $data['ingresoMensual'],
-                ];
-                LineaBaseSocioeconomico::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'negocio':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'nombre' => $data['nombreNegocio'],
-                    'telefono' => $data['telefonoNegocio'],
-                    'calle' => $data['calleNegocio'],
-                    'calle_cruce_1' => $data['calleCruce1Negocio'],
-                    'calle_cruce_2' => $data['calleCruce2Negocio'],
-                    'numero_exterior' => $data['numExteriorNegocio'],
-                    'numero_interior' => $data['numInteriorNegocio'] ?? null,
-                    'id_codigo_postal' => $data['codigoPostalNegocio'],
-                    'colonia' => $data['coloniaNegocio'],
-                    'antiguedad' => $data['antiguedadNegocio'],
-                    'cant_empleados' => $data['cantEmpleadosNegocio'],
-                    'id_giro_negocio' => $data['giroNegocio'],
-                    'otra_actividad' => $data['otraActividadNegocio'] ?? null,
-                    'actividad' => $data['actividadNegocio'] ?? null,
-                ];
-                LineaBaseNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'analisis':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'problemas_negocio' => $data['problemasNegocio'],
-                    'registra_entrada_salida' => $data['registraEntradaSalida'],
-                    'asigna_sueldo' => $data['asignaSueldo'],
-                    'conoce_utilidades' => $data['conoceUtilidades'],
-                    'identifica_competencia' => $data['identificaCompetencia'],
-                    'quien_competencia' => $data['quienCompetencia'] ?? null,
-                    'clientes_negocio' => $data['clientesNegocio'],
-                    'ventajas_negocio' => $data['ventajasNegocio'],
-                    'conoce_productos_mayor_utilidad' => $data['conoceProductosMayorUtilidad'],
-                    'porcentaje_ganancia' => $data['porcentajeGanancias'] ?? null,
-                    'ahorro' => $data['ahorro'],
-                    'cuanto_ahorro' => $data['cuantoAhorro'] ?? null,
-                    'razones_no_ahorro' => $data['razonesNoAhorro'] ?? null,
-                    'conoce_punto_equilibrio' => $data['conocePuntoEquilibrio'],
-                    'separa_gastos' => $data['separaGastos'],
-                    'elabora_presupuesto' => $data['elaboraPresupuesto'],
-                ];
-                LineaBaseAnalisisNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-            case 'administracion':
-                $mappedData = [
-                    'id_linea_base' => $idLineaBase,
-                    'sueldo_mensual' => $data['sueldoMensual'] ?? null,
-                    'monto_mensual_ventas' => $data['ventasMensuales'] ?? null,
-                    'monto_mensual_egresos' => $data['gastosMensuales'] ?? null,
-                    'monto_mensual_utilidades' => $data['utilidadesMensuales'] ?? null,
-                    'es_negocio_principal_fuente_personal' => $data['esIngresoPrincipalPersonal'] ?? null,
-                    'es_negocio_principal_fuente_familiar' => $data['esIngresoPrincipalFamiliar'] ?? null,
-                    'habito_ahorro' => $data['tieneHabitoAhorro'] ?? null,
-                    'cuenta_sistema_ahorro' => $data['cuentaConSistemaAhorro'] ?? null,
-                    'detalle_sistema_ahorro' => $data['detallesSistemaAhorro'] ?? null,
-                    'monto_ahorro_mensual' => $data['ahorroMensual'] ?? null,
-                ];
-                LineaBaseAdministracionIngresosNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
-                break;
-        }
-    }
-
-    private function validateEmprendedor($idUsuario)
-    {
-        $usuario = Usuario::find($idUsuario);
-        Log::info('Usuario encontrado: ' . $usuario->nombre);
-        if (!$usuario || $usuario->tipo_usuario !== TipoUsuario::EMPRENDEDOR) {
-            throw new \Exception('Solo los usuarios con rol Emprendedor pueden tener línea base.');
-        }
-        return $usuario;
-    }
-
-    private function findLineaBase($idUsuario)
-    {
-        $usuario = $this->validateEmprendedor($idUsuario);
-        return $usuario->lineaBase;
-    }
-
-    private function createLineaBase($idUsuario, $idEtapa = 1)
-    {
-        $usuario = $this->validateEmprendedor($idUsuario);
-
-        return LineaBase::create([
-            'id_usuario' => $idUsuario,
-            'id_etapa' => $idEtapa,
-            'fecha_creacion' => Carbon::now()
-        ]);
-    }
-
-    private function ensureLineaBaseExists($idUsuario, $idEtapa = 1)
-    {
-        $lineaBase = $this->findLineaBase($idUsuario);
-
-        if (!$lineaBase) {
-            $lineaBase = $this->createLineaBase($idUsuario, $idEtapa);
-        }
-
-        return $lineaBase;
-    }
-
-    private function getOrCreateLineaBaseId($idUsuario, $idEtapa = 1)
-    {
-        $lineaBase = $this->ensureLineaBaseExists($idUsuario, $idEtapa);
-
-        return $lineaBase->id;
-    }
-
-    // Método unificado para obtener catálogos
-    public function getCatalogo($tipo): JsonResponse
-    {
-        if (!isset($this->catalogos[$tipo])) {
-            return ApiResponse::error('Tipo de catálogo no válido', ApiResponse::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            $data = $this->getCatalogoData($tipo);
-
-            return ApiResponse::success($data, $this->catalogos[$tipo]::getMessage());
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener el catálogo: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener municipios por estado
-    public function getMunicipios($estadoId): JsonResponse
-    {
-        try {
-            $municipios = Municipio::where('id_estado', $estadoId)->get();
-            return ApiResponse::success($municipios, 'Municipios obtenidos');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener los municipios: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener códigos postales por municipio
-    public function getCodigosPostales($municipioId): JsonResponse
-    {
-        try {
-            $codigos = CodigoPostal::where('id_municipio', $municipioId)->get();
-            return ApiResponse::success($codigos, 'Códigos postales obtenidos');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener los códigos postales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener códigos postales con paginación
-    public function getAllCodigosPostales(Request $request): JsonResponse
-    {
-        try {
-            $perPage = $request->get('per_page', 50); // Default 50 items per page
-            $relationships = CodigoPostal::getRelationships();
-            $codigos = CodigoPostal::with($relationships)->paginate($perPage);
-            return ApiResponse::success($codigos, 'Códigos postales obtenidos');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener los códigos postales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para buscar códigos postales
-    public function searchCodigosPostales(Request $request): JsonResponse
-    {
-        try {
-            $query = $request->get('q', '');
-            $perPage = $request->get('per_page', 50);
-
-            $relationships = CodigoPostal::getRelationships();
-            $codigos = CodigoPostal::with($relationships)
-                ->where('codigo_postal', 'like', '%' . $query . '%')
-                ->orWhere('colonia', 'like', '%' . $query . '%')
-                ->paginate($perPage);
-
-            return ApiResponse::success($codigos, 'Códigos postales encontrados');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al buscar los códigos postales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener un código postal por ID
-    public function getCodigoPostalPorId($id): JsonResponse
-    {
-        try {
-            $relationships = CodigoPostal::getRelationships();
-            $codigo = CodigoPostal::with($relationships)->find($id);
-            if (!$codigo) {
-                return ApiResponse::notFound('Código postal no encontrado');
-            }
-            return ApiResponse::success($codigo, 'Código postal obtenido');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener el código postal: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener comunidades parroquiales con paginación
-    public function getAllComunidadesParroquiales(Request $request): JsonResponse
-    {
-        try {
-            $perPage = $request->get('per_page', 50); // Default 50 items per page
-            $relationships = ComunidadParroquial::getRelationships();
-            $comunidades = ComunidadParroquial::with($relationships)->paginate($perPage);
-            return ApiResponse::success($comunidades, 'Comunidades parroquiales obtenidas');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener las comunidades parroquiales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para buscar comunidades parroquiales
-    public function searchComunidadesParroquiales(Request $request): JsonResponse
-    {
-        try {
-            $query = $request->get('q', '');
-            $perPage = $request->get('per_page', 50);
-
-            $relationships = ComunidadParroquial::getRelationships();
-            $comunidades = ComunidadParroquial::with($relationships)
-                ->where('nombre', 'like', '%' . $query . '%')
-                ->paginate($perPage);
-
-            return ApiResponse::success($comunidades, 'Comunidades parroquiales encontradas');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al buscar las comunidades parroquiales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener comunidades parroquiales por decanato
-    public function getComunidadesParroquialesPorDecanato($decanatoId): JsonResponse
-    {
-        try {
-            $relationships = ComunidadParroquial::getRelationships();
-            $comunidades = ComunidadParroquial::with($relationships)->where('id_decanato', $decanatoId)->get();
-            return ApiResponse::success($comunidades, 'Comunidades parroquiales obtenidas');
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener las comunidades parroquiales: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Método para obtener todos los catálogos
-    public function getAllCatalogosPorTipoInput(): JsonResponse
-    {
-        try {
-            $diccionario = [
-                //"etapaFormacion" => EtapaFormacion::actual(),
-                "checkbox" => [
-                    MedioConocimiento::class,
-                    EstrategiaIncrementarVentas::class,
-                ],
-                "radio" => [
-                    EmpleoGanancia::class,
-                    TiempoDedicaFormacion::class,
-                    RazonRecurreFundacion::class,
-                    SolicitaCredito::class,
-                    UtilizaCredito::class,
-                    CantidadDependientesEconomicos::class,
-                    Ocupacion::class,
-                    RangoIngresoMensual::class,
-                    ObjetivoAhorro::class,
-                ],
-                "select" => [
-                    EstadoCivil::class,
-                    Escolaridad::class,
-                    NegocioGiro::class,
-                    NegocioActividad::class,
-                ]
-            ];
-
-            $allCatalogos = [];
-            $allCatalogos['etapaFormacion'] = EtapaFormacion::actual();
-            foreach ($diccionario as $tipo => $modelClass) {
-                foreach ($modelClass as $model) {
-                    $inputName = $model::INPUT_NAME_KEY;
-                    $allCatalogos[$inputName] = [
-                        "name" => $inputName,
-                        "tipo" => $tipo,
-                        "data" => $model::query()->get()
-                    ];
+            if (isset($data['estrategiasIncrementarVentas']) && is_array($data['estrategiasIncrementarVentas'])) {
+                LineaBaseListaEstrategiasIncrementarVentas::where('id_linea_base', $idLineaBase)->delete();
+                foreach ($data['estrategiasIncrementarVentas'] as $estrategia) {
+                    LineaBaseListaEstrategiasIncrementarVentas::create([
+                        'id_linea_base' => $idLineaBase,
+                        'id_estrategia' => $estrategia
+                    ]);
                 }
             }
 
-            return ApiResponse::success($allCatalogos, 'Todos los catálogos obtenidos');
+            // Save empleo ganancias
+            if (isset($data['comoEmpleaGanancias'])) {
+                LineaBaseListaEmpleoGanancias::where('id_linea_base', $idLineaBase)->delete();
+                LineaBaseListaEmpleoGanancias::create([
+                    'id_linea_base' => $idLineaBase,
+                    'id_empleo_ganancia' => $data['comoEmpleaGanancias']
+                ]);
+            }
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al guardar la sección de análisis de negocio: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener los catálogos: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Error al guardar la sección de análisis de negocio: ' . $e->getMessage());
         }
     }
 
-    /* Método privado para obtener los datos de un catálogo específico
-    private function getCatalogoData($tipo)
+    private function saveAdministracionIngresos($data, $idLineaBase): void
     {
         try {
-            $query = $this->catalogos[$tipo]::query();
-
-            $relationships = $this->catalogos[$tipo]::getRelationships();
-            if (!empty($relationships)) {
-                $query->with($relationships);
-            }
-
-            $data = $query->get();
-
-            // Si hay relaciones, devolver los modelos completos; si no, mapear a id y descripcion
-            if (!empty($relationships)) {
-                return $data;
-            } else {
-                $mappedData = $data->map(function ($item) {
-                    return [
-                        'id' => $item->getKey(),
-                        'descripcion' => $item->descripcion ?? $item->nombre ?? 'Sin descripción'
-                    ];
-                });
-                return $mappedData;
+            $tieneNegocio = StringHelper::boolValue($data['tieneNegocio']);
+            $cuentaSistemaAhorro = StringHelper::boolValue($data['cuentaConSistemaAhorro']);
+            $mappedData = [
+                'id_linea_base' => $idLineaBase,
+                'sueldo_mensual' => StringHelper::floatValue($tieneNegocio ? $data['sueldoMensual'] : 0),
+                'monto_mensual_ventas' => StringHelper::floatValue($tieneNegocio ? $data['montoVentasMensual'] : 0),
+                'monto_mensual_egresos' => StringHelper::floatValue($tieneNegocio ? $data['montoGastosMensual'] : 0),
+                'monto_mensual_utilidades' => StringHelper::floatValue($tieneNegocio ? $data['utilidadesMensual'] : 0),
+                'es_negocio_principal_fuente_personal' => StringHelper::intValue($tieneNegocio ? $data['esIngresoPrincipalPersonal'] : 0),
+                'es_negocio_principal_fuente_familiar' => StringHelper::intValue($tieneNegocio ? $data['esIngresoPrincipalFamiliar'] : 0),
+                'habito_ahorro' => StringHelper::intValue(value: $data['tieneHabitoAhorro']),
+                'cuenta_sistema_ahorro' => StringHelper::intValue($data['cuentaConSistemaAhorro']),
+                'detalle_sistema_ahorro' => $cuentaSistemaAhorro ? StringHelper::cleanString($data['tipoSistemaAhorro']) : null,
+                'monto_ahorro_mensual' => StringHelper::floatValue($cuentaSistemaAhorro ? $data['ahorroMensual'] : 0)
+            ];
+            LineaBaseAdministracionIngresosNegocio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);
+            if (isset($data['objetivosAhorro'])) {
+                LineaBaseListaObjetivosAhorro::where('id_linea_base', $idLineaBase)->delete();
+                LineaBaseListaObjetivosAhorro::create([
+                    'id_linea_base' => $idLineaBase,
+                    'id_objetivo' => StringHelper::intValue($data['objetivosAhorro'])
+                ]);
             }
         } catch (QueryException $e) {
-            throw new \Exception('Error al acceder a la base de datos para el catálogo ' . $tipo . ': ' . $e->getMessage());
+            throw new \Exception('Error en la base de datos al guardar la sección de administración de ingresos: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception('Error al guardar la sección de administración de ingresos: ' . $e->getMessage());
         }
-    }*/
+    }
+
+    private function validateEmprendedor(Usuario $usuario)
+    {
+        if (!$usuario || $usuario->tipo_usuario !== TipoUsuario::EMPRENDEDOR) {
+            throw new \Exception('Solo los usuarios con rol Emprendedor pueden tener línea base.');
+        }
+    }
+
+    private function createLineaBase(): LineaBase
+    {
+        $usuario = JWTAuth::user();
+
+        $this->validateEmprendedor($usuario);
+
+        if ($usuario->lineaBase()->exists()) {
+            throw new \Exception('El usuario ya tiene una línea base creada. Solo se permite una línea base por usuario.');
+        }
+        try {
+            return LineaBase::create([
+                'id_usuario' => $usuario->id,
+                'id_etapa' => EtapaFormacionController::getCurrentEtapaId(),
+                'fecha_creacion' => Carbon::now()
+            ]);
+        } catch (QueryException $e) {
+            throw new \Exception('Error en la base de datos al crear la línea base: ' . $e->getMessage());
+        } catch (\Illuminate\Database\Eloquent\MassAssignmentException $e) {
+            throw new \Exception('Error de asignación masiva al crear la línea base: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception('Error inesperado al crear la línea base: ' . $e->getMessage());
+        }
+    }
 }
