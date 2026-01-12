@@ -33,7 +33,6 @@ $router->get(
                 'GET ' . $appUrl . '/auth/me' => 'Obtiene la información del usuario autenticado.',
                 'POST ' . $appUrl . '/auth/forgot-password' => 'Solicita el envío de un código de verificación al correo electrónico del usuario para restablecer contraseña.',
                 'POST ' . $appUrl . '/auth/reset-password' => 'Verifica el código y actualiza la contraseña del usuario.',
-                'GET ' . $appUrl . '/linea-base/{idUsuario}' => 'Obtiene la línea base completa para un usuario.',
                 'POST ' . $appUrl . '/linea-base/{idUsuario}' => 'Guarda la línea base completa para un usuario.',
                 'POST ' . $appUrl . '/linea-base/preliminar/{idUsuario}' => 'Guarda la sección preliminar de la línea base.',
                 'POST ' . $appUrl . '/linea-base/identificacion/{idUsuario}' => 'Guarda la sección de identificación de la línea base.',
@@ -51,9 +50,7 @@ $router->get(
                 'GET ' . $appUrl . '/linea-base/catalogos/codigo-postal/{id}' => 'Obtiene un código postal específico por su ID.',
                 'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales?per_page={per_page}' => 'Obtiene todas las comunidades parroquiales con paginación.',
                 'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales/search?q={query}&per_page={per_page}' => 'Busca comunidades parroquiales por nombre con paginación.',
-                'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales/{decanatoId}' => 'Obtiene las comunidades parroquiales para un decanato específico.',
-                'GET ' . $appUrl . '/linea-base/catalogos/decanatos' => 'Obtiene la lista de decanatos.',
-                'GET ' . $appUrl . '/linea-base/catalogos/vicarias' => 'Obtiene la lista de vicarias.'
+                'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales/{decanatoId}' => 'Obtiene las comunidades parroquiales para un decanato específico.'
             ]
         ];
         return response()->json($result);
@@ -80,25 +77,19 @@ $router->group(
 $router->group(
     ['prefix' => 'linea-base', 'middleware' => 'jwt.cookie'], function () use ($router) {
         // Rutas para obtener catálogos (deben ir antes de las rutas con parámetros)
-        $router->get('/catalogos', 'LineaBaseController@getAllCatalogosPorTipoInput');
-        $router->get('/catalogos/municipios/{estadoId}', 'LineaBaseController@getMunicipios');
-        $router->get('/catalogos/codigos-postales', 'LineaBaseController@getAllCodigosPostales');
-        $router->get('/catalogos/codigos-postales/search', 'LineaBaseController@searchCodigosPostales');
-        $router->get('/catalogos/codigos-postales/{municipioId}', 'LineaBaseController@getCodigosPostales');
-        $router->get('/catalogos/codigo-postal/{id}', 'LineaBaseController@getCodigoPostalPorId');
-        $router->get('/catalogos/comunidades-parroquiales', 'LineaBaseController@getAllComunidadesParroquiales');
-        $router->get('/catalogos/comunidades-parroquiales/search', 'LineaBaseController@searchComunidadesParroquiales');
-        $router->get('/catalogos/comunidades-parroquiales/{decanatoId}', 'LineaBaseController@getComunidadesParroquialesPorDecanato');
-        $router->get('/catalogos/{tipo}', 'LineaBaseController@getCatalogo');
+        $router->get('/catalogos', 'LineaBaseCatalogosController@getAllCatalogosPorTipoInput');
+        $router->get('/catalogos/municipios/{estadoId}', 'LineaBaseCatalogosController@getMunicipios');
+        $router->get('/catalogos/codigos-postales', 'LineaBaseCatalogosController@getAllCodigosPostales');
+        $router->get('/catalogos/codigos-postales/search', 'LineaBaseCatalogosController@searchCodigosPostales');
+        $router->get('/catalogos/codigos-postales/{municipioId}', 'LineaBaseCatalogosController@getCodigosPostales');
+        $router->get('/catalogos/codigo-postal/{id}', 'LineaBaseCatalogosController@getCodigoPostalPorId');
+        $router->get('/catalogos/comunidades-parroquiales', 'LineaBaseCatalogosController@getAllComunidadesParroquiales');
+        $router->get('/catalogos/comunidades-parroquiales/search', 'LineaBaseCatalogosController@searchComunidadesParroquiales');
+        $router->get('/catalogos/comunidades-parroquiales/{decanatoId}', 'LineaBaseCatalogosController@getComunidadesParroquialesPorDecanato');
+        $router->get('/catalogos/{tipo}', 'LineaBaseCatalogosController@getCatalogo');
 
         $router->get('/', 'LineaBaseController@getLineaBase');
-        $router->post('/{idUsuario}', 'LineaBaseController@saveAll');
-        $router->post('/preliminar/{idUsuario}', 'LineaBaseController@savePreliminar');
-        $router->post('/identificacion/{idUsuario}', 'LineaBaseController@saveIdentificacion');
-        $router->post('/domicilio/{idUsuario}', 'LineaBaseController@saveDomicilio');
-        $router->post('/socioeconomico/{idUsuario}', 'LineaBaseController@saveSocioeconomico');
-        $router->post('/negocio/{idUsuario}', 'LineaBaseController@saveNegocio');
-        $router->post('/analisis-negocio/{idUsuario}', 'LineaBaseController@saveAnalisisNegocio');
-        $router->post('/administracion-ingresos/{idUsuario}', 'LineaBaseController@saveAdministracionIngresos');
+        $router->post('/', 'LineaBaseController@saveAll');
+
     }
 );
