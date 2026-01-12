@@ -2,6 +2,7 @@
 
 namespace App\Models\LineaBase;
 
+use App\Models\LineaBase\Catalogos\ObjetivoAhorro;
 use Illuminate\Database\Eloquent\Model;
 
 class LineaBaseListaObjetivosAhorro extends Model
@@ -14,5 +15,10 @@ class LineaBaseListaObjetivosAhorro extends Model
     public function lineaBase()
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
+    }
+
+    public function objetivoAhorro()
+    {
+        return $this->belongsTo(ObjetivoAhorro::class, 'id_objetivo');
     }
 }

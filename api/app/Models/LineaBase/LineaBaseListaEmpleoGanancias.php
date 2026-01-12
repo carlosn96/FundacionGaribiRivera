@@ -3,6 +3,7 @@
 namespace App\Models\LineaBase;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\LineaBase\Catalogos\EmpleoGanancia;
 
 class LineaBaseListaEmpleoGanancias extends Model
 {
@@ -14,5 +15,10 @@ class LineaBaseListaEmpleoGanancias extends Model
     public function lineaBase()
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
+    }
+
+    public function empleoGanancia()
+    {
+        return $this->belongsTo(EmpleoGanancia::class, 'id_empleo_ganancia');
     }
 }

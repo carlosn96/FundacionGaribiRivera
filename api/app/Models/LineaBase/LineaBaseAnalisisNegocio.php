@@ -22,7 +22,7 @@ class LineaBaseAnalisisNegocio extends Model
         'ahorro',
         'cuanto_ahorro',
         'razones_no_ahorro',
-        'conoce_punto_equilibrio',
+        'conoce_punto_equilibro', //Error de dislexia en la BD
         'separa_gastos',
         'elabora_presupuesto'
     ];
@@ -32,5 +32,15 @@ class LineaBaseAnalisisNegocio extends Model
     public function lineaBase()
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
+    }
+
+    public function estrategiasIncrementarVentas()
+    {
+        return $this->hasMany(LineaBaseListaEstrategiasIncrementarVentas::class, 'id_linea_base', 'id_linea_base');
+    }
+
+    public function empleoGanancias()
+    {
+        return $this->hasMany(LineaBaseListaEmpleoGanancias::class, 'id_linea_base', 'id_linea_base');
     }
 }

@@ -27,4 +27,9 @@ class LineaBaseAdministracionIngresosNegocio extends Model
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
     }
+
+    public function objetivosAhorro()
+    {
+        return $this->hasMany(LineaBaseListaObjetivosAhorro::class, 'id_linea_base', 'id_linea_base');
+    }
 }

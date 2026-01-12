@@ -3,6 +3,7 @@
 namespace App\Models\LineaBase;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\LineaBase\Catalogos\EstrategiaIncrementarVentas;
 
 class LineaBaseListaEstrategiasIncrementarVentas extends Model
 {
@@ -14,5 +15,10 @@ class LineaBaseListaEstrategiasIncrementarVentas extends Model
     public function lineaBase()
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
+    }
+
+    public function estrategia()
+    {
+        return $this->belongsTo(EstrategiaIncrementarVentas::class, 'id_estrategia');
     }
 }

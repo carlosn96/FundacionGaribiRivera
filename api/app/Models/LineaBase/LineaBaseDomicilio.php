@@ -3,6 +3,8 @@
 namespace App\Models\LineaBase;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\LineaBase\Catalogos\CodigoPostal;
+use App\Models\LineaBase\Catalogos\ComunidadParroquial;
 
 class LineaBaseDomicilio extends Model
 {
@@ -24,5 +26,15 @@ class LineaBaseDomicilio extends Model
     public function lineaBase()
     {
         return $this->belongsTo(LineaBase::class, 'id_linea_base');
+    }
+
+    public function codigoPostal()
+    {
+        return $this->belongsTo(CodigoPostal::class, 'id_codigo_postal');
+    }
+
+    public function comunidadParroquial()
+    {
+        return $this->belongsTo(ComunidadParroquial::class, 'id_comunidad_parroquial');
     }
 }
