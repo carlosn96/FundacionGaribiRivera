@@ -37,7 +37,7 @@ class AuthController extends Controller
         if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
             return ApiResponse::unauthorized('Contraseña incorrecta.');
         }
-        JWTAuth::factory()->setTTL($rememberMe ? 60 * 24 * 7 : 60 * 24); // 1 semana o 1 día
+        JWTAuth::factory()->setTTL($rememberMe ? 60 : 15); // 60 minutos si rememberMe, sino 15 minutos
         auth()->login($user);
         try {
             $token = JWTAuth::fromUser($user);
@@ -115,8 +115,24 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        $token = JWTAuth::refresh();
-        return $this->respondWithToken($token, auth()->user());
+        $refreshToken = request()->cookie('refresh_token');
+
+        if (!$refreshToken) {
+            return ApiResponse::unauthorized('Refresh token not provided.');
+        }
+
+        try {
+            JWTAuth::setToken($refreshToken);
+            $user = JWTAuth::authenticate();
+            // Generar nuevo access token con TTL corto
+            JWTAuth::factory()->setTTL(config('jwt.ttl', 15));
+            $newToken = JWTAuth::fromUser($user);
+            // Reset TTL
+            JWTAuth::factory()->setTTL(config('jwt.ttl', 15));
+            return $this->respondWithToken($newToken, $user, 'Token refreshed');
+        } catch (\Exception $e) {
+            return ApiResponse::unauthorized('Invalid refresh token.');
+        }
     }
 
     public function forgotPassword(Request $request)

@@ -64,7 +64,7 @@ $router->group(
         $router->post('register', ['middleware' => 'jwt.cookie', 'uses' => 'RegisterController@register']);
         $router->post('login', 'AuthController@login');
         $router->post('logout', 'AuthController@logout');
-        $router->post('refresh', ['middleware' => 'jwt.cookie', 'uses' => 'AuthController@refresh']);
+        $router->post('refresh', 'AuthController@refresh');
         $router->get('me', 'AuthController@me');
         $router->post('forgot-password', 'AuthController@forgotPassword');
         $router->post('reset-password', 'AuthController@resetPassword');
