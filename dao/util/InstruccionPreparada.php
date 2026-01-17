@@ -43,6 +43,10 @@ class InstruccionPreparada {
         }
     }
 
+    function agregarNullableString(?string $valor) {
+        $this->agregarParametro("s", $valor);
+    }
+
     function agregarInt(int $valor) {
         $this->agregarParametro("i", $valor);
     }
