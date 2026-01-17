@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{TITULO}}</title>
+    <style>
+        /* CSS SIMPLE - Solo estilos básicos compatibles con Dompdf */
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10px;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        /* Clases de utilidad simples */
+        .bold {
+            font-weight: bold;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        /* Colores */
+        .bg-green {
+            background-color: #173F35;
+        }
+
+        .bg-yellow {
+            background-color: #F2D34F;
+        }
+
+        .bg-yellow-light {
+            background-color: #F8EEC2;
+        }
+
+        .bg-white {
+            background-color: #FFFFFF;
+        }
+
+        .bg-gray {
+            background-color: #F4F4F4;
+        }
+
+        .text-white {
+            color: #FFFFFF;
+        }
+
+        .text-green {
+            color: #173F35;
+        }
+
+        .text-green-dark {
+            color: #1F5A4A;
+        }
+
+        .text-yellow {
+            color: #F2D34F;
+        }
+
+        /* Bordes simples */
+        .border-yellow {
+            border: 2px solid #F2D34F;
+        }
+
+        .border-yellow-light {
+            border: 2px solid #F8EEC2;
+        }
+
+        .border-left-green {
+            border-left: 3px solid #173F35;
+        }
+
+        .border-left-yellow {
+            border-left: 3px solid #F2D34F;
+        }
+
+        .border-bottom {
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .border-bottom-thick {
+            border-bottom: 4px solid #F2D34F;
+        }
+
+        .border-top {
+            border-top: 2px solid #F8EEC2;
+        }
+
+        /* Encabezado con contenido del footer */
+        .header-footer {
+            text-align: center;
+            font-size: 8px;
+            color: #1F5A4A;
+            background-color: #F8EEC2;
+            padding: 5px;
+            margin: 10px 0;
+            border: 1px solid #F2D34F;
+        }
+
+        /* Reglas de página para Dompdf */
+        @page {
+            margin: 1cm;
+            size: A4;
+        }
+
+        /* Para repetir encabezados de tabla en saltos de página */
+        thead {
+            display: table-header-group;
+        }
+
+        tbody {
+            display: table-row-group;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+
+                <!-- ENCABEZADO CON CONTENIDO DEL FOOTER -->
+                {{ENCABEZADO_FOOTER}}
+
+                <!-- HEADER -->
+                {{HEADER}}
+
+                
+
+                <!-- TOTALES GENERALES -->
+                {{TOTALES_GENERALES}}
+
+                <!-- ESTADISTICAS DEMOGRAFICAS -->
+                {{ESTADISTICAS_DEMOGRAFICAS}}
+
+                <!-- MUNICIPIOS -->
+                {{MUNICIPIOS_SECTION}}
+
+                <!-- DETALLES PARTICIPANTES -->
+                {{DETALLES_PARTICIPANTES}}
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

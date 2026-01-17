@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Corporativo - Fundación Garibi Rivera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent: #0f766e;
+            --border-light: #e5e7eb;
+            --border-strong: #1f2937;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #525252;
+            margin: 0;
+            padding: 40px 0;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            margin: 0 auto 20px auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .label-eyebrow {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .metric-block {
+            padding: 16px 0;
+        }
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-top: 8px;
+        }
+        .metric-delta {
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .corp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .corp-table th {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-strong);
+            padding: 12px 8px;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.05em;
+        }
+        .corp-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        .corp-table tr:last-child td {
+            border-bottom: none;
+        }
+        .corp-table td:first-child {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            background-color: #f3f4f6;
+            color: var(--text-secondary);
+        }
+
+        .doc-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-light);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: var(--text-tertiary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
+                border: none;
+            }
+            .no-print { display: none !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botón Flotante (No Imprimible) -->
+    <div class="fixed top-6 right-6 z-50 no-print">
+        <button onclick="window.print()" class="bg-white hover:bg-gray-50 text-gray-800 font-medium py-2 px-4 border border-gray-200 rounded shadow-sm flex items-center gap-2 transition-all text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Imprimir PDF
+        </button>
+    </div>
+
+    <!-- PÁGINA 1: PORTADA MINIMALISTA -->
+    <div class="page flex flex-col justify-between">
+        <!-- Top Branding -->
+        <div class="pt-10">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="w-8 h-8 bg-teal-700 rounded-sm"></div>
+                <span class="text-sm font-semibold tracking-widest uppercase text-gray-900">Garibi Rivera</span>
+            </div>
+
+            <div class="max-w-2xl">
+                <p class="label-eyebrow mb-4">Documento Confidencial</p>
+                <h1 class="text-5xl font-bold text-gray-900 leading-tight mb-6">
+                    Reporte de<br>Participantes
+                </h1>
+                <div class="h-1 w-20 bg-teal-700 mb-8"></div>
+                <h2 class="text-2xl font-normal text-gray-500">{{TITULO}}</h2>
+            </div>
+        </div>
+
+        <!-- Middle (Whitespace is luxury) -->
+        <div class="flex-grow"></div>
+
+        <!-- Bottom Metadata -->
+        <div class="pb-10 grid grid-cols-2 gap-12 border-t border-gray-200 pt-8">
+            <div>
+                <p class="label-eyebrow">Preparado para</p>
+                <p class="text-sm font-medium text-gray-900 mt-1">Dirección General</p>
+            </div>
+            <div>
+                <p class="label-eyebrow">Fecha de Emisión</p>
+                <p class="text-sm font-medium text-gray-900 mt-1">{{FECHA_GENERACION}}</p>
+            </div>
+            <div>
+                <p class="label-eyebrow">ID de Reporte</p>
+                <p class="text-sm font-medium text-gray-900 mt-1 font-mono text-xs">RPT-{{FECHA_ID}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: DASHBOARD EJECUTIVO -->
+    <div class="page">
+        <!-- Header Página -->
+        <div class="flex justify-between items-end border-b border-gray-200 pb-4 mb-8">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Resumen Ejecutivo</h3>
+                <p class="text-xs text-gray-500 mt-1">Análisis demográfico y distribución geográfica</p>
+            </div>
+            <div class="text-right">
+                <span class="badge">Estatus: Finalizado</span>
+            </div>
+        </div>
+
+        <!-- KPIs (Key Performance Indicators) -->
+        <div class="grid grid-cols-3 gap-8 mb-12">
+            <!-- Total -->
+            <div class="metric-block border-l-2 border-teal-600 pl-4">
+                <p class="label-eyebrow">Total Registros</p>
+                <p class="metric-value">{{TOTAL_PARTICIPANTES}}</p>
+                <p class="text-xs text-gray-400 mt-2">Participantes activos</p>
+            </div>
+            <!-- Mujeres -->
+            <div class="metric-block border-l-2 border-gray-200 pl-4">
+                <p class="label-eyebrow">Mujeres</p>
+                <p class="metric-value">{{TOTAL_MUJERES}}</p>
+                <div class="metric-delta text-teal-700">
+                    <span class="font-bold mr-1">{{PORCENTAJE_MUJERES}}%</span> del total
+                </div>
+            </div>
+            <!-- Hombres -->
+            <div class="metric-block border-l-2 border-gray-200 pl-4">
+                <p class="label-eyebrow">Hombres</p>
+                <p class="metric-value">{{TOTAL_HOMBRES}}</p>
+                <div class="metric-delta text-gray-500">
+                    <span class="font-bold mr-1">{{PORCENTAJE_HOMBRES}}%</span> del total
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido sin gráficos -->
+        <div class="flex-grow space-y-8">
+            {{ESTADISTICAS_DEMOGRAFICAS}}
+            {{MUNICIPIOS_SECTION}}
+        </div>
+
+        <!-- Footer -->
+        <div class="doc-footer">
+            <span>Garibi Rivera &bull; Reporte Interno</span>
+            <span>Página 2 de 3</span>
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: LISTADO DETALLADO -->
+    <div class="page">
+        <!-- Header Página -->
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Listado de Participantes</h3>
+                <p class="text-xs text-gray-500 mt-1">Desglose completo de asistentes registrados</p>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="flex-grow">
+            {{DETALLES_PARTICIPANTES}}
+        </div>
+
+        <!-- Footer -->
+        <div class="doc-footer">
+            <span>Garibi Rivera &bull; Reporte Interno</span>
+            <span>Página 3 de 3</span>
+        </div>
+    </div>
+
+</body>
+</html>

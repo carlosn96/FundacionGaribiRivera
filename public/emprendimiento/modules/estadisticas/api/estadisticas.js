@@ -57,16 +57,16 @@ function generateColorPalette(baseColor, count = 5) {
             const hue2rgb = (p, q, t) => {
                 if (t < 0) t += 1;
                 if (t > 1) t -= 1;
-                if (t < 1/6) return p + (q - p) * 6 * t;
-                if (t < 1/2) return q;
-                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
                 return p;
             };
             const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             const p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
+            r = hue2rgb(p, q, h + 1 / 3);
             g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
+            b = hue2rgb(p, q, h - 1 / 3);
         }
         return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
     }
@@ -94,10 +94,10 @@ function generateColorPalette(baseColor, count = 5) {
         // Variar la luminosidad para mejorar la separación visual.
         // Alternar entre tonos más claros y más oscuros en relación con la luminosidad base.
         let newL = baseL + (i % 2 === 0 ? -1 : 1) * Math.ceil(i / 2) * lightnessStep;
-        
+
         // Limitar la luminosidad a un rango razonable [0.2, 0.85] para evitar negro/blanco puros
         newL = Math.max(0.2, Math.min(0.85, newL));
-        
+
         // Mantener la saturación relativamente alta para mayor viveza
         const newS = Math.max(0.5, baseS > 0.1 ? baseS * 0.9 : 0.5);
 
@@ -235,7 +235,7 @@ function construirCamposFiltro(campos) {
     // Contenedor de checkboxes con grid responsivo
     const gridContainer = $("<div class=\"row g-2 g-md-3\"></div>");
 
-    $.each(campos, function(key, campo) {
+    $.each(campos, function (key, campo) {
         // Columna responsiva: 1 en móvil, 2 en tablet, 3 en desktop
         const col = $("<div class=\"col-12 col-sm-6 col-lg-4\"></div>");
 
@@ -248,8 +248,8 @@ function construirCamposFiltro(campos) {
         // Agregar efecto hover si no es obligatorio
         if (!campo.obligatorio) {
             card.hover(
-                function() { $(this).addClass('shadow-sm border-primary'); },
-                function() { $(this).removeClass('shadow-sm border-primary'); }
+                function () { $(this).addClass('shadow-sm border-primary'); },
+                function () { $(this).removeClass('shadow-sm border-primary'); }
             );
         } else {
             card.addClass('bg-light');
@@ -269,7 +269,7 @@ function construirCamposFiltro(campos) {
         // Si es obligatorio, agregar atributos para que no se pueda desmarcar
         if (campo.obligatorio) {
             checkbox.prop('disabled', true);
-            
+
             // Crear campo oculto para enviar el valor al servidor
             const hiddenInput = $("<input type=\"hidden\">")
                 .attr('name', 'campos[]')
@@ -295,7 +295,7 @@ function construirCamposFiltro(campos) {
 
         // Click en la card para toggle checkbox (si no es obligatorio)
         if (!campo.obligatorio) {
-            card.on('click', function(e) {
+            card.on('click', function (e) {
                 if (!$(e.target).is('input[type="checkbox"]')) {
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
@@ -318,13 +318,13 @@ function construirCamposFiltro(campos) {
 
     const btnSelectAll = $("<button type=\"button\" class=\"btn btn-sm btn-outline-primary\"></button>")
         .html('<i class="fas fa-check me-1"></i> Todos')
-        .on('click', function() {
+        .on('click', function () {
             contenedor.find('input[type="checkbox"]:not(:disabled)').prop('checked', true);
         });
 
     const btnDeselectAll = $("<button type=\"button\" class=\"btn btn-sm btn-outline-secondary\"></button>")
         .html('<i class="fas fa-times-circle me-1"></i> Ninguno')
-        .on('click', function() {
+        .on('click', function () {
             contenedor.find('input[type="checkbox"]:not(:disabled)').prop('checked', false);
         });
 
@@ -1021,7 +1021,7 @@ function configurarEventosModales() {
                 try {
                     const csv = convertToCSV(data);
                     downloadCSV(csv, `${title}_${new Date().toISOString().split('T')[0]}.csv`);
-                    
+
                     $btn.html('<i class="fas fa-check-circle me-1"></i> Descargado'); // Mostrar mensaje de éxito
 
                     setTimeout(() => {
@@ -1180,4 +1180,68 @@ function configurarEventosFiltros() {
             });
         });
     }
+}
+
+function exportar(plantilla) {
+    const camposFormulario = validarCamposFormularioEstadisticas();
+
+    if (!camposFormulario.camposValidos) {
+        mostrarMensajeAdvertencia('Debe seleccionar al menos una etapa o un rango de fechas válido para descargar el reporte PDF.', false);
+        return;
+    }
+
+    const $newForm = $('<form>', {
+        action: plantilla,
+        method: 'POST',
+        target: '_blank',
+    });
+
+    Object.entries(camposFormulario.data).forEach(([name, val]) => {
+        $newForm.append($('<input>', {
+            type: val.type,
+            name: name,
+            value: val.value
+        }));
+    });
+
+    $('body').append($newForm);
+    $newForm[0].submit();
+    $newForm.remove();
+}
+
+function reportePreview() {
+    exportar('api/reportePreview/index.php');
+}
+
+function descargarPDF() {
+    exportar('api/descargarPDF/index.php');
+}
+
+function validarCamposFormularioEstadisticas() {
+    const etapa = $("#etapa").val();
+    const fechaInicio = $("#fechaInicio").val();
+    const fechaFin = $("#fechaFin").val();
+    const hasEtapa = etapa && etapa !== '0';
+    const hasFechas = fechaInicio && fechaFin;
+
+    // Función para convertir fecha de dd/mm/yyyy a yyyy-mm-dd
+    function convertDateFormat(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = parts[2];
+            return `${year}-${month}-${day}`;
+        }
+        return dateStr;
+    }
+
+    return {
+        camposValidos: !!(hasEtapa || hasFechas), data: {
+            etapa: { value: etapa, type: "number" },
+            fechaInicio: { value: convertDateFormat(fechaInicio), type: "date" },
+            fechaFin: { value: convertDateFormat(fechaFin), type: "date" }
+        }
+    };
 }

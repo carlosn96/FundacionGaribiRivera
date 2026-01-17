@@ -4,6 +4,7 @@ class EstadisticasDAO extends DAO
 {
     private const RECUPERAR_ESTADISTICAS_LINEA_BASE = "CALL consultar_estadisticas_linea_base (?,?,?)";
     private const RECUPERAR_ESTADISTICAS_LINEA_BASE_DETALLES = "SELECT CAMPOS FROM estadisticas_linea_base_detalles lb";
+    private const RECUPERAR_ESTADISTICAS_DEMOGRAFICAS = "CALL consultar_estadistica_demografica(?,?,?)";
 
     /**
      * Obtiene las estadísticas agregadas para el dashboard de línea base.
@@ -14,7 +15,7 @@ class EstadisticasDAO extends DAO
     {
         return [
             "categorias" => $this->consultarCategoriasLineaBase($etapa, $fechaInicio, $fechaFin),
-            "detalle" => $this->obtenerDetalleLineaBase($seleccion,$etapa, $fechaInicio, $fechaFin)
+            "detalle" => $this->obtenerDetalleLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin)
         ];
 
     }
@@ -105,4 +106,52 @@ class EstadisticasDAO extends DAO
 
         return $datos;
     }
+
+    /**
+     * Obtiene las estadísticas demográficas.
+     *
+     * @param string $fechaInicio Fecha de inicio (puede ser vacío).
+     * @param string $fechaFin    Fecha de fin (puede ser vacío).
+     * @param int $idEtapa        ID de la etapa (puede ser 0).
+     * 
+     * @return array Un arreglo con los datos demográficos organizados por categoría.
+     */
+    public function obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa)
+    {
+        $prep = $this->prepararInstruccion(self::RECUPERAR_ESTADISTICAS_DEMOGRAFICAS);
+        $prep->agregarNullableString(empty($fechaInicio) ? null : $fechaInicio);
+        $prep->agregarNullableString(empty($fechaFin) ? null : $fechaFin);
+        $prep->agregarInt($idEtapa);
+        
+        $resultado = $prep->ejecutarConsultaMultiple();
+
+        // Organizar los resultados en un arreglo asociativo
+        $datos = [
+            'totales' => [],
+            'rangosEdad' => [],
+            'municipios' => []
+        ];
+
+        // Clasificar los resultados según la categoría
+        foreach ($resultado as $row) {
+            switch ($row['categoria']) {
+                case 'Participantes':
+                    $datos['totales'][] = $row;
+                    break;
+                case 'Rango Edad':
+                    $datos['rangosEdad'][] = $row;
+                    break;
+                case 'Municipios':
+                    $datos['municipios'][] = $row;
+                    break;
+            }
+        }
+        return $datos;
+    }
+
+    public function obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa)
+    {
+        return $this->obtenerDetalleLineaBase('*', $idEtapa, $fechaInicio, $fechaFin);
+    }
+
 }

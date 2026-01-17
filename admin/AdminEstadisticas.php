@@ -14,13 +14,21 @@ class AdminEstadisticas extends Admin
      */
     public function obtenerEstadisticasLineaBase(array $campos, $etapa = 0, $fechaInicio = '', $fechaFin = '')
     {
-        $seleccion = implode(',', $campos);
+        $seleccion = empty($campos) ? '*' : implode(',', $campos);
         return $this->formatearRespuestaMultiple($this->dao->obtenerEstadisticasLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin));
     }
 
     public function camposDisponiblesReporte()
     {
         return $this->dao->camposDisponiblesReporte();
+    }
+
+    /**
+     * Orquesta la obtención de datos estadísticos demográficos y los devuelve como Array.
+     */
+    public function obtenerEstadisticasDemograficas($fechaInicio = '', $fechaFin = '', $idEtapa = 0)
+    {
+        return $this->dao->obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa);
     }
 
     private function formatearRespuestaMultiple($respuesta)
@@ -38,6 +46,11 @@ class AdminEstadisticas extends Admin
             unset($detalle); // Buenas prácticas para referencias
         }
         return $respuesta;
+    }
+
+    public function obtenerEstadisticasDetalle($fechaInicio = '', $fechaFin = '', $idEtapa = 0)
+    {
+        return $this->dao->obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa);
     }
 
 }
