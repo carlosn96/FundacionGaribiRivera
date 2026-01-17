@@ -67,4 +67,10 @@ class EtapaFormacionDAO extends DAO
         return $prep->ejecutar();
     }
 
+    public function buscarPorId($idEtapa)
+    {
+        $rs = $this->selectPorId(self::LISTAR_ETAPAS_FORMACION." WHERE idEtapa = ?", $idEtapa);
+        return $rs ? $rs : [];
+    }
+
 }

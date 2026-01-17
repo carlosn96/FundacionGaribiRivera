@@ -75,4 +75,9 @@ class AdminEtapaFormacion extends Admin
     {
         $this->dao->listarTalleresPorEtapa($idEtapa);
     }
+
+    public function obtenerEtapaPorId($idEtapa)
+    {
+        return $this->construirEtapa($this->dao->buscarPorId($idEtapa))->toArray();
+    }
 }
