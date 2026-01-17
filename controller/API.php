@@ -58,9 +58,9 @@ abstract class API
         $this->data = $data;
     }
 
-    function getData($key)
+    function getData($key = null)
     {
-        return $this->data[$key] ?? "";
+        return empty($key) ? $this->data : $this->data[$key] ?? "";
     }
 
     protected function getDataAll()
