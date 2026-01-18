@@ -8,12 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --accent: #0f766e;
-            --border-light: #e5e7eb;
-            --border-strong: #1f2937;
+            --text-primary: #000000;
+            --text-secondary: #1F5A4A;
+            --text-tertiary: #F4F4F4;
+            --accent: #173F35;
+            --border-light: #F4F4F4;
+            --border-strong: #173F35;
+            --yellow-primary: #F2D34F;
+            --yellow-light: #F8EEC2;
+            --white: #FFFFFF;
         }
 
         body {
@@ -39,9 +42,15 @@
             flex-direction: column;
         }
 
-        h1, h2, h3, h4 {
+        h1, h2 {
             margin: 0;
             font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        h3, h4 {
+            margin: 0;
+            font-weight: 300;
             letter-spacing: -0.025em;
         }
 
@@ -114,13 +123,32 @@
 
         .doc-footer {
             margin-top: auto;
-            border-top: 1px solid var(--border-light);
+            border-top: 2px solid var(--accent);
             padding-top: 12px;
             display: flex;
             justify-content: space-between;
             font-size: 9px;
-            color: var(--text-tertiary);
+            color: var(--text-primary);
             font-family: 'Inter', sans-serif;
+        }
+
+        /* Orientación de páginas */
+        @page portrait {
+            size: A4 portrait;
+        }
+
+        @page landscape {
+            size: A4 landscape;
+        }
+
+        .page-portrait {
+            page: portrait;
+        }
+
+        .page-landscape {
+            page: landscape;
+            width: 297mm;
+            height: 210mm;
         }
 
         @media print {
@@ -147,26 +175,28 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            Imprimir PDF
+            Imprimir
         </button>
     </div>
 
     <!-- PÁGINA 1: PORTADA MINIMALISTA -->
-    <div class="page flex flex-col justify-between">
+    <div class="page page-portrait flex flex-col justify-between">
         <!-- Top Branding -->
         <div class="pt-10">
-            <div class="flex items-center gap-3 mb-12">
-                <div class="w-8 h-8 bg-teal-700 rounded-sm"></div>
-                <span class="text-sm font-semibold tracking-widest uppercase text-gray-900">Garibi Rivera</span>
+            <div class="flex  items-center gap-3 mb-12">
+                <img src="../../../../../assets/images/logos/ico.png" alt="Logo Fundación Garibi Rivera" class="w-16 h-16 object-contain">
+                <span class="text-2xl font-bold tracking-widest uppercase" style="color: var(--text-primary);">Fundación Garibi Rivera</span>
             </div>
 
             <div class="max-w-2xl">
                 <p class="label-eyebrow mb-4">Documento Confidencial</p>
-                <h1 class="text-5xl font-bold text-gray-900 leading-tight mb-6">
+                <h1 class="text-5xl font-bold leading-tight mb-6" style="color: var(--text-primary);">
                     Reporte de<br>Participantes
                 </h1>
-                <div class="h-1 w-20 bg-teal-700 mb-8"></div>
-                <h2 class="text-2xl font-normal text-gray-500">{{TITULO}}</h2>
+                
+                <div class="h-1 w-20 mb-8" style="background-color: var(--yellow-primary);"></div>
+                <h2 class="text-2xl font-normal" style="color: var(--text-secondary);">{{TITULO}}</h2>
+                <h3 class="text-xl font-normal mb-8" style="color: var(--text-secondary);">{{SUBTITULO}}</h3>
             </div>
         </div>
 
@@ -177,53 +207,53 @@
         <div class="pb-10 grid grid-cols-2 gap-12 border-t border-gray-200 pt-8">
             <div>
                 <p class="label-eyebrow">Preparado para</p>
-                <p class="text-sm font-medium text-gray-900 mt-1">Dirección General</p>
+                <p class="text-sm font-medium mt-1" style="color: var(--text-primary);">Dirección General</p>
             </div>
             <div>
                 <p class="label-eyebrow">Fecha de Emisión</p>
-                <p class="text-sm font-medium text-gray-900 mt-1">{{FECHA_GENERACION}}</p>
+                <p class="text-sm font-medium mt-1" style="color: var(--text-primary);">{{FECHA_GENERACION}}</p>
             </div>
             <div>
                 <p class="label-eyebrow">ID de Reporte</p>
-                <p class="text-sm font-medium text-gray-900 mt-1 font-mono text-xs">RPT-{{FECHA_ID}}</p>
+                <p class="text-sm font-medium mt-1 font-mono text-xs" style="color: var(--text-primary);">RPT-{{FECHA_ID}}</p>
             </div>
         </div>
     </div>
 
     <!-- PÁGINA 2: DASHBOARD EJECUTIVO -->
-    <div class="page">
+    <div class="page page-portrait">
         <!-- Header Página -->
         <div class="flex justify-between items-end border-b border-gray-200 pb-4 mb-8">
             <div>
-                <h3 class="text-lg font-bold text-gray-900">Resumen Ejecutivo</h3>
-                <p class="text-xs text-gray-500 mt-1">Análisis demográfico y distribución geográfica</p>
+                <h3 class="text-lg font-bold" style="color: var(--text-primary);">Resumen Ejecutivo</h3>
+                <p class="text-xs mt-1" style="color: var(--text-secondary);">Análisis demográfico y distribución geográfica</p>
             </div>
             <div class="text-right">
-                <span class="badge">Estatus: Finalizado</span>
+                <span class="badge">{{ETAPA}}</span>
             </div>
         </div>
 
         <!-- KPIs (Key Performance Indicators) -->
         <div class="grid grid-cols-3 gap-8 mb-12">
             <!-- Total -->
-            <div class="metric-block border-l-2 border-teal-600 pl-4">
+            <div class="metric-block pl-4" style="border-left: 2px solid var(--accent);">
                 <p class="label-eyebrow">Total Registros</p>
                 <p class="metric-value">{{TOTAL_PARTICIPANTES}}</p>
-                <p class="text-xs text-gray-400 mt-2">Participantes activos</p>
+                <p class="text-xs mt-2" style="color: var(--text-secondary);">Participantes activos</p>
             </div>
             <!-- Mujeres -->
-            <div class="metric-block border-l-2 border-gray-200 pl-4">
+            <div class="metric-block pl-4" style="border-left: 2px solid var(--border-light);">
                 <p class="label-eyebrow">Mujeres</p>
                 <p class="metric-value">{{TOTAL_MUJERES}}</p>
-                <div class="metric-delta text-teal-700">
+                <div class="metric-delta" style="color: var(--accent);">
                     <span class="font-bold mr-1">{{PORCENTAJE_MUJERES}}%</span> del total
                 </div>
             </div>
             <!-- Hombres -->
-            <div class="metric-block border-l-2 border-gray-200 pl-4">
+            <div class="metric-block pl-4" style="border-left: 2px solid var(--border-light);">
                 <p class="label-eyebrow">Hombres</p>
                 <p class="metric-value">{{TOTAL_HOMBRES}}</p>
-                <div class="metric-delta text-gray-500">
+                <div class="metric-delta" style="color: var(--text-secondary);">
                     <span class="font-bold mr-1">{{PORCENTAJE_HOMBRES}}%</span> del total
                 </div>
             </div>
@@ -237,29 +267,32 @@
 
         <!-- Footer -->
         <div class="doc-footer">
-            <span>Garibi Rivera &bull; Reporte Interno</span>
+            <span>Fundación Garibi Rivera &bull; Reporte Interno</span>
             <span>Página 2 de 3</span>
         </div>
     </div>
 
     <!-- PÁGINA 3: LISTADO DETALLADO -->
-    <div class="page">
+    <div class="page page-landscape" style="display: flex; flex-direction: column;">
         <!-- Header Página -->
-        <div class="flex justify-between items-end mb-6">
+        <div class="flex justify-between items-end mb-6" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
             <div>
-                <h3 class="text-lg font-bold text-gray-900">Listado de Participantes</h3>
-                <p class="text-xs text-gray-500 mt-1">Desglose completo de asistentes registrados</p>
+                <h3 class="text-lg font-bold" style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; margin: 0;">Listado de Participantes</h3>
+                <p class="text-xs mt-1" style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.25rem;">Desglose completo de asistentes registrados</p>
+            </div>
+            <div class="text-right" style="text-align: right;">
+                <span class="badge">{{ETAPA}}</span>
             </div>
         </div>
 
         <!-- Tabla -->
-        <div class="flex-grow">
+        <div class="flex-grow" style="flex-grow: 1;">
             {{DETALLES_PARTICIPANTES}}
         </div>
 
         <!-- Footer -->
-        <div class="doc-footer">
-            <span>Garibi Rivera &bull; Reporte Interno</span>
+        <div class="doc-footer" style="margin-top: auto; border-top: 2px solid var(--accent); padding-top: 12px; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-primary);">
+            <span>Fundación Garibi Rivera &bull; Reporte Interno</span>
             <span>Página 3 de 3</span>
         </div>
     </div>

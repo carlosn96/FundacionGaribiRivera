@@ -381,12 +381,10 @@ class EstadisticasPDFRenderer
             $html .= '<td width="13%" style="padding: 6px 4px;">Emprendedor</td>';
             $html .= '<td width="17%" style="padding: 6px 4px;">Correo</td>';
             $html .= '<td width="8%" style="padding: 6px 4px;">Teléfono</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Etapa</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Razón Recurre</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Solicita Crédito</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Utiliza Crédito</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Medios Conocimiento</td>';
-            $html .= '<td width="4%" style="padding: 6px 4px;">Fecha Creación</td>';
+            $html .= '<td width="8%" style="padding: 6px 4px;">Edad</td>';
+            $html .= '<td width="8%" style="padding: 6px 4px;">Giro</td>';
+            $html .= '<td width="8%" style="padding: 6px 4px;">Municipio</td>';
+            $html .= '<td width="8%" style="padding: 6px 4px;">Colonia</td>';
             $html .= '</tr>';
             $html .= '</thead>';
             $html .= '<tbody>';
@@ -399,12 +397,10 @@ class EstadisticasPDFRenderer
                 $html .= '<td class="bold text-green" width="13%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['emprendedor'] ?? '-') . '</td>';
                 $html .= '<td width="17%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['correo'] ?? '-') . '</td>';
                 $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['tel'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['etapaNombre'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['razonRecurreDescripcion'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['solicitaCreditoDescripcion'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['utilizaCreditoDescripcion'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['mediosConocimiento'] ?? '-') . '</td>';
-                $html .= '<td width="4%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['fechaCreacion'] ?? '-') . '</td>';
+                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['edad'] ?? '-') . '</td>';
+                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['giro'] ?? '-') . '</td>';
+                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['municipio'] ?? '-') . '</td>';
+                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['colonia'] ?? '-') . '</td>';
                 $html .= '</tr>';
                 $rowIndex++;
             }

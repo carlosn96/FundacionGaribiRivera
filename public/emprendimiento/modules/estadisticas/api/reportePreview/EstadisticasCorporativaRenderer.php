@@ -7,6 +7,7 @@ use Dompdf\Dompdf;
 class EstadisticasCorporativaRenderer
 {
     private const TEMPLATE_PATH = __DIR__ . '/plantilla_corporativa_simple.html';
+    private const REGISTROS_POR_PAGINA = 8;
     private $template;
     private $data;
 
@@ -20,15 +21,22 @@ class EstadisticasCorporativaRenderer
     {
         $html = $this->template;
 
+        // Construir subtítulo basado en filtros
+        $html = str_replace('{{SUBTITULO}}', $subtitulo = $this->construirSubtitulo(), $html);
+        $html = str_replace('{{ETAPA}}', $this->data['etapa'] ?? 'Etapa no especificada', $html);
+
         // Reemplazar placeholders principales
-        $html = str_replace('{{TITULO}}', 'Estadísticas Demográficas - Fundación Garibi Rivera', $html);
+        $html = str_replace('{{TITULO}}', 'Estadísticas Demográficas', $html);
         $html = str_replace('{{FECHA_GENERACION}}', Util::obtenerFechaActual('d/m/Y H:i:s'), $html);
         $html = str_replace('{{FECHA_ID}}', date('Y') . '-0525-GR-' . substr(uniqid(), -4), $html);
 
         // Generar secciones
         $html = str_replace('{{ESTADISTICAS_DEMOGRAFICAS}}', $this->generarEstadisticasDemograficas(), $html);
         $html = str_replace('{{MUNICIPIOS_SECTION}}', $this->generarSeccionMunicipios(), $html);
-        $html = str_replace('{{DETALLES_PARTICIPANTES}}', $this->generarDetallesParticipantes(), $html);
+
+        // Generar tabla de participantes (solo primeros registros por página)
+        $detalles = $this->data['detalles'] ?? [];
+        $html = str_replace('{{DETALLES_PARTICIPANTES}}', $this->generarDetallesParticipantes(array_slice($detalles, 0, self::REGISTROS_POR_PAGINA), 0), $html);
 
         // Estadísticas generales
         $totales = $this->data['categorias']['totales'][0] ?? [];
@@ -45,6 +53,11 @@ class EstadisticasCorporativaRenderer
 
         $html = str_replace('{{PORCENTAJE_HOMBRES}}', $pctHombres, $html);
         $html = str_replace('{{PORCENTAJE_MUJERES}}', $pctMujeres, $html);
+
+        // Generar páginas adicionales si hay más de REGISTROS_POR_PAGINA participantes
+        if (count($detalles) > self::REGISTROS_POR_PAGINA) {
+            $html .= $this->generarPaginasAdicionales($detalles);
+        }
 
         return $html;
     }
@@ -126,9 +139,8 @@ class EstadisticasCorporativaRenderer
         return $html;
     }
 
-    public function generarDetallesParticipantes()
+    public function generarDetallesParticipantes($detalles, $startIndex = 0)
     {
-        $detalles = $this->data['detalles'] ?? [];
         if (empty($detalles)) {
             return '<div class="bg-white rounded border border-gray-200 p-6 text-center text-gray-500">No hay detalles de participantes disponibles para mostrar.</div>';
         }
@@ -148,11 +160,11 @@ class EstadisticasCorporativaRenderer
         $html .= '</thead>';
         $html .= '<tbody>';
 
-        $rowIndex = 0;
+        $rowIndex = $startIndex + 1;
         foreach ($detalles as $detalle) {
-            $bgClass = ($rowIndex % 2 === 0) ? 'bg-gray-50' : 'bg-white';
+            $bgClass = (($rowIndex - 1) % 2 === 0) ? 'bg-gray-50' : 'bg-white';
             $html .= '<tr class="' . $bgClass . '">';
-            $html .= '<td class="text-center">' . ($rowIndex + 1) . '</td>';
+            $html .= '<td class="text-center">' . $rowIndex . '</td>';
             $html .= '<td class="font-medium text-gray-900">' . htmlspecialchars($detalle['emprendedor'] ?? '-') . '</td>';
             $html .= '<td>' . htmlspecialchars($detalle['correo'] ?? '-') . '</td>';
             $html .= '<td>' . htmlspecialchars($detalle['tel'] ?? '-') . '</td>';
@@ -168,5 +180,85 @@ class EstadisticasCorporativaRenderer
         $html .= '</table>';
 
         return $html;
+    }
+
+    private function generarPaginasAdicionales($detalles)
+    {
+        $chunks = array_chunk($detalles, self::REGISTROS_POR_PAGINA);
+        $html = '';
+        $totalPages = count($chunks);
+
+        // Empezar desde el segundo chunk (el primero ya está en la plantilla)
+        for ($i = 1; $i < $totalPages; $i++) {
+            $pageNumber = $i + 3; // +3 porque ya tenemos 3 páginas base (portada, resumen, primera tabla)
+            $html .= $this->generarPaginaParticipantes($chunks[$i], $i * self::REGISTROS_POR_PAGINA, $pageNumber, $totalPages + 2);
+        }
+
+        return $html;
+    }
+
+    private function generarPaginaParticipantes($detalles, $startIndex, $pageNumber, $totalPages)
+    {
+        $etapa = $this->data['etapa'] ?? 'Sin especificar';
+
+        $html = '
+    <!-- PÁGINA ' . $pageNumber . ': LISTADO DETALLADO (Continuación) -->
+    <div class="page page-landscape" style="display: flex; flex-direction: column;">
+        <!-- Header Página -->
+        <div class="flex justify-between items-end mb-6" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+            <div>
+                <h3 class="text-lg font-bold" style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; margin: 0;">Listado de Participantes (Continuación)</h3>
+                <p class="text-xs mt-1" style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.25rem;">Desglose completo de asistentes registrados</p>
+            </div>
+            <div class="text-right" style="text-align: right;">
+                <span class="badge">' . htmlspecialchars($etapa) . '</span>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="flex-grow" style="flex-grow: 1;">
+            ' . $this->generarDetallesParticipantes($detalles, $startIndex) . '
+        </div>
+
+        <!-- Footer -->
+        <div class="doc-footer" style="margin-top: auto; border-top: 2px solid var(--accent); padding-top: 12px; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-primary);">
+            <span>Fundación Garibi Rivera &bull; Reporte Interno</span>
+            <span>Página ' . $pageNumber . ' de ' . $totalPages . '</span>
+        </div>
+    </div>
+';
+
+        return $html;
+    }
+
+    private function construirSubtitulo()
+    {
+        $etapa = $this->data['etapa'] ?? 'Sin especificar';
+        $filtros = $this->data['filtros'] ?? [];
+
+        $fechaInicioStr = '';
+        $fechaFinStr = '';
+        $hasEtapa = $etapa !== 'Sin especificar';
+        $hasFechas = false;
+
+        foreach ($filtros as $filtro) {
+            if (strpos($filtro, 'Fecha inicio:') === 0) {
+                $fechaInicioStr = trim(str_replace('Fecha inicio:', '', $filtro));
+            } elseif (strpos($filtro, 'Fecha fin:') === 0) {
+                $fechaFinStr = trim(str_replace('Fecha fin:', '', $filtro));
+            }
+        }
+
+        $hasFechas = !empty($fechaInicioStr) && !empty($fechaFinStr);
+
+        if ($hasEtapa && !$hasFechas) {
+            return "Etapa: $etapa";
+        } elseif (!$hasEtapa && $hasFechas) {
+            return "Del $fechaInicioStr al $fechaFinStr";
+        } elseif ($hasEtapa && $hasFechas) {
+            return "Etapa: $etapa - Del $fechaInicioStr al $fechaFinStr";
+        } else {
+            return 'Reporte General';
+        }
     }
 }

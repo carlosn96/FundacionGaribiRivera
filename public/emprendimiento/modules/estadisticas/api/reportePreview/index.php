@@ -51,8 +51,8 @@ function obtenerEstadisticasDemograficas()
     return [
         'etapa' => $etapaData ? $etapaData['nombre'] : 'Sin especificar',
         'filtros' => [
-            'Fecha inicio: ' . ($fechaInicio ?: 'No especificada'),
-            'Fecha fin: ' . ($fechaFin ?: 'No especificada'),
+            'Fecha inicio: ' . $fechaInicio,
+            'Fecha fin: ' . $fechaFin,
             'Etapa: ' . ($etapaData ? $etapaData['nombre'] : 'Todas')
         ],
         'categorias' => $data,
