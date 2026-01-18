@@ -1,6 +1,6 @@
 <?php
 
-function inicializarPlantilla($dir, $aside, $scripts = [])
+function inicializarPlantilla($dir, $aside, $scripts = [], $styles = [])
 {
     ?>
     <!DOCTYPE html>
@@ -10,7 +10,12 @@ function inicializarPlantilla($dir, $aside, $scripts = [])
         <?php
         // Incluir archivo de la cabecera
         include '../../../assets/commons/head.php';
+        // Incluir estilos adicionales, si los hay
+        foreach ($styles as $style) {
+            echo '<link rel="stylesheet" href="' . $style . '">';
+        }
         ?>
+
     </head>
 
     <body>
