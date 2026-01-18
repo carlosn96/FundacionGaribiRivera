@@ -68,8 +68,8 @@
                                                     Ver todos los mensajes
                                                 </button>
                                             </div>
-                                        </div>-->
-                </li>
+                                        </div>
+                </li>-->
                 <!-- ------------------------------- -->
                 <!-- end Messages cart Dropdown -->
                 <!-- ------------------------------- -->
