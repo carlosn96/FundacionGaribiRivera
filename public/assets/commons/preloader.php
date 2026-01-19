@@ -1,17 +1,32 @@
-<div class="preloader" id="preloader" style="display: flex; justify-content: center; align-items: center;">
-    <svg fill="#173f35" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-        style="width: 80px; height: 80px;">
-        <circle cx="4" cy="12" r="3">
-            <animate id="spinner_qFRN" begin="0;spinner_OcgL.end+0.25s" attributeName="cy" calcMode="spline" dur="0.6s"
-                values="12;6;12" keySplines=".33,.66,.66,1;.33,0,.66,.33" />
-        </circle>
-        <circle cx="12" cy="12" r="3">
-            <animate begin="spinner_qFRN.begin+0.1s" attributeName="cy" calcMode="spline" dur="0.6s" values="12;6;12"
-                keySplines=".33,.66,.66,1;.33,0,.66,.33" />
-        </circle>
-        <circle cx="20" cy="12" r="3">
-            <animate id="spinner_OcgL" begin="spinner_qFRN.begin+0.2s" attributeName="cy" calcMode="spline" dur="0.6s"
-                values="12;6;12" keySplines=".33,.66,.66,1;.33,0,.66,.33" />
-        </circle>
-    </svg>
+<style>
+    .preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .preloader.hidden {
+        display: none;
+    }
+    .professional-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #173f35;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+<div class="preloader" id="preloader">
+    <div class="professional-spinner"></div>
 </div>
