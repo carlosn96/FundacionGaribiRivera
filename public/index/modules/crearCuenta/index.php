@@ -9,7 +9,7 @@
     <body>
         <!-- Preloader y Overlay con Spinner -->
         <?php
-        require_once '../../includes/overlay.php';
+        require_once '../../../assets/commons/preloader.php';
         ?>
         <div class="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-white">
             <div class="container-fluid">

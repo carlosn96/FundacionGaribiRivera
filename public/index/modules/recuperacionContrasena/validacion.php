@@ -13,7 +13,7 @@ require_once 'assets/sesion.php';
     <body>
         <!-- Preloader y Overlay con Spinner -->
         <?php
-        require_once '../../includes/overlay.php';
+        require_once '../../../assets/commons/preloader.php';
         ?>
         <div id="main-wrapper" class="p-0 bg-white">
             <div class="auth-login position-relative overflow-hidden d-flex align-items-center justify-content-center px-7 px-xxl-0 rounded-3 h-n20">

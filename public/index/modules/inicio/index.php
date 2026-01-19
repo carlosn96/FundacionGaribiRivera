@@ -11,7 +11,7 @@
 <body>
     <!-- Preloader y Overlay con Spinner -->
     <?php
-    require_once '../../includes/overlay.php';
+    require_once '../../../assets/commons/preloader.php';
     ?>
 
     <div class="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-white">
@@ -42,11 +42,10 @@
                                             class="input-group-text bg-white border-success border-end-0 rounded-start">
                                             <i class="fas fa-envelope text-success"></i>
                                         </span>
-                                        <input type="email"
+                                        <input type="email" value="carlos_n96@hotmail.com"
                                             class="form-control form-control-lg border-success border-start-0 ps-0"
-                                            id="correo" name="correo"
-                                            aria-label="Correo electrónico" aria-describedby="email-icon" required
-                                            autocomplete="email">
+                                            id="correo" name="correo" aria-label="Correo electrónico"
+                                            aria-describedby="email-icon" required autocomplete="email">
                                     </div>
                                 </div>
 
@@ -59,13 +58,13 @@
                                             class="input-group-text bg-white border-success border-end-0 rounded-start">
                                             <i class="fas fa-lock text-success"></i>
                                         </span>
-                                        <input type="password"
+                                        <input type="password" value="Pa$$w0rd!"
                                             class="form-control form-control-lg border-success border-start-0 border-end-0 ps-0"
                                             id="contrasena" name="contrasena" placeholder="••••••••"
                                             aria-label="Contraseña" aria-describedby="password-icon toggle-password"
                                             required autocomplete="current-password">
-                                        <button class="btn border-success"
-                                            type="button" id="togglePassword" aria-label="Mostrar contraseña">
+                                        <button class="btn border-success" type="button" id="togglePassword"
+                                            aria-label="Mostrar contraseña">
                                             <i class="fas fa-eye text-success" id="eyeIcon"></i>
                                         </button>
                                     </div>
@@ -74,7 +73,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <div class="form-check">
                                         <input class="form-check-input warning border-success" type="checkbox" value=""
-                                            id="rememberMe" >
+                                            id="rememberMe">
                                         <label class="form-check-label text-muted small" for="rememberMe">
                                             Recuérdame
                                         </label>
