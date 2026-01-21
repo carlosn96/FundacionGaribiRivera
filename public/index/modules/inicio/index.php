@@ -42,7 +42,7 @@
                                             class="input-group-text bg-white border-success border-end-0 rounded-start">
                                             <i class="fas fa-envelope text-success"></i>
                                         </span>
-                                        <input type="email" value="carlos_n96@hotmail.com"
+                                        <input type="email" value=""
                                             class="form-control form-control-lg border-success border-start-0 ps-0"
                                             id="correo" name="correo" aria-label="Correo electrónico"
                                             aria-describedby="email-icon" required autocomplete="email">
@@ -58,7 +58,7 @@
                                             class="input-group-text bg-white border-success border-end-0 rounded-start">
                                             <i class="fas fa-lock text-success"></i>
                                         </span>
-                                        <input type="password" value="Pa$$w0rd!"
+                                        <input type="password" value=""
                                             class="form-control form-control-lg border-success border-start-0 border-end-0 ps-0"
                                             id="contrasena" name="contrasena" placeholder="••••••••"
                                             aria-label="Contraseña" aria-describedby="password-icon toggle-password"
