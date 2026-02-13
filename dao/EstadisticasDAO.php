@@ -24,6 +24,9 @@ class EstadisticasDAO extends DAO
     {
         return [
             "referencia" => ["campo" => "Referencia", "obligatorio" => true],
+            "fechaCredito" => ["campo" => "Fecha de crédito", "obligatorio" => true],
+            'graduado' => ["campo" => "Graduado", "obligatorio" => true],
+            'fechaGraduacion' => ["campo" => "Fecha de graduación", "obligatorio" => true],
             "emprendedor" => ["campo" => "Emprendedor", "obligatorio" => true],
             "etapaNombre" => ["campo" => "Etapa", "obligatorio" => false],
             "correo" => ["campo" => "Correo", "obligatorio" => false],
@@ -32,7 +35,7 @@ class EstadisticasDAO extends DAO
             "solicitaCreditoDescripcion" => ["campo" => "El crédito lo solicitarías para", "obligatorio" => false],
             "utilizaCreditoDescripcion" => ["campo" => "El crédito lo utilizarías para", "obligatorio" => false],
             "mediosConocimiento" => ["campo" => "¿Cómo te enteraste de la Fundación?", "obligatorio" => false],
-            "fechaCreacion" => ["campo" => "Fecha de registro", "obligatorio" => true]
+            "fechaCreacion" => ["campo" => "Fecha de registro", "obligatorio" => true],
         ];
     }
 

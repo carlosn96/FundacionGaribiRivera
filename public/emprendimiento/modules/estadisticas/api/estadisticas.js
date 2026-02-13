@@ -424,8 +424,9 @@ function procesarDatosDashboard(data, detalle) {
 // Calcular y mostrar estadísticas resumidas
 function calcularEstadisticasResumen(detalle) {
     const totalEmprendedores = detalle.length;
-    const totalCapacitacion = detalle.filter(item => item.referencia === null).length;
-    const totalCreditos = detalle.filter(item => item.referencia !== null).length;
+    const totalCapacitacion = detalle.filter(item => item.referencia === null && item.fechaCredito === null && item.graduado === '1').length;
+    const totalCreditos = detalle.filter(item => item.referencia !== null /*&& item.fechaCredito !== null*/).length;
+
 
     // Animar contadores
     animateValue('totalEmprendedores', totalEmprendedores, 1500);
