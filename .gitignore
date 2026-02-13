@@ -5,3 +5,6 @@ nbproject/project.properties
 .gitignore
 .env
 .dat
+/bd
+.github/
+/test_dev
