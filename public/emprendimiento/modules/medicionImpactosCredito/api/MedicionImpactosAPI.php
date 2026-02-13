@@ -2,9 +2,11 @@
 
 include_once '../../../../../loader.php';
 
-class MedicionImpactosAPI extends API {
+class MedicionImpactosAPI extends API
+{
 
-    function consultarMedicionImpactos() {
+    function consultarMedicionImpactos()
+    {
         $idUsuario = $this->getUsuarioActual();
         $this->enviarRespuesta([
             "impactos" => getAdminImpacto()->getMedicionImpacto($idUsuario),
@@ -12,32 +14,38 @@ class MedicionImpactosAPI extends API {
         ]);
     }
 
-    function actualizarConfiguracionFechas() {
+    function actualizarConfiguracionFechas()
+    {
         $inicio = $this->getData("fechaInicio");
         $fin = $this->getData("fechaFin");
         $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionAnios(
-                        $inicio,
-                        $fin,
-                        $this->getUsuarioActual()));
+            $inicio,
+            $fin,
+            $this->getUsuarioActual()
+        ));
     }
 
-    function actualizarFiltroEmprendedores() {
-        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionListaEmprendedores($this->data["seleccionados"]??[], $this->getUsuarioActual()));
+    function actualizarFiltroEmprendedores()
+    {
+        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionListaEmprendedores($this->data["seleccionados"] ?? [], $this->getUsuarioActual()));
     }
-    
-    function recuperarVistaGeneral() {
+
+    function recuperarVistaGeneral()
+    {
         $this->enviarRespuesta($this->getVistaGeneral($this->getData("tipo")));
     }
 
-    function aplicarPreprocesamiento() {
+    function aplicarPreprocesamiento()
+    {
         $preprocesamiento = $this->getData("preprocesamiento");
         $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionPreprocesamiento($preprocesamiento, $this->getUsuarioActual()));
     }
-    
-    private function getVistaGeneral($tipo) {
+
+    private function getVistaGeneral($tipo)
+    {
         return getAdminImpacto()->recuperarVistaGeneral($tipo);
     }
-    
+
 }
 
 Util::iniciarAPI(MedicionImpactosAPI::class);

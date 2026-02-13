@@ -3,7 +3,7 @@
 class ImpactoDAO extends DAO
 {
 
-    private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto';
+    private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto_credito';
     private const RECUPERAR_RANGOS_FECHAS_LINEA_BASE = "SELECT * FROM recuperar_linea_base_rangos_fechas_registrados WHERE id_usuario = ?";
     private const INSERTAR_O_ACTUALIZAR_CONFIG_ANIOS = "
     INSERT INTO linea_base_impacto_configuracion (id_usuario, anio_inicio_selected, anio_fin_selected)
@@ -26,7 +26,7 @@ class ImpactoDAO extends DAO
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
-    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)";
+    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)"; //Impacto de Credito
     private const CAMPOS_ADM_RECURSOS = [
         [
             "columna" => "registraEntradaSalida",
@@ -197,10 +197,10 @@ class ImpactoDAO extends DAO
 
     public function getMedicionImpacto($usuario): array
     {
+        $fechas = $this->getRangoFechasLineaBaseSeguimiento($usuario);
         $estabilidadEconomica = $this->recuperarEstabilidadEconomica($usuario);
         $medicionesEE = $estabilidadEconomica["mediciones"];
         $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
-        $fechas = $this->getAniosLineaBase($usuario);
         $configuracionPreprocesamiento = $this->getConfiguracionPreprocesamiento($usuario);
         return [
             "fechas" => $fechas,
@@ -230,7 +230,7 @@ class ImpactoDAO extends DAO
         y el impulso de créditos transparentes y deuda sana.";
     }
 
-    private function getAniosLineaBase($usuario)
+    private function getRangoFechasLineaBaseSeguimiento($usuario)
     {
         $prep = $this->prepararInstruccion(self::RECUPERAR_RANGOS_FECHAS_LINEA_BASE);
         $prep->agregarInt($usuario);
@@ -296,8 +296,8 @@ class ImpactoDAO extends DAO
         foreach ($rset as $row) {
             $rowVista = [];
             $rowVista["Etapa"] = $row["etapa"];
-            $rowVista["Fecha"] = $row["fechaCreacion"];
-            $rowVista["Nombre de emprendedor"] = $row["nombreUsuario"];
+            $rowVista["Fecha de registro"] = $row["fechaCreacion"];
+            $rowVista["Emprendedor"] = $row["nombreUsuario"];
             foreach ($preguntas as $pregunta) {
                 $rowVista[$pregunta["pregunta"]] = $row[$pregunta["columna"]];
             }
