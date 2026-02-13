@@ -39,7 +39,7 @@ This is a modular PHP system for Fundación Garibi Rivera, structured for mainta
   2. Add a DAO in `/dao/`.
   3. Add admin logic in `/admin/` if needed.
   4. Expose endpoints via Lumen API or `controller/API.php`.
-  5. Add frontend logic in the relevant `/public/[module]/`.
+  5. Add frontend logic in the relevant `/public/[module]`.
 
 - To enforce access control in a module template:
   ```php
@@ -92,4 +92,11 @@ class RevisorSesion extends API {
 - For PDF/email, see `/admin/dompdf/README.md` and `/admin/PHPMailer/`.
 
 ---
-For any unclear or missing conventions, consult the main `README.md` or ask a maintainer.
+
+## Estructura de la base de datos (dumps)
+
+- **Ubicación y archivos:**
+  - Los dumps oficiales se guardan en el directorio `bd/` del repositorio.
+  - Archivos estándar:
+    - `bd/dump_structure.sql` — Estructura completa (`CREATE TABLE`, `CREATE VIEW`, `CREATE PROCEDURE`, `CREATE FUNCTION`, `CREATE TRIGGER`, índices y restricciones). Generado con `--routines --triggers --no-data`.
+    - `bd/dump_data.sql` — Datos únicamente (todos los `INSERT`). Generado con `--no-create-info`.
