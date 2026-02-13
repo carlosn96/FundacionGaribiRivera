@@ -20,7 +20,7 @@ class Conexion {
             die("Connection failed: " . $conexion->connect_error);
             exit();
         } else {
-            $conexion->set_charset("utf8");
+            $conexion->set_charset("utf8mb4");
         }
         $this->conexion = $conexion;
     }
@@ -47,6 +47,10 @@ class Conexion {
 
     public function obtenerIdAutogenerado() {
         return $this->conexion->insert_id;
+    }
+
+    public function getMysqliConnection() {
+        return $this->conexion;
     }
 
 }
