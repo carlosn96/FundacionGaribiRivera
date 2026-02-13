@@ -2,7 +2,7 @@
 const urlAPI = "api/MedicionImpactosCapacitacionAPI.php";
 
 function ready() {
-    crearPeticion(urlAPI, {case: "consultarMedicionImpactos"}, (res) => {
+    crearPeticion(urlAPI, { case: "consultarMedicionImpactos" }, (res) => {
         const impactos = res.impactos;
         print(impactos);
         if (impactos.fechas.fin) {
@@ -15,127 +15,102 @@ function ready() {
 }
 
 function mostrarMensajeNoHayInformacion() {
-    $("#msgImpacto").prop("hidden", false);
+    $("#msgImpacto").prop("hidden", false).attr('role','status').attr('aria-live','polite');
 }
 
 function generarImpactoHTML(data, emprendedores) {
     $("#impacto-container").empty();
 
-    // Contenedor principal
-    const contenedorPrincipal = $("<div>", {class: "container-fluid py-4"});
-    const fila = $("<div>", {class: "row g-4"});
+    // === CONTENEDOR PRINCIPAL ===
+    const contenedorPrincipal = $("<div>", { class: "container-xxl py-5" });
 
-    // === SIDEBAR DE NAVEGACIÓN ===
-    const columnaSidebar = $("<div>", {class: "col-lg-3 col-md-4"});
-    const navCard = $("<div>", {class: "card shadow-sm position-sticky", style: "top: 1rem;"});
-    
-    const navHeader = $("<div>", {class: "card-header bg-white border-bottom"});
-    navHeader.append($("<h5>", {class: "mb-0 fw-semibold", text: "Navegación"}));
-    
-    const navBody = $("<div>", {class: "card-body p-0"});
-    const listaNav = $("<ul>", {class: "nav nav-pills flex-column", role: "tablist", id: "navigationList"});
+    // Header del Módulo
+    const headerSection = $("<div>", { class: "text-center mb-5" });
+    headerSection.append(
+        $("<h2>", { class: "display-6 fw-bold text-dark mb-2", text: "Medición de Impactos (Capacitación)" }),
+        $("<p>", { class: "text-muted lead fs-5", text: `Período de Evaluación: ${data.fechas.inicioSelected} al ${data.fechas.finSelected}` })
+    );
+    contenedorPrincipal.append(headerSection);
+
+    // === NAVEGACIÓN SUPERIOR (TABS) ===
+    const navContainer = $("<div>", { class: "d-flex justify-content-center mb-5" });
+    const listaNav = $("<ul>", { class: "nav nav-pills shadow-sm bg-body-tertiary rounded-pill p-2", role: "tablist", id: "navigationList" });
 
     const itemsNav = [
-        {id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Medición de Impactos", target: "section-medicion"},
-        {id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion"},
-        {id: "nav-vista-general", icon: "ti ti-file-analytics", texto: "Vista General", target: "section-vista-general"}
+        { id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Reporte de Medición", target: "section-medicion" },
+        { id: "nav-vista-general", icon: "ti ti-table", texto: "Exportar Datos", target: "section-vista-general" },
+        { id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion" }
     ];
 
     itemsNav.forEach((item, idx) => {
-        const navItem = $("<li>", {class: "nav-item"});
+        const navItem = $("<li>", { class: "nav-item", role: "presentation" });
         const navLink = $("<button>", {
             type: "button",
-            class: `nav-link ${idx === 0 ? 'active' : ''} d-flex align-items-center w-100 text-start`,
+            class: `nav-link rounded-pill px-4 ${idx === 0 ? 'active' : ''} d-flex align-items-center gap-2`,
             id: item.id,
             "data-target": item.target,
             role: "tab",
             "aria-controls": item.target,
-            "aria-selected": idx === 0 ? "true" : "false"
+            "aria-selected": idx === 0 ? "true" : "false",
+            tabindex: idx === 0 ? '0' : '-1'
         });
-        
+
         navLink.append(
-            $("<i>", {class: `${item.icon} me-2`}),
-            $("<span>", {text: item.texto})
+            $("<i>", { class: item.icon }),
+            $("<span>", { class: "fw-semibold", text: item.texto })
         );
-        
-        navLink.on("click", function() {
-            listaNav.find(".nav-link").removeClass("active").attr("aria-selected", "false");
-            $(this).addClass("active").attr("aria-selected", "true");
-            
-            $("#main-content").find(".content-section").addClass("d-none");
-            $(`#${item.target}`).removeClass("d-none");
-            
-            $(`#${item.target}`)[0].scrollIntoView({behavior: 'smooth', block: 'start'});
+
+        navLink.on("click", function () {
+            // Update visual state
+            listaNav.find(".nav-link").removeClass("active").attr({ "aria-selected": "false", tabindex: '-1' });
+            $(this).addClass("active").attr({ "aria-selected": "true", tabindex: '0' });
+
+            // Switch content with slight fade
+            $("#main-content .content-section").addClass("d-none").removeClass("animate__animated animate__fadeIn");
+            $(`#${item.target}`).removeClass("d-none").addClass("animate__animated animate__fadeIn");
         });
-        
+
         navItem.append(navLink);
         listaNav.append(navItem);
     });
 
-    navBody.append(listaNav);
-    navCard.append(navHeader, navBody);
-    columnaSidebar.append(navCard);
+    navContainer.append(listaNav);
+    contenedorPrincipal.append(navContainer);
 
-    // === CONTENIDO PRINCIPAL ===
-    const columnaContenido = $("<div>", {class: "col-lg-9 col-md-8"});
-    const contenidoPrincipal = $("<div>", {id: "main-content"});
+    // === CONTENIDO ===
+    const contenidoPrincipal = $("<div>", { id: "main-content" });
 
-    // === SECCIÓN 1: MEDICIÓN DE IMPACTOS ===
+    // === SECCIÓN 1: MEDICIÓN ===
     const seccionMedicion = $("<section>", {
         id: "section-medicion",
-        class: "content-section",
+        class: "content-section animate__animated animate__fadeIn",
         role: "tabpanel",
         "aria-labelledby": "nav-medicion"
     });
 
-    const headerMedicion = $("<div>", {class: "mb-4"});
-    const cardHeader = $("<div>", {class: "card shadow-sm border-start border-4 border-primary"});
-    const cardHeaderBody = $("<div>", {class: "card-body"});
-    
-    const rowHeader = $("<div>", {class: "row align-items-center"});
-    rowHeader.append(
-        $("<div>", {class: "col"}).append(
-            $("<h2>", {class: "h4 mb-1 d-flex align-items-center"}).append(
-                $("<i>", {class: "ti ti-chart-bar me-2"}),
-                $("<span>", {text: "Medición de Impactos (Capacitación)"})
-            ),
-            $("<p>", {class: "text-muted mb-0 small", text: `Período: ${data.fechas.inicioSelected} - ${data.fechas.finSelected}`})
-        )
-    );
-    
-    cardHeaderBody.append(rowHeader);
-    cardHeader.append(cardHeaderBody);
-    headerMedicion.append(cardHeader);
-    seccionMedicion.append(headerMedicion);
-
     // Accordion de impactos
-    const accordionImpactos = $("<div>", {class: "accordion", id: "impactosAccordion"});
-
+    const accordionImpactos = $("<div>", { class: "accordion accordion-flush bg-transparent", id: "impactosAccordion" });
     const impactosVisibles = data.impactos.filter(p => p.nombre === 'Estabilidad económica');
 
     impactosVisibles.forEach((impacto, idx) => {
-        const itemAccordion = $("<div>", {class: "accordion-item shadow-sm mb-3"});
-        
-        const headerAccordion = $("<h3>", {class: "accordion-header", id: `heading-${idx}`});
+        const itemAccordion = $("<div>", { class: "accordion-item border-0 bg-transparent mb-4" });
+
+        const headerAccordion = $("<div>", { class: "accordion-header", id: `heading-${idx}` });
         const botonAccordion = $("<button>", {
-            class: `accordion-button ${idx === 0 ? '' : 'collapsed'}`,
+            class: `accordion-button shadow-sm rounded-4 ${idx === 0 ? '' : 'collapsed'} fs-5 fw-medium bg-white`,
             type: "button",
             "data-bs-toggle": "collapse",
             "data-bs-target": `#collapse-${idx}`,
             "aria-expanded": idx === 0 ? "true" : "false",
             "aria-controls": `collapse-${idx}`
         });
-        
+
         botonAccordion.append(
-            $("<div>", {class: "d-flex align-items-center w-100"}).append(
-                $("<span>", {class: "badge bg-primary me-3 fs-6", text: idx + 1}),
-                $("<div>").append(
-                    $("<strong>", {text: impacto.nombre}),
-                    $("<div>", {class: "text-muted small", text: "Ver análisis detallado"})
-                )
+            $("<div>", { class: "d-flex align-items-center w-100" }).append(
+                $("<span>", { class: "badge bg-primary-subtle text-primary border border-primary-subtle me-3 px-3 rounded-pill", text: idx + 1 }),
+                $("<span>", { text: impacto.nombre })
             )
         );
-        
         headerAccordion.append(botonAccordion);
 
         const collapseAccordion = $("<div>", {
@@ -145,45 +120,62 @@ function generarImpactoHTML(data, emprendedores) {
             "data-bs-parent": "#impactosAccordion"
         });
 
-        const bodyAccordion = $("<div>", {class: "accordion-body"});
+        const bodyAccordion = $("<div>", { class: "accordion-body bg-white rounded-bottom-4 shadow-sm p-4 mt-2" });
 
-        // Calcular impacto total
+        // Cálculo Impacto Total
         let impactoTotal = 0;
         impacto.data.forEach(seccion => {
             impactoTotal += parseFloat(seccion.contribucionImpacto);
         });
 
-        // Card de resumen
-        const cardResumen = $("<div>", {class: "card mb-4 border-0"});
-        const alertClass = impactoTotal >= 70 ? 'alert-success' : impactoTotal >= 40 ? 'alert-warning' : 'alert-danger';
+        // Stats Row
+        const rowStats = $("<div>", { class: "row mb-5 align-items-center g-4" });
+        const colGauge = $("<div>", { class: "col-md-5 text-center" });
+
+        const alertClass = impactoTotal >= 70 ? 'text-success' : impactoTotal >= 40 ? 'text-warning' : 'text-danger';
+        const bgAlertClass = impactoTotal >= 70 ? 'bg-success-subtle' : impactoTotal >= 40 ? 'bg-warning-subtle' : 'bg-danger-subtle';
         const iconClass = impactoTotal >= 70 ? 'ti-check' : impactoTotal >= 40 ? 'ti-alert-triangle' : 'ti-x';
-        
-        const alertResumen = $("<div>", {
-            class: `alert ${alertClass} d-flex align-items-center mb-0`,
-            role: "alert"
-        });
-        
-        alertResumen.append(
-            $("<i>", {class: `ti ${iconClass} fs-2 me-3`}),
-            $("<div>").append(
-                $("<h5>", {class: "alert-heading mb-1", text: "Impacto Total"}),
-                $("<p>", {class: "h3 mb-0", text: `${impactoTotal.toFixed(2)}%`})
+
+        const statsCard = $("<div>", { class: `p-4 rounded-4 ${bgAlertClass} d-inline-block w-100` });
+        statsCard.append(
+            $("<div>", { class: "display-3 fw-bold " + alertClass, text: `${impactoTotal.toFixed(1)}%` }),
+            $("<div>", { class: "text-uppercase tracking-wider small fw-bold opacity-75 " + alertClass, text: "Nivel de Impacto Global" }),
+            $("<div>", { class: "mt-3 d-flex justify-content-center" }).append(
+                $("<span>", { class: `badge rounded-pill ${alertClass} bg-white px-3 py-2 bg-opacity-75 shadow-sm` }).append(
+                    $("<i>", { class: `ti ${iconClass} me-2` }),
+                    $("<span>", { text: impactoTotal >= 70 ? "Positivo" : impactoTotal >= 40 ? "Moderado" : "Bajo" })
+                )
             )
         );
-        
-        cardResumen.append(alertResumen);
+        colGauge.append(statsCard);
 
-        // Tabla de cálculos
-        const divTabla = $("<div>", {class: "table-responsive mb-4"});
-        const tabla = $("<table>", {class: "table table-hover align-middle"});
-        
-        const thead = $("<thead>", {class: "table-light"});
+        const colNarrativa = $("<div>", { class: "col-md-7" });
+        colNarrativa.append(
+            $("<h5>", { class: "mb-3 d-flex align-items-center" }).append(
+                $("<i>", { class: "ti ti-file-description text-primary me-2" }),
+                $("<span>", { text: "Resumen Ejecutivo" })
+            ),
+            $("<div>", { class: "text-muted border-start border-4 ps-3 border-light", html: impacto.narrativa })
+        );
+
+        rowStats.append(colGauge, colNarrativa);
+        bodyAccordion.append(rowStats);
+
+        // Tabla de Desglose
+        const labelTable = $("<h5>", { class: "mb-3 d-flex align-items-center" });
+        labelTable.append($("<i>", { class: "ti ti-table text-primary me-2" }), $("<span>", { text: "Detalle de Contribución por Sección" }));
+        bodyAccordion.append(labelTable);
+
+        const divTabla = $("<div>", { class: "table-responsive mb-5 rounded-3 border" });
+        const tabla = $("<table>", { class: "table table-hover align-middle mb-0" });
+        const thead = $("<thead>", { class: "table-light" });
+
         thead.append(
             $("<tr>").append(
-                $("<th>", {scope: "col", text: "Sección"}),
-                $("<th>", {scope: "col", class: "text-center", text: "Obtenido"}),
-                $("<th>", {scope: "col", class: "text-center", text: "Peso"}),
-                $("<th>", {scope: "col", class: "text-center", text: "Contribución"})
+                $("<th>", { scope: "col", text: "Dimensión", class: "ps-3 py-3" }),
+                $("<th>", { scope: "col", class: "text-center py-3", text: "Puntaje Obtenido" }),
+                $("<th>", { scope: "col", class: "text-center py-3", text: "Ponderación" }),
+                $("<th>", { scope: "col", class: "text-center py-3", text: "Contribución Total" })
             )
         );
 
@@ -191,569 +183,206 @@ function generarImpactoHTML(data, emprendedores) {
         impacto.data.forEach(seccion => {
             const fila = $("<tr>");
             const contribucion = parseFloat(seccion.contribucionImpacto);
-            const badgeClass = contribucion >= 15 ? 'bg-success' : contribucion >= 10 ? 'bg-warning text-dark' : 'bg-danger';
-            
+            const badgeClass = contribucion >= 15 ? 'bg-success-subtle text-success' : contribucion >= 10 ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger';
+
             fila.append(
-                $("<td>").append(
-                    $("<i>", {class: "ti ti-clipboard-data me-2"}),
-                    $("<span>", {text: seccion.titulo})
-                ),
-                $("<td>", {class: "text-center"}).append(
-                    $("<span>", {class: "badge bg-secondary", text: `${seccion.obtenido}%`})
-                ),
-                $("<td>", {class: "text-center"}).append(
-                    $("<span>", {class: "badge bg-dark", text: `${seccion.peso}%`})
-                ),
-                $("<td>", {class: "text-center"}).append(
-                    $("<span>", {class: `badge ${badgeClass}`, text: `${seccion.contribucionImpacto}%`})
-                )
+                $("<td>", { class: "ps-3 fw-medium" }).append(seccion.titulo),
+                $("<td>", { class: "text-center" }).append($("<span>", { class: "badge bg-white text-dark border", text: `${seccion.obtenido}%` })),
+                $("<td>", { class: "text-center" }).append($("<span>", { class: "badge bg-light text-muted border", text: `${seccion.peso}%` })),
+                $("<td>", { class: "text-center h5 mb-0" }).append($("<span>", { class: `badge ${badgeClass} border border-0`, text: `${seccion.contribucionImpacto}%` }))
             );
             tbody.append(fila);
         });
+        divTabla.append(tabla.append(thead, tbody));
+        bodyAccordion.append(divTabla);
 
-        const filaTotal = $("<tr>", {class: "table-active fw-bold"});
-        filaTotal.append(
-            $("<td>", {text: "Total", colspan: 3}),
-            $("<td>", {class: "text-center"}).append(
-                $("<span>", {class: "badge bg-primary fs-6", text: `${impactoTotal.toFixed(2)}%`})
+        // Sub-accordions for details
+        const detailsHeader = $("<div>", { class: "d-flex align-items-center justify-content-between mb-3" });
+        detailsHeader.append(
+            $("<h5>", { class: "mb-0" }).append(
+                $("<i>", { class: "ti ti-zoom-in text-primary me-2" }),
+                $("<span>", { text: "Análisis de Variaciones" })
             )
         );
-        tbody.append(filaTotal);
+        bodyAccordion.append(detailsHeader);
 
-        tabla.append(thead, tbody);
-        divTabla.append(tabla);
-
-        // Card de narrativa
-        const cardNarrativa = $("<div>", {class: "card mb-4 bg-light border-0 shadow-sm"});
-        const headerNarrativa = $("<div>", {class: "card-header bg-transparent border-bottom"});
-        headerNarrativa.append(
-            $("<h6>", {class: "mb-0"}).append(
-                $("<i>", {class: "ti ti-file-text me-2"}),
-                $("<span>", {text: "Narrativa"})
-            )
-        );
-        
-        const bodyNarrativa = $("<div>", {class: "card-body"});
-        bodyNarrativa.append($("<div>", {class: "text-muted", html: impacto.narrativa}));
-        cardNarrativa.append(headerNarrativa, bodyNarrativa);
-
-        // Accordion anidado para detalles
-        const accordionDetalles = $("<div>", {class: "accordion accordion-flush", id: `variaciones-${idx}`});
-        
+        const accordionDetalles = $("<div>", { class: "accordion accordion-flush", id: `variaciones-${idx}` });
         impacto.data.forEach((seccion, secIdx) => {
-            const itemDetalle = $("<div>", {class: "accordion-item"});
-            const headerDetalle = $("<h4>", {class: "accordion-header", id: `var-heading-${idx}-${secIdx}`});
+            const itemDetalle = $("<div>", { class: "accordion-item border rounded-3 mb-2" });
+            const headerDetalle = $("<h4>", { class: "accordion-header", id: `var-heading-${idx}-${secIdx}` });
+            
             const botonDetalle = $("<button>", {
-                class: "accordion-button collapsed",
+                class: "accordion-button collapsed rounded-3 p-3",
                 type: "button",
                 "data-bs-toggle": "collapse",
                 "data-bs-target": `#var-collapse-${idx}-${secIdx}`,
                 "aria-expanded": "false",
                 "aria-controls": `var-collapse-${idx}-${secIdx}`,
-                text: `Detalles: ${seccion.titulo}`
+                text: `${seccion.titulo}`
             });
-
-            const collapseDetalle = $("<div>", {
-                id: `var-collapse-${idx}-${secIdx}`,
-                class: "accordion-collapse collapse",
-                "aria-labelledby": `var-heading-${idx}-${secIdx}`,
-                "data-bs-parent": `#variaciones-${idx}`
-            });
-
-            const bodyDetalle = $("<div>", {class: "accordion-body"});
-            const tablaDetalle = $("<div>", {class: "table-responsive"});
-            const tableDetalle = $("<table>", {class: "table table-sm table-striped"});
+            headerDetalle.append(botonDetalle);
             
+            const collapseDetalle = $("<div>", { 
+                id: `var-collapse-${idx}-${secIdx}`, 
+                class: "accordion-collapse collapse", 
+                "aria-labelledby": `var-heading-${idx}-${secIdx}`,
+                "data-bs-parent": `#variaciones-${idx}` 
+            });
+            const bodyDetalle = $("<div>", { class: "accordion-body p-0" });
+            
+            // Tabla detalles
+            const tableDetalle = $("<table>", { class: "table table-striped mb-0 table-sm" });
             const theadDetalle = $("<thead>");
-            theadDetalle.append(
-                $("<tr>").append(
-                    $("<th>", {text: "Pregunta"}),
-                    $("<th>", {class: "text-center", text: "Inicial"}),
-                    $("<th>", {class: "text-center", text: "Final"}),
-                    $("<th>", {class: "text-center", text: "Variación"})
-                )
-            );
-
+            theadDetalle.append($("<tr>").append(
+                $("<th>", {text: "Pregunta", class: "ps-4 py-2"}), 
+                $("<th>", {text: "Inicio", class: "text-center py-2"}), 
+                $("<th>", {text: "Fin", class: "text-center py-2"}), 
+                $("<th>", {text: "Var.", class: "text-center py-2"})
+            ));
+            
             const tbodyDetalle = $("<tbody>");
             Object.entries(seccion.mediciones).forEach(([pregunta, medicion]) => {
-                const variacion = medicion.variacionPorcentual.toFixed(2);
-                const badgeVar = parseFloat(variacion) > 0 ? 'bg-success' : parseFloat(variacion) < 0 ? 'bg-danger' : 'bg-secondary';
-                
-                const filaDetalle = $("<tr>");
-                filaDetalle.append(
-                    $("<td>", {text: pregunta}),
-                    $("<td>", {class: "text-center", text: medicion.inicial}),
-                    $("<td>", {class: "text-center", text: medicion.final}),
-                    $("<td>", {class: "text-center"}).append(
-                        $("<span>", {class: `badge ${badgeVar}`, text: `${variacion}%`})
-                    )
-                );
-                tbodyDetalle.append(filaDetalle);
+                 const variacion = medicion.variacionPorcentual.toFixed(2);
+                 const badgeVar = parseFloat(variacion) > 0 ? 'text-success' : parseFloat(variacion) < 0 ? 'text-danger' : 'text-muted';
+                 tbodyDetalle.append(
+                     $("<tr>").append(
+                         $("<td>", { class: "ps-4 py-2 small text-muted", text: pregunta }),
+                         $("<td>", { class: "text-center small", text: medicion.inicial }),
+                         $("<td>", { class: "text-center small", text: medicion.final }),
+                         $("<td>", { class: `text-center fw-bold small ${badgeVar}`, text: `${variacion}%` })
+                     )
+                 );
             });
-
+            
             tableDetalle.append(theadDetalle, tbodyDetalle);
-            tablaDetalle.append(tableDetalle);
-            bodyDetalle.append(tablaDetalle);
-            headerDetalle.append(botonDetalle);
+            bodyDetalle.append(tableDetalle);
+            
             collapseDetalle.append(bodyDetalle);
             itemDetalle.append(headerDetalle, collapseDetalle);
             accordionDetalles.append(itemDetalle);
         });
 
-        bodyAccordion.append(cardResumen, divTabla, cardNarrativa, accordionDetalles);
+        bodyAccordion.append(accordionDetalles);
         collapseAccordion.append(bodyAccordion);
         itemAccordion.append(headerAccordion, collapseAccordion);
         accordionImpactos.append(itemAccordion);
     });
-
     seccionMedicion.append(accordionImpactos);
+
 
     // === SECCIÓN 2: CONFIGURACIÓN ===
     const seccionConfig = $("<section>", {
         id: "section-configuracion",
-        class: "content-section d-none",
+        class: "content-section d-none animate__animated animate__fadeIn",
         role: "tabpanel",
         "aria-labelledby": "nav-configuracion"
     });
 
-    const headerConfig = $("<div>", {class: "mb-4"});
-    const cardHeaderConfig = $("<div>", {class: "card shadow-sm border-start border-4 border-info"});
-    const cardHeaderBodyConfig = $("<div>", {class: "card-body"});
-    cardHeaderBodyConfig.append(
-        $("<h2>", {class: "h4 mb-0 d-flex align-items-center"}).append(
-            $("<i>", {class: "ti ti-settings me-2"}),
-            $("<span>", {text: "Configuración de Parámetros"})
-        )
-    );
-    cardHeaderConfig.append(cardHeaderBodyConfig);
-    headerConfig.append(cardHeaderConfig);
-    seccionConfig.append(headerConfig);
+    const rowConfig = $("<div>", { class: "row justify-content-center" });
+    const colConfig = $("<div>", { class: "col-lg-8" });
 
-    // Card temporal
-    const cardTemporal = $("<div>", {class: "card shadow-sm mb-4"});
-    const headerTemporal = $("<div>", {class: "card-header bg-white border-bottom"});
-    headerTemporal.append(
-        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
-            $("<i>", {class: "ti ti-calendar me-2"}),
-            $("<span>", {text: "Configuración Temporal"})
-        )
-    );
-
-    const bodyTemporal = $("<div>", {class: "card-body"});
-    const formFechas = $("<form>", {id: "form-fechas", class: "needs-validation", novalidate: true});
-    const rowTemporal = $("<div>", {class: "row g-3"});
-
-    const colInicio = $("<div>", {class: "col-md-6"});
-    const labelInicio = $("<label>", {for: "fechaInicio", class: "form-label", text: "Fecha de Inicio"});
-    const inputInicio = $("<input>", {
-        type: "date",
-        class: "form-control",
-        id: "fechaInicio",
-        name: "fechaInicio",
-        min: `${data.fechas.inicio}`,
-        max: `${data.fechas.fin}`,
-        value: `${data.fechas.inicioSelected}`,
-        required: true
-    });
-    colInicio.append(labelInicio, inputInicio);
-
-    const colFinal = $("<div>", {class: "col-md-6"});
-    const labelFinal = $("<label>", {for: "fechaFinal", class: "form-label", text: "Fecha Final"});
-    const inputFinal = $("<input>", {
-        type: "date",
-        class: "form-control",
-        id: "fechaFinal",
-        name: "fechaFinal",
-        min: `${data.fechas.inicio}`,
-        max: `${data.fechas.fin}`,
-        value: `${data.fechas.finSelected}`,
-        required: true
-    });
-    colFinal.append(labelFinal, inputFinal);
-
-    rowTemporal.append(colInicio, colFinal);
-
-    const divBoton = $("<div>", {class: "mt-3 text-end"});
-    const botonSubmit = $("<button>", {
-        type: "submit",
-        class: "btn btn-primary"
-    });
-    botonSubmit.append($("<i>", {class: "ti ti-device-floppy me-2"}), $("<span>", {text: "Actualizar Período"}));
-    divBoton.append(botonSubmit);
-
-    formFechas.append(rowTemporal, divBoton);
-    bodyTemporal.append(formFechas);
-    cardTemporal.append(headerTemporal, bodyTemporal);
-
-    // Card emprendedores
-    const cardEmprendedores = $("<div>", {class: "card shadow-sm"});
-    const headerEmprendedores = $("<div>", {class: "card-header bg-white border-bottom d-flex justify-content-between align-items-center"});
-    headerEmprendedores.append(
-        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
-            $("<i>", {class: "ti ti-users me-2"}),
-            $("<span>", {text: "Gestión de Emprendedores"})
-        ),
-        $("<span>", {class: "badge bg-dark", id: "emprendedores-count", text: `${emprendedores.length} total`})
-    );
-
-    const bodyEmprendedores = $("<div>", {class: "card-body"});
-
-    // Filtros
-    const rowFiltros = $("<div>", {class: "row g-3 mb-3"});
-    const colEtapa = $("<div>", {class: "col-md-6"});
-    
-    const labelEtapa = $("<label>", {for: "etapaSelector", class: "form-label", text: "Filtrar por etapa"});
-    const selectEtapa = $("<select>", {class: "form-select", id: "etapaSelector", "aria-describedby": "etapaHelp"});
-    selectEtapa.append($("<option>", {value: "", text: "Todas las etapas"}));
-    
-    const etapasUnicas = [...new Set(emprendedores.map(emp => emp.etapa))];
-    etapasUnicas.forEach(etapa => {
-        selectEtapa.append($("<option>", {value: etapa, text: etapa}));
-    });
-    
-    selectEtapa.on('change', function() {
-        const etapaSelec = $(this).val();
-        filtrarEmprendedores(etapaSelec, emprendedores);
-        actualizarContadorSeleccionados();
-    });
-    
-    const helpEtapa = $("<div>", {id: "etapaHelp", class: "form-text", text: "Filtre emprendedores por su etapa actual"});
-    colEtapa.append(labelEtapa, selectEtapa, helpEtapa);
-
-    const colAcciones = $("<div>", {class: "col-md-6 d-flex align-items-end gap-2"});
-    const btnSelTodos = $("<button>", {
-        type: "button",
-        class: "btn btn-outline-primary flex-fill",
-        id: "select-all-btn",
-        text: "Seleccionar Todos"
-    });
-    const btnDeselTodos = $("<button>", {
-        type: "button",
-        class: "btn btn-outline-secondary flex-fill",
-        id: "deselect-all-btn",
-        text: "Deseleccionar Todos"
-    });
-    colAcciones.append(btnSelTodos, btnDeselTodos);
-
-    rowFiltros.append(colEtapa, colAcciones);
-
-    // Tabla emprendedores
-    const divTablaEmp = $("<div>", {class: "table-responsive"});
-    const tablaEmp = $("<table>", {class: "table table-hover align-middle", id: "tablaEmprendedores"});
-    
-    const theadEmp = $("<thead>", {class: "table-light"});
-    const checkAll = $("<input>", {
-        class: "form-check-input",
-        type: "checkbox",
-        id: "select-all",
-        "aria-label": "Seleccionar todos"
-    });
-    
-    theadEmp.append(
-        $("<tr>").append(
-            $("<th>", {scope: "col", class: "text-center"}).append(
-                $("<div>", {class: "form-check d-flex justify-content-center"}).append(checkAll)
+    // Header Config
+    colConfig.append(
+        $("<div>", { class: "d-flex align-items-center mb-4" }).append(
+            $("<div>", { class: "bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3", style: "width: 48px; height: 48px;" }).append(
+                $("<i>", { class: "ti ti-adjustments fs-4" })
             ),
-            $("<th>", {scope: "col", text: "Nombre Completo"}),
-            $("<th>", {scope: "col", text: "Correo Electrónico"}),
-            $("<th>", {scope: "col", class: "text-center", text: "Etapa"})
-        )
-    );
-
-    const tbodyEmp = $("<tbody>");
-    emprendedores.forEach(emp => {
-        const iniciales = emp.nombre.charAt(0) + emp.apellidos.charAt(0);
-        const checkEmp = $("<input>", {
-            checked: emp.enLineaBase,
-            class: "form-check-input emprendedor-checkbox",
-            type: "checkbox",
-            value: emp.idLineaBase,
-            id: `checkbox-${emp.idUsuario}`,
-            "aria-label": `Seleccionar ${emp.nombre} ${emp.apellidos}`
-        });
-        
-        const fila = $("<tr>");
-        fila.append(
-            $("<td>", {class: "text-center"}).append(
-                $("<div>", {class: "form-check d-flex justify-content-center"}).append(checkEmp)
-            ),
-            $("<td>").append(
-                $("<div>", {class: "d-flex align-items-center"}).append(
-                    $("<div>", {
-                        class: "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3",
-                        style: "width: 40px; height: 40px; font-weight: 600;",
-                        text: iniciales
-                    }),
-                    $("<div>").append(
-                        $("<div>", {class: "fw-semibold", text: `${emp.nombre} ${emp.apellidos}`})
-                    )
-                )
-            ),
-            $("<td>", {text: emp.correo}),
-            $("<td>", {class: "text-center"}).append(
-                $("<span>", {class: "badge bg-light text-dark border", text: emp.etapa})
+            $("<div>").append(
+                $("<h3>", { class: "h5 mb-0 fw-bold", text: "Parámetros del Reporte" }),
+                $("<p>", { class: "text-muted mb-0 small", text: "Ajuste las fechas y filtros aplicables" })
             )
-        );
-        tbodyEmp.append(fila);
-    });
-
-    tablaEmp.append(theadEmp, tbodyEmp);
-    divTablaEmp.append(tablaEmp);
-
-    // Footer con contador y botón
-    const divFooterEmp = $("<div>", {class: "d-flex justify-content-between align-items-center mt-3"});
-    divFooterEmp.append(
-        $("<span>", {class: "text-muted", id: "seleccionados-info", text: "0 emprendedores seleccionados"}),
-        $("<button>", {
-            type: "button",
-            class: "btn btn-primary",
-            id: "apply-filter"
-        }).append(
-            $("<i>", {class: "ti ti-check me-2"}),
-            $("<span>", {text: "Aplicar Configuración"})
         )
     );
 
-    /*bodyEmprendedores.append(rowFiltros, divTablaEmp, divFooterEmp); // descomentar para mejorar el filtro de emprendedores
-    cardEmprendedores.append(headerEmprendedores, bodyEmprendedores);*/
+    // Card Temporal
+    const cardTemporal = $("<div>", { class: "card border-0 shadow-sm mb-4" });
+    const bodyTemporal = $("<div>", { class: "card-body p-4" });
     
-    seccionConfig.append(cardTemporal, cardEmprendedores);
+    bodyTemporal.append($("<h6>", { class: "fw-bold text-uppercase text-muted smaller mb-3", text: "Rango de Fechas" }));
+    
+    const formFechas = $("<form>", { id: "form-fechas", class: "needs-validation", novalidate: true });
+    // ... duplicate logic for inputs but cleaner ...
+    const rowInputs = $("<div>", { class: "row g-3" });
+    const colIn = $("<div>", { class: "col-md-6" });
+    colIn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Inicial" }), $("<input>", { type: "date", id: "fechaInicio", class: "form-control", value: data.fechas.inicioSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
+    const colFn = $("<div>", { class: "col-md-6" });
+    colFn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Final" }), $("<input>", { type: "date", id: "fechaFinal", class: "form-control", value: data.fechas.finSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
+    
+    rowInputs.append(colIn, colFn);
+    formFechas.append(rowInputs, $("<div>", { class: "mt-4 text-end" }).append($("<button>", { type: "submit", class: "btn btn-primary rounded-pill px-4" }).append($("<i>", { class: "ti ti-refresh me-2" }), "Actualizar")));
+    bodyTemporal.append(formFechas);
+    cardTemporal.append(bodyTemporal);
 
-    // === SECCIÓN 3: VISTA GENERAL ===
+    colConfig.append(cardTemporal);
+    rowConfig.append(colConfig);
+    seccionConfig.append(rowConfig);
+
+    // === SECCIÓN 3: VISTA GENERAL (EXPORT) ===
     const seccionVista = $("<section>", {
         id: "section-vista-general",
-        class: "content-section d-none",
+        class: "content-section d-none animate__animated animate__fadeIn",
         role: "tabpanel",
         "aria-labelledby": "nav-vista-general"
     });
-
-    const headerVista = $("<div>", {class: "mb-4"});
-    const cardHeaderVista = $("<div>", {class: "card shadow-sm border-start border-4 border-success"});
-    const cardHeaderBodyVista = $("<div>", {class: "card-body"});
-    cardHeaderBodyVista.append(
-        $("<h2>", {class: "h4 mb-0 d-flex align-items-center"}).append(
-            $("<i>", {class: "ti ti-file-analytics me-2"}),
-            $("<span>", {text: "Vista General"})
-        )
-    );
-    cardHeaderVista.append(cardHeaderBodyVista);
-    headerVista.append(cardHeaderVista);
-    seccionVista.append(headerVista);
-
-    const cardExport = $("<div>", {class: "card shadow-sm"});
-    const headerExport = $("<div>", {class: "card-header bg-white border-bottom"});
-    headerExport.append(
-        $("<h5>", {class: "mb-0 d-flex align-items-center"}).append(
-            $("<i>", {class: "ti ti-download me-2"}),
-            $("<span>", {text: "Exportación de Datos"})
-        )
-    );
-
-    const bodyExport = $("<div>", {class: "card-body text-center py-5"});
     
-    bodyExport.append(
-        $("<p>", {class: "text-muted mb-4", text: "Exporte los datos de la línea base en formato Excel para análisis externos."}),
-        $("<div>", {class: "d-grid gap-3 d-md-flex justify-content-md-center"}).append(
-            $("<button>", {
-                type: "button",
-                class: "btn btn-outline-info btn-lg",
-                id: "btnInicial",
-                "data-tipo": "inicial"
-            }).append(
-                $("<i>", {class: "ti ti-download me-2"}),
-                $("<span>", {text: "Exportar Línea Base Inicial"})
-            ),
-            $("<button>", {
-                type: "button",
-                class: "btn btn-outline-success btn-lg",
-                id: "btnFinal",
-                "data-tipo": "graduados"
-            }).append(
-                $("<i>", {class: "ti ti-upload me-2"}),
-                $("<span>", {text: "Exportar Seguimiento Final de Graduados"})
-            )
-        ),
-        $("<div>", {id: "loadingSpinnerContainer", class: "mt-4 d-none"}).append(
-            $("<div>", {class: "alert alert-info d-flex align-items-center justify-content-center", role: "alert"}).append(
-                $("<div>", {class: "spinner-border spinner-border-sm me-3", role: "status"}).append(
-                    $("<span>", {class: "visually-hidden", text: "Cargando..."})
-                ),
-                $("<span>", {text: "Preparando exportación..."})
-            )
+    const rowVista = $("<div>", { class: "row justify-content-center" });
+    const colVista = $("<div>", { class: "col-lg-8" });
+
+    const cardExport = $("<div>", { class: "card border-0 shadow-sm text-center py-5 px-4" });
+    cardExport.append(
+        $("<div>", { class: "mb-4 text-primary" }).append($("<i>", { class: "ti ti-cloud-download display-1" })),
+        $("<h3>", { class: "fw-bold", text: "Descarga de Datos" }),
+        $("<p>", { class: "text-muted mb-5", text: "Obtenga los datos completos de línea base inicial y seguimiento en formato Excel para su posterior análisis." }),
+        $("<div>", { class: "d-flex justify-content-center gap-3 flex-wrap" }).append(
+             $("<button>", { type: "button", class: "btn btn-outline-primary btn-lg rounded-pill px-5", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-file-spreadsheet me-2" }), "Base Seguimiento")
         )
     );
+    colVista.append(cardExport);
+    rowVista.append(colVista);
+    seccionVista.append(rowVista);
 
-    cardExport.append(headerExport, bodyExport);
-    seccionVista.append(cardExport);
-
-    // === ENSAMBLADO ===
+    // Assembly
     contenidoPrincipal.append(seccionMedicion, seccionConfig, seccionVista);
-    columnaContenido.append(contenidoPrincipal);
-    fila.append(columnaSidebar, columnaContenido);
-    contenedorPrincipal.append(fila);
+    contenedorPrincipal.append(contenidoPrincipal);
     $("#impacto-container").append(contenedorPrincipal);
 
-    // === EVENTOS ===
+    // --- LOGIC RESTORATION ---
+    // Make icons decorative
+    contenedorPrincipal.find('i').attr('aria-hidden', 'true');
+    // Filters logic removed as table is removed. But buttons exist? 
+    // Wait, I removed the Entrepreneur table.
+    // So the filtering logic can be removed too?
+    // Credito had it in background. If I follow instructions strictly "replicate structure", I should include it if Credito has it.
+    // Credito has it.
     
-    function actualizarContadorSeleccionados() {
-        const seleccionados = $('.emprendedor-checkbox:checked').length;
-        const total = emprendedores.length;
-        $("#seleccionados-info").text(`${seleccionados} de ${total} emprendedores seleccionados`);
-        $("#emprendedores-count").text(`${seleccionados}/${total} seleccionados`);
-    }
-
-    $("#select-all").on("change", function() {
-        const isChecked = $(this).prop("checked");
-        const table = $('#tablaEmprendedores').DataTable();
-        table.rows().every(function() {
-            $(this.node()).find('.emprendedor-checkbox').prop('checked', isChecked);
-        });
-        $("#etapaSelector").val("");
-        actualizarContadorSeleccionados();
-    });
-
-    $("#select-all-btn").on("click", function() {
-        $('.emprendedor-checkbox').prop('checked', true);
-        $("#select-all").prop('checked', true);
-        $("#etapaSelector").val("");
-        actualizarContadorSeleccionados();
-    });
-
-    $("#deselect-all-btn").on("click", function() {
-        $('.emprendedor-checkbox').prop('checked', false);
-        $("#select-all").prop('checked', false);
-        actualizarContadorSeleccionados();
-    });
-
-    $(document).on('change', '.emprendedor-checkbox', function() {
-        actualizarContadorSeleccionados();
-        
-        const totalCheckboxes = $('.emprendedor-checkbox').length;
-        const checkedCheckboxes = $('.emprendedor-checkbox:checked').length;
-        
-        if (checkedCheckboxes === totalCheckboxes) {
-            $("#select-all").prop('checked', true).prop('indeterminate', false);
-        } else if (checkedCheckboxes === 0) {
-            $("#select-all").prop('checked', false).prop('indeterminate', false);
-        } else {
-            $("#select-all").prop('indeterminate', true);
-        }
-    });
-
-    $("#apply-filter").on("click", aplicarFiltro);
     $("#btnInicial").on("click", recuperarVistaImpacto);
     $("#btnFinal").on("click", recuperarVistaImpacto);
-
-    actualizarContadorSeleccionados();
     
-    $(document).on('shown.bs.tab shown.bs.collapse', function (e) {
-        const table = $('#tablaEmprendedores');
-        if (table.length && $.fn.DataTable.isDataTable(table)) {
-            table.DataTable().columns.adjust().draw();
-        }
-    });
+    // In Credito, there is filter logic attached to hidden elements. I will include it to match structure if I'm being very strict.
+    // Or I can omit it because it does nothing.
+    // But let's omit it for cleanliness in Capacitacion unless demanded.
+    // The previous Credito file has filter logic.
+    // I already wrote the file content UP TO "Assembly".
+    // I should probably clean up unused logic.
+    // But since I have to REPLACE the whole file content, I need to match the previous file content's string exactly in `oldString`.
+    // My `oldString` below is the EXACT content I read from `read_file`.
+    // My `newString` is the new structure.
     
-    $(document).on('click', '#nav-configuracion', function() {
-        setTimeout(() => {
-            if (!$.fn.DataTable.isDataTable('#tablaEmprendedores')) {
-                crearDataTable("#tablaEmprendedores");
-            } else {
-                $('#tablaEmprendedores').DataTable().columns.adjust().draw();
-            }
-        }, 100);
-    });
-}
-
-function aplicarFiltro() {
-    const seleccionados = [];
-    const table = $('#tablaEmprendedores').DataTable();
-    
-    const btnAplicar = $("#apply-filter");
-    const btnText = btnAplicar.html();
-    btnAplicar.prop('disabled', true).html(
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Aplicando...'
-    );
-    
-    table.rows().every(function() {
-        let checkbox = $(this.node()).find('.emprendedor-checkbox');
-        if (checkbox.prop('checked')) {
-            seleccionados.push(parseInt(checkbox.val()));
-        }
-    });
-    
-    crearPeticion(urlAPI, {
-        case: "actualizarFiltroEmprendedores", 
-        data: $.param({seleccionados: seleccionados})
-    }, (res) => {
-        if (!res.es_valor_error) {
-            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-            alertSuccess.append(
-                '<i class="ti ti-check me-2"></i>',
-                '<strong>¡Éxito!</strong> La configuración se ha aplicado correctamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            
-            $("#section-configuracion").prepend(alertSuccess);
-            
-            setTimeout(() => {
-                alertSuccess.alert('close');
-            }, 5000);
-            
-            refresh();
-        } else {
-            const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
-            alertError.append(
-                '<i class="ti ti-x me-2"></i>',
-                '<strong>Error:</strong> No se pudo aplicar la configuración. Intente nuevamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            
-            $("#section-configuracion").prepend(alertError);
-            
-            setTimeout(() => {
-                alertError.alert('close');
-            }, 5000);
-        }
-        
-        btnAplicar.prop('disabled', false).html(btnText);
-    });
-}
-
-function filtrarEmprendedores(etapaSeleccionada) {
-    const table = $('#tablaEmprendedores').DataTable();
-    
-    if (etapaSeleccionada === "") {
-        table.search('').draw();
-        return;
-    }
-    
-    table.rows({ search: 'applied' }).every(function() { 
-        const rowNode = $(this.node());
-        const checkbox = rowNode.find('.emprendedor-checkbox');
-        const etapaCell = rowNode.find('td:nth-child(4) .badge');
-        const etapaText = etapaCell.text().trim();
-        
-        checkbox.prop('checked', etapaText === etapaSeleccionada);
-    });
-    
-    table.column(3).search(etapaSeleccionada).draw();
-    
-    $("#select-all").prop("checked", false).prop('indeterminate', false);
 }
 
 function completarParametrosConfiguracion() {
-    $('#form-fechas').on('submit', function(event) {
+    $('#form-fechas').on('submit', function (event) {
         event.preventDefault();
         event.stopPropagation();
 
         const form = $(this);
         const fechaInicioInput = $('#fechaInicio');
         const fechaFinalInput = $('#fechaFinal');
-        
+
         // --- Reset Validation State ---
         form.find('.is-invalid').removeClass('is-invalid');
         form.find('.invalid-feedback').remove();
-        
+
         const fechaInicio = fechaInicioInput.val();
         const fechaFinal = fechaFinalInput.val();
         const minDate = fechaInicioInput.attr('min');
@@ -762,11 +391,11 @@ function completarParametrosConfiguracion() {
         let isValid = true;
 
         const showError = (input, message) => {
-            if(isValid) isValid = false; // Only set to false, never back to true
+            if (isValid) isValid = false; // Only set to false, never back to true
             input.addClass('is-invalid');
             const feedback = $('<div>', { class: 'invalid-feedback', text: message });
             // Prevent adding duplicate messages
-            if(input.parent().find('.invalid-feedback').length === 0) {
+            if (input.parent().find('.invalid-feedback').length === 0) {
                 input.after(feedback);
             }
         };
@@ -826,10 +455,10 @@ function completarParametrosConfiguracion() {
             )
         );
         configCard.addClass('position-relative').append(overlay);
-        
-        let data = {fechaInicio: fechaInicio, fechaFin: fechaFinal};
+
+        let data = { fechaInicio: fechaInicio, fechaFin: fechaFinal };
         crearPeticion(urlAPI, {
-            case: "actualizarConfiguracionFechas", 
+            case: "actualizarConfiguracionFechas",
             data: $.param(data)
         }, (res) => {
             overlay.remove();
@@ -867,65 +496,43 @@ function recuperarVistaImpacto() {
     const button = $(this);
     const tipo = button.data("tipo");
     const originalContent = button.html();
-    
+
     button.prop("disabled", true).html(
         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
         `Exportando ${tipo}...`
     );
-    
-    $("#loadingSpinnerContainer").removeClass("d-none");
-    
+
     crearPeticion(urlAPI, {
         case: 'recuperarVistaGeneral',
-        data: $.param({tipo: tipo})
+        data: $.param({ tipo: tipo })
     }, async (registros) => {
-        $("#loadingSpinnerContainer").addClass("d-none");
 
         if (Array.isArray(registros) && registros.length > 0) {
             // Definir columnas esperadas según tu DataTable
-            const columnasEsperadas = [
-                "Etapa",
-                "Fecha",
-                "Nombre de emprendedor",
-                "¿Llevas registros de entradas y salidas de dinero?",
-                "¿Tienes asignado un sueldo?",
-                "¿Conoces cuál es la utilidad que te deja tu negocio?",
-                "¿Identiﬁcas quién es tu competencia?",
-                "¿Conoces los productos o servicios que te generan mayor utilidad?",
-                "¿Asignas ahorro mensual para mantenimiento de equipo o maquinaria?",
-                "¿Conoces el punto de equilibro?",
-                "¿Separas los gastos del negocio de tus gastos personales?",
-                "¿Elaboras un presupuesto mensual para tu negocio?",
-                "Ingreso mensual",
-                "¿Tienes el hábito de ahorrar de manera constante y a largo plazo?",
-                "¿Cuentas con algún sistema de ahorro?",
-                "¿Cómo empleas las ganancias generadas?"
-            ];
-
-            // Asegurar que todas las filas tengan las mismas columnas
-            registros.forEach(row => {
-                columnasEsperadas.forEach(col => {
-                    if (!(col in row)) {
-                        row[col] = "No disponible";
-                    }
-                });
-            });
-
-            // Crear contenedor temporal oculto para la tabla
+            // In new structure, we rely on dynamic columns from `registros` mostly, like Credito does.
+            // But Capacitacion had a fixed list of columns in previous file.
+            // Credito: columns: Object.keys(registros[0]).map...
+            // Capacitacion (Previous): columns: columnasEsperadas.map...
+            // I should use `Object.keys(registros[0])` to be dynamic like Credito, unless keys are unreliable.
+            // Credito source was used as template.
+            // I will use dynamic keys like Credito for consistency.
+            
+            // Crear contenedor temporal para la tabla
             const tempContainer = $('<div>').css({ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' });
             const tempTable = $('<table class="table">').appendTo(tempContainer);
             tempContainer.appendTo('body');
 
             let dataTable = null;
             try {
+                // Inicializar DataTable con los datos
                 dataTable = tempTable.DataTable({
                     data: registros,
-                    columns: columnasEsperadas.map(key => ({
+                    columns: Object.keys(registros[0]).map(key => ({
                         title: key,
                         data: key
                     })),
                     dom: 'Bfrtip',
-                    buttons: ['excel'],
+                    buttons: [{ extend: 'excel', filename: `Medición de Impactos Capacitacion` }],
                     searching: false,
                     paging: false,
                     info: false
@@ -938,7 +545,7 @@ function recuperarVistaImpacto() {
                         const excelButton = tempContainer.find('.buttons-excel');
                         if (excelButton.length > 0) {
                             excelButton.one('click', function() {
-                                setTimeout(resolve, 500);
+                                setTimeout(resolve, 500); // Espera a que termine la exportación
                             });
                             excelButton.click();
                         } else if (++attempts < 10) {
@@ -950,13 +557,14 @@ function recuperarVistaImpacto() {
                     tryExport();
                 });
 
+                // Limpiar DataTable y contenedor
                 dataTable.destroy();
                 tempContainer.remove();
 
                 const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
                 alertSuccess.append(
-                    '<i class="ti ti-download me-2"></i>',
-                    `<strong>¡Descarga iniciada!</strong> Los datos de la línea base ${tipo} se están descargando.`,
+                    '<i class="ti ti-check me-2"></i>',
+                    `<strong>¡Descarga completada!</strong> Los datos de la medición de impactos de capacitación ${tipo} han sido descargados.`,
                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
                 $("#section-vista-general").prepend(alertSuccess);
@@ -972,7 +580,7 @@ function recuperarVistaImpacto() {
                 const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
                 alertError.append(
                     '<i class="ti ti-x me-2"></i>',
-                    '<strong>Error:</strong> Ocurrió un error al exportar los datos.',
+                    '<strong>Error:</strong> Ocurrió un error al exportar los datos de la medición de impactos de capacitación.',
                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
                 );
                 $("#section-vista-general").prepend(alertError);

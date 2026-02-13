@@ -16,16 +16,13 @@ class MedicionImpactosCapacitacionAPI extends API {
     function actualizarConfiguracionFechas() {
         $inicio = $this->getData("fechaInicio");
         $fin = $this->getData("fechaFin");
-        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionAnios(
-                        $inicio,
-                        $fin,
-                        $this->getUsuarioActual()));
+        $this->enviarResultadoOperacion(getAdminImpactoCapacitacion()->actualizarConfiguracionAnios(
+            $inicio,
+            $fin,
+            $this->getUsuarioActual()
+        ));
     }
 
-    function actualizarFiltroEmprendedores() {
-        $this->enviarResultadoOperacion(getAdminImpacto()->actualizarConfiguracionListaEmprendedores($this->data["seleccionados"]??[], $this->getUsuarioActual()));
-    }
-    
     function recuperarVistaGeneral() {
         $this->enviarRespuesta(getAdminImpactoCapacitacion()->recuperarVistaGeneral($this->getData("tipo")));
     }

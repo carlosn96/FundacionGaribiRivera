@@ -3,19 +3,15 @@
 class ImpactoCapacitacionDAO extends DAO
 {
 
-    private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto';
+    private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto_graduados';
     private const RECUPERAR_RANGOS_FECHAS_LINEA_BASE = "SELECT * FROM recuperar_linea_base_rangos_fechas_registrados WHERE id_usuario = ?";
     private const INSERTAR_O_ACTUALIZAR_CONFIG_ANIOS = "
     INSERT INTO linea_base_impacto_configuracion (id_usuario, anio_inicio_selected, anio_fin_selected)
     VALUES (?, ?, ?)
     ON DUPLICATE KEY UPDATE
-        anio_inicio_selected = VALUES(anio_inicio_selected),
-        anio_fin_selected = VALUES(anio_fin_selected)";
-    private const INSERTAR_O_ACTUALIZAR_CONFIG_LISTA = "
-    INSERT INTO linea_base_impacto_configuracion (id_usuario, lista_registros_filtrados)
-    VALUES (?, ?)
-    ON DUPLICATE KEY UPDATE
-        lista_registros_filtrados = VALUES(lista_registros_filtrados)";
+        anio_inicio_capacitacion_selected = VALUES(anio_inicio_selected),
+        anio_fin_capacitacion_selected = VALUES(anio_fin_selected)";
+
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
@@ -263,14 +259,6 @@ class ImpactoCapacitacionDAO extends DAO
         return $prep->ejecutar();
     }
 
-    public function actualizarConfiguracionListaEmprendedores(array $lista, $id)
-    {
-        $prep = $this->prepararInstruccion(self::INSERTAR_O_ACTUALIZAR_CONFIG_LISTA);
-        $prep->agregarInt($id);
-        $prep->agregarJSON($lista);
-        return $prep->ejecutar();
-    }
-
     public function recuperarVistaGeneral($tipo)
     {
         $tabla = self::VISTA_ANALISIS_IMPACTO . "_" . $tipo;
@@ -282,8 +270,9 @@ class ImpactoCapacitacionDAO extends DAO
             if(isset($row["etapa"])) {
                 $rowVista["Etapa"] = $row["etapa"];
             }
-            $rowVista["Fecha"] = $row["fechaCreacion"];
+            $rowVista["Fecha de Seguimiento"] = $row["fechaCreacion"];
             $rowVista["Nombre de emprendedor"] = $row["nombreUsuario"];
+            $row["empleoGanancias"] = $this->limpiarJsonEmpleoGanancias($row["empleoGanancias"]);
             foreach ($preguntas as $pregunta) {
                 if (isset($row[$pregunta["columna"]])) {
                     $rowVista[$pregunta["pregunta"]] = $row[$pregunta["columna"]];
@@ -292,6 +281,27 @@ class ImpactoCapacitacionDAO extends DAO
             $vista[] = $rowVista;
         }
         return $vista;
+    }
+
+    private function limpiarJsonEmpleoGanancias($json)
+    {
+        $data = json_decode($json, true);
+        if (is_array($data)) {
+            if (isset($data['descripcion'])) {
+                // Single object
+                return $data['descripcion'];
+            } else {
+                // Assume array of objects
+                $descripciones = [];
+                foreach ($data as $item) {
+                    if (is_array($item) && isset($item['descripcion'])) {
+                        $descripciones[] = $item['descripcion'];
+                    }
+                }
+                return implode(", ", $descripciones);
+            }
+        }
+        return $json;
     }
 
     public function recuperarSeguimientoGraduado($emprendedor)
