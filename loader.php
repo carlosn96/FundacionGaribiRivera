@@ -313,7 +313,7 @@ function getAdminVisitaSeguimiento(): AdminVisitaSeguimiento
     return AdminFactory::getAdminVisitaSeguimiento();
 }
 
-function getAdminImpacto(): AdminImpacto
+function getAdminImpacto(): AdminImpactoCredito
 {
     return AdminFactory::getAdminImpacto();
 }
