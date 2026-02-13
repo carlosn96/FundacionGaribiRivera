@@ -1,11 +1,11 @@
 <?php
 
-class AdminImpacto extends Admin
+class AdminImpactoCredito extends Admin
 {
 
     public function __construct()
     {
-        parent::__construct(new ImpactoDAO());
+        parent::__construct(new ImpactoCreditoDAO());
     }
 
     public function getMedicionImpacto($usuario)

@@ -1,6 +1,6 @@
 <?php
 
-class ImpactoDAO extends DAO
+class ImpactoCreditoDAO extends DAO
 {
 
     private const VISTA_ANALISIS_IMPACTO = 'analisis_impacto_credito';
@@ -26,7 +26,8 @@ class ImpactoDAO extends DAO
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
-    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica(?)"; //Impacto de Credito
+    // Use the dedicated credit procedure for crédito impact measurement
+    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica_credito(?)"; //Impacto de Crédito
     private const CAMPOS_ADM_RECURSOS = [
         [
             "columna" => "registraEntradaSalida",
@@ -157,6 +158,11 @@ class ImpactoDAO extends DAO
         $prep = $this->prepararInstruccion($impactoMap[$tipo]);
         $prep->agregarInt($usuario);
         $data = $prep->ejecutarConsulta();
+        // Validar resultado de la consulta antes de procesar
+        if (!$data || !is_array($data)) {
+            Util::error_log("recuperarImpactoPorTipo failed for tipo=$tipo usuario=$usuario: result invalid");
+            return ["mediciones" => [], "total_registros" => 0];
+        }
         // Procesar los datos de impacto
         return ["mediciones" => $this->recuperarImpacto(self::SECCIONES_IMPACTO[$tipo], $data), "total_registros" => $data["total_registros"]];
     }

@@ -4,6 +4,6 @@ require_once '../../includes/emprendimientoTemplate.php';
 
 renderizarPlantillaEmprendimiento(
     __DIR__, [
-    'api/medicionImpactos.js'
+    'api/medicionImpactosCapacitacion.js'
     ]
 );

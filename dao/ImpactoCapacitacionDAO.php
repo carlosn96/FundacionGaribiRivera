@@ -141,6 +141,11 @@ class ImpactoCapacitacionDAO extends DAO
         $prep = $this->prepararInstruccion($impactoMap[$tipo]);
         $prep->agregarInt($usuario);
         $data = $prep->ejecutarConsulta();
+        // Validar resultado de la consulta antes de procesar
+        if (!$data || !is_array($data)) {
+            Util::error_log("recuperarImpactoPorTipo (capacitacion) failed for tipo=$tipo usuario=$usuario: result invalid");
+            return ["mediciones" => [], "total_registros" => 0];
+        }
         // Procesar los datos de impacto
         return ["mediciones" => $this->recuperarImpacto(self::SECCIONES_IMPACTO[$tipo], $data), "total_registros" => $data["total_registros"]];
     }
@@ -238,15 +243,29 @@ class ImpactoCapacitacionDAO extends DAO
 
     private function getAniosLineaBase($usuario)
     {
-        $prep = $this->prepararInstruccion(self::RECUPERAR_RANGOS_FECHAS_LINEA_BASE);
+        // First try to read capacitación-specific range from configuration
+        $prep = $this->prepararInstruccion("SELECT anio_inicio_capacitacion_selected AS inicioSelected, anio_fin_capacitacion_selected AS finSelected FROM linea_base_impacto_configuracion WHERE id_usuario = ? LIMIT 1");
         $prep->agregarInt($usuario);
         $rs = $prep->ejecutarConsulta();
+
+        if ($rs && (!empty($rs['inicioSelected']) || !empty($rs['finSelected']))) {
+            return [
+                "inicio" => $rs['inicioSelected'] ?? "2023-01-01",
+                "fin" => $rs['finSelected'] ?? Util::obtenerFechaActual(),
+                "inicioSelected" => $rs['inicioSelected'] ?? Util::obtenerFechaActual(),
+                "finSelected" => $rs['finSelected'] ?? Util::obtenerFechaActual()
+            ];
+        }
+
+        // Fallback: use min/max from data
+        $inicio = $this->selectPorCamposEspecificos("MIN(fechaCreacion) AS inicio", "recuperar_linea_base", "", true);
+        $fin = $this->selectPorCamposEspecificos("MAX(fechaCreacion) AS fin", "recuperar_seguimiento_graduado", "", true);
         $anioActual = Util::obtenerFechaActual();
-        return $rs ?: [
-            "inicio" => "2023-01-01",
-            "fin" => $anioActual,
-            "inicioSelected" => $anioActual,
-            "finSelected" => $anioActual
+        return [
+            "inicio" => $inicio['inicio'] ?? "2023-01-01",
+            "fin" => $fin['fin'] ?? $anioActual,
+            "inicioSelected" => $inicio['inicio'] ?? $anioActual,
+            "finSelected" => $fin['fin'] ?? $anioActual
         ];
     }
 

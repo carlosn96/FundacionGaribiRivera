@@ -50,9 +50,9 @@ class AdminFactory
         return self::getOrCreateInstance(AdminVisitaSeguimiento::class);
     }
 
-    public static function getAdminImpacto(): AdminImpacto
+    public static function getAdminImpacto(): AdminImpactoCredito
     {
-        return self::getOrCreateInstance(AdminImpacto::class);
+        return self::getOrCreateInstance(AdminImpactoCredito::class);
     }
     public static function getAdminImpactoCapacitacion(): AdminImpactoCapacitacion
     {
