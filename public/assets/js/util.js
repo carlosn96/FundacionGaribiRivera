@@ -294,6 +294,56 @@ function crearDataTable(idTabla, buttons) {
     return tabla;
 }
 
+/**
+ * Crear DataTable con opciones flexibles heredando valores por defecto del proyecto.
+ * @param {string} idTabla - Selector de la tabla (ej. '#miTabla')
+ * @param {Array} buttons - Botones para DataTables Buttons
+ * @param {Object} opts - Opciones adicionales que sobrescriben las por defecto
+ * @returns {Object} instancia de DataTable
+ */
+function crearDataTableFlexible(idTabla, buttons = [], opts = {}) {
+    if ($.fn.dataTable.isDataTable(idTabla)) {
+        $(idTabla).DataTable().clear().destroy();
+    }
+    const defaultOpts = {
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        buttons: Array.isArray(buttons) ? buttons : [],
+        responsive: false,
+        scrollX: true,
+        scrollY: '60vh',
+        scrollCollapse: true,
+        paging: true,
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+        order: [[0, "asc"]],
+        language: {
+            "paginate": { "previous": "Anterior", "next": "Siguiente" },
+            "sInfoThousands": ",",
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible",
+            "sInfo": "_START_ a _END_ de _TOTAL_",
+            "sInfoEmpty": "0 registros",
+            "sInfoFiltered": "(filtrado de _MAX_)",
+            "sSearch": "Buscar:",
+            "searchPlaceholder": "Filtrar...",
+            "sLoadingRecords": "Cargando..."
+        },
+        drawCallback: function () {
+            const wrapper = $(this).closest('.dataTables_wrapper');
+            const buttonsWrapper = wrapper.find('.dt-buttons').parent().parent();
+            if (buttonsWrapper.length && !buttonsWrapper.parent().is('#datatable-buttons-container')) {
+                $('#datatable-buttons-container').empty().append(buttonsWrapper);
+            }
+        }
+    };
+
+    const finalOpts = $.extend(true, {}, defaultOpts, opts);
+    const tabla = $(idTabla).DataTable(finalOpts);
+    return tabla;
+}
+
 
 function calcuarEdad(fechaNacimiento) {
     return parseInt((new Date() - new Date(fechaNacimiento)) /
