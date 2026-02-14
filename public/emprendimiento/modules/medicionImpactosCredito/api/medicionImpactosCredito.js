@@ -1,12 +1,12 @@
 // Configuración global
-const urlAPI = "api/MedicionImpactosAPI.php";
+const urlAPI = "api/MedicionImpactosCreditoAPI.php";
 
 function ready() {
     crearPeticion(urlAPI, { case: "consultarMedicionImpactos" }, (res) => {
-        const impactos = res.impactos;
-        print(impactos);
-        if (impactos.fechas.fin) {
-            generarImpactoHTML(impactos, res.emprendedores);
+        const data = res && res.impactos ? res.impactos : {};
+        print({ raw: res, data });
+        if (data.fechas && data.fechas.fin) {
+            generarImpactoHTML(data, res.emprendedores || []);
             completarParametrosConfiguracion();
         } else {
             mostrarMensajeNoHayInformacion();
@@ -15,7 +15,7 @@ function ready() {
 }
 
 function mostrarMensajeNoHayInformacion() {
-    $("#msgImpacto").prop("hidden", false).attr('role','status').attr('aria-live','polite');
+    $("#msgImpacto").prop("hidden", false).attr('role', 'status').attr('aria-live', 'polite');
 }
 
 function crearPanelPreprocesamiento(preprocesamiento) {
@@ -46,7 +46,7 @@ function crearPanelPreprocesamiento(preprocesamiento) {
 
     // Header for the list (Select All)
     const headerItem = $("<div>", { class: "list-group-item d-flex justify-content-between align-items-center bg-light-subtle rounded-top p-3 border-0 mb-2" });
-    
+
     const checkAllSwitch = $("<input>", {
         class: "form-check-input me-2",
         type: "checkbox",
@@ -54,13 +54,13 @@ function crearPanelPreprocesamiento(preprocesamiento) {
         id: "preproc-select-all-switch",
         "aria-label": "Seleccionar todas las preguntas de preprocesamiento"
     });
-    
+
     headerItem.append(
         $("<strong>", { class: "text-muted small text-uppercase", text: "Seleccionar Todo" }),
         $("<div>", { class: "form-check form-switch m-0" }).append(checkAllSwitch)
     );
     listGroup.append(headerItem);
-    
+
     preguntas.forEach((pregunta, index) => {
         const switchId = `switch-pregunta-${index}`;
         const listItem = $("<div>", { class: "list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-3" });
@@ -101,7 +101,7 @@ function crearPanelPreprocesamiento(preprocesamiento) {
         }
     }
 
-    checkAllSwitch.on('change', function() {
+    checkAllSwitch.on('change', function () {
         const isChecked = $(this).prop('checked');
         allSwitches.prop('checked', isChecked);
     });
@@ -145,7 +145,16 @@ function crearPanelPreprocesamiento(preprocesamiento) {
 }
 
 function generarImpactoHTML(data, emprendedores) {
+    // Ensure the container is reset and message state is correct
     $("#impacto-container").empty();
+    // If there are no impact sections, show the informative message and bail out
+    if (!data || !Array.isArray(data.impactos) || data.impactos.length === 0) {
+        const info = $("<div>", { class: "alert alert-warning", role: "alert", id: "msgImpacto" }).text('No hay suficiente información para poder realizar la medición.');
+        $("#impacto-container").append(info);
+        return;
+    }
+    // Remove any existing message element if present
+    $("#msgImpacto").remove();
 
     // === CONTENEDOR PRINCIPAL ===
     const contenedorPrincipal = $("<div>", { class: "container-xxl py-5" });
@@ -156,6 +165,13 @@ function generarImpactoHTML(data, emprendedores) {
         $("<h2>", { class: "display-6 fw-bold text-dark mb-2", text: "Medición de Impactos (Crédito)" }),
         $("<p>", { class: "text-muted lead fs-5", text: `Período de Evaluación: ${data.fechas.inicioSelected} al ${data.fechas.finSelected}` })
     );
+    // Mostrar contador de registros sin fecha de crédito si existe
+    if (data.flag_fecha_credito_missing && parseInt(data.flag_fecha_credito_missing) > 0) {
+        const badge = $("<div>", { class: "mt-2" }).append(
+            $("<span>", { class: "badge bg-warning text-dark", text: `${data.flag_fecha_credito_missing} registros sin fecha de crédito — incluidos en el conteo de créditos por tener referencia.` })
+        );
+        headerSection.append(badge);
+    }
     contenedorPrincipal.append(headerSection);
 
     // === NAVEGACIÓN SUPERIOR (TABS) ===
@@ -164,7 +180,7 @@ function generarImpactoHTML(data, emprendedores) {
 
     const itemsNav = [
         { id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Reporte de Medición", target: "section-medicion" },
-        { id: "nav-vista-general", icon: "ti ti-table", texto: "Exportar Datos", target: "section-vista-general" },
+        { id: "nav-vista-general", icon: "ti ti-table", texto: "Datos y Exportación", target: "section-vista-general" },
         { id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion" }
     ];
 
@@ -336,7 +352,7 @@ function generarImpactoHTML(data, emprendedores) {
         impacto.data.forEach((seccion, secIdx) => {
             const itemDetalle = $("<div>", { class: "accordion-item border rounded-3 mb-2" });
             const headerDetalle = $("<h4>", { class: "accordion-header", id: `var-heading-${idx}-${secIdx}` });
-            
+
             const botonDetalle = $("<button>", {
                 class: "accordion-button collapsed rounded-3 p-3",
                 type: "button",
@@ -347,42 +363,42 @@ function generarImpactoHTML(data, emprendedores) {
                 text: `${seccion.titulo}`
             });
             headerDetalle.append(botonDetalle);
-            
-            const collapseDetalle = $("<div>", { 
-                id: `var-collapse-${idx}-${secIdx}`, 
-                class: "accordion-collapse collapse", 
+
+            const collapseDetalle = $("<div>", {
+                id: `var-collapse-${idx}-${secIdx}`,
+                class: "accordion-collapse collapse",
                 "aria-labelledby": `var-heading-${idx}-${secIdx}`,
-                "data-bs-parent": `#variaciones-${idx}` 
+                "data-bs-parent": `#variaciones-${idx}`
             });
             const bodyDetalle = $("<div>", { class: "accordion-body p-0" });
-            
+
             // Tabla detalles
             const tableDetalle = $("<table>", { class: "table table-striped mb-0 table-sm" });
             const theadDetalle = $("<thead>");
             theadDetalle.append($("<tr>").append(
-                $("<th>", {text: "Pregunta", class: "ps-4 py-2"}), 
-                $("<th>", {text: "Inicio", class: "text-center py-2"}), 
-                $("<th>", {text: "Fin", class: "text-center py-2"}), 
-                $("<th>", {text: "Var.", class: "text-center py-2"})
+                $("<th>", { text: "Pregunta", class: "ps-4 py-2" }),
+                $("<th>", { text: "Inicio", class: "text-center py-2" }),
+                $("<th>", { text: "Fin", class: "text-center py-2" }),
+                $("<th>", { text: "Var.", class: "text-center py-2" })
             ));
-            
+
             const tbodyDetalle = $("<tbody>");
             Object.entries(seccion.mediciones).forEach(([pregunta, medicion]) => {
-                 const variacion = medicion.variacionPorcentual.toFixed(2);
-                 const badgeVar = parseFloat(variacion) > 0 ? 'text-success' : parseFloat(variacion) < 0 ? 'text-danger' : 'text-muted';
-                 tbodyDetalle.append(
-                     $("<tr>").append(
-                         $("<td>", { class: "ps-4 py-2 small text-muted", text: pregunta }),
-                         $("<td>", { class: "text-center small", text: medicion.inicial }),
-                         $("<td>", { class: "text-center small", text: medicion.final }),
-                         $("<td>", { class: `text-center fw-bold small ${badgeVar}`, text: `${variacion}%` })
-                     )
-                 );
+                const variacion = medicion.variacionPorcentual.toFixed(2);
+                const badgeVar = parseFloat(variacion) > 0 ? 'text-success' : parseFloat(variacion) < 0 ? 'text-danger' : 'text-muted';
+                tbodyDetalle.append(
+                    $("<tr>").append(
+                        $("<td>", { class: "ps-4 py-2 small text-muted", text: pregunta }),
+                        $("<td>", { class: "text-center small", text: medicion.inicial }),
+                        $("<td>", { class: "text-center small", text: medicion.final }),
+                        $("<td>", { class: `text-center fw-bold small ${badgeVar}`, text: `${variacion}%` })
+                    )
+                );
             });
-            
+
             tableDetalle.append(theadDetalle, tbodyDetalle);
             bodyDetalle.append(tableDetalle);
-            
+
             collapseDetalle.append(bodyDetalle);
             itemDetalle.append(headerDetalle, collapseDetalle);
             accordionDetalles.append(itemDetalle);
@@ -423,9 +439,9 @@ function generarImpactoHTML(data, emprendedores) {
     // Card Temporal
     const cardTemporal = $("<div>", { class: "card border-0 shadow-sm mb-4" });
     const bodyTemporal = $("<div>", { class: "card-body p-4" });
-    
+
     bodyTemporal.append($("<h6>", { class: "fw-bold text-uppercase text-muted smaller mb-3", text: "Rango de Fechas" }));
-    
+
     const formFechas = $("<form>", { id: "form-fechas", class: "needs-validation", novalidate: true });
     // ... duplicate logic for inputs but cleaner ...
     const rowInputs = $("<div>", { class: "row g-3" });
@@ -433,217 +449,213 @@ function generarImpactoHTML(data, emprendedores) {
     colIn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Inicial" }), $("<input>", { type: "date", id: "fechaInicio", class: "form-control", value: data.fechas.inicioSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
     const colFn = $("<div>", { class: "col-md-6" });
     colFn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Final" }), $("<input>", { type: "date", id: "fechaFinal", class: "form-control", value: data.fechas.finSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
-    
+
     rowInputs.append(colIn, colFn);
     formFechas.append(rowInputs, $("<div>", { class: "mt-4 text-end" }).append($("<button>", { type: "submit", class: "btn btn-primary rounded-pill px-4" }).append($("<i>", { class: "ti ti-refresh me-2" }), "Actualizar")));
     bodyTemporal.append(formFechas);
     cardTemporal.append(bodyTemporal);
+
+    // Acción visible dentro de la pestaña de configuración (jerarquía global dentro de la pestaña)
+    const configActions = $("<div>", { class: "d-flex justify-content-end mb-3" });
+    const btnConfigReset = $("<button>", {
+        type: "button",
+        id: "btnRestablecerConfig",
+        class: "btn btn-outline-danger rounded-pill px-3",
+        title: "Restablecer configuración (elimina la configuración guardada)",
+        "aria-label": "Restablecer configuración"
+    }).append($("<i>", { class: "ti ti-trash me-2" }), "Restablecer configuración");
+    configActions.append(btnConfigReset);
 
     // Append Card Preprocesamiento (created by separate function)
     const cardPreprocesamiento = crearPanelPreprocesamiento(data.preprocesamiento);
     // Add margin if not present
     cardPreprocesamiento.addClass("mb-4");
 
-    // Card Emprendedores (Hidden logic maintained)
-    const cardEmprendedores = $("<div>"); // Placeholder to keep logic if uncommented in future or if logic relies on it existing
-    // The previous implementation had it empty largely, but created filtering vars.
-    // I will recreate the hidden dom elements needed for the filtering scripts ("#tablaEmprendedores", etc) if they are referenced by ID later.
-    // Check lines 825+ "actualizarContadorSeleccionados". It uses ".emprendedor-checkbox".
-    // If the card is empty, no checkboxes exist. So the logic runs but finds nothing.
-    // I will uphold the "commented out" state of the previous file, effectively showing nothing.
-
-    colConfig.append(cardTemporal, cardPreprocesamiento, cardEmprendedores);
+    colConfig.append(configActions, cardTemporal, cardPreprocesamiento);
     rowConfig.append(colConfig);
     seccionConfig.append(rowConfig);
 
-    // === SECCIÓN 3: VISTA GENERAL (EXPORT) ===
+    // === SECCIÓN 3: VISTA GENERAL (DATOS + EXPORTACIÓN) ===
     const seccionVista = $("<section>", {
         id: "section-vista-general",
         class: "content-section d-none animate__animated animate__fadeIn",
         role: "tabpanel",
         "aria-labelledby": "nav-vista-general"
     });
-    
-    const rowVista = $("<div>", { class: "row justify-content-center" });
-    const colVista = $("<div>", { class: "col-lg-8" });
 
-    const cardExport = $("<div>", { class: "card border-0 shadow-sm text-center py-5 px-4" });
-    cardExport.append(
-        $("<div>", { class: "mb-4 text-primary" }).append($("<i>", { class: "ti ti-cloud-download display-1" })),
-        $("<h3>", { class: "fw-bold", text: "Descarga de Datos" }),
-        $("<p>", { class: "text-muted mb-5", text: "Obtenga los datos completos de línea base inicial y seguimiento en formato Excel para su posterior análisis." }),
-        $("<div>", { class: "d-flex justify-content-center gap-3 flex-wrap" }).append(
-             $("<button>", { type: "button", class: "btn btn-outline-primary btn-lg rounded-pill px-5", id: "btnInicial", "data-tipo": "inicial" }).append($("<i>", { class: "ti ti-file-spreadsheet me-2" }), "Base Inicial"),
-             $("<button>", { type: "button", class: "btn btn-outline-success btn-lg rounded-pill px-5", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-file-spreadsheet me-2" }), "Base Seguimiento")
+    // Contenedor completo sin restricciones de ancho
+    const containerFull = $("<div>", { class: "container-fluid px-2 px-md-3" });
+
+    const cardExport = $("<div>", { class: "card border-0 shadow-sm" });
+    const cardHeader = $("<div>", { class: "card-body text-center py-3 border-bottom" });
+    cardHeader.append(
+        $("<div>", { class: "mb-2 text-primary" }).append($("<i>", { class: "ti ti-cloud-download fs-1" })),
+        $("<h3>", { class: "h5 fw-bold mb-2", text: "Datos y Exportación" }),
+        $("<p>", { class: "text-muted small mb-3", text: "Visualice la información y exporte con los botones disponibles de DataTable." }),
+        $("<div>", { class: "d-flex justify-content-center gap-2 flex-wrap" }).append(
+            $("<button>", { type: "button", class: "btn btn-outline-primary rounded-pill px-4", id: "btnInicial", "data-tipo": "inicial" }).append($("<i>", { class: "ti ti-database-export me-2" }), "Cargar Base Inicial"),
+            $("<button>", { type: "button", class: "btn btn-outline-success rounded-pill px-4", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-database-export me-2" }), "Cargar Seguimiento")
         )
     );
-    colVista.append(cardExport);
-    rowVista.append(colVista);
-    seccionVista.append(rowVista);
+    
+    const cardBody = $("<div>", { class: "card-body" });
+    
+    // Contenedor para botones de DataTable (fijo en la parte superior)
+    const botonesContainer = $("<div>", { 
+        id: "datatable-buttons-container",
+        class: "mb-3"
+    });
+    
+    // Contenedor para la tabla con DataTable
+    const tableContainer = $("<div>", { class: "datatable-container" });
+    tableContainer.append(
+        $("<table>", { 
+            id: "tablaVistaGeneralImpacto", 
+            class: "table table-striped table-hover table-sm w-100"
+        })
+    );
+    
+    cardBody.append(botonesContainer, tableContainer);
+    cardExport.append(cardHeader, cardBody);
+    containerFull.append(cardExport);
+    seccionVista.append(containerFull);
+
 
     // Assembly
     contenidoPrincipal.append(seccionMedicion, seccionConfig, seccionVista);
     contenedorPrincipal.append(contenidoPrincipal);
     $("#impacto-container").append(contenedorPrincipal);
+    
+    // Use global project styles for DataTables instead of injecting inline CSS here.
+    // The project-wide stylesheet provides the necessary styles for
+    // `.datatable-container`, `.dataTables_wrapper`, pagination and buttons.
+    // Ensure the main stylesheet is loaded on the page so the table renders correctly.
 
     // --- LOGIC RESTORATION ---
     // Make icons decorative
     contenedorPrincipal.find('i').attr('aria-hidden', 'true');
-    
-    // Logic for filters (checkboxes etc) needs to be event-bound even if elements aren't there, 
-    // to match original function scope.
-    
-    $("#select-all").on("change", function () {
-        const isChecked = $(this).prop("checked");
-        // table logic...
-         if($.fn.DataTable.isDataTable('#tablaEmprendedores')) {
-             $('#tablaEmprendedores').DataTable().rows().every(function () {
-                $(this.node()).find('.emprendedor-checkbox').prop('checked', isChecked);
-            });
-         }
-        $("#etapaSelector").val("");
-        actualizarContadorSeleccionados();
+    cargarVistaGeneralEnTabla('inicial');
+    $("#btnInicial").off("click").on("click", function () {
+        cargarVistaGeneralEnTabla('inicial');
     });
-    
-    // ... (Filter logic listeners - adapted) ...
-
-    function actualizarContadorSeleccionados() {
-        const seleccionados = $('.emprendedor-checkbox:checked').length;
-        const total = emprendedores.length;
-        $("#seleccionados-info").text(`${seleccionados} de ${total} emprendedores seleccionados`);
-        $("#emprendedores-count").text(`${seleccionados}/${total} seleccionados`);
-    }
-
-    $("#select-all-btn").on("click", function () {
-        $('.emprendedor-checkbox').prop('checked', true);
-        $("#select-all").prop('checked', true);
-        $("#etapaSelector").val("");
-        actualizarContadorSeleccionados();
+    $("#btnFinal").off("click").on("click", function () {
+        cargarVistaGeneralEnTabla('final');
     });
 
-    $("#deselect-all-btn").on("click", function () {
-        $('.emprendedor-checkbox').prop('checked', false);
-        $("#select-all").prop('checked', false);
-        actualizarContadorSeleccionados();
+    // Restablecer configuración: usar la alerta del proyecto y delegar la petición al backend
+    $("#btnRestablecerConfig").off('click').on('click', function () {
+        alertaEliminar({
+            mensajeAlerta: 'Esta acción eliminará la configuración guardada para su usuario. ¿Desea continuar?',
+            url: urlAPI,
+            data: { case: 'restablecerConfiguracion' },
+            fnSuccess: function (res) {
+                if (!res || res.es_valor_error) {
+                    const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
+                    alertError.append(
+                        '<i class="ti ti-x me-2"></i>',
+                        '<strong>Error:</strong> No se pudo restablecer la configuración.',
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                    );
+                    $("#section-configuracion").prepend(alertError);
+                    setTimeout(() => { alertError.alert('close'); }, 5000);
+                    return;
+                }
+
+                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
+                alertSuccess.append(
+                    '<i class="ti ti-check me-2"></i>',
+                    '<strong>¡Listo!</strong> La configuración ha sido restablecida. La página se recargará para aplicar cambios.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-configuracion").prepend(alertSuccess);
+                setTimeout(() => { refresh(); }, 1200);
+            }
+        });
     });
-
-    $(document).on('change', '.emprendedor-checkbox', function () {
-        actualizarContadorSeleccionados();
-        const totalCheckboxes = $('.emprendedor-checkbox').length;
-        const checkedCheckboxes = $('.emprendedor-checkbox:checked').length;
-        if (checkedCheckboxes === totalCheckboxes) {
-            $("#select-all").prop('checked', true).prop('indeterminate', false);
-        } else if (checkedCheckboxes === 0) {
-            $("#select-all").prop('checked', false).prop('indeterminate', false);
-        } else {
-            $("#select-all").prop('indeterminate', true);
-        }
-    });
-
-    $("#apply-filter").on("click", aplicarFiltro);
-    $("#btnInicial").on("click", recuperarVistaImpacto);
-    $("#btnFinal").on("click", recuperarVistaImpacto);
-
-    actualizarContadorSeleccionados();
 
     $(document).on('shown.bs.tab shown.bs.collapse', function (e) {
         // DataTable adjust
-         if($.fn.DataTable.isDataTable('#tablaEmprendedores')) {
-             $('#tablaEmprendedores').DataTable().columns.adjust().draw();
-         }
+        if ($.fn.DataTable.isDataTable('#tablaVistaGeneralImpacto')) {
+            $('#tablaVistaGeneralImpacto').DataTable().columns.adjust().draw();
+        }
     });
 
     // Nav config click to init table if exists
-    $(document).on('click', '#nav-configuracion', function () {
+    $(document).on('click', '#nav-vista-general', function () {
         // Logic primarily for when the table is present
         setTimeout(() => {
-             // Only if table exists in DOM
-             if ($("#tablaEmprendedores").length) {
-                 if (!$.fn.DataTable.isDataTable('#tablaEmprendedores')) {
-                     crearDataTable("#tablaEmprendedores");
-                 } else {
-                     $('#tablaEmprendedores').DataTable().columns.adjust().draw();
-                 }
-             }
+            // Only if table exists in DOM
+            if ($("#tablaVistaGeneralImpacto").length) {
+                if (!$.fn.DataTable.isDataTable('#tablaVistaGeneralImpacto')) {
+                    cargarVistaGeneralEnTabla('inicial');
+                } else {
+                    $('#tablaVistaGeneralImpacto').DataTable().columns.adjust().draw();
+                }
+            }
         }, 100);
     });
 }
 
-function aplicarFiltro() {
-    const seleccionados = [];
-    const table = $('#tablaEmprendedores').DataTable();
+function obtenerBotonesExportacion(nombreArchivo) {
+    const ext = ($.fn.dataTable && $.fn.dataTable.ext && $.fn.dataTable.ext.buttons) ? $.fn.dataTable.ext.buttons : {};
+    const candidatos = ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'];
+    const disponibles = candidatos.filter(btn => !!ext[btn]);
 
-    const btnAplicar = $("#apply-filter");
-    const btnText = btnAplicar.html();
-    btnAplicar.prop('disabled', true).html(
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Aplicando...'
-    );
-
-    table.rows().every(function () {
-        let checkbox = $(this.node()).find('.emprendedor-checkbox');
-        if (checkbox.prop('checked')) {
-            seleccionados.push(parseInt(checkbox.val()));
+    return disponibles.map(btn => {
+        if (btn === 'colvis') {
+            return { extend: 'colvis', text: 'Columnas' };
         }
-    });
-
-    crearPeticion(urlAPI, {
-        case: "actualizarFiltroEmprendedores",
-        data: $.param({ seleccionados: seleccionados })
-    }, (res) => {
-        if (!res.es_valor_error) {
-            const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-            alertSuccess.append(
-                '<i class="ti ti-check me-2"></i>',
-                '<strong>¡Éxito!</strong> La configuración se ha aplicado correctamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-
-            $("#section-configuracion").prepend(alertSuccess);
-
-            setTimeout(() => {
-                alertSuccess.alert('close');
-            }, 5000);
-
-            refresh();
-        } else {
-            const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
-            alertError.append(
-                '<i class="ti ti-x me-2"></i>',
-                '<strong>Error:</strong> No se pudo aplicar la configuración. Intente nuevamente.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-
-            $("#section-configuracion").prepend(alertError);
-
-            setTimeout(() => {
-                alertError.alert('close');
-            }, 5000);
+        const conf = { extend: btn, exportOptions: { columns: ':visible' } };
+        if (btn !== 'print') {
+            conf.filename = nombreArchivo;
         }
-
-        btnAplicar.prop('disabled', false).html(btnText);
+        return conf;
     });
 }
 
-function filtrarEmprendedores(etapaSeleccionada) {
-    const table = $('#tablaEmprendedores').DataTable();
+function cargarVistaGeneralEnTabla(tipo = 'inicial') {
+    const tabla = $('#tablaVistaGeneralImpacto');
 
-    if (etapaSeleccionada === "") {
-        table.search('').draw();
-        return;
-    }
+    crearPeticion(urlAPI, {
+        case: 'recuperarVistaGeneral',
+        data: $.param({ tipo: tipo })
+    }, (registros) => {
+        if (!Array.isArray(registros) || registros.length === 0) {
+            if ($.fn.DataTable.isDataTable('#tablaVistaGeneralImpacto')) {
+                $('#tablaVistaGeneralImpacto').DataTable().clear().destroy();
+            }
+            tabla.empty().append(
+                $('<tbody>').append(
+                    $('<tr>').append(
+                        $('<td>', { class: 'text-center text-muted p-4', text: 'No hay información disponible para mostrar.' })
+                    )
+                )
+            );
+            return;
+        }
 
-    table.rows({ search: 'applied' }).every(function () {
-        const rowNode = $(this.node());
-        const checkbox = rowNode.find('.emprendedor-checkbox');
-        const etapaCell = rowNode.find('td:nth-child(4) .badge');
-        const etapaText = etapaCell.text().trim();
+        const keys = Object.keys(registros[0]);
+        const thead = $('<thead>').append(
+            $('<tr>').append(keys.map(k => $('<th>', { text: k })))
+        );
 
-        checkbox.prop('checked', etapaText === etapaSeleccionada);
+        const tbody = $('<tbody>');
+        registros.forEach(row => {
+            const tr = $('<tr>');
+            keys.forEach(k => tr.append($('<td>', { text: row[k] ?? '' })));
+            tbody.append(tr);
+        });
+
+        tabla.empty().append(thead, tbody);
+
+        const botones = obtenerBotonesExportacion(`Medicion_Impactos_Credito_${tipo}`);
+        
+        // Use project helper to initialize DataTable with project defaults and custom buttons
+        crearDataTableFlexible('#tablaVistaGeneralImpacto', botones, {
+            buttons: botones,
+            responsive: false
+        });
     });
-
-    table.column(3).search(etapaSeleccionada).draw();
-
-    $("#select-all").prop("checked", false).prop('indeterminate', false);
 }
 
 function completarParametrosConfiguracion() {
@@ -769,106 +781,6 @@ function completarParametrosConfiguracion() {
 }
 
 function recuperarVistaImpacto() {
-    const button = $(this);
-    const tipo = button.data("tipo");
-    const originalContent = button.html();
-
-    button.prop("disabled", true).html(
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
-        `Exportando ${tipo}...`
-    );
-
-    crearPeticion(urlAPI, {
-        case: 'recuperarVistaGeneral',
-        data: $.param({ tipo: tipo })
-    }, async (registros) => {
-
-        if (Array.isArray(registros) && registros.length > 0) {
-            // Crear contenedor temporal para la tabla
-            const tempContainer = $('<div>').css({ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' });
-            const tempTable = $('<table class="table">').appendTo(tempContainer);
-            tempContainer.appendTo('body');
-
-            let dataTable = null;
-            try {
-                // Inicializar DataTable con los datos
-                dataTable = tempTable.DataTable({
-                    data: registros,
-                    columns: Object.keys(registros[0]).map(key => ({
-                        title: key,
-                        data: key
-                    })),
-                    dom: 'Bfrtip',
-                    buttons: [{ extend: 'excel', filename: `Medición de impactos - ${tipo}` }],
-                    searching: false,
-                    paging: false,
-                    info: false
-                });
-
-                // Esperar a que el botón esté disponible y exportar
-                await new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    function tryExport() {
-                        const excelButton = tempContainer.find('.buttons-excel');
-                        if (excelButton.length > 0) {
-                            excelButton.one('click', function() {
-                                setTimeout(resolve, 500); // Espera a que termine la exportación
-                            });
-                            excelButton.click();
-                        } else if (++attempts < 10) {
-                            setTimeout(tryExport, 100);
-                        } else {
-                            reject(new Error('No se encontró el botón de exportación.'));
-                        }
-                    }
-                    tryExport();
-                });
-
-                // Limpiar DataTable y contenedor
-                dataTable.destroy();
-                tempContainer.remove();
-
-                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-                alertSuccess.append(
-                    '<i class="ti ti-check me-2"></i>',
-                    `<strong>¡Descarga completada!</strong> Los datos de la línea base ${tipo} han sido descargados.`,
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-                );
-                $("#section-vista-general").prepend(alertSuccess);
-                setTimeout(() => {
-                    alertSuccess.alert('close');
-                }, 5000);
-            } catch (e) {
-                if (dataTable) {
-                    dataTable.destroy();
-                }
-                tempContainer.remove();
-                console.error('Error al exportar:', e);
-                const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
-                alertError.append(
-                    '<i class="ti ti-x me-2"></i>',
-                    '<strong>Error:</strong> Ocurrió un error al exportar los datos.',
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-                );
-                $("#section-vista-general").prepend(alertError);
-                setTimeout(() => {
-                    alertError.alert('close');
-                }, 5000);
-            } finally {
-                button.prop("disabled", false).html(originalContent);
-            }
-        } else {
-            const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
-            alertInfo.append(
-                '<i class="ti ti-info-circle me-2"></i>',
-                '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            $("#section-vista-general").prepend(alertInfo);
-            setTimeout(() => {
-                alertInfo.alert('close');
-            }, 5000);
-            button.prop("disabled", false).html(originalContent);
-        }
-    });
+    const tipo = $(this).data("tipo") || 'inicial';
+    cargarVistaGeneralEnTabla(tipo);
 }

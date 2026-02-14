@@ -27,7 +27,7 @@ class ImpactoCreditoDAO extends DAO
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
     // Use the dedicated credit procedure for crédito impact measurement
-    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL nuevo_recuperar_impacto_estabilidad_economica_credito(?)"; //Impacto de Crédito
+    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL recuperar_impacto_credito(?)"; //Impacto de Crédito
     private const CAMPOS_ADM_RECURSOS = [
         [
             "columna" => "registraEntradaSalida",
@@ -163,8 +163,15 @@ class ImpactoCreditoDAO extends DAO
             Util::error_log("recuperarImpactoPorTipo failed for tipo=$tipo usuario=$usuario: result invalid");
             return ["mediciones" => [], "total_registros" => 0];
         }
-        // Procesar los datos de impacto
-        return ["mediciones" => $this->recuperarImpacto(self::SECCIONES_IMPACTO[$tipo], $data), "total_registros" => $data["total_registros"]];
+        // Procesar los datos de impacto y propagar flags adicionales (p.ej. flag_fecha_credito_missing)
+        $result = [
+            "mediciones" => $this->recuperarImpacto(self::SECCIONES_IMPACTO[$tipo], $data),
+            "total_registros" => $data["total_registros"]
+        ];
+        if (isset($data['flag_fecha_credito_missing'])) {
+            $result['flag_fecha_credito_missing'] = intval($data['flag_fecha_credito_missing']);
+        }
+        return $result;
     }
 
     /**
@@ -208,7 +215,7 @@ class ImpactoCreditoDAO extends DAO
         $medicionesEE = $estabilidadEconomica["mediciones"];
         $sumaPromediosEstabilidad = array_sum(array_column($medicionesEE, 'contribucionImpacto'));
         $configuracionPreprocesamiento = $this->getConfiguracionPreprocesamiento($usuario);
-        return [
+        $result = [
             "fechas" => $fechas,
             "preprocesamiento" => $configuracionPreprocesamiento,
             "impactos" => [
@@ -226,6 +233,12 @@ class ImpactoCreditoDAO extends DAO
                 ]
             ]
         ];
+
+        if (isset($estabilidadEconomica['flag_fecha_credito_missing'])) {
+            $result['flag_fecha_credito_missing'] = intval($estabilidadEconomica['flag_fecha_credito_missing']);
+        }
+
+        return $result;
     }
 
     private function getNarrativa($tipoImpacto, $cantFamilias, $porcentaje, $anioInicio, $anioFin)
@@ -274,6 +287,19 @@ class ImpactoCreditoDAO extends DAO
         $prep->agregarInt($usuario);
         $prep->agregarString($inicio);
         $prep->agregarString($fin);
+        return $prep->ejecutar();
+    }
+
+    /**
+     * Elimina la configuración de años guardada para un usuario, si existe.
+     *
+     * @param int $usuario
+     * @return array|bool
+     */
+    public function eliminarConfiguracionAnios($usuario)
+    {
+        $prep = $this->prepararInstruccion("DELETE FROM linea_base_impacto_configuracion WHERE id_usuario = ?");
+        $prep->agregarInt($usuario);
         return $prep->ejecutar();
     }
 

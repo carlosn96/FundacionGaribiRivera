@@ -28,6 +28,11 @@ class AdminImpactoCredito extends Admin
         return $this->dao->actualizarConfiguracionPreprocesamiento($preprocesamiento, $usuario);
     }
 
+    public function eliminarConfiguracionAnios($usuario)
+    {
+        return $this->dao->eliminarConfiguracionAnios($usuario);
+    }
+
     public function recuperarVistaGeneral($tipo)
     {
         return $this->dao->recuperarVistaGeneral($tipo);
