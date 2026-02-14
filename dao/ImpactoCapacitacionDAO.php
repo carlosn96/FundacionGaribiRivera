@@ -15,7 +15,7 @@ class ImpactoCapacitacionDAO extends DAO
     private const ESTABILIDAD_ECONOMICA_1 = "recuperar_impacto_estabilidad_economica_seccion_1";
     private const ESTABILIDAD_ECONOMICA_2 = "recuperar_impacto_estabilidad_economica_seccion_2";
     private const ESTABILIDAD_ECONOMICA_3 = "recuperar_impacto_estabilidad_economica_seccion_3";
-    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL recuperar_impacto_seguimiento_graduados(?)";
+    private const RECUPERAR_IMPACTO_ESTABILIDAD_ECONOMICA = "CALL recuperar_impacto_capacitacion(?)";
     private const CAMPOS_ADM_RECURSOS = [
         [
             "columna" => "registraEntradaSalida",
@@ -275,6 +275,19 @@ class ImpactoCapacitacionDAO extends DAO
         $prep->agregarInt($usuario);
         $prep->agregarString($inicio);
         $prep->agregarString($fin);
+        return $prep->ejecutar();
+    }
+
+    /**
+     * Elimina la configuración de años guardada para un usuario, si existe.
+     *
+     * @param int $usuario
+     * @return array|bool
+     */
+    public function eliminarConfiguracionAnios($usuario)
+    {
+        $prep = $this->prepararInstruccion("DELETE FROM linea_base_impacto_configuracion WHERE id_usuario = ?");
+        $prep->agregarInt($usuario);
         return $prep->ejecutar();
     }
 

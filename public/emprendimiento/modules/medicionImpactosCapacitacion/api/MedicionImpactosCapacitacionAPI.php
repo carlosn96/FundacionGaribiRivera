@@ -26,6 +26,11 @@ class MedicionImpactosCapacitacionAPI extends API {
     function recuperarVistaGeneral() {
         $this->enviarRespuesta(getAdminImpactoCapacitacion()->recuperarVistaGeneral($this->getData("tipo")));
     }
+
+    function restablecerConfiguracion() {
+        $idUsuario = $this->getUsuarioActual();
+        $this->enviarResultadoOperacion(getAdminImpactoCapacitacion()->eliminarConfiguracionAnios($idUsuario));
+    }
     
 }
 

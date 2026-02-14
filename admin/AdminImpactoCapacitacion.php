@@ -27,6 +27,11 @@ class AdminImpactoCapacitacion extends Admin
         return $this->dao->actualizarConfiguracionListaEmprendedores(array_map('intval', $lista), $idUsuario);
     }
 
+    public function eliminarConfiguracionAnios($usuario)
+    {
+        return $this->dao->eliminarConfiguracionAnios($usuario);
+    }
+
     public function recuperarVistaGeneral($tipo)
     {
         return $this->dao->recuperarVistaGeneral($tipo);

@@ -38,7 +38,7 @@ function generarImpactoHTML(data, emprendedores) {
 
     const itemsNav = [
         { id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Reporte de Medición", target: "section-medicion" },
-        { id: "nav-vista-general", icon: "ti ti-table", texto: "Exportar Datos", target: "section-vista-general" },
+        { id: "nav-vista-general", icon: "ti ti-table", texto: "Datos y Exportación", target: "section-vista-general" },
         { id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion" }
     ];
 
@@ -309,15 +309,27 @@ function generarImpactoHTML(data, emprendedores) {
     colFn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Final" }), $("<input>", { type: "date", id: "fechaFinal", class: "form-control", value: data.fechas.finSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
     
     rowInputs.append(colIn, colFn);
-    formFechas.append(rowInputs, $("<div>", { class: "mt-4 text-end" }).append($("<button>", { type: "submit", class: "btn btn-primary rounded-pill px-4" }).append($("<i>", { class: "ti ti-refresh me-2" }), "Actualizar")));
+    formFechas.append(rowInputs, $("<div>", { class: "mt-4 text-end" }).append(
+        $("<button>", { type: "submit", class: "btn btn-primary rounded-pill px-4 me-2" }).append($("<i>", { class: "ti ti-refresh me-2" }), "Actualizar")
+    ));
     bodyTemporal.append(formFechas);
     cardTemporal.append(bodyTemporal);
 
-    colConfig.append(cardTemporal);
+    // Acción visible dentro de la pestaña de configuración (jerarquía global dentro de la pestaña)
+    const configActions = $("<div>", { class: "d-flex justify-content-end mb-3" });
+    const btnConfigReset = $("<button>", {
+        type: "button",
+        id: "btnRestablecerConfig",
+        class: "btn btn-outline-danger rounded-pill px-3",
+        title: "Restablecer configuración (elimina la configuración guardada)",
+        "aria-label": "Restablecer configuración"
+    }).append($("<i>", { class: "ti ti-trash me-2" }), "Restablecer configuración");
+    configActions.append(btnConfigReset);
+    colConfig.append(configActions, cardTemporal);
     rowConfig.append(colConfig);
     seccionConfig.append(rowConfig);
 
-    // === SECCIÓN 3: VISTA GENERAL (EXPORT) ===
+    // === SECCIÓN 3: VISTA GENERAL (DATOS + EXPORTACIÓN) ===
     const seccionVista = $("<section>", {
         id: "section-vista-general",
         class: "content-section d-none animate__animated animate__fadeIn",
@@ -325,38 +337,91 @@ function generarImpactoHTML(data, emprendedores) {
         "aria-labelledby": "nav-vista-general"
     });
     
-    const rowVista = $("<div>", { class: "row justify-content-center" });
-    const colVista = $("<div>", { class: "col-lg-8" });
+    // Contenedor completo sin restricciones de ancho
+    const containerFull = $("<div>", { class: "container-fluid px-2 px-md-3" });
 
-    const cardExport = $("<div>", { class: "card border-0 shadow-sm text-center py-5 px-4" });
-    cardExport.append(
-        $("<div>", { class: "mb-4 text-primary" }).append($("<i>", { class: "ti ti-cloud-download display-1" })),
-        $("<h3>", { class: "fw-bold", text: "Descarga de Datos" }),
-        $("<p>", { class: "text-muted mb-5", text: "Obtenga los datos completos de línea base inicial y seguimiento en formato Excel para su posterior análisis." }),
-        $("<div>", { class: "d-flex justify-content-center gap-3 flex-wrap" }).append(
-             $("<button>", { type: "button", class: "btn btn-outline-primary btn-lg rounded-pill px-5", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-file-spreadsheet me-2" }), "Base Seguimiento")
+    const cardExport = $("<div>", { class: "card border-0 shadow-sm" });
+    const cardHeader = $("<div>", { class: "card-body text-center py-3 border-bottom" });
+    cardHeader.append(
+        $("<div>", { class: "mb-2 text-primary" }).append($("<i>", { class: "ti ti-cloud-download fs-1" })),
+        $("<h3>", { class: "h5 fw-bold mb-2", text: "Datos y Exportación" }),
+        $("<p>", { class: "text-muted small mb-3", text: "Consulte la información y use los botones de DataTable para exportar en distintos formatos." }),
+        $("<div>", { class: "d-flex justify-content-center gap-2 flex-wrap" }).append(
+            $("<button>", { type: "button", class: "btn btn-outline-primary rounded-pill px-4", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-database-export me-2" }), "Cargar Seguimientos capturados")
         )
     );
-    colVista.append(cardExport);
-    rowVista.append(colVista);
-    seccionVista.append(rowVista);
+    
+    const cardBody = $("<div>", { class: "card-body" });
+    
+    // Contenedor para botones de DataTable (fijo en la parte superior)
+    const botonesContainer = $("<div>", { 
+        id: "datatable-buttons-container",
+        class: "mb-3"
+    });
+    
+    // Contenedor para la tabla con DataTable
+    const tableContainer = $("<div>", { class: "datatable-container" });
+    tableContainer.append(
+        $("<table>", { 
+            id: "tablaVistaGeneralImpacto", 
+            class: "table table-striped table-hover table-sm w-100"
+        })
+    );
+    
+    cardBody.append(botonesContainer, tableContainer);
+    cardExport.append(cardHeader, cardBody);
+    containerFull.append(cardExport);
+    seccionVista.append(containerFull);
+
 
     // Assembly
     contenidoPrincipal.append(seccionMedicion, seccionConfig, seccionVista);
     contenedorPrincipal.append(contenidoPrincipal);
     $("#impacto-container").append(contenedorPrincipal);
+    
+    // Use global project styles for DataTables instead of injecting inline CSS here.
+    // The project-wide stylesheet provides the necessary styles for
+    // `.datatable-container`, `.dataTables_wrapper`, pagination and buttons.
+    // Ensure the main stylesheet is loaded on the page so the table renders correctly.
 
     // --- LOGIC RESTORATION ---
     // Make icons decorative
     contenedorPrincipal.find('i').attr('aria-hidden', 'true');
-    // Filters logic removed as table is removed. But buttons exist? 
-    // Wait, I removed the Entrepreneur table.
-    // So the filtering logic can be removed too?
-    // Credito had it in background. If I follow instructions strictly "replicate structure", I should include it if Credito has it.
-    // Credito has it.
-    
-    $("#btnInicial").on("click", recuperarVistaImpacto);
-    $("#btnFinal").on("click", recuperarVistaImpacto);
+    cargarVistaGeneralEnTabla('final');
+    $("#btnFinal").off("click").on("click", function () {
+        cargarVistaGeneralEnTabla('final');
+    });
+
+    // Restablecer configuración: usar la alerta del proyecto y delegar la petición al backend
+    $("#btnRestablecerConfig").off('click').on('click', function () {
+        alertaEliminar({
+            mensajeAlerta: 'Esta acción eliminará la configuración guardada para su usuario. ¿Desea continuar?',
+            url: urlAPI,
+            data: { case: 'restablecerConfiguracion' },
+            fnSuccess: function (res) {
+                if (!res || res.es_valor_error) {
+                    const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
+                    alertError.append(
+                        '<i class="ti ti-x me-2"></i>',
+                        '<strong>Error:</strong> No se pudo restablecer la configuración.',
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                    );
+                    $("#section-configuracion").prepend(alertError);
+                    setTimeout(() => { alertError.alert('close'); }, 5000);
+                    return;
+                }
+
+                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
+                alertSuccess.append(
+                    '<i class="ti ti-check me-2"></i>',
+                    '<strong>¡Listo!</strong> La configuración ha sido restablecida. La página se recargará para aplicar cambios.',
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
+                );
+                $("#section-configuracion").prepend(alertSuccess);
+                setTimeout(() => { refresh(); }, 1200);
+            }
+        });
+    });
     
     // In Credito, there is filter logic attached to hidden elements. I will include it to match structure if I'm being very strict.
     // Or I can omit it because it does nothing.
@@ -368,6 +433,69 @@ function generarImpactoHTML(data, emprendedores) {
     // My `oldString` below is the EXACT content I read from `read_file`.
     // My `newString` is the new structure.
     
+}
+
+function obtenerBotonesExportacion(nombreArchivo) {
+    const ext = ($.fn.dataTable && $.fn.dataTable.ext && $.fn.dataTable.ext.buttons) ? $.fn.dataTable.ext.buttons : {};
+    const candidatos = ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'];
+    const disponibles = candidatos.filter(btn => !!ext[btn]);
+
+    return disponibles.map(btn => {
+        if (btn === 'colvis') {
+            return { extend: 'colvis', text: 'Columnas' };
+        }
+        const conf = { extend: btn, exportOptions: { columns: ':visible' } };
+        if (btn !== 'print') {
+            conf.filename = nombreArchivo;
+        }
+        return conf;
+    });
+}
+
+function cargarVistaGeneralEnTabla(tipo = 'final') {
+    const tabla = $('#tablaVistaGeneralImpacto');
+
+    crearPeticion(urlAPI, {
+        case: 'recuperarVistaGeneral',
+        data: $.param({ tipo: tipo })
+    }, (registros) => {
+        if (!Array.isArray(registros) || registros.length === 0) {
+            if ($.fn.DataTable.isDataTable('#tablaVistaGeneralImpacto')) {
+                $('#tablaVistaGeneralImpacto').DataTable().clear().destroy();
+            }
+            tabla.empty().append(
+                $('<tbody>').append(
+                    $('<tr>').append(
+                        $('<td>', { class: 'text-center text-muted p-4', text: 'No hay información disponible para mostrar.' })
+                    )
+                )
+            );
+            return;
+        }
+
+        const keys = Object.keys(registros[0]);
+        const thead = $('<thead>').append(
+            $('<tr>').append(keys.map(k => $('<th>', { text: k })))
+        );
+
+        const tbody = $('<tbody>');
+        registros.forEach(row => {
+            const tr = $('<tr>');
+            keys.forEach(k => tr.append($('<td>', { text: row[k] ?? '' })));
+            tbody.append(tr);
+        });
+
+        tabla.empty().append(thead, tbody);
+
+        const botones = obtenerBotonesExportacion(`Medicion_Impactos_Capacitacion_${tipo}`);
+        
+        // Use project helper to initialize DataTable with project defaults and custom buttons
+        crearDataTableFlexible('#tablaVistaGeneralImpacto', botones, {
+            buttons: botones,
+            // keep responsive off for wide tables
+            responsive: false
+        });
+    });
 }
 
 function completarParametrosConfiguracion() {
@@ -493,115 +621,6 @@ function completarParametrosConfiguracion() {
 }
 
 function recuperarVistaImpacto() {
-    const button = $(this);
-    const tipo = button.data("tipo");
-    const originalContent = button.html();
-
-    button.prop("disabled", true).html(
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
-        `Exportando ${tipo}...`
-    );
-
-    crearPeticion(urlAPI, {
-        case: 'recuperarVistaGeneral',
-        data: $.param({ tipo: tipo })
-    }, async (registros) => {
-
-        if (Array.isArray(registros) && registros.length > 0) {
-            // Definir columnas esperadas según tu DataTable
-            // In new structure, we rely on dynamic columns from `registros` mostly, like Credito does.
-            // But Capacitacion had a fixed list of columns in previous file.
-            // Credito: columns: Object.keys(registros[0]).map...
-            // Capacitacion (Previous): columns: columnasEsperadas.map...
-            // I should use `Object.keys(registros[0])` to be dynamic like Credito, unless keys are unreliable.
-            // Credito source was used as template.
-            // I will use dynamic keys like Credito for consistency.
-            
-            // Crear contenedor temporal para la tabla
-            const tempContainer = $('<div>').css({ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' });
-            const tempTable = $('<table class="table">').appendTo(tempContainer);
-            tempContainer.appendTo('body');
-
-            let dataTable = null;
-            try {
-                // Inicializar DataTable con los datos
-                dataTable = tempTable.DataTable({
-                    data: registros,
-                    columns: Object.keys(registros[0]).map(key => ({
-                        title: key,
-                        data: key
-                    })),
-                    dom: 'Bfrtip',
-                    buttons: [{ extend: 'excel', filename: `Medición de Impactos Capacitacion` }],
-                    searching: false,
-                    paging: false,
-                    info: false
-                });
-
-                // Esperar a que el botón esté disponible y exportar
-                await new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    function tryExport() {
-                        const excelButton = tempContainer.find('.buttons-excel');
-                        if (excelButton.length > 0) {
-                            excelButton.one('click', function() {
-                                setTimeout(resolve, 500); // Espera a que termine la exportación
-                            });
-                            excelButton.click();
-                        } else if (++attempts < 10) {
-                            setTimeout(tryExport, 100);
-                        } else {
-                            reject(new Error('No se encontró el botón de exportación.'));
-                        }
-                    }
-                    tryExport();
-                });
-
-                // Limpiar DataTable y contenedor
-                dataTable.destroy();
-                tempContainer.remove();
-
-                const alertSuccess = $('<div class="alert alert-success alert-dismissible fade show" role="alert">');
-                alertSuccess.append(
-                    '<i class="ti ti-check me-2"></i>',
-                    `<strong>¡Descarga completada!</strong> Los datos de la medición de impactos de capacitación ${tipo} han sido descargados.`,
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-                );
-                $("#section-vista-general").prepend(alertSuccess);
-                setTimeout(() => {
-                    alertSuccess.alert('close');
-                }, 5000);
-            } catch (e) {
-                if (dataTable) {
-                    dataTable.destroy();
-                }
-                tempContainer.remove();
-                console.error('Error al exportar:', e);
-                const alertError = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">');
-                alertError.append(
-                    '<i class="ti ti-x me-2"></i>',
-                    '<strong>Error:</strong> Ocurrió un error al exportar los datos de la medición de impactos de capacitación.',
-                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-                );
-                $("#section-vista-general").prepend(alertError);
-                setTimeout(() => {
-                    alertError.alert('close');
-                }, 5000);
-            } finally {
-                button.prop("disabled", false).html(originalContent);
-            }
-        } else {
-            const alertInfo = $('<div class="alert alert-info alert-dismissible fade show" role="alert">');
-            alertInfo.append(
-                '<i class="ti ti-info-circle me-2"></i>',
-                '<strong>Sin datos:</strong> No hay información disponible para exportar en este momento.',
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>'
-            );
-            $("#section-vista-general").prepend(alertInfo);
-            setTimeout(() => {
-                alertInfo.alert('close');
-            }, 5000);
-            button.prop("disabled", false).html(originalContent);
-        }
-    });
+    const tipo = $(this).data("tipo") || 'final';
+    cargarVistaGeneralEnTabla(tipo);
 }
