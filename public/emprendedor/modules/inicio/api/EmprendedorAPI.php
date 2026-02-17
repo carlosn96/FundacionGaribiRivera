@@ -55,7 +55,7 @@ class EmprendedorAPI extends API {
     }
 
     public function extraerEventos() {
-        $endpoint = "https://fundaciongaribirivera.com/wp-json/tribe/events/v1/events";
+        /*$endpoint = "https://fundaciongaribirivera.com/wp-json/tribe/events/v1/events";
 
         $params = [
             'status' => 'publish',
@@ -92,9 +92,9 @@ class EmprendedorAPI extends API {
                             $evento["image"]["sizes"]["large"]["url"],
                     ))->toArray()
             );
-        }
+        }*/
 
-        return $eventos;
+        return $eventos??[];
     }
 
     private function getMedia($mediaEndpoint) {
