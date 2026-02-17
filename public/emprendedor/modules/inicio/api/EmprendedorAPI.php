@@ -2,26 +2,29 @@
 
 include_once '../../../../../loader.php';
 
-class EmprendedorAPI extends API {
-    
-    public function recuperarNovedades() {
+class EmprendedorAPI extends API
+{
+
+    public function recuperarNovedades()
+    {
         $this->enviarRespuesta([
             "eventos" => $this->extraerEventos(),
             "publicaciones" => $this->extraerPublicaciones()
         ]);
     }
-    
 
-    public function extraerPublicaciones() {
-        $endpoint = "https://fundaciongaribirivera.com/wp-json/wp/v2/posts";
+
+    public function extraerPublicaciones()
+    {
+        /*$endpoint = "https://fundaciongaribirivera.com/wp-json/wp/v2/posts";
 
         /* $params = [
           'status' => 'publish',
           'start_date' => '1900-01-01',
           'end_date' => Util::obtenerFechaActual("Y-m-d")
-          ]; */
+          ]; 
 
-        $url = $endpoint /* . '?' . http_build_query($params) */;
+        //$url = $endpoint  . '?' . http_build_query($params) ;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -50,11 +53,12 @@ class EmprendedorAPI extends API {
                             $this->getMedia($evento["_links"]["wp:featuredmedia"][0]["href"]),
                     ))->toArray()
             );
-        }
-        return $publicaciones;
+        }*/
+        return $publicaciones ?? [];
     }
 
-    public function extraerEventos() {
+    public function extraerEventos()
+    {
         /*$endpoint = "https://fundaciongaribirivera.com/wp-json/tribe/events/v1/events";
 
         $params = [
@@ -94,10 +98,11 @@ class EmprendedorAPI extends API {
             );
         }*/
 
-        return $eventos??[];
+        return $eventos ?? [];
     }
 
-    private function getMedia($mediaEndpoint) {
+    private function getMedia($mediaEndpoint)
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $mediaEndpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Retorna el resultado en lugar de imprimirlo
@@ -113,7 +118,7 @@ class EmprendedorAPI extends API {
 
         curl_close($ch);
 
-         return json_decode($response, true)["guid"]["rendered"];
+        return json_decode($response, true)["guid"]["rendered"];
     }
 }
 
