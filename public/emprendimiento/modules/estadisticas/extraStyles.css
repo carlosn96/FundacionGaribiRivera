@@ -5,13 +5,22 @@
 
 /* === VARIABLES CSS === */
 :root {
+    /* Using Global Theme Variables where possible, preserving module identity */
     --dashboard-primary: #e2b800;
-    --dashboard-primary-dark: #c9a600;
-    --dashboard-secondary: #183f37;
-    --dashboard-success: #43a047;
-    --dashboard-info: #039be5;
-    --dashboard-warning: #e2b800;
+    /* Gold (Specific to Emprendimiento) */
+    --dashboard-primary-dark: #b39200;
+    --dashboard-secondary: var(--primary, #183f37);
+    /* Green */
+    --dashboard-success: var(--success, #11998e);
+    --dashboard-info: var(--info, #4facfe);
+    --dashboard-warning: #ff9800;
     --dashboard-danger: #e53935;
+
+    /* Semantic Colors that adapt to theme */
+    --card-bg: var(--bg-surface, #ffffff);
+    --text-color: var(--text-main, #2d3748);
+    --heading-color: var(--text-brand, #183f37);
+    --border-color: var(--border-color, #e8eef7);
 
     --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     --shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -19,6 +28,50 @@
 
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease-in-out;
+}
+
+[data-bs-theme="dark"] {
+    --dashboard-primary: #ffd54f;
+    /* Lighter gold for dark mode */
+    --dashboard-primary-dark: #ffecb3;
+
+    /* Explicitly override layout variables for Dark Mode */
+    --card-bg: #1e293b;
+    /* Slate 800 */
+    --bg-hover: #334155;
+    /* Slate 700 */
+    --text-color: #f1f5f9;
+    /* Slate 100 */
+    --heading-color: #f1f5f9;
+    /* Slate 100 */
+    --border-color: #334155;
+    /* Slate 700 */
+
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.6);
+}
+
+/* === DARK MODE BUTTON OVERRIDES === */
+[data-bs-theme="dark"] .btn-primary {
+    color: #1a1a1a !important;
+    background-color: var(--dashboard-primary) !important;
+    border-color: var(--dashboard-primary) !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    color: var(--dashboard-primary) !important;
+    border-color: var(--dashboard-primary) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+    color: #1a1a1a !important;
+    background-color: var(--dashboard-primary) !important;
+}
+
+[data-bs-theme="dark"] .chart-type-btn.active {
+    color: #b39200 !important;
+    /* Use darker gold for text on white bg */
 }
 
 /* === ANIMACIONES === */
@@ -60,9 +113,10 @@
 
 /* === HEADER DASHBOARD === */
 .dashboard-header-card {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-hover, #f8f9fa) 100%);
     border-radius: 12px;
     animation: fadeInUp 0.5s ease-out;
+    border: 1px solid var(--border-color);
 }
 
 .header-bg-decoration {
@@ -104,10 +158,12 @@
     border-radius: 12px;
     overflow: hidden;
     animation: fadeInUp 0.6s ease-out 0.1s both;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
 }
 
 .bg-gradient-light {
-    background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+    background: var(--bg-hover, #f8f9fa);
 }
 
 .filter-icon-badge {
@@ -156,7 +212,8 @@
 
 .filter-tabs .nav-link.active {
     background: var(--dashboard-primary);
-    color: white !important;
+    color: #000 !important;
+    /* Gold needs dark text for contrast */
     box-shadow: 0 4px 12px rgba(226, 184, 0, 0.3);
 }
 
@@ -187,6 +244,8 @@
     border-radius: 12px;
     transition: var(--transition-base);
     animation: fadeInUp 0.7s ease-out backwards;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
 }
 
 .summary-card:nth-child(1) {
@@ -306,6 +365,8 @@
     border-radius: 12px;
     overflow: hidden;
     animation: fadeInUp 0.8s ease-out backwards;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
 }
 
 .chart-card:nth-child(1) {
@@ -326,7 +387,8 @@
 
 .chart-header-primary {
     background: linear-gradient(135deg, var(--dashboard-primary) 0%, var(--dashboard-primary-dark) 100%);
-    color: white;
+    color: #000;
+    /* Gold header needs block text */
 }
 
 .chart-header-success {

@@ -2,12 +2,19 @@
 <meta charset="UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="../../../assets/js/theme/theme-manager.js"></script>
 
 <!-- Favicon icon-->
 <link rel="shortcut icon" type="image/png" href="../../../assets/images/logos/ico.png" />
 <link rel="stylesheet" href="../../../assets/libs/sweetalert2/dist/sweetalert2.min.css">
 <!-- Core Css -->
+<!-- Icon Libraries (Extracted & Local) -->
+<link rel="stylesheet" href="../../../assets/css/icons/tabler-icons-bundled.css" />
+<link rel="stylesheet" href="../../../assets/css/icons/misc-icons-bundled.css" />
+<link rel="stylesheet" href="../../../assets/css/icons/fontawesome.css" />
+
 <link rel="stylesheet" href="../../../assets/css/styles.css" />
+<link rel="stylesheet" href="../../../assets/css/custom-overrides.css" />
 <link rel="stylesheet" href="../../../assets/fonts/tabler-icons/tabler-icons.css" />
 <!-- jvectormap  -->
 <link rel="stylesheet" href="../../../assets/libs/jvectormap/jquery-jvectormap.css">

@@ -124,18 +124,19 @@ let chartColors = {};
 
 function initializeChartColors() {
     const style = getComputedStyle(document.documentElement);
-    const primary = style.getPropertyValue('--bs-primary') || '#284dbdff';
-    const success = style.getPropertyValue('--bs-success') || '#1cc88a';
-    const info = style.getPropertyValue('--bs-info') || '#36b9cc';
-    const warning = style.getPropertyValue('--bs-warning') || '#f6c23e';
-    const danger = style.getPropertyValue('--bs-danger') || '#e74a3b';
+    // Read specific dashboard variables defined in extraStyles.css
+    const primary = style.getPropertyValue('--dashboard-primary') || '#e2b800';
+    const success = style.getPropertyValue('--dashboard-success') || '#43a047';
+    const info = style.getPropertyValue('--dashboard-info') || '#039be5';
+    const warning = style.getPropertyValue('--dashboard-warning') || '#ff9800';
+    const danger = style.getPropertyValue('--dashboard-danger') || '#e53935';
 
     chartColors.primary = generateColorPalette(primary.trim());
     chartColors.success = generateColorPalette(success.trim());
     chartColors.info = generateColorPalette(info.trim());
     chartColors.warning = generateColorPalette(warning.trim());
     chartColors.danger = generateColorPalette(danger.trim());
-    chartColors.mixed = [primary, success, info, warning, danger];
+    chartColors.mixed = [primary.trim(), success.trim(), info.trim(), warning.trim(), danger.trim()];
 }
 
 function ready() {
