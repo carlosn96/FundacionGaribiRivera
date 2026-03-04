@@ -1,6 +1,7 @@
 <?php
 
-class TallerDAO extends DAO {
+class TallerDAO extends DAO
+{
 
     private const LISTAR_TALLERES = "listar_talleres";
     private const LISTAR_INSTRUCTORES = "listar_taller_instructor";
@@ -9,36 +10,44 @@ class TallerDAO extends DAO {
     private const GUARDAR_TALLER = "CALL guardar_taller(?,?,?,?,?)";
     private const GUARDAR_INSTRUCTOR = "CALL guardar_instructor_taller(?)";
 
-    private function listarTalleresCondicion($where) {
+    private function listarTalleresCondicion($where)
+    {
         return $this->selectPorCamposEspecificos("*", self::LISTAR_TALLERES, $where, true);
     }
-    
-    function listarTalleres($tipoTaller) {
+
+    function listarTalleres($tipoTaller)
+    {
         $where = empty($tipoTaller) ? "" : "  WHERE idTipoTaller = " . $tipoTaller;
         return $this->listarTalleresCondicion($where);
     }
-    
-    function listarTalleresPorInstructor($id) {
+
+    function listarTalleresPorInstructor($id)
+    {
         return $this->listarTalleresCondicion("  WHERE idInstructor = $id ");
     }
 
-    function listarNombreTalleres() {
+    function listarNombreTalleres()
+    {
         return $this->selectPorCamposEspecificos("*", self::LISTAR_NOMBRE_TALLERES, "");
     }
 
-    function listarInstructores() {
+    function listarInstructores()
+    {
         return $this->recuperarInstructores("");
     }
 
-    function obtenerInstructorPorId($id) {
+    function obtenerInstructorPorId($id)
+    {
         return ($instructor = $this->recuperarInstructores(" WHERE idInstructor = $id")) ? $instructor[0] : null;
     }
 
-    private function recuperarInstructores($where) {
+    private function recuperarInstructores($where)
+    {
         return $this->selectPorCamposEspecificos("*", self::LISTAR_INSTRUCTORES, $where, true);
     }
 
-    public function actualizarTaller(Taller $taller) {
+    public function actualizarTaller(Taller $taller)
+    {
         $prep = $this->prepararInstruccion(self::ACTUALIZAR_TALLER);
         $prep->agregarInt($taller->getId());
         $prep->agregarString($taller->getNombre());
@@ -46,24 +55,29 @@ class TallerDAO extends DAO {
         $prep->agregarInt($taller->getTipoTaller());
         $prep->agregarString($taller->getObservaciones());
         $prep->agregarBoolean($taller->getEvaluacionHabilitada());
+        $prep->agregarInt($taller->getNumeroTaller());
         return $prep->ejecutar();
     }
-    
-    public function agregarTaller(Taller $taller) {
+
+    public function agregarTaller(Taller $taller)
+    {
         $prep = $this->prepararInstruccion(self::GUARDAR_TALLER);
         $prep->agregarString($taller->getNombre());
         $prep->agregarInt($taller->getInstructor());
         $prep->agregarInt($taller->getTipoTaller());
         $prep->agregarString($taller->getObservaciones());
         $prep->agregarBoolean($taller->getEvaluacionHabilitada());
+        $prep->agregarInt($taller->getNumeroTaller());
         return $prep->ejecutar();
     }
-    
-    public function eliminarTaller($id) {
+
+    public function eliminarTaller($id)
+    {
         return $this->eliminarPorId("taller", "id_taller", $id);
     }
-    
-    public function guardarInstructor(InstructorTaller $instructor) {
+
+    public function guardarInstructor(InstructorTaller $instructor)
+    {
         $prep = $this->prepararInstruccion(self::GUARDAR_INSTRUCTOR);
         $prep->agregarEntidad($instructor);
         return $prep->ejecutar();

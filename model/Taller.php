@@ -1,6 +1,7 @@
 <?php
 
-class Taller {
+class Taller
+{
 
     use Entidad;
 
@@ -10,61 +11,86 @@ class Taller {
     private bool $evaluacionHabilitada;
     private string $observaciones;
     private InstructorTaller|int $instructor;
+    private int $numeroTaller;
 
-    public function __construct(string $nombre, array|int $tipoTaller, bool $evaluacionHabilitada, string $observaciones, InstructorTaller|int $instructor, int $id = 0) {
+    public function __construct(string $nombre, array|int $tipoTaller, bool $evaluacionHabilitada, string $observaciones, InstructorTaller|int $instructor, int $numeroTaller = 0, int $id = 0)
+    {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->tipoTaller = $tipoTaller;
         $this->evaluacionHabilitada = $evaluacionHabilitada;
         $this->observaciones = $observaciones;
         $this->instructor = $instructor;
+        $this->numeroTaller = $numeroTaller;
     }
 
-    public function getId(): int {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getNombre(): string {
+    public function getNombre(): string
+    {
         return $this->nombre;
     }
 
-    public function getTipoTaller(): array | int {
+    public function getTipoTaller(): array|int
+    {
         return $this->tipoTaller;
     }
 
-    public function getEvaluacionHabilitada(): bool {
+    public function getEvaluacionHabilitada(): bool
+    {
         return $this->evaluacionHabilitada;
     }
 
-    public function getObservaciones(): string {
+    public function getObservaciones(): string
+    {
         return $this->observaciones;
     }
 
-    public function getInstructor(): InstructorTaller|int {
+    public function getInstructor(): InstructorTaller|int
+    {
         return $this->instructor;
     }
 
-    public function setId(int $id): void {
+    public function getNumeroTaller(): int
+    {
+        return $this->numeroTaller;
+    }
+
+    public function setId(int $id): void
+    {
         $this->id = $id;
     }
 
-    public function setNombre(string $nombre): void {
+    public function setNombre(string $nombre): void
+    {
         $this->nombre = $nombre;
     }
 
-    public function setTipoTaller(array $tipoTaller): void {
+    public function setTipoTaller(array $tipoTaller): void
+    {
         $this->tipoTaller = $tipoTaller;
     }
 
-    public function setEvaluacionHabilitada(bool $evaluacionHabilitada): void {
+    public function setEvaluacionHabilitada(bool $evaluacionHabilitada): void
+    {
         $this->evaluacionHabilitada = $evaluacionHabilitada;
     }
 
-    public function setObservaciones(string $observaciones): void {
+    public function setObservaciones(string $observaciones): void
+    {
         $this->observaciones = $observaciones;
     }
 
-    public function setInstructor(Instructor $instructor): void {
+    public function setInstructor(Instructor $instructor): void
+    {
         $this->instructor = $instructor;
+    }
+
+    public function setNumeroTaller(int $numeroTaller): void
+    {
+        $this->numeroTaller = $numeroTaller;
     }
 }
