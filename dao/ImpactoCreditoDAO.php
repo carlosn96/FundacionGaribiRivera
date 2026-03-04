@@ -254,11 +254,26 @@ class ImpactoCreditoDAO extends DAO
         $prep = $this->prepararInstruccion(self::RECUPERAR_RANGOS_FECHAS_LINEA_BASE);
         $prep->agregarInt($usuario);
         $rs = $prep->ejecutarConsulta();
-        $anioActual = Util::obtenerFechaActual();
-        return $rs ?: [
-            "inicio" => "2023-01-01",
+
+        if ($rs && (!empty($rs['inicioSelected']) || !empty($rs['finSelected']))) {
+            return [
+                "inicio" => $rs['inicioSelected'] ?? "2023-01-01",
+                "fin" => $rs['finSelected'] ?? date('Y-m-d'),
+                "inicioSelected" => $rs['inicioSelected'] ?? date('Y-m-d'),
+                "finSelected" => $rs['finSelected'] ?? date('Y-m-d')
+            ];
+        }
+
+        $rsMin = $this->ejecutarInstruccion("SELECT MIN(fecha_creacion) AS inicio FROM linea_base");
+        $filaMin = $rsMin ? $rsMin->fetch_assoc() : null;
+
+        $anioActual = date('Y-m-d');
+        $minFecha = (!empty($filaMin) && !empty($filaMin['inicio'])) ? substr($filaMin['inicio'], 0, 10) : "2023-01-01";
+
+        return [
+            "inicio" => $minFecha,
             "fin" => $anioActual,
-            "inicioSelected" => $anioActual,
+            "inicioSelected" => $minFecha,
             "finSelected" => $anioActual
         ];
     }
@@ -336,6 +351,56 @@ class ImpactoCreditoDAO extends DAO
             $vista[] = $rowVista;
         }
         return $vista;
+    }
+
+    public function recuperarRegistrosContabilizados(int $usuario)
+    {
+        $fechas = $this->getRangoFechasLineaBaseSeguimiento($usuario);
+        $inicio = $fechas['inicioSelected'];
+        $fin = $fechas['finSelected'];
+
+        $sqlLista = "SELECT lista_registros_filtrados FROM linea_base_impacto_configuracion WHERE id_usuario = ?";
+        $prepLista = $this->prepararInstruccion($sqlLista);
+        $prepLista->agregarInt($usuario);
+        $rsLista = $prepLista->ejecutarConsulta();
+        $lista = (!empty($rsLista) && !empty($rsLista["lista_registros_filtrados"])) ? json_decode($rsLista["lista_registros_filtrados"], true) : [];
+
+        $condicionLista = "";
+        if (!empty($lista)) {
+            $inClause = implode(',', array_fill(0, count($lista), '?'));
+            $condicionLista = " AND inicial.idUsuario IN ($inClause)";
+        }
+
+        $sql = "
+            SELECT 
+                u.id AS 'ID_Emprendedor', 
+                CONCAT(u.nombre, ' ', u.apellidos) AS 'Nombre',
+                ue.referencia AS 'Referencia',
+                ue.fecha_credito AS 'Fecha_Otorgamiento_Credito',
+                inicial.fechaCreacion AS 'Fecha_Linea_Base_Inicial',
+                final.fechaCreacion AS 'Fecha_Seguimiento_Final'
+            FROM recuperar_linea_base inicial
+            INNER JOIN recuperar_linea_base_final final ON final.idLineaBase = inicial.idLineaBase
+            INNER JOIN usuario_emprendedor ue ON ue.id_usuario = inicial.idUsuario
+            INNER JOIN usuario u ON u.id = inicial.idUsuario
+            WHERE inicial.fechaCreacion BETWEEN ? AND ?
+              AND ue.referencia IS NOT NULL
+              AND (
+                  ue.fecha_credito IS NULL
+                  OR TIMESTAMPDIFF(MONTH, ue.fecha_credito, final.fechaCreacion) >= 6
+              )
+              $condicionLista
+        ";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarString($inicio);
+        $prep->agregarString($fin);
+        if (!empty($lista)) {
+            foreach ($lista as $id) {
+                $prep->agregarInt($id);
+            }
+        }
+        $rs = $prep->ejecutarConsultaMultiple();
+        return $rs ?: [];
     }
 
     public function recuperarSeguimientoGraduado($emprendedor)

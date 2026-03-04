@@ -135,7 +135,7 @@ class Util
     }
 
 
-    public static function obtenerFechaActual($format = "Ymd")
+    public static function obtenerFechaActual($format = "Y-m-d")
     {
         $date = new DateTime("now", new DateTimeZone("America/Mexico_City"));
         return $date->format($format);

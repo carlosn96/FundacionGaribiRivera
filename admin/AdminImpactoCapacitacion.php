@@ -8,7 +8,8 @@ class AdminImpactoCapacitacion extends Admin
         parent::__construct(new ImpactoCapacitacionDAO());
     }
 
-    public function getMedicionImpactoCapacitacion($usuario) {
+    public function getMedicionImpactoCapacitacion($usuario)
+    {
         return $this->dao->getMedicionImpactoCapacitacion($usuario);
     }
 
@@ -87,5 +88,10 @@ class AdminImpactoCapacitacion extends Admin
     public function eliminarSeguimientoGraduado($idEmprendedor)
     {
         return $this->dao->eliminarSeguimientoGraduado($idEmprendedor);
+    }
+
+    public function recuperarRegistrosContabilizados($usuario)
+    {
+        return $this->dao->recuperarRegistrosContabilizados($usuario);
     }
 }

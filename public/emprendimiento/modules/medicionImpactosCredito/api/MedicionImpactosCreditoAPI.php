@@ -52,6 +52,11 @@ class MedicionImpactosAPI extends API
         return getAdminImpacto()->recuperarVistaGeneral($tipo);
     }
 
+    function recuperarRegistrosContabilizados()
+    {
+        $this->enviarRespuesta(getAdminImpacto()->recuperarRegistrosContabilizados($this->getUsuarioActual()));
+    }
+
 }
 
 Util::iniciarAPI(MedicionImpactosAPI::class);

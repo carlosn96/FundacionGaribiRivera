@@ -89,4 +89,9 @@ class AdminImpactoCredito extends Admin
     {
         return $this->dao->eliminarSeguimientoGraduado($idEmprendedor);
     }
+
+    public function recuperarRegistrosContabilizados($usuario)
+    {
+        return $this->dao->recuperarRegistrosContabilizados($usuario);
+    }
 }

@@ -251,21 +251,28 @@ class ImpactoCapacitacionDAO extends DAO
         if ($rs && (!empty($rs['inicioSelected']) || !empty($rs['finSelected']))) {
             return [
                 "inicio" => $rs['inicioSelected'] ?? "2023-01-01",
-                "fin" => $rs['finSelected'] ?? Util::obtenerFechaActual(),
-                "inicioSelected" => $rs['inicioSelected'] ?? Util::obtenerFechaActual(),
-                "finSelected" => $rs['finSelected'] ?? Util::obtenerFechaActual()
+                "fin" => $rs['finSelected'] ?? date('Y-m-d'),
+                "inicioSelected" => $rs['inicioSelected'] ?? date('Y-m-d'),
+                "finSelected" => $rs['finSelected'] ?? date('Y-m-d')
             ];
         }
 
-        // Fallback: use min/max from data
-        $inicio = $this->selectPorCamposEspecificos("MIN(fechaCreacion) AS inicio", "recuperar_linea_base", "", true);
-        $fin = $this->selectPorCamposEspecificos("MAX(fechaCreacion) AS fin", "recuperar_seguimiento_graduado", "", true);
-        $anioActual = Util::obtenerFechaActual();
+        // Fallback: use min/max from db
+        $rsMin = $this->ejecutarInstruccion("SELECT MIN(fecha_creacion) AS inicio FROM linea_base");
+        $rsMax = $this->ejecutarInstruccion("SELECT MAX(fecha_creacion) AS fin FROM linea_base");
+
+        $filaMin = $rsMin ? $rsMin->fetch_assoc() : null;
+        $filaMax = $rsMax ? $rsMax->fetch_assoc() : null;
+
+        $anioActual = date('Y-m-d');
+        $minFecha = (!empty($filaMin) && !empty($filaMin['inicio'])) ? substr($filaMin['inicio'], 0, 10) : "2023-01-01";
+        $maxFecha = (!empty($filaMax) && !empty($filaMax['fin'])) ? substr($filaMax['fin'], 0, 10) : $anioActual;
+
         return [
-            "inicio" => $inicio['inicio'] ?? "2023-01-01",
-            "fin" => $fin['fin'] ?? $anioActual,
-            "inicioSelected" => $inicio['inicio'] ?? $anioActual,
-            "finSelected" => $fin['fin'] ?? $anioActual
+            "inicio" => $minFecha,
+            "fin" => $maxFecha,
+            "inicioSelected" => $minFecha,
+            "finSelected" => $anioActual
         ];
     }
 
@@ -299,7 +306,7 @@ class ImpactoCapacitacionDAO extends DAO
         $vista = [];
         foreach ($rset as $row) {
             $rowVista = [];
-            if(isset($row["etapa"])) {
+            if (isset($row["etapa"])) {
                 $rowVista["Etapa"] = $row["etapa"];
             }
             $rowVista["Fecha de Seguimiento"] = $row["fechaCreacion"];
@@ -313,6 +320,34 @@ class ImpactoCapacitacionDAO extends DAO
             $vista[] = $rowVista;
         }
         return $vista;
+    }
+
+    public function recuperarRegistrosContabilizados(int $usuario)
+    {
+        $fechas = $this->getAniosLineaBase($usuario);
+        $inicio = $fechas['inicioSelected'];
+        $fin = $fechas['finSelected'];
+
+        $sql = "
+            SELECT 
+                u.id AS 'ID_Emprendedor', 
+                CONCAT(u.nombre, ' ', u.apellidos) AS 'Nombre',
+                ue.referencia AS 'Credito_Referencia',
+                inicial.fechaCreacion AS 'Fecha_Linea_Base_Inicial',
+                final.fechaCreacion AS 'Fecha_Seguimiento_Final'
+            FROM recuperar_linea_base inicial
+            INNER JOIN recuperar_seguimiento_graduado final ON final.idUsuario = inicial.idUsuario
+            INNER JOIN usuario_emprendedor ue ON ue.id_usuario = inicial.idUsuario
+            INNER JOIN usuario u ON u.id = inicial.idUsuario
+            WHERE inicial.fechaCreacion BETWEEN ? AND ?
+              AND ue.graduado = 1
+              AND ue.referencia IS NULL
+        ";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarString($inicio);
+        $prep->agregarString($fin);
+        $rs = $prep->ejecutarConsultaMultiple();
+        return $rs ?: [];
     }
 
     private function limpiarJsonEmpleoGanancias($json)

@@ -2,10 +2,12 @@
 
 include_once '../../../../../loader.php';
 
-class MedicionImpactosCapacitacionAPI extends API {
+class MedicionImpactosCapacitacionAPI extends API
+{
 
 
-    function consultarMedicionImpactos() {
+    function consultarMedicionImpactos()
+    {
         $idUsuario = $this->getUsuarioActual();
         $this->enviarRespuesta([
             "impactos" => getAdminImpactoCapacitacion()->getMedicionImpacto($idUsuario),
@@ -13,7 +15,8 @@ class MedicionImpactosCapacitacionAPI extends API {
         ]);
     }
 
-    function actualizarConfiguracionFechas() {
+    function actualizarConfiguracionFechas()
+    {
         $inicio = $this->getData("fechaInicio");
         $fin = $this->getData("fechaFin");
         $this->enviarResultadoOperacion(getAdminImpactoCapacitacion()->actualizarConfiguracionAnios(
@@ -23,15 +26,21 @@ class MedicionImpactosCapacitacionAPI extends API {
         ));
     }
 
-    function recuperarVistaGeneral() {
+    function recuperarVistaGeneral()
+    {
         $this->enviarRespuesta(getAdminImpactoCapacitacion()->recuperarVistaGeneral($this->getData("tipo")));
     }
 
-    function restablecerConfiguracion() {
+    function restablecerConfiguracion()
+    {
         $idUsuario = $this->getUsuarioActual();
         $this->enviarResultadoOperacion(getAdminImpactoCapacitacion()->eliminarConfiguracionAnios($idUsuario));
     }
-    
+
+    function recuperarRegistrosContabilizados()
+    {
+        $this->enviarRespuesta(getAdminImpactoCapacitacion()->recuperarRegistrosContabilizados($this->getUsuarioActual()));
+    }
 }
 
 Util::iniciarAPI(MedicionImpactosCapacitacionAPI::class);

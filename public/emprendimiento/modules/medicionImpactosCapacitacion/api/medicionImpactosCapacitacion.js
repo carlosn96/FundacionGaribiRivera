@@ -15,7 +15,7 @@ function ready() {
 }
 
 function mostrarMensajeNoHayInformacion() {
-    $("#msgImpacto").prop("hidden", false).attr('role','status').attr('aria-live','polite');
+    $("#msgImpacto").prop("hidden", false).attr('role', 'status').attr('aria-live', 'polite');
 }
 
 function generarImpactoHTML(data, emprendedores) {
@@ -38,6 +38,7 @@ function generarImpactoHTML(data, emprendedores) {
 
     const itemsNav = [
         { id: "nav-medicion", icon: "ti ti-chart-bar", texto: "Reporte de Medición", target: "section-medicion" },
+        { id: "nav-registros", icon: "ti ti-users", texto: "Registros Contabilizados", target: "section-registros" },
         { id: "nav-vista-general", icon: "ti ti-table", texto: "Datos y Exportación", target: "section-vista-general" },
         { id: "nav-configuracion", icon: "ti ti-settings", texto: "Configuración", target: "section-configuracion" }
     ];
@@ -210,7 +211,7 @@ function generarImpactoHTML(data, emprendedores) {
         impacto.data.forEach((seccion, secIdx) => {
             const itemDetalle = $("<div>", { class: "accordion-item border rounded-3 mb-2" });
             const headerDetalle = $("<h4>", { class: "accordion-header", id: `var-heading-${idx}-${secIdx}` });
-            
+
             const botonDetalle = $("<button>", {
                 class: "accordion-button collapsed rounded-3 p-3",
                 type: "button",
@@ -221,42 +222,42 @@ function generarImpactoHTML(data, emprendedores) {
                 text: `${seccion.titulo}`
             });
             headerDetalle.append(botonDetalle);
-            
-            const collapseDetalle = $("<div>", { 
-                id: `var-collapse-${idx}-${secIdx}`, 
-                class: "accordion-collapse collapse", 
+
+            const collapseDetalle = $("<div>", {
+                id: `var-collapse-${idx}-${secIdx}`,
+                class: "accordion-collapse collapse",
                 "aria-labelledby": `var-heading-${idx}-${secIdx}`,
-                "data-bs-parent": `#variaciones-${idx}` 
+                "data-bs-parent": `#variaciones-${idx}`
             });
             const bodyDetalle = $("<div>", { class: "accordion-body p-0" });
-            
+
             // Tabla detalles
             const tableDetalle = $("<table>", { class: "table table-striped mb-0 table-sm" });
             const theadDetalle = $("<thead>");
             theadDetalle.append($("<tr>").append(
-                $("<th>", {text: "Pregunta", class: "ps-4 py-2"}), 
-                $("<th>", {text: "Inicio", class: "text-center py-2"}), 
-                $("<th>", {text: "Fin", class: "text-center py-2"}), 
-                $("<th>", {text: "Var.", class: "text-center py-2"})
+                $("<th>", { text: "Pregunta", class: "ps-4 py-2" }),
+                $("<th>", { text: "Inicio", class: "text-center py-2" }),
+                $("<th>", { text: "Fin", class: "text-center py-2" }),
+                $("<th>", { text: "Var.", class: "text-center py-2" })
             ));
-            
+
             const tbodyDetalle = $("<tbody>");
             Object.entries(seccion.mediciones).forEach(([pregunta, medicion]) => {
-                 const variacion = medicion.variacionPorcentual.toFixed(2);
-                 const badgeVar = parseFloat(variacion) > 0 ? 'text-success' : parseFloat(variacion) < 0 ? 'text-danger' : 'text-muted';
-                 tbodyDetalle.append(
-                     $("<tr>").append(
-                         $("<td>", { class: "ps-4 py-2 small text-muted", text: pregunta }),
-                         $("<td>", { class: "text-center small", text: medicion.inicial }),
-                         $("<td>", { class: "text-center small", text: medicion.final }),
-                         $("<td>", { class: `text-center fw-bold small ${badgeVar}`, text: `${variacion}%` })
-                     )
-                 );
+                const variacion = medicion.variacionPorcentual.toFixed(2);
+                const badgeVar = parseFloat(variacion) > 0 ? 'text-success' : parseFloat(variacion) < 0 ? 'text-danger' : 'text-muted';
+                tbodyDetalle.append(
+                    $("<tr>").append(
+                        $("<td>", { class: "ps-4 py-2 small text-muted", text: pregunta }),
+                        $("<td>", { class: "text-center small", text: medicion.inicial }),
+                        $("<td>", { class: "text-center small", text: medicion.final }),
+                        $("<td>", { class: `text-center fw-bold small ${badgeVar}`, text: `${variacion}%` })
+                    )
+                );
             });
-            
+
             tableDetalle.append(theadDetalle, tbodyDetalle);
             bodyDetalle.append(tableDetalle);
-            
+
             collapseDetalle.append(bodyDetalle);
             itemDetalle.append(headerDetalle, collapseDetalle);
             accordionDetalles.append(itemDetalle);
@@ -297,9 +298,9 @@ function generarImpactoHTML(data, emprendedores) {
     // Card Temporal
     const cardTemporal = $("<div>", { class: "card border-0 shadow-sm mb-4" });
     const bodyTemporal = $("<div>", { class: "card-body p-4" });
-    
+
     bodyTemporal.append($("<h6>", { class: "fw-bold text-uppercase text-muted smaller mb-3", text: "Rango de Fechas" }));
-    
+
     const formFechas = $("<form>", { id: "form-fechas", class: "needs-validation", novalidate: true });
     // ... duplicate logic for inputs but cleaner ...
     const rowInputs = $("<div>", { class: "row g-3" });
@@ -307,7 +308,7 @@ function generarImpactoHTML(data, emprendedores) {
     colIn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Inicial" }), $("<input>", { type: "date", id: "fechaInicio", class: "form-control", value: data.fechas.inicioSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
     const colFn = $("<div>", { class: "col-md-6" });
     colFn.append($("<label>", { class: "form-label small fw-bold", text: "Fecha Final" }), $("<input>", { type: "date", id: "fechaFinal", class: "form-control", value: data.fechas.finSelected, min: data.fechas.inicio, max: data.fechas.fin, required: true }));
-    
+
     rowInputs.append(colIn, colFn);
     formFechas.append(rowInputs, $("<div>", { class: "mt-4 text-end" }).append(
         $("<button>", { type: "submit", class: "btn btn-primary rounded-pill px-4 me-2" }).append($("<i>", { class: "ti ti-refresh me-2" }), "Actualizar")
@@ -336,7 +337,7 @@ function generarImpactoHTML(data, emprendedores) {
         role: "tabpanel",
         "aria-labelledby": "nav-vista-general"
     });
-    
+
     // Contenedor completo sin restricciones de ancho
     const containerFull = $("<div>", { class: "container-fluid px-2 px-md-3" });
 
@@ -350,35 +351,66 @@ function generarImpactoHTML(data, emprendedores) {
             $("<button>", { type: "button", class: "btn btn-outline-primary rounded-pill px-4", id: "btnFinal", "data-tipo": "final" }).append($("<i>", { class: "ti ti-database-export me-2" }), "Cargar Seguimientos capturados")
         )
     );
-    
+
     const cardBody = $("<div>", { class: "card-body" });
-    
+
     // Contenedor para botones de DataTable (fijo en la parte superior)
-    const botonesContainer = $("<div>", { 
+    const botonesContainer = $("<div>", {
         id: "datatable-buttons-container",
         class: "mb-3"
     });
-    
+
     // Contenedor para la tabla con DataTable
     const tableContainer = $("<div>", { class: "datatable-container" });
     tableContainer.append(
-        $("<table>", { 
-            id: "tablaVistaGeneralImpacto", 
+        $("<table>", {
+            id: "tablaVistaGeneralImpacto",
             class: "table table-striped table-hover table-sm w-100"
         })
     );
-    
+
     cardBody.append(botonesContainer, tableContainer);
     cardExport.append(cardHeader, cardBody);
     containerFull.append(cardExport);
     seccionVista.append(containerFull);
 
 
+    // === SECCIÓN 4: REGISTROS CONTABILIZADOS ===
+    const seccionRegistros = $("<section>", {
+        id: "section-registros",
+        class: "content-section d-none animate__animated animate__fadeIn",
+        role: "tabpanel",
+        "aria-labelledby": "nav-registros"
+    });
+
+    const containerFullReg = $("<div>", { class: "container-fluid px-2 px-md-3" });
+    const cardExportReg = $("<div>", { class: "card border-0 shadow-sm" });
+    const cardHeaderReg = $("<div>", { class: "card-body text-center py-3 border-bottom" });
+    cardHeaderReg.append(
+        $("<div>", { class: "mb-2 text-primary" }).append($("<i>", { class: "ti ti-users fs-1" })),
+        $("<h3>", { class: "h5 fw-bold mb-2", text: "Registros Contabilizados en el Período" }),
+        $("<p>", { class: "text-muted small mb-3", text: "Estos son los emprendedores exactos que cumplieron las reglas matemáticas y conforman la estadística que está visualizando ahora mismo." })
+    );
+
+    const cardBodyReg = $("<div>", { class: "card-body" });
+    const tableContainerReg = $("<div>", { class: "datatable-container" });
+    tableContainerReg.append(
+        $("<table>", {
+            id: "tablaRegistrosContabilizados",
+            class: "table table-striped table-hover table-sm w-100"
+        })
+    );
+
+    cardBodyReg.append(tableContainerReg);
+    cardExportReg.append(cardHeaderReg, cardBodyReg);
+    containerFullReg.append(cardExportReg);
+    seccionRegistros.append(containerFullReg);
+
     // Assembly
-    contenidoPrincipal.append(seccionMedicion, seccionConfig, seccionVista);
+    contenidoPrincipal.append(seccionMedicion, seccionRegistros, seccionConfig, seccionVista);
     contenedorPrincipal.append(contenidoPrincipal);
     $("#impacto-container").append(contenedorPrincipal);
-    
+
     // Use global project styles for DataTables instead of injecting inline CSS here.
     // The project-wide stylesheet provides the necessary styles for
     // `.datatable-container`, `.dataTables_wrapper`, pagination and buttons.
@@ -388,6 +420,7 @@ function generarImpactoHTML(data, emprendedores) {
     // Make icons decorative
     contenedorPrincipal.find('i').attr('aria-hidden', 'true');
     cargarVistaGeneralEnTabla('final');
+    cargarRegistrosContabilizados();
     $("#btnFinal").off("click").on("click", function () {
         cargarVistaGeneralEnTabla('final');
     });
@@ -422,7 +455,7 @@ function generarImpactoHTML(data, emprendedores) {
             }
         });
     });
-    
+
     // In Credito, there is filter logic attached to hidden elements. I will include it to match structure if I'm being very strict.
     // Or I can omit it because it does nothing.
     // But let's omit it for cleanliness in Capacitacion unless demanded.
@@ -432,7 +465,7 @@ function generarImpactoHTML(data, emprendedores) {
     // But since I have to REPLACE the whole file content, I need to match the previous file content's string exactly in `oldString`.
     // My `oldString` below is the EXACT content I read from `read_file`.
     // My `newString` is the new structure.
-    
+
 }
 
 function obtenerBotonesExportacion(nombreArchivo) {
@@ -488,11 +521,54 @@ function cargarVistaGeneralEnTabla(tipo = 'final') {
         tabla.empty().append(thead, tbody);
 
         const botones = obtenerBotonesExportacion(`Medicion_Impactos_Capacitacion_${tipo}`);
-        
+
         // Use project helper to initialize DataTable with project defaults and custom buttons
         crearDataTableFlexible('#tablaVistaGeneralImpacto', botones, {
             buttons: botones,
             // keep responsive off for wide tables
+            responsive: false
+        });
+    });
+}
+
+function cargarRegistrosContabilizados() {
+    const tabla = $('#tablaRegistrosContabilizados');
+
+    crearPeticion(urlAPI, {
+        case: 'recuperarRegistrosContabilizados'
+    }, (registros) => {
+        if (!Array.isArray(registros) || registros.length === 0) {
+            if ($.fn.DataTable.isDataTable('#tablaRegistrosContabilizados')) {
+                $('#tablaRegistrosContabilizados').DataTable().clear().destroy();
+            }
+            tabla.empty().append(
+                $('<tbody>').append(
+                    $('<tr>').append(
+                        $('<td>', { class: 'text-center text-muted p-4', text: 'Ningún emprendedor cumplió las reglas en este rango de fechas.' })
+                    )
+                )
+            );
+            return;
+        }
+
+        const keys = Object.keys(registros[0]);
+        const thead = $('<thead>').append(
+            $('<tr>').append(keys.map(k => $('<th>', { text: k.replace(/_/g, ' ') })))
+        );
+
+        const tbody = $('<tbody>');
+        registros.forEach(row => {
+            const tr = $('<tr>');
+            keys.forEach(k => tr.append($('<td>', { text: row[k] ?? '' })));
+            tbody.append(tr);
+        });
+
+        tabla.empty().append(thead, tbody);
+
+        const botones = obtenerBotonesExportacion(`Registros_Contabilizados`);
+
+        crearDataTableFlexible('#tablaRegistrosContabilizados', botones, {
+            buttons: botones,
             responsive: false
         });
     });
