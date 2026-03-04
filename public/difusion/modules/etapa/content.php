@@ -5,13 +5,15 @@
     <!-- Tabs de navegación -->
     <ul class="nav nav-pills flex-column flex-sm-row mt-4" role="tablist">
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-        <a class="nav-link border active d-flex align-items-center" data-bs-toggle="tab" href="#etapasDisponibles" role="tab" aria-selected="true">
+        <a class="nav-link border active d-flex align-items-center" data-bs-toggle="tab" href="#etapasDisponibles"
+          role="tab" aria-selected="true">
           <i class="ti ti-calendar fs-5 me-2"></i>
           <span class="d-none d-md-inline">Etapas disponibles</span>
         </a>
       </li>
       <li class="nav-item flex-sm-fill text-sm-center" role="presentation">
-        <a class="nav-link border d-flex align-items-center" data-bs-toggle="tab" href="#nuevaEtapa" role="tab" aria-selected="false">
+        <a class="nav-link border d-flex align-items-center" data-bs-toggle="tab" href="#nuevaEtapa" role="tab"
+          aria-selected="false">
           <i class="ti ti-playlist-add fs-5 me-2"></i>
           <span class="d-none d-md-inline">Nueva etapa</span>
         </a>
@@ -20,7 +22,7 @@
 
     <!-- Contenido de pestañas -->
     <div class="tab-content  mt-2">
-      
+
       <!-- Tab: Etapas disponibles -->
       <div class="tab-pane fade show active" id="etapasDisponibles" role="tabpanel">
         <div class="mb-4 d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
@@ -43,7 +45,8 @@
 
           <!-- Nombre -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="nombre" name="nombre" maxlength="45" placeholder="Nombre de la etapa" required>
+            <input type="text" class="form-control" id="nombre" name="nombre" maxlength="45"
+              placeholder="Nombre de la etapa" required>
             <label for="nombre">
               <i class="ti ti-list me-2 text-warning"></i>
               Nombre de la etapa
@@ -56,6 +59,17 @@
             <div class="btn-group w-100" role="group" id="tipoEtapaGroup">
               <!-- Radios dinámicos por JS -->
             </div>
+          </div>
+
+          <!-- Modalidad -->
+          <div class="mb-3">
+            <label class="form-label" for="modalidad">Modalidad de cronograma</label>
+            <select class="form-select" id="modalidad" name="modalidad" required>
+              <option value="" selected disabled>Selecciona la modalidad</option>
+              <option value="1">Modalidad A</option>
+              <option value="2">Modalidad B</option>
+            </select>
+            <div class="invalid-feedback">Debes seleccionar la modalidad.</div>
           </div>
 
           <!-- Fechas -->
@@ -80,7 +94,8 @@
 
           <!-- Botón de envío -->
           <div class="d-grid col-md-6 mx-auto">
-            <button type="submit" class="btn btn-outline-primary d-flex justify-content-center align-items-center gap-2">
+            <button type="submit"
+              class="btn btn-outline-primary d-flex justify-content-center align-items-center gap-2">
               <i class="ti ti-device-floppy"></i> Guardar etapa
             </button>
           </div>
@@ -91,12 +106,13 @@
 </div>
 
 <!-- Modal: Editar etapa -->
-<div class="modal fade" id="modalDetallesEtapa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalDetallesEtapaLabel" aria-hidden="true">
+<div class="modal fade" id="modalDetallesEtapa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="modalDetallesEtapaLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <form id="actualizarEtapaForm" class="needs-validation" novalidate>
       <div class="modal-content">
         <!-- Header -->
-        <div class="modal-header bg-warning text-white">
+        <div class="modal-header bg-primary text-white">
           <h5 class="modal-title d-flex align-items-center" id="modalDetallesEtapaLabel">
             <i class="ti ti-edit me-2"></i> Editar Etapa
           </h5>
@@ -110,7 +126,8 @@
           <!-- Nombre -->
           <div class="mb-3">
             <label for="nombreEtapaModal" class="form-label">Nombre de la etapa</label>
-            <input type="text" id="nombreEtapaModal" name="nombre" class="form-control" placeholder="Nombre de la etapa" required>
+            <input type="text" id="nombreEtapaModal" name="nombre" class="form-control" placeholder="Nombre de la etapa"
+              required>
             <div class="invalid-feedback">Por favor, ingresa un nombre válido.</div>
           </div>
 
@@ -118,6 +135,17 @@
           <div class="mb-3" id="tipoEtapaModal">
             <!-- Radios dinámicos por JS -->
             <div class="invalid-feedback">Debes seleccionar un tipo de etapa.</div>
+          </div>
+
+          <!-- Modalidad -->
+          <div class="mb-3">
+            <label class="form-label" for="modalidadEtapaModal">Modalidad de cronograma</label>
+            <select class="form-select" id="modalidadEtapaModal" name="modalidad" required>
+              <option value="" selected disabled>Selecciona la modalidad</option>
+              <option value="1">Modalidad A</option>
+              <option value="2">Modalidad B</option>
+            </select>
+            <div class="invalid-feedback">Debes seleccionar la modalidad.</div>
           </div>
 
           <!-- Fechas -->
@@ -146,5 +174,39 @@
         </div>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal: Cronograma -->
+<div class="modal fade" id="modalCronograma" tabindex="-1" aria-labelledby="modalCronogramaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title d-flex align-items-center" id="modalCronogramaLabel">
+          <i class="ti ti-calendar-event me-2"></i> Cronograma de la Etapa
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mt-3" id="tablaCronograma">
+            <thead class="table-light">
+              <tr>
+                <th># Taller</th>
+                <th>Nombre del Taller</th>
+                <th>Instructor</th>
+                <th>Fecha Programada</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCronograma">
+              <!-- JS rellenará esto -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
   </div>
 </div>

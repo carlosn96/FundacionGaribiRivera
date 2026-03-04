@@ -10,13 +10,13 @@ class EtapaAPI extends API
         $admEtapa = getAdminEtapaFormacion();
         $this->enviarRespuesta(
             [
-            "etapas" => ($etapas = $admEtapa->listarEtapasFormacion()),
-            "tiposEtapa" => $admEtapa->listarTiposEtapasFormacion(),
-            "aniosEtapas" => $this->filtrarAnios($etapas)
+                "etapas" => ($etapas = $admEtapa->listarEtapasFormacion()),
+                "tiposEtapa" => $admEtapa->listarTiposEtapasFormacion(),
+                "aniosEtapas" => $this->filtrarAnios($etapas)
             ]
         );
     }
-    
+
     function filtrarEtapasPorAnio()
     {
         $this->enviarRespuesta(getAdminEtapaFormacion()->listarEtapasFormacionPorAnio($this->getData("anio")));
@@ -51,10 +51,16 @@ class EtapaAPI extends API
                 array_map(
                     function ($item) {
                         return date('Y', strtotime($item['fechaInicio']));
-                    }, $etapas
+                    },
+                    $etapas
                 )
             )
         );
+    }
+
+    function recuperarCronograma()
+    {
+        $this->enviarRespuesta(getAdminEtapaFormacion()->recuperarCronograma($this->data["idEtapa"]));
     }
 }
 

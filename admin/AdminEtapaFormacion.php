@@ -10,7 +10,61 @@ class AdminEtapaFormacion extends Admin
 
     public function crearEtapa($data)
     {
-        return $this->dao->insertarEtapa($this->construirEtapa($data));
+        $etapa = $this->construirEtapa($data);
+        $idEtapa = $this->dao->insertarEtapa($etapa);
+        if ($idEtapa) {
+            $this->generarCronograma($idEtapa, $etapa->getFechaInicio(), $etapa->getModalidad());
+            return true;
+        }
+        return false;
+    }
+
+    private function getProximoDiaHabil(\DateTime $fecha, $diasAumento = 1)
+    {
+        for ($i = 0; $i < $diasAumento; $i++) {
+            $fecha->modify('+1 day');
+            while (in_array($fecha->format('N'), [6, 7])) {
+                $fecha->modify('+1 day');
+            }
+        }
+        return $fecha;
+    }
+
+    private function generarCronograma($idEtapa, $fechaInicioStr, $modalidad)
+    {
+        $fecha = new \DateTime($fechaInicioStr);
+        while (in_array($fecha->format('N'), [6, 7])) {
+            $fecha->modify('+1 day');
+        }
+
+        $talleresDAO = new TallerDAO();
+        $talleres = $talleresDAO->selectPorCamposEspecificos("id_taller, numero_taller", "taller", "ORDER BY numero_taller ASC", true);
+
+        foreach ($talleres as $index => $t) {
+            $numero = $t['numero_taller'];
+            $idTaller = $t['id_taller'];
+
+            if ($index > 0) {
+                if ($modalidad == 1) { // MODALIDAD A
+                    if ($numero <= 5) {
+                        $this->getProximoDiaHabil($fecha, 1);
+                    } else {
+                        $fecha->modify('+7 days');
+                    }
+                } else { // MODALIDAD B (2)
+                    if ($numero <= 10) {
+                        $diasAumento = ($index % 2 == 1) ? 3 : 4;
+                        $fecha->modify("+$diasAumento days");
+                        while (in_array($fecha->format('N'), [6, 7])) {
+                            $fecha->modify('+1 day');
+                        }
+                    } else {
+                        $fecha->modify('+7 days');
+                    }
+                }
+            }
+            $this->dao->agendarCronograma($idEtapa, $idTaller, $fecha->format('Y-m-d'));
+        }
     }
 
     public function eliminarEtapa($id)
@@ -59,11 +113,17 @@ class AdminEtapaFormacion extends Admin
         $fechaInicio = $data["fechaInicio"];
         $fechaFin = $data["fechaFin"];
         $tipo = isset($data["descripcionTipo"]) ?
-                Util::map($data["tipo"], $data["descripcionTipo"]) : $data["tipo"];
+            Util::map($data["tipo"], $data["descripcionTipo"]) : $data["tipo"];
         $esActual = $data["esActual"] ?? false;
+        $modalidad = isset($data["modalidad"]) ? (int) $data["modalidad"] : 1;
         $etapa = new EtapaFormacion(
-            $idEtapa, $nombre, $fechaInicio, $fechaFin,
-            $tipo,  $esActual
+            $idEtapa,
+            $nombre,
+            $fechaInicio,
+            $fechaFin,
+            $tipo,
+            $esActual,
+            $modalidad
         );
         if (isset($data["talleres"])) {
             $etapa->setTalleres($data["talleres"]);
@@ -79,5 +139,10 @@ class AdminEtapaFormacion extends Admin
     public function obtenerEtapaPorId($idEtapa)
     {
         return $this->construirEtapa($this->dao->buscarPorId($idEtapa))->toArray();
+    }
+
+    public function recuperarCronograma($idEtapa)
+    {
+        return $this->dao->recuperarCronograma($idEtapa);
     }
 }

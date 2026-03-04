@@ -53,6 +53,7 @@ function mostrarModalEditar(etapastr) {
     $("#fechaInicioModal").val(etapa.fechaInicio);
     $("#fechaFinModal").val(etapa.fechaFin);
     $(`input[name="tipoModal"][value="${etapa.tipo.id}"]`).prop("checked", true);
+    $("#modalidadEtapaModal").val(etapa.modalidad || "");
     $("#idEtapa").val(etapa.idEtapa);
     $("#modalDetallesEtapa").modal("show");
 }
@@ -72,7 +73,7 @@ function construirSelectorAnios(listaAnios) {
             crearPeticion(urlAPI, { case: "filtrarEtapasPorAnio", data: "anio=" + anioSeleccionado }, function (etapas) {
                 construirTablaEtapas(etapas);
                 $selector.prop('disabled', false);
-                
+
             });
         }
     });
@@ -85,7 +86,7 @@ function construirTablaEtapas(etapas) {
         data: { case: "eliminar" },
         mensajeAlerta: "La etapa ya no estará disponible"
     };
-    const dataTabla = etapas.map(({ idEtapa, nombre, fechaInicio, fechaFin, esActual, tipo, claveAcceso }) => {
+    const dataTabla = etapas.map(({ idEtapa, nombre, fechaInicio, fechaFin, esActual, tipo, modalidad, claveAcceso }) => {
         opcionesBtnEliminar.idRegistro = idEtapa;
         opcionesBtnEliminar.data.data = `id=${idEtapa}`;
 
@@ -96,7 +97,12 @@ function construirTablaEtapas(etapas) {
         </button>
         <ul class="dropdown-menu">
             <li>
-                <a class="dropdown-item text-success" href="#" onclick="mostrarModalEditar('${encodeURIComponent(JSON.stringify({ idEtapa, nombre, fechaInicio, fechaFin, esActual, tipo, claveAcceso }))}')">
+                <a class="dropdown-item text-info" href="#" onclick="mostrarModalCronograma(${idEtapa})">
+                    <i class="ti ti-calendar-event me-2"></i>Ver Cronograma
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-success" href="#" onclick="mostrarModalEditar('${encodeURIComponent(JSON.stringify({ idEtapa, nombre, fechaInicio, fechaFin, esActual, tipo, modalidad, claveAcceso }))}')">
                     <i class="ti ti-edit me-2"></i>Editar
                 </a>
             </li>
@@ -120,4 +126,30 @@ function construirTablaEtapas(etapas) {
         };
     });
     construirTablaDataTable(dataTabla, "table table-hover", "tablaEtapas", "etapasTable", "");
+}
+
+function mostrarModalCronograma(idEtapa) {
+    $("#tbodyCronograma").html('<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"></div></td></tr>');
+    $("#modalCronograma").modal("show");
+
+    crearPeticion(urlAPI, { case: "recuperarCronograma", data: "idEtapa=" + idEtapa }, function (talleres) {
+        const $tbody = $("#tbodyCronograma");
+        $tbody.empty();
+
+        if (!talleres || talleres.length === 0) {
+            $tbody.html('<tr><td colspan="4" class="text-center">No hay cronograma generado para esta etapa.</td></tr>');
+            return;
+        }
+
+        talleres.forEach(t => {
+            $tbody.append(`
+                <tr>
+                    <td>${t.numero_taller || "N/A"}</td>
+                    <td>${t.nombre_taller}</td>
+                    <td>${t.instructor || "Sin asignar"}</td>
+                    <td><span class="badge bg-primary-subtle text-primary">${t.fecha_formateada}</span></td>
+                </tr>
+            `);
+        });
+    });
 }

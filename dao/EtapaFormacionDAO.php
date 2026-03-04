@@ -8,7 +8,7 @@ class EtapaFormacionDAO extends DAO
     private const LISTAR_ETAPAS_FORMACION = "SELECT * FROM " . self::VISTA;
     private const LISTAR_TIPOS_ETAPAS_FORMACION = "SELECT * FROM " . self::TABLA . "_tipo";
     private const OBTENER_ETAPA_ACTUAL = self::LISTAR_ETAPAS_FORMACION . " WHERE esActual = 1";
-    private const INSERTAR_ETAPA = "CALL guardar_etapa_formacion(?,?,?,?)";
+    private const INSERTAR_ETAPA = "CALL guardar_etapa_formacion(?,?,?,?,?)";
     private const ACTUALIZAR_ETAPA = "UPDATE " . self::TABLA . " SET nombre = ?, fecha_inicio = ?, fecha_fin = ?, id_tipo=? WHERE id_etapa = ?";
     private const ELIMINAR_ETAPA = "CALL eliminar_etapa_formacion(?)";
     private const ACTUALIZAR_ETAPA_ACTUAL = "CALL actualizar_etapa_actual(?)";
@@ -16,7 +16,7 @@ class EtapaFormacionDAO extends DAO
     public function listarEtapasFormacion($anio)
     {
         $where = empty($anio) || is_null($anio) ? "" : " WHERE fechaInicio BETWEEN $anio AND $anio";
-        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION. $where);
+        $rs = $this->ejecutarInstruccion(self::LISTAR_ETAPAS_FORMACION . $where);
         return $rs ? $rs->fetch_all(MYSQLI_ASSOC) : [];
     }
 
@@ -39,6 +39,20 @@ class EtapaFormacionDAO extends DAO
         $prep->agregarString($etapa->getFechaInicio());
         $prep->agregarString($etapa->getFechaFin());
         $prep->agregarInt($etapa->getTipo());
+        $prep->agregarInt($etapa->getModalidad());
+        $result = $prep->ejecutarConsulta();
+        if ($result && isset($result['idEtapa'])) {
+            return (int) $result['idEtapa'];
+        }
+        return false;
+    }
+
+    public function agendarCronograma($idEtapa, $idTaller, $fecha)
+    {
+        $prep = $this->prepararInstruccion("INSERT INTO cronograma_taller (id_etapa, id_taller, fecha) VALUES (?, ?, ?)");
+        $prep->agregarInt($idEtapa);
+        $prep->agregarInt($idTaller);
+        $prep->agregarString($fecha);
         return $prep->ejecutar();
     }
 
@@ -69,8 +83,21 @@ class EtapaFormacionDAO extends DAO
 
     public function buscarPorId($idEtapa)
     {
-        $rs = $this->selectPorId(self::LISTAR_ETAPAS_FORMACION." WHERE idEtapa = ?", $idEtapa);
+        $rs = $this->selectPorId(self::LISTAR_ETAPAS_FORMACION . " WHERE idEtapa = ?", $idEtapa);
         return $rs ? $rs : [];
     }
 
+    public function recuperarCronograma($idEtapa)
+    {
+        $sql = "SELECT t.numero_taller, t.nombre AS nombre_taller, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha_formateada, i.nombreInstructor AS instructor 
+                FROM cronograma_taller c 
+                INNER JOIN taller t ON c.id_taller = t.id_taller 
+                LEFT JOIN listar_taller_instructor i ON t.id_instructor = i.idInstructor 
+                WHERE c.id_etapa = ? 
+                ORDER BY c.fecha ASC, t.numero_taller ASC";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idEtapa);
+        $result = $prep->ejecutarConsultaMultiple();
+        return $result ? $result : [];
+    }
 }

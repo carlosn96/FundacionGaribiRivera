@@ -11,9 +11,10 @@ class EtapaFormacion
     private $fechaFin;
     private $tipo;
     private bool $esActual;
+    private int $modalidad;
     private array $talleres;
 
-    public function __construct($idEtapa, $nombre, $fechaInicio, $fechaFin, $tipo, $esActual)
+    public function __construct($idEtapa, $nombre, $fechaInicio, $fechaFin, $tipo, $esActual, $modalidad = null)
     {
         $this->idEtapa = $idEtapa;
         $this->nombre = $nombre;
@@ -21,6 +22,7 @@ class EtapaFormacion
         $this->fechaFin = $fechaFin;
         $this->tipo = $tipo;
         $this->esActual = $esActual;
+        $this->modalidad = $modalidad ?? 0;
         $this->setTalleres([]);
     }
 
@@ -81,6 +83,16 @@ class EtapaFormacion
     public function setFechaFin($fechaFin): void
     {
         $this->fechaFin = $fechaFin;
+    }
+
+    public function getModalidad(): int
+    {
+        return $this->modalidad;
+    }
+
+    public function setModalidad(int $modalidad): void
+    {
+        $this->modalidad = $modalidad;
     }
 
     public function setTipo($tipo): void
