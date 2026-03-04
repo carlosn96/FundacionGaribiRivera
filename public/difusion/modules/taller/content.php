@@ -1,165 +1,248 @@
-<div class="course">
-    <div class="card">
-        <div class="card-body">
-            <div class="row d-md-flex justify-content-between mb-4">
-                <div class="mb-4 mb-md-0">
-                    <h4 class="card-title">Talleres de Capacitación</h4>
-                    <p class="card-subtitle mb-0">Puedes buscar talleres por instructor, nombre o tipo de formación</p>
-                </div>
-                <div class="d-flex flex-column flex-md-row align-items-center w-100">
-                    <form class="position-relative me-3 mb-3 mb-md-0 w-100 w-md-auto">
-                        <input type="text" class="form-control search-chat py-2 ps-5" id="searchTaller" placeholder="Buscar">
-                        <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-                    </form>
-                    <div class="ms-auto">
-                        <!-- Menú desplegable -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownNuevo" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-plus me-2"></i> Nuevo
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownNuevo">
-                                <li>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevoTaller">
-                                        <i class="fas fa-book me-2"></i> Taller
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="../instructores">
-                                        <i class="fas fa-user-plus me-2"></i> Instructor
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+<link rel="stylesheet" href="taller-premium.css">
+
+<div class="taller-premium-wrapper">
+    <!-- Header Hero -->
+    <div class="premium-header mb-4 rounded-4 position-relative">
+        <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden rounded-4 z-0">
+            <div class="premium-decorator position-absolute"></div>
+            <div class="premium-decorator-2 position-absolute"></div>
+        </div>
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-lg-7">
+                <h2 class="display-6 fw-bold mb-2 text-dark">Talleres de Capacitación</h2>
+                <p class="lead mb-0 text-muted-premium">Busca y administra la oferta formativa de manera eficiente y
+                    visual.</p>
+            </div>
+            <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+                <div class="d-flex flex-column flex-sm-row justify-content-lg-end align-items-center gap-3">
+                    <!-- Search with floating modern style -->
+                    <div class="premium-search-box position-relative w-100 flex-grow-1">
+                        <i
+                            class="ti ti-search position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-primary"></i>
+                        <input type="text" class="form-control premium-search ps-5 py-2 w-100" id="searchTaller"
+                            placeholder="Buscar taller...">
+                    </div>
+                    <!-- Dropdown Nuevo -->
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-primary premium-btn shadow-sm dropdown-toggle d-flex align-items-center py-2 px-4"
+                            type="button" id="dropdownNuevo" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-plus fs-5 me-2"></i> Nuevo
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2"
+                            aria-labelledby="dropdownNuevo">
+                            <li>
+                                <a class="dropdown-item py-2 px-3 d-flex align-items-center rounded-3 mb-1" href="#"
+                                    data-bs-toggle="modal" data-bs-target="#modalNuevoTaller">
+                                    <div class="icon-circle bg-primary-subtle text-primary me-3"><i
+                                            class="ti ti-book fs-5"></i></div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold text-dark">Taller</h6>
+                                        <small class="text-muted d-block">Crear nueva sesión</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider opacity-10 mx-3">
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 px-3 d-flex align-items-center rounded-3 mt-1"
+                                    href="../instructores">
+                                    <div class="icon-circle bg-secondary-subtle text-secondary me-3"><i
+                                            class="ti ti-user-plus fs-5"></i></div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold text-dark">Instructor</h6>
+                                        <small class="text-muted d-block">Dar de alta formador</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div class="d-flex justify-content-end mb-3">
-                <div class="btn-group" role="group" aria-label="View switcher">
-                    <button type="button" class="btn btn-outline-primary active" id="btn-grid-view" aria-label="Vista de cuadrícula">
-                        <i class="ti ti-layout-grid"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" id="btn-table-view" aria-label="Vista de tabla">
-                        <i class="ti ti-list"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="row" id="talleresContent">
-                <!-- Aquí se mostrarán las tarjetas de los talleres -->
-            </div>
-            <div id="talleresTableView" class="table-responsive" style="display: none;">
-                <table id="talleresTable" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre del Taller</th>
-                            <th>Tipo de Formación</th>
-                            <th>Instructor</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="talleresTableBody">
-                        <!-- Rows will be inserted here by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+        </div>
+    </div>
+
+    <!-- View Switcher & Actions -->
+    <div class="d-flex justify-content-end mb-4">
+        <div class="btn-group premium-view-switcher rounded-pill shadow-sm border" role="group">
+            <button type="button" class="btn btn-sm rounded-pill px-3 active" id="btn-grid-view"
+                aria-label="Vista de cuadrícula">
+                <i class="ti ti-layout-grid fs-5"></i>
+            </button>
+            <button type="button" class="btn btn-sm rounded-pill px-3" id="btn-table-view" aria-label="Vista de tabla">
+                <i class="ti ti-list fs-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="row g-4" id="talleresContent">
+        <!-- JS Cards -->
+    </div>
+    <div id="talleresTableView" class="premium-table-container rounded-4 shadow-sm overflow-hidden"
+        style="display: none;">
+        <div class="table-responsive">
+            <table id="talleresTable" class="table premium-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="border-0 text-uppercase fw-bold text-muted">Nombre del Taller</th>
+                        <th class="border-0 text-uppercase fw-bold text-muted">Módulo</th>
+                        <th class="border-0 text-uppercase fw-bold text-muted">Instructor</th>
+                        <th class="border-0 text-uppercase fw-bold text-muted text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="talleresTableBody" class="border-top-0">
+                    <!-- JS Rows -->
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-
 <!-- Modal para Editar Taller -->
-<div class="modal fade" id="modalEditarTaller" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade premium-modal" id="modalEditarTaller" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarTallerLabel">Editar Taller</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header position-relative overflow-hidden">
+                <h5 class="modal-title fw-bold text-dark position-relative z-1" id="modalEditarTallerLabel">
+                    <i class="ti ti-edit text-primary me-2"></i>Editar Taller
+                </h5>
+                <button type="button" class="btn-close position-relative z-1" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <form id="editarTallerForm">
-                            <div class="text-center">
-                                <img width="110" class="rounded-3 mb-3" alt="" id="imagenInstructor">
-                                <span class="badge bg-primary-subtle text-primary fw-light rounded-pill mb-3 d-block">Instructor</span>
-                                <div class="mb-3" id="selectorInstructores">
-                                </div>
-                                <div class="mb-3">
-                                    <div class="spinner-grow text-warning" role="status" id="spinnerImagenInstructor" hidden>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-5">
-                                <input id="idTaller" name="idTaller" hidden="">
-                                <!-- Nombre del taller -->
-                                <div class="mb-3">
-                                    <label for="nombreTaller" class="form-label">Nombre del Taller</label>
-                                    <input required="" type="text" class="form-control" id="nombreTaller" name="nombreTaller" placeholder="Introduce el nombre del taller">
-                                </div>
-                                <!-- Tipo de taller -->
-                                <div class="mb-3">
-                                    <label for="tipoTaller" class="form-label">Tipo de Taller</label>
-                                    <div id="selectorTipoTalleres">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="evaluacionHabilitada">Evaluación habilitada:</label>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="evaluacionHabilitada" name="evaluacionHabilitada">
-                                        <label class="form-check-label" for="evaluacionHabilitada" name="evaluacionHabilitada">Habilitar / Deshablitar</label>
-                                    </div>
-                                </div>
-                                <!-- Observaciones -->
-                                <div class="mb-3">
-                                    <label for="observaciones" class="form-label">Observaciones</label>
-                                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="Observaciones adicionales sobre el taller"></textarea>
-                                </div>
-                                <!-- Botones para guardar o cancelar -->
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center">
-                                        <i class="ti ti-check fs-5 me-2"></i>Actualizar
-                                    </button>
-                                    <button type="button" class="btn btn-outline-warning px-4 py-2" data-bs-dismiss="modal">
-                                        <i class="ti ti-x fs-5 me-2"></i>Cancelar
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                <form id="editarTallerForm">
+                    <div class="text-center mb-5">
+                        <div class="position-relative d-inline-block">
+                            <img class="rounded-circle shadow-sm border border-3 border-white mt-2" alt=""
+                                id="imagenInstructor" width="100" height="100" style="object-fit: cover;">
+                            <span
+                                class="position-absolute bottom-0 start-50 translate-middle-x badge bg-primary-subtle text-primary border border-white rounded-pill px-3 shadow-sm transform-bottom">Instructor</span>
+                        </div>
+                        <div class="mt-4 mx-auto" style="max-width: 300px;" id="selectorInstructores"></div>
+                        <div class="mt-2" id="spinnerImagenInstructor" hidden>
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="row g-4">
+                        <input id="idTaller" name="idTaller" hidden="">
+
+                        <!-- Nombre del taller -->
+                        <div class="col-md-12">
+                            <label for="nombreTaller" class="form-label">Nombre del Taller</label>
+                            <input required="" type="text" class="form-control" id="nombreTaller" name="nombreTaller"
+                                placeholder="Ej. Modelo de Negocio con Alma">
+                        </div>
+
+                        <!-- Número de taller y Tipo -->
+                        <div class="col-md-6">
+                            <label for="numeroTaller" class="form-label">Secuencia (1 a 15)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted border-end-0"><i
+                                        class="ti ti-hash"></i></span>
+                                <input required="" type="number" class="form-control border-start-0 ps-0"
+                                    id="numeroTaller" name="numeroTaller" min="1" max="15">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="tipoTaller" class="form-label">Módulo</label>
+                            <div id="selectorTipoTalleres"></div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="col-md-12">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="3"
+                                placeholder="Añade notas o requerimientos del taller..."></textarea>
+                        </div>
+
+                        <!-- Evaluación habilitada -->
+                        <div class="col-md-12">
+                            <div
+                                class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-dark fw-semibold">Evaluación habilitada</h6>
+                                    <small class="text-muted">Permite registrar calificaciones para esta sesión.</small>
+                                </div>
+                                <div class="form-check form-switch form-check-lg fs-4 mb-0">
+                                    <input class="form-check-input" type="checkbox" id="evaluacionHabilitada"
+                                        name="evaluacionHabilitada">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center shadow-sm">
+                            <i class="ti ti-device-floppy fs-5 me-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal para crear Taller -->
-<div class="modal fade" id="modalNuevoTaller" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade premium-modal" id="modalNuevoTaller" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarTallerLabel">Crear Taller</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header position-relative overflow-hidden">
+                <h5 class="modal-title fw-bold text-dark position-relative z-1">
+                    <i class="ti ti-square-plus text-primary me-2"></i>Crear Taller
+                </h5>
+                <button type="button" class="btn-close position-relative z-1" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="editarCrearTallerForm">
-                    <div class="mt-5">
-                        <label for="instructorTaller" class="form-label">Instructor</label>
-                        <div class="mb-3" id="selectorInstructoresTallerCrear"></div>
-                        <div class="mb-3">
-                            <label for="nombreCrearTaller" class="form-label">Nombre del Taller</label>
-                            <input required type="text" class="form-control" id="nombreCrearTaller" name="nombreCrearTaller" placeholder="Introduce el nombre del taller">
+                    <div class="row g-4">
+                        <!-- Instructor -->
+                        <div class="col-md-12">
+                            <label for="instructorTaller" class="form-label">Instructor Asignado</label>
+                            <div id="selectorInstructoresTallerCrear"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="tipoTaller" class="form-label">Tipo de Taller</label>
+
+                        <!-- Nombre del taller -->
+                        <div class="col-md-12">
+                            <label for="nombreCrearTaller" class="form-label">Nombre de la Sesión</label>
+                            <input required type="text" class="form-control" id="nombreCrearTaller"
+                                name="nombreCrearTaller" placeholder="Ej. Aspectos Legales y Laborales">
+                        </div>
+
+                        <!-- Número y Tipo -->
+                        <div class="col-md-6">
+                            <label for="numeroTallerCrear" class="form-label">Secuencia (1 a 15)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted border-end-0"><i
+                                        class="ti ti-hash"></i></span>
+                                <input required type="number" class="form-control border-start-0 ps-0"
+                                    id="numeroTallerCrear" name="numeroTallerCrear" min="1" max="15">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tipoTaller" class="form-label">Módulo</label>
                             <div id="selectorTipoTallerCrear"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="observacionesTallerCrear" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="observacionesTallerCrear" name="observacionesTallerCrear" rows="3" placeholder="Observaciones adicionales sobre el taller"></textarea>
+
+                        <!-- Observaciones -->
+                        <div class="col-md-12">
+                            <label for="observacionesTallerCrear" class="form-label">Observaciones Adicionales</label>
+                            <textarea class="form-control" id="observacionesTallerCrear" name="observacionesTallerCrear"
+                                rows="3" placeholder="Detalles extra..."></textarea>
                         </div>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center"><i class="ti ti-check fs-5 me-2"></i>Guardar</button>
-                            <button type="button" class="btn btn-outline-warning px-4 py-2" data-bs-dismiss="modal"><i class="ti ti-x fs-5 me-2"></i>Cancelar</button>
-                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2 d-flex align-items-center shadow-sm">
+                            <i class="ti ti-plus fs-5 me-2"></i> Registrar Taller
+                        </button>
                     </div>
                 </form>
             </div>
