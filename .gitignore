@@ -8,3 +8,5 @@ nbproject/project.properties
 /bd
 .github/
 /test_dev
+.agents
+/doc
