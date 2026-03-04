@@ -3,19 +3,19 @@ let allInstructores = []; // Store all instructor data
 let instructorsDataTable = null;
 
 function ready() {
-    crearPeticion(urlAPI, {case: "recuperarInstructores"}, function (instructores) {
+    crearPeticion(urlAPI, { case: "recuperarInstructores" }, function (instructores) {
         allInstructores = instructores;
         print(instructores);
         construirCardsInstructores(allInstructores);
         construirTablaInstructores(allInstructores);
-        
+
         // Initialize DataTable
         instructorsDataTable = crearDataTable($('#instructorsTable'));
 
         configurarEventosInstructores();
         configurarViewSwitcherInstructors();
         configurarBusquedaInstructores();
-        
+
         // Initialize tooltips after all elements are rendered
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
@@ -45,7 +45,7 @@ function ready() {
 function configurarBusquedaInstructores() {
     $("#searchInstructor").on("input", function () {
         const query = $(this).val().toLowerCase();
-        
+
         // Filter cards
         const filteredInstructores = allInstructores.filter(function (instructor) {
             const nombreCompleto = instructor.nombreCompleto.toLowerCase();
@@ -61,13 +61,13 @@ function configurarBusquedaInstructores() {
 }
 
 function configurarViewSwitcherInstructors() {
-    $('#btn-grid-view-instructors').on('click', function() {
+    $('#btn-grid-view-instructors').on('click', function () {
         $(this).addClass('active').siblings().removeClass('active');
         $('#cardsInstructores').show();
         $('#instructorsTableView').hide();
     });
 
-    $('#btn-table-view-instructors').on('click', function() {
+    $('#btn-table-view-instructors').on('click', function () {
         $(this).addClass('active').siblings().removeClass('active');
         $('#cardsInstructores').hide();
         $('#instructorsTableView').show();
@@ -83,37 +83,30 @@ function construirCardsInstructores(instructores) {
     $container.empty();
 
     if (instructores.length === 0) {
-        $container.html('<div class="col-12"><p class="text-center">No se encontraron instructores.</p></div>');
+        $container.html('<div class="col-12"><p class="text-center text-muted mt-4">No se encontraron instructores.</p></div>');
         return;
     }
 
     instructores.forEach(function (i) {
         const dataInstructorStr = JSON.stringify(i).replace(/"/g, "'");
         const card = `
-        <div class="col-md-4 mb-4">
-            <div class="card hover-img h-100">
-                <div class="card-body p-4 text-center border-bottom">
-                    <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombre}" class="rounded-circle mb-3" width="80" height="80">
-                    <h4 class="card-title mb-1">${i.nombreCompleto}</h4>
-                    <span class="fs-2">Instructor</span>
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+            <div class="card instructor-card h-100">
+                <div class="instructor-banner"></div>
+                <div class="card-body p-4 text-center d-flex flex-column align-items-center">
+                    <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombreCompleto}" class="instructor-avatar bg-white">
+                    <h5 class="fw-bold mt-3 mb-1 text-dark">${i.nombreCompleto}</h5>
+                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 mb-3">Instructor</span>
+                    
+                    <div class="mt-auto w-100 instructor-actions rounded-4 px-2 py-3 d-flex justify-content-center gap-3">
+                        <a href="../instructor/?id=${i.id}" class="btn btn-primary rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Detalles">
+                            <i class="fs-5 ti ti-eye"></i>
+                        </a>
+                        <a href="javascript:void(0)" onclick="eliminarInstructor(${i.id})" class="btn btn-outline-danger rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
+                            <i class="fs-5 ti ti-trash"></i>
+                        </a>
+                    </div>
                 </div>
-                <ul class="px-2 py-2 list-unstyled d-flex align-items-center justify-content-center mb-0">
-                    <li class="position-relative">
-                        <a class="text-primary d-flex align-items-center justify-content-center p-2 fs-5 rounded-circle fw-semibold"
-                           href="../instructor/?id=${i.id}" 
-                           data-bs-toggle="tooltip" data-bs-placement="top" title="Detalles">
-                            <i class="fs-4 ti ti-eye"></i>
-                        </a>
-                    </li>
-                    <li class="position-relative">
-                        <a class="text-danger d-flex align-items-center justify-content-center p-2 fs-5 rounded-circle fw-semibold" 
-                           href="javascript:void(0)" 
-                           onclick="eliminarInstructor(${i.id})"
-                           data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
-                           <i class="fs-4 ti ti-trash"></i>
-                        </a>
-                    </li>
-                </ul>
             </div>
         </div>
         `;
@@ -126,7 +119,6 @@ function construirTablaInstructores(instructores) {
     $tableBody.empty();
 
     if (instructores.length === 0) {
-        // DataTables will show its own message
         return;
     }
 
@@ -137,29 +129,31 @@ function construirTablaInstructores(instructores) {
                 <td>
                     <div class="d-flex align-items-center">
                         <div class="me-3">
-                            <img src="data:image/jpeg;base64,${instructor.fotografia}" alt="Foto de ${instructor.nombreCompleto}" width="45" class="rounded-circle" />
+                            <img src="data:image/jpeg;base64,${instructor.fotografia}" alt="Foto de ${instructor.nombreCompleto}" width="48" height="48" class="rounded-circle shadow-sm border border-2 border-white" style="object-fit: cover;" />
                         </div>
                         <div>
-                            <h6 class="mb-1">${instructor.nombreCompleto}</h6>
-                            <span class="text-muted">${instructor.correoElectronico}</span>
+                            <h6 class="mb-0 fw-semibold text-dark">
+                                <a href="../instructor/?id=${instructor.id}" class="text-dark text-decoration-none premium-link">${instructor.nombreCompleto}</a>
+                            </h6>
+                            <span class="text-muted small">${instructor.correoElectronico}</span>
                         </div>
                     </div>
                 </td>
-                <td>${instructor.telefono}</td>
-                <td>
+                <td class="text-muted fw-medium">${instructor.telefono}</td>
+                <td class="text-end">
                     <div class="dropdown">
-                        <a href="javascript:void(0)" class="btn btn-outline-primary shadow-none px-3" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a href="javascript:void(0)" class="btn btn-light rounded-circle shadow-sm text-muted dropdown-toggle-hide d-flex align-items-center justify-content-center ms-auto" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false" style="width: 36px; height: 36px;">
                             <i class="ti ti-dots-vertical fs-5"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButtonTable_${instructor.id}">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2 p-2" aria-labelledby="dropdownMenuButtonTable_${instructor.id}">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3" href="../instructor/?id=${instructor.id}">
-                                    <i class="fs-4 ti ti-eye"></i> Detalles
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 rounded-2 mb-1 text-primary" href="../instructor/?id=${instructor.id}">
+                                    <i class="fs-4 ti ti-eye me-3"></i> Detalles
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3" href="javascript:void(0)" onclick="eliminarInstructor(${instructor.id})">
-                                    <i class="fs-4 ti ti-trash"></i> Eliminar
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 text-danger rounded-2" href="javascript:void(0)" onclick="eliminarInstructor(${instructor.id})">
+                                    <i class="fs-4 ti ti-trash me-3"></i> Eliminar
                                 </a>
                             </li>
                         </ul>
@@ -181,6 +175,6 @@ function eliminarInstructor(id) {
     alertaEliminar({
         mensajeAlerta: "Se eliminará el instructor",
         url: urlAPI,
-        data: {"case": "eliminarInstructor", "data": `id=${id}`}
+        data: { "case": "eliminarInstructor", "data": `id=${id}` }
     });
 }
