@@ -7,8 +7,15 @@
 <!-- Favicon icon-->
 <link rel="shortcut icon" type="image/png" href="../../../assets/images/logos/ico.png" />
 
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<link rel="stylesheet" href="../../../assets/css/icons/fontawesome.css" />
+
 <!-- Core Css -->
 <link rel="stylesheet" href="../../../assets/libs/sweetalert2/dist/sweetalert2.min.css">
-<link rel="stylesheet" href="../../../assets/css/inicio.css" />
+<link rel="stylesheet" href="../../../assets/css/styles.css" />
+<link rel="stylesheet" href="../../../assets/css/auth.css" />
 
 <title>Fundación Cardenal Garibi Rivera</title>

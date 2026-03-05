@@ -1,125 +1,108 @@
 <!DOCTYPE html>
-<html lang="es" dir="ltr" data-bs-theme="dark" data-color-theme="Blue_Theme" data-layout="vertical">
+<html lang="es">
 
 <head>
-    <!-- Head -->
-    <?php
-    require_once '../../includes/head.php';
-    ?>
+    <?php require_once '../../includes/head.php'; ?>
 </head>
 
 <body>
-    <!-- Preloader y Overlay con Spinner -->
-    <?php
-    require_once '../../../assets/commons/preloader.php';
-    ?>
-    <div class="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-white">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-12 col-xl-10 col-xxl-8">
-                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                        <div class="row g-0">
-                            <!-- Illustration Column -->
-                            <div
-                                class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center bg-warning bg-opacity-10">
-                                <div class="text-center p-4">
-                                    <img src="../../../assets/images/backgrounds/fondoRegistro.png" alt=""
-                                        class="img-fluid rounded-3 shadow-sm" />
-                                </div>
+    <?php require_once '../../../assets/commons/preloader.php'; ?>
+
+    <div class="auth-page">
+        <div class="auth-container auth-container--wide">
+            <div class="auth-logo">
+                <a href="https://fundaciongaribirivera.com/" target="_blank">
+                    <img src="../../../assets/images/logos/logo-dark.svg" alt="Fundación Garibi Rivera">
+                </a>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-icon-circle auth-icon-circle--brand">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h1 class="auth-title">Crear cuenta</h1>
+                    <p class="auth-subtitle">Completa los campos para registrarte</p>
+                </div>
+
+                <form id="crearCuentaForm" class="needs-validation" novalidate>
+                    <div class="auth-row-2">
+                        <div>
+                            <label class="auth-label" for="nombre">Nombre</label>
+                            <div class="auth-field">
+                                <input type="text" class="auth-input" id="nombre" name="nombre" placeholder="Juan"
+                                    required>
+                                <div class="auth-invalid-feedback">Ingrese su nombre.</div>
                             </div>
-
-                            <!-- Form Column -->
-                            <div class="col-lg-6">
-                                <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center">
-                                    <div class="text-center mb-4">
-                                        <h2 class="h4 fw-bold text-dark mb-2">Crear nueva cuenta</h2>
-                                        <p class="text-muted small">Complete todos los campos para registrarse</p>
-                                    </div>
-
-                                    <form id="crearCuentaForm" class="needs-validation" novalidate>
-                                        <div class="mb-3">
-                                            <label for="nombre"
-                                                class="form-label fw-bold text-dark small">Nombre:</label>
-                                            <input type="text" class="form-control border-warning" id="nombre"
-                                                name="nombre" aria-label="nombre" required>
-                                            <div class="invalid-feedback">Por favor, ingrese su nombre.</div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="apellidos"
-                                                class="form-label fw-bold text-dark small">Apellidos:</label>
-                                            <input type="text" class="form-control border-warning" id="apellidos"
-                                                name="apellidos" aria-label="apellidos" required>
-                                            <div class="invalid-feedback">Por favor, ingrese sus apellidos.</div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="correo" class="form-label fw-bold text-dark small">Correo
-                                                electrónico:</label>
-                                            <input type="email" class="form-control border-warning" id="correo"
-                                                name="correo" aria-describedby="emailHelp" required>
-                                            <div class="invalid-feedback">Debes proporcionar un correo electrónico
-                                                válido que no haya sido registrado anteriormente.</div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="numero_celular"
-                                                class="form-label fw-bold text-dark small">Número celular:</label>
-                                            <input type="tel" class="form-control border-warning" id="numero_celular"
-                                                name="numero_celular" required>
-                                            <div class="invalid-feedback">Por favor, ingrese su número celular.</div>
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label for="contrasena"
-                                                class="form-label fw-bold text-dark small">Contraseña:</label>
-                                            <input type="password" class="form-control border-warning" id="contrasena"
-                                                name="contrasena" required>
-                                            <div class="invalid-feedback">Por favor, ingrese una contraseña.</div>
-                                        </div>
-
-                                        
-                                        <div class="mb-4 form-check ms-1">
-                                            <input type="checkbox" class="form-check-input border-warning shadow-none"
-                                                id="terminos" name="terminos" required style="cursor: pointer;">
-                                            <label class="form-check-label small text-dark pt-1 user-select-none"
-                                                for="terminos" style="cursor: pointer;">
-                                                He leído y acepto los <a
-                                                    href="https://www.fundaciongaribirivera.com/privacy-policy"
-                                                    target="_blank"
-                                                    class="text-warning fw-bold text-decoration-none">términos y condiciones</a>
-                                            </label>
-                                            <div class="invalid-feedback">
-                                                Debes aceptar los términos para registrarte.
-                                            </div>
-                                        </div>
-
-                                        <div class="d-grid mb-3">
-                                            <button disabled type="submit" id="submitBtn"
-                                                class="btn btn-warning btn-lg rounded-pill fw-bold">
-                                                Registrarme
-                                                <span id="spinner" class="spinner-border spinner-border-sm d-none ms-2"
-                                                    role="status"></span>
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <p class="mb-0 text-muted small">¿Ya tienes cuenta?</p>
-                                        <a class="text-warning fw-bold text-decoration-none small"
-                                            href="../inicio/">Iniciar sesión</a>
-                                    </div>
-                                </div>
+                        </div>
+                        <div>
+                            <label class="auth-label" for="apellidos">Apellidos</label>
+                            <div class="auth-field">
+                                <input type="text" class="auth-input" id="apellidos" name="apellidos"
+                                    placeholder="Pérez García" required>
+                                <div class="auth-invalid-feedback">Ingrese sus apellidos.</div>
                             </div>
                         </div>
                     </div>
+
+                    <label class="auth-label" for="correo">Correo electrónico</label>
+                    <div class="auth-field">
+                        <input type="email" class="auth-input" id="correo" name="correo" placeholder="tu@correo.com"
+                            required>
+                        <div class="auth-invalid-feedback">Correo no válido o ya registrado.</div>
+                    </div>
+
+                    <div class="auth-row-2">
+                        <div>
+                            <label class="auth-label" for="numero_celular">Celular</label>
+                            <div class="auth-field">
+                                <input type="tel" class="auth-input" id="numero_celular" name="numero_celular"
+                                    placeholder="33 1234 5678" required>
+                                <div class="auth-invalid-feedback">Ingrese su número celular.</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="auth-label" for="contrasena">Contraseña</label>
+                            <div class="auth-field">
+                                <input type="password" class="auth-input" id="contrasena" name="contrasena"
+                                    placeholder="••••••••" required>
+                                <div class="auth-invalid-feedback">Ingrese una contraseña.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="terminos" name="terminos" required
+                            style="cursor:pointer;">
+                        <label class="form-check-label" for="terminos"
+                            style="cursor:pointer; font-size:0.8rem; color:var(--auth-text-soft)">
+                            He leído y acepto los
+                            <a href="https://www.fundaciongaribirivera.com/privacy-policy" target="_blank"
+                                class="auth-link">términos y condiciones</a>
+                        </label>
+                        <div class="auth-invalid-feedback">Debes aceptar los términos.</div>
+                    </div>
+
+                    <button disabled type="submit" id="submitBtn" class="auth-btn auth-btn--primary">
+                        Registrarme
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                    </button>
+                </form>
+
+                <div class="auth-divider"><span>o</span></div>
+
+                <div class="auth-register-link">
+                    ¿Ya tienes cuenta? <a href="../inicio/">Iniciar sesión</a>
                 </div>
+            </div>
+
+            <div class="auth-footer">
+                &copy; <?php echo date('Y'); ?> Fundación Cardenal Garibi Rivera
             </div>
         </div>
     </div>
-    <?php
-    require_once '../../includes/scripts.php';
-    ?>
+
+    <?php require_once '../../includes/scripts.php'; ?>
     <script src="api/crearCuenta.js"></script>
 </body>
 

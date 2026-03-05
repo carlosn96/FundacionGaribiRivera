@@ -1,57 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <!-- Head -->
-        <?php
-        require_once '../../includes/head.php';
-        ?>
-    </head>
-    <body>
-        <!-- Preloader y Overlay con Spinner -->
-        <?php
-        require_once '../../../assets/commons/preloader.php';
-        ?>
-        <div id="main-wrapper" class="p-0 bg-white">
-            <div class="auth-login position-relative overflow-hidden d-flex align-items-center justify-content-center px-7 px-xxl-0 rounded-3 h-n20">
-                <div class="auth-login-shape position-relative w-100">
-                    <div class="auth-login-wrapper card mb-0 container position-relative z-1 h-100 max-h-770" data-simplebar>
-                        <div class="card-body">
-                            <a href="../inicio/" class="">
-                                <img src="../../../assets/images/logos/logo-dark.svg" class="light-logo" alt="Logo-Dark" />
-                            </a>
-                            <div class="row align-items-center justify-content-around pt-6 pb-5">
-                                <div class="col-lg-6 col-xl-5 d-none d-lg-block">
-                                    <div class="text-center text-lg-start">
-                                        <img src="../../../assets/images/backgrounds/login-security.png" class="img-fluid" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-xl-5">
-                                    <h2 class="mb-6 fs-8 fw-bolder text-center">¿Olvidaste tu contraseña?</h2>
-                                    <p class="text-dark fs-4 mb-7">
-                                        Ingresa el correo asociado a tu cuenta y te enviaremos un enlace para restablecer tu contraseña.
-                                    </p>
-                                    <form method="POST" id="formEnviarCorreo">
-                                        <div class="mb-7">
-                                            <label for="correo_electronico" class="form-label text-dark fw-bold">Correo electrónico</label>
-                                            <input type="email" class="form-control py-3 px-4 border border-warning rounded-lg shadow-sm" id="correo_electronico" name="correo_electronico" aria-describedby="emailHelp" required>
-                                        </div>
-                                        <button type="submit"class="btn btn-warning w-100 mb-3 rounded-pill">
-                                            Enviar correo de verificación
-                                            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                        </button>
-                                        <a href = '../inicio/' class="btn  btn-outline-warning w-100 rounded-pill">Cancelar</a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+
+<head>
+    <?php include_once '../../includes/head.php'; ?>
+</head>
+
+<body>
+    <?php require_once '../../../assets/commons/preloader.php'; ?>
+
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <a href="../inicio/">
+                    <img src="../../../assets/images/logos/logo-dark.svg" alt="Logo">
+                </a>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-header auth-header--center">
+                    <div class="auth-icon-circle auth-icon-circle--brand">
+                        <i class="fas fa-key"></i>
                     </div>
+                    <h1 class="auth-title">¿Olvidaste tu contraseña?</h1>
+                    <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
                 </div>
+
+                <form method="POST" id="formEnviarCorreo">
+                    <label class="auth-label" for="correo_electronico">Correo electrónico</label>
+                    <div class="auth-field">
+                        <input type="email" class="auth-input" id="correo_electronico" name="correo_electronico"
+                            placeholder="tu@correo.com" required>
+                    </div>
+
+                    <button type="submit" class="auth-btn auth-btn--primary">
+                        Enviar correo de verificación
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                    </button>
+                    <a href="../inicio/" class="auth-btn auth-btn--outline">
+                        <i class="fas fa-arrow-left me-1" style="font-size:0.8rem;"></i> Volver al inicio
+                    </a>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                &copy; <?php echo date('Y'); ?> Fundación Cardenal Garibi Rivera
             </div>
         </div>
-        <?php
-        require_once '../../includes/scripts.php';
-        ?>
-        <!-- Script para manejar la solicitud de envío de correo -->
-        <script src="api/recuperar.js"></script>
-    </body>
+    </div>
+
+    <?php require_once '../../includes/scripts.php'; ?>
+    <script src="api/recuperar.js"></script>
+</body>
+
 </html>

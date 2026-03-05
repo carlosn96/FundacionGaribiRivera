@@ -1,68 +1,62 @@
-<?php
-require_once 'assets/sesion.php';
-?>
-
+<?php require_once 'assets/sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <!-- Head -->
-        <?php
-        require_once '../../includes/head.php';
-        ?>
-    </head>
-    <body>
-        <!-- Preloader y Overlay con Spinner -->
-        <?php
-        require_once '../../../assets/commons/preloader.php';
-        ?>
-        <div id="main-wrapper" class="p-0 bg-white">
-            <div class="auth-login position-relative overflow-hidden d-flex align-items-center justify-content-center px-7 px-xxl-0 rounded-3 h-n20">
-                <div class="auth-login-shape position-relative w-100">
-                    <div class="auth-login-wrapper card mb-0 container position-relative z-1 h-100 max-h-770" data-simplebar>
-                        <div class="card-body">
-                            <a href="../inicio/" class="">
-                                <img src="../../../assets/images/logos/logo-dark.svg" class="light-logo" alt="Logo-Dark" />
-                            </a>
-                            <div class="row align-items-center justify-content-around pt-6 pb-5">
-                                <div class="col-lg-6 col-xl-5 d-none d-lg-block">
-                                    <div class="text-center text-lg-start">
-                                        <img src="../../../assets/images/backgrounds/login-security.png" alt="" class="img-fluid" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-xl-5">
-                                    <h2 class="mb-6 fs-8 fw-bolder">Revisa tu correo</h2>
-                                    <p class="fs-4">
-                                        Te enviamos un código de verificación a tu correo electrónico <br>
-                                        <span><?php echo htmlspecialchars($correoElectronico); ?></span><br>
-                                        <span>Ingresa el código recibido, en el campo de abajo.</span>
-                                    </p>
 
-                                    <form id="formValidarCodigo">
-                                        <div class="mb-7">
-                                            <label class="form-label fw-semibold">Escribe el código de seguridad</label>
-                                            <div class="d-flex justify-content-between">
-                                                <input type="text" class="form-control py-6 text-center mx-1" id="codigo1" name="codigo[]" maxlength="1" required>
-                                                <input type="text" class="form-control py-6 text-center mx-1" id="codigo2" name="codigo[]" maxlength="1" required>
-                                                <input type="text" class="form-control py-6 text-center mx-1" id="codigo3" name="codigo[]" maxlength="1" required>
-                                                <input type="text" class="form-control py-6 text-center mx-1" id="codigo4" name="codigo[]" maxlength="1" required>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-warning w-100 mb-4 rounded-pill">Validar Cuenta</button>
-                                        <a href='../inicio/' class="btn btn-outline-warning w-100 rounded-pill">Cancelar</a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+<head>
+    <?php require_once '../../includes/head.php'; ?>
+</head>
+
+<body>
+    <?php require_once '../../../assets/commons/preloader.php'; ?>
+
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <a href="../inicio/">
+                    <img src="../../../assets/images/logos/logo-dark.svg" alt="Logo">
+                </a>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-header auth-header--center">
+                    <div class="auth-icon-circle auth-icon-circle--info">
+                        <i class="fas fa-envelope-open-text"></i>
                     </div>
+                    <h1 class="auth-title">Revisa tu correo</h1>
+                    <p class="auth-subtitle">
+                        Enviamos un código de verificación a<br>
+                        <span class="auth-highlight"><?php echo htmlspecialchars($correoElectronico); ?></span>
+                    </p>
                 </div>
+
+                <form id="formValidarCodigo">
+                    <label class="auth-label" style="text-align:center; display:block;">Código de seguridad</label>
+                    <div class="auth-otp-group">
+                        <input type="text" class="auth-otp-input" id="codigo1" name="codigo[]" maxlength="1" required
+                            inputmode="numeric">
+                        <input type="text" class="auth-otp-input" id="codigo2" name="codigo[]" maxlength="1" required
+                            inputmode="numeric">
+                        <input type="text" class="auth-otp-input" id="codigo3" name="codigo[]" maxlength="1" required
+                            inputmode="numeric">
+                        <input type="text" class="auth-otp-input" id="codigo4" name="codigo[]" maxlength="1" required
+                            inputmode="numeric">
+                    </div>
+
+                    <button type="submit" class="auth-btn auth-btn--primary">Validar Código</button>
+                    <a href="../inicio/" class="auth-btn auth-btn--outline">
+                        <i class="fas fa-arrow-left me-1" style="font-size:0.8rem;"></i> Cancelar
+                    </a>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                &copy; <?php echo date('Y'); ?> Fundación Cardenal Garibi Rivera
             </div>
         </div>
-        <?php
-        require_once '../../includes/scripts.php';
-        ?>
-        <!-- Script para manejar la solicitud de envío de correo -->
-        <script src="api/validacion.js"></script>
+    </div>
 
-    </body>
+    <?php require_once '../../includes/scripts.php'; ?>
+    <script src="api/validacion.js"></script>
+</body>
 
 </html>
