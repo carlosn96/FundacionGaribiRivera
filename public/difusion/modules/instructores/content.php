@@ -1,6 +1,4 @@
-<link rel="stylesheet" href="instructores-premium.css">
-
-<div class="instructores-premium-wrapper container-fluid py-4">
+<div class="bg-light container-fluid py-4">
     <!-- Header Hero -->
     <div class="text-center mb-5">
         <h2 class="display-6 fw-bold text-dark mb-2">Directorio de Instructores</h2>
@@ -11,8 +9,8 @@
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
             <!-- Tab Navigation -->
-            <ul class="nav nav-pills premium-nav-tabs d-inline-flex mx-auto mb-5 shadow-sm" role="tablist"
-                style="display: flex !important;">
+            <ul class="nav nav-pills nav-pills bg-light p-2 rounded-pill shadow-sm d-inline-flex mx-auto mb-5 shadow-sm"
+                role="tablist" style="display: flex !important;">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link active d-flex align-items-center rounded-pill" data-bs-toggle="tab"
                         href="#listInstructorsTab" role="tab" aria-controls="listInstructorsTab" aria-selected="true">
@@ -28,21 +26,22 @@
             </ul>
 
             <!-- Tab Content -->
-            <div class="tab-content premium-tab-content mt-2">
+            <div class="tab-content tab-content mt-2">
                 <!-- Tab Pane for Listing Instructors -->
                 <div class="tab-pane fade show active" id="listInstructorsTab" role="tabpanel"
                     aria-labelledby="listInstructorsTab">
                     <div
                         class="d-flex flex-column flex-md-row align-items-center justify-content-between w-100 mb-4 bg-white p-3 rounded-4 shadow-sm border border-light">
-                        <div class="premium-search-box position-relative w-100 flex-grow-1 mb-3 mb-md-0 me-md-4">
+                        <div
+                            class="bg-white rounded-pill shadow-sm border position-relative w-100 flex-grow-1 mb-3 mb-md-0 me-md-4">
                             <i
                                 class="ti ti-search position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-primary"></i>
-                            <input type="text" class="form-control premium-search ps-5 py-2 w-100" id="searchInstructor"
-                                placeholder="Buscar por nombre o apellido...">
+                            <input type="text" class="form-control bg-transparent border-0 shadow-none ps-5 py-2 w-100"
+                                id="searchInstructor" placeholder="Buscar por nombre o apellido...">
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <div class="btn-group premium-view-switcher rounded-pill shadow-sm border" role="group"
+                            <div class="btn-group bg-white rounded-pill shadow-sm border" role="group"
                                 aria-label="View switcher">
                                 <button type="button" class="btn btn-sm rounded-pill px-3 active"
                                     id="btn-grid-view-instructors" aria-label="Vista de cuadrícula">
@@ -60,9 +59,9 @@
 
                     <!-- Table View -->
                     <div id="instructorsTableView"
-                        class="premium-table-container rounded-4 shadow-sm overflow-hidden mt-4" style="display: none;">
+                        class="card shadow-sm border-0 rounded-4 shadow-sm overflow-hidden mt-4" style="display: none;">
                         <div class="table-responsive bg-white">
-                            <table id="instructorsTable" class="table premium-table align-middle mb-0">
+                            <table id="instructorsTable" class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
                                         <th class="border-0 text-uppercase fw-bold text-muted">Instructor</th>
@@ -83,7 +82,7 @@
                     <form id="instructorForm" class="needs-validation">
 
                         <!-- Section: Profile Picture -->
-                        <div class="premium-form-card">
+                        <div class="card shadow-sm border-0 mb-4">
                             <div class="card-header bg-success-subtle border-success-subtle">
                                 <h6 class="mb-0 text-success"><i class="ti ti-photo-circle fs-5 me-2"></i>Fotografía de
                                     Perfil</h6>
@@ -93,7 +92,9 @@
                                     <label for="fotografiaInstructor" class="form-label d-block m-0">
                                         <div class="mb-3">
                                             <img id="previewImage" src="../../../assets/images/profile/user-1.jpg"
-                                                alt="Imagen de perfil" class="preview-image-premium shadow">
+                                                alt="Imagen de perfil"
+                                                class="rounded-circle border border-4 border-white shadow"
+                                                style="width: 120px; height: 120px; object-fit: cover;">
                                         </div>
                                         <span class="btn btn-outline-success rounded-pill px-4 shadow-sm"><i
                                                 class="ti ti-upload fs-5 me-2"></i> Subir imagen (opcional)</span>
@@ -107,14 +108,14 @@
                         </div>
 
                         <!-- Section: Personal Information -->
-                        <div class="premium-form-card">
+                        <div class="card shadow-sm border-0 mb-4">
                             <div class="card-header">
                                 <h6 class="mb-0"><i class="ti ti-id fs-5 me-2"></i>Información Personal</h6>
                             </div>
                             <div class="card-body">
                                 <div class="row g-4">
                                     <div class="col-md-12">
-                                        <div class="form-floating premium-floating">
+                                        <div class="form-floating form-floating">
                                             <input type="text" class="form-control" id="nombreInstructor"
                                                 name="nombreInstructor" placeholder="Nombre" required>
                                             <label for="nombreInstructor">
@@ -123,7 +124,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-floating premium-floating">
+                                        <div class="form-floating form-floating">
                                             <input type="text" class="form-control" id="apellidoPaterno"
                                                 name="apellidoPaterno" placeholder="Apellido Paterno" required>
                                             <label for="apellidoPaterno">
@@ -132,7 +133,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-floating premium-floating">
+                                        <div class="form-floating form-floating">
                                             <input type="text" class="form-control" id="apellidoMaterno"
                                                 name="apellidoMaterno" placeholder="Apellido Materno" required>
                                             <label for="apellidoMaterno">
@@ -145,7 +146,7 @@
                         </div>
 
                         <!-- Section: Contact Information -->
-                        <div class="premium-form-card">
+                        <div class="card shadow-sm border-0 mb-4">
                             <div class="card-header">
                                 <h6 class="mb-0"><i class="ti ti-address-book fs-5 me-2"></i>Información de Contacto
                                 </h6>
@@ -153,7 +154,7 @@
                             <div class="card-body">
                                 <div class="row g-4">
                                     <div class="col-md-6">
-                                        <div class="form-floating premium-floating">
+                                        <div class="form-floating form-floating">
                                             <input type="email" class="form-control" id="correoInstructor"
                                                 name="correoInstructor" placeholder="Correo electrónico" required>
                                             <label for="correoInstructor">
@@ -162,7 +163,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-floating premium-floating">
+                                        <div class="form-floating form-floating">
                                             <input type="tel" class="form-control" id="telefonoInstructor"
                                                 name="telefonoInstructor" placeholder="Teléfono">
                                             <label for="telefonoInstructor">
@@ -177,7 +178,7 @@
                         <!-- Save Button -->
                         <div class="d-flex justify-content-end mb-5">
                             <button type="submit"
-                                class="btn btn-primary premium-btn d-flex align-items-center py-3 px-5 shadow">
+                                class="btn btn-primary rounded-pill d-flex align-items-center py-3 px-5 shadow">
                                 <i class="ti ti-device-floppy fs-4 me-2"></i>
                                 Registrar Instructor
                             </button>

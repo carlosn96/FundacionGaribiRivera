@@ -1,7 +1,6 @@
 <?php
 require_once '../../../../../loader.php';
 
-
 class AsistenciaTallerAPI extends API
 {
 
@@ -13,32 +12,36 @@ class AsistenciaTallerAPI extends API
     public function getTalleresPorEtapa()
     {
         $idEtapa = $this->getData("id_etapa");
-        getAdminEtapaFormacion()->listarTalleresPorEtapa();
-        $talleres = $dao->listarTalleresPorEtapa($idEtapa);
-        $this->exito($talleres);
+        $talleres = getAdminTaller()->listarTalleresPorEtapa($idEtapa);
+        $this->enviarRespuesta($talleres);
     }
 
-    public function getEmprendedoresPorEtapa()
+    public function getEmprendedoresPorEtapaTaller()
     {
-        $idEtapa = $this->getParams()->id_etapa;
-        $dao = new EmprendedorDAO();
-        $emprendedores = $dao->listarPorEtapa($idEtapa);
-        $this->exito($emprendedores);
+        $idEtapa = $this->getData("id_etapa");
+        $idTaller = $this->getData("id_taller");
+        $emprendedores = getAdminTaller()->recuperarListaInscritosPorTaller($idTaller, $idEtapa);
+        $this->enviarRespuesta($emprendedores);
     }
 
     public function registrarAsistencia()
     {
-        $data = json_decode($this->getParams()->data);
-        $dao = new AsistenciaTallerDAO();
-        $idTaller = $data->id_taller;
-        $fecha = $data->fecha;
-        $emprendedores = $data->emprendedores;
+        $idTaller = $this->getData('id_taller');
+        $idEtapa = $this->getData('id_etapa');
+        $asistencias = $this->getData('asistencias');
+
+        $admin = getAdminTaller();
         $result = true;
-        foreach ($emprendedores as $idEmprendedor) {
-            $result = $result && $dao->guardarAsistencia($idTaller, $idEmprendedor, $fecha);
+
+        foreach ($asistencias as $asistencia) {
+            $idEmprendedor = $asistencia['id_emprendedor'];
+            $asiste = $asistencia['asiste'];
+            $observacion = $asistencia['observacion'] ?? null;
+            $res = $admin->actualizarAsistencia($idTaller, $idEmprendedor, $idEtapa, $asiste, $observacion);
+            $result = $result && $res;
         }
-        $this->exito($result);
+        $this->enviarRespuesta(["mensaje" => $result ? "Asistencia guardada correctamente" : "Error guardando asistencias", "es_valor_error" => !$result]);
     }
 }
 
-AsistenciaTaller::start();
+AsistenciaTallerAPI::start();

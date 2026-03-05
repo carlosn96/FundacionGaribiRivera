@@ -3,7 +3,8 @@
 require_once '../../includes/proyectosTemplate.php';
 
 renderizarPlantillaProyectos(
-    __DIR__, [
-    'api/asistenciaTaller.mock.js'
+    __DIR__,
+    [
+        'api/asistenciaTaller.js'
     ]
 );

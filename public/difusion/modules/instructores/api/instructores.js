@@ -91,14 +91,14 @@ function construirCardsInstructores(instructores) {
         const dataInstructorStr = JSON.stringify(i).replace(/"/g, "'");
         const card = `
         <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
-            <div class="card instructor-card h-100">
-                <div class="instructor-banner"></div>
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="bg-primary bg-opacity-10 w-100" style="height: 80px;"></div>
                 <div class="card-body p-4 text-center d-flex flex-column align-items-center">
-                    <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombreCompleto}" class="instructor-avatar bg-white">
+                    <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombreCompleto}" class="rounded-circle border border-4 border-white shadow-sm bg-white" style="width: 90px; height: 90px; object-fit: cover; margin-top: -45px; position: relative; z-index: 1;">
                     <h5 class="fw-bold mt-3 mb-1 text-dark">${i.nombreCompleto}</h5>
-                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 mb-3">Instructor</span>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 mb-3">Instructor</span>
                     
-                    <div class="mt-auto w-100 instructor-actions rounded-4 px-2 py-3 d-flex justify-content-center gap-3">
+                    <div class="mt-auto w-100 bg-light border-top rounded-4 p-3 d-flex justify-content-center gap-3">
                         <a href="../instructor/?id=${i.id}" class="btn btn-primary rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Detalles">
                             <i class="fs-5 ti ti-eye"></i>
                         </a>
@@ -133,7 +133,7 @@ function construirTablaInstructores(instructores) {
                         </div>
                         <div>
                             <h6 class="mb-0 fw-semibold text-dark">
-                                <a href="../instructor/?id=${instructor.id}" class="text-dark text-decoration-none premium-link">${instructor.nombreCompleto}</a>
+                                <a href="../instructor/?id=${instructor.id}" class="text-dark fw-bold text-decoration-none">${instructor.nombreCompleto}</a>
                             </h6>
                             <span class="text-muted small">${instructor.correoElectronico}</span>
                         </div>

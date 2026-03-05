@@ -8,10 +8,9 @@ function ready() {
     if (isNaN(id)) {
         salir();
     } else {
-        crearPeticion(urlAPI, {case: "recuperarInstructor", data: "id=" + id}, (res) => {
+        crearPeticion(urlAPI, { case: "recuperarInstructor", data: "id=" + id }, (res) => {
             construirCardInstructor(res.instructor);
             construirTablaTalleres(res.talleres);
-            setChart();
         });
     }
 }
@@ -19,18 +18,25 @@ function ready() {
 
 function construirCardInstructor(instructor) {
     if ((typeof instructor === 'object' && instructor !== null && Object.keys(instructor).length > 0) ||
-            (Array.isArray(instructor) && instructor.length > 0)) {
+        (Array.isArray(instructor) && instructor.length > 0)) {
         $('#nombre').text(instructor.nombreCompleto);
         $('#profile').attr('src', 'data:image/jpeg;base64,' + instructor.fotografia);
         const details = [
-            {label: "Teléfono", value: instructor.telefono || "N/A"},
-            {label: "Correo", value: instructor.correoElectronico}
+            { label: "Teléfono Móvil", value: instructor.telefono || "No especificado", icon: "ti-phone" },
+            { label: "Correo Electrónico", value: instructor.correoElectronico, icon: "ti-mail" }
         ];
         $('#instructor-details').empty();
         details.forEach(detail => {
-            const listItem = $('<li>').addClass('py-2')
-                    .append($('<p>').addClass('fw-normal text-dark mb-0')
-                            .html(`${detail.label}: <span class="fw-light ms-1">${detail.value}</span>`));
+            const listItem = $('<li>').addClass('list-group-item px-0 d-flex align-items-center py-3 border-bottom-0')
+                .html(`
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="ti ${detail.icon} fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">${detail.label}</p>
+                            <h6 class="mb-0 fw-bold text-dark mt-1">${detail.value}</h6>
+                        </div>
+                    `);
             $('#instructor-details').append(listItem);
         });
     } else {
@@ -45,178 +51,41 @@ function construirTablaTalleres(talleres) {
 
     talleres.forEach(taller => {
         const fila = $('<tr>');
-        fila.append($('<td>').text(taller.nombre));
-        fila.append($('<td>').text(taller.tipoTaller.val));
-        fila.append($('<td>').text(taller.evaluacionHabilitada ? 'Sí' : 'No'));
+
+        // Columna 1: Nombre del Taller
+        fila.append($('<td class="ps-4">').html(`<span class="fw-semibold text-dark">${taller.nombre}</span>`));
+
+        // Columna 2: Modalidad (Badge)
+        fila.append($('<td>').html(`<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-1">${taller.tipoTaller.val}</span>`));
+
+        // Columna 3: Evaluaciones Habilitada (Icon Toggle)
+        const evalIcon = taller.evaluacionHabilitada
+            ? `<i class="ti ti-check text-success fs-5"></i>`
+            : `<i class="ti ti-x text-danger fs-5"></i>`;
+        fila.append($('<td class="text-center">').html(evalIcon));
+
+        // Columna 4: Observaciones / URL
         if (urlRegex.test(taller.observaciones)) {
-            fila.append($('<td>').html(`<a href="${taller.observaciones}" target="_blank" class="text-info">Acceder</a>`));
+            fila.append($('<td class="pe-4">').html(`<a href="${taller.observaciones}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill"><i class="ti ti-external-link me-1"></i>Material</a>`));
         } else {
             // Si no es una URL, mostrar el texto de manera truncada
-            const texto = taller.observaciones.length > 100 ?
-                    taller.observaciones.substring(0, 100) + '...' :
-                    taller.observaciones;
-            fila.append($('<td>')
-                    .text(texto)
-                    .attr('title', taller.observaciones)
-                    .css({
-                        'max-width': '200px', // Establecer un ancho máximo para la celda
-                        'white-space': 'nowrap', // Evitar que el texto se divida en varias líneas
-                        'overflow': 'hidden', // Ocultar el texto que se desborda
-                        'text-overflow': 'ellipsis' // Añadir puntos suspensivos cuando el texto se corta
-                    })
-                    );
+            const texto = taller.observaciones.length > 50 ?
+                taller.observaciones.substring(0, 50) + '...' :
+                taller.observaciones;
+            fila.append($('<td class="pe-4 text-muted small">')
+                .text(texto || "-")
+                .attr('title', taller.observaciones)
+                .css({
+                    'max-width': '150px',
+                    'white-space': 'nowrap',
+                    'overflow': 'hidden',
+                    'text-overflow': 'ellipsis'
+                })
+            );
         }
         $('#tablaTalleres tbody').append(fila);
     });
+
+    // Actualizar el contador de la tarjeta
+    $('#total-talleres').text(`${talleres.length} Registro${talleres.length !== 1 ? 's' : ''}`);
 }
-
-function setChart() {
-    var options_realtime = {
-        series: [
-            {
-                data: data.slice(),
-            },
-        ],
-        chart: {
-            fontFamily: "inherit",
-            id: "realtime",
-            height: 350,
-            type: "line",
-            animations: {
-                enabled: true,
-                easing: "linear",
-                dynamicAnimation: {
-                    speed: 1000,
-                },
-            },
-            toolbar: {
-                show: false,
-            },
-
-            zoom: {
-                enabled: false,
-            },
-        },
-        grid: {
-            borderColor: "transparent",
-        },
-        colors: ["var(--bs-primary)"],
-        dataLabels: {
-            enabled: false,
-        },
-        stroke: {
-            curve: "smooth",
-        },
-        markers: {
-            size: 0,
-        },
-        xaxis: {
-            type: "datetime",
-            range: XAXISRANGE,
-            labels: {
-                style: {
-                    colors: [
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                    ],
-                },
-            },
-        },
-        yaxis: {
-            max: 100,
-            labels: {
-                style: {
-                    colors: [
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                        "#a1aab2",
-                    ],
-                },
-            },
-        },
-        tooltip: {
-            theme: "dark",
-        },
-        legend: {
-            show: false,
-        },
-    };
-
-    var chart_line_realtime = new ApexCharts(
-            document.querySelector("#chart-line-real-time"),
-            options_realtime
-            );
-    chart_line_realtime.render();
-
-    window.setInterval(function () {
-        getNewSeries(lastDate, {
-            min: 10,
-            max: 90,
-        });
-
-        chart_line_realtime.updateSeries([
-            {
-                data: data,
-            },
-        ]);
-    }, 800);
-}
-
-
-
-  var lastDate = 0;
-  var data = [];
-  var TICKINTERVAL = 86400000;
-  let XAXISRANGE = 777600000;
-
-  function getDayWiseTimeSeries(baseval, count, yrange) {
-    var i = 0;
-    while (i < count) {
-      var x = baseval;
-      var y =
-        Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-      data.push({
-        x,
-        y,
-      });
-      lastDate = baseval;
-      baseval += TICKINTERVAL;
-      i++;
-    }
-  }
-
-  getDayWiseTimeSeries(new Date("11 Feb 2017 GMT").getTime(), 10, {
-    min: 10,
-    max: 90,
-  });
-
-  function getNewSeries(baseval, yrange) {
-    var newDate = baseval + TICKINTERVAL;
-    lastDate = newDate;
-
-    for (var i = 0; i < data.length - 10; i++) {
-      data[i].x = newDate - XAXISRANGE - TICKINTERVAL;
-      data[i].y = 0;
-    }
-
-    data.push({
-      x: newDate,
-      y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
-    });
-  }
