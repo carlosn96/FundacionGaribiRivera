@@ -78,12 +78,7 @@
                                             <div class="invalid-feedback">Por favor, ingrese una contraseña.</div>
                                         </div>
 
-                                        <style>
-                                            .form-check-input:checked {
-                                                background-color: var(--bs-warning);
-                                                border-color: var(--bs-warning);
-                                            }
-                                        </style>
+                                        
                                         <div class="mb-4 form-check ms-1">
                                             <input type="checkbox" class="form-check-input border-warning shadow-none"
                                                 id="terminos" name="terminos" required style="cursor: pointer;">

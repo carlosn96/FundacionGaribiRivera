@@ -82,4 +82,57 @@ class TallerDAO extends DAO
         $prep->agregarEntidad($instructor);
         return $prep->ejecutar();
     }
+
+    public function listarTalleresPorEtapa($idEtapa)
+    {
+        $sql = "SELECT c.id_taller, t.nombreTaller as nombre_taller, DATE_FORMAT(c.fecha, '%d/%m/%Y') as fecha 
+                FROM cronograma_taller c
+                JOIN listar_talleres t ON c.id_taller = t.idTaller
+                WHERE c.id_etapa = ? 
+                ORDER BY c.fecha ASC";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idEtapa);
+        return $prep->ejecutarConsultaMultiple();
+    }
+
+    public function recuperarListaInscritos($idTaller, $idEtapa)
+    {
+        $sql = "SELECT e.id, e.nombre, e.apellidos, e.correo_electronico, e.numero_celular, e.fotografia,
+                       COALESCE(a.asiste, 0) as asiste, a.observacion
+                FROM listar_emprendedores_por_etapa e
+                LEFT JOIN asistencia_taller a 
+                       ON e.id = a.id_emprendedor AND a.id_taller = ? AND a.id_etapa = ?
+                WHERE e.id_etapa = ?";
+
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idTaller);
+        $prep->agregarInt($idEtapa);
+        $prep->agregarInt($idEtapa);
+        $res = $prep->ejecutarConsultaMultiple();
+
+        // Transformar de BIN a Base64 usando la utilidad del sistema
+        if ($res && is_array($res)) {
+            foreach ($res as &$row) {
+                if (!empty($row['fotografia'])) {
+                    $row['fotografia'] = Util::binToBase64($row['fotografia']);
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    public function actualizarAsistencia($idTaller, $idAsistente, $idEtapa, $asiste, $observacion)
+    {
+        $sql = "INSERT INTO asistencia_taller (id_taller, id_emprendedor, id_etapa, asiste, observacion, fecha) 
+                VALUES (?, ?, ?, ?, ?, CURDATE()) 
+                ON DUPLICATE KEY UPDATE asiste = VALUES(asiste), observacion = VALUES(observacion), fecha = VALUES(fecha)";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idTaller);
+        $prep->agregarInt($idAsistente);
+        $prep->agregarInt($idEtapa);
+        $prep->agregarInt($asiste);
+        $prep->agregarString($observacion !== null ? $observacion : "");
+        return $prep->ejecutar();
+    }
 }

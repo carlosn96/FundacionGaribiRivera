@@ -3,7 +3,7 @@
     <!-- Header con estadísticas resumidas -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="dashboard-header-card card border-0 shadow-sm mb-4 overflow-hidden">
+            <div class="card border-0 shadow-sm mb-4 overflow-hidden">
                 <div class="card-body p-4 position-relative">
                     <!-- Decoración de fondo -->
                     <div class="header-bg-decoration"></div>
@@ -29,7 +29,7 @@
                             <small class="text-muted d-block mb-1 fw-semibold">
                                 <i class="fas fa-clock me-1"></i>Última actualización
                             </small>
-                            <span class="badge bg-primary-gradient px-3 py-2" id="lastUpdate">
+                            <span class="badge bg-primary text-white px-3 py-2" id="lastUpdate">
                                 <i class="fas fa-sync-alt me-1"></i>Cargando...
                             </span>
                         </div>
@@ -46,7 +46,7 @@
                 <div class="card-header bg-gradient-light border-0 py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                            <span class="filter-icon-badge">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded bg-primary text-white p-2">
                                 <i class="fas fa-filter"></i>
                             </span>
                             Filtros de Búsqueda
@@ -182,25 +182,25 @@
     <div class="row g-3 g-md-4 mb-4" id="summaryCards">
         <!-- Tarjeta de Emprendedores -->
         <div class="col-12 col-sm-6 col-lg-4">
-            <div class="summary-card card border-0 shadow-hover h-100 overflow-hidden">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
                 <div class="card-body p-4 position-relative">
-                    <div class="card-bg-pattern card-bg-primary"></div>
+                    <div class="position-absolute top-0 end-0 translate-middle-y bg-primary rounded-circle opacity-10" style="width: 120px; height: 120px; margin-top: 30px; margin-right: -30px;"></div>
                     <div class="d-flex justify-content-between align-items-start position-relative">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="category-badge badge-primary">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-3 p-2 bg-primary bg-opacity-10 text-primary">
                                     <i class="fas fa-chart-line"></i>
                                 </span>
                                 <div class="text-uppercase fw-bold text-primary small">Emprendedores</div>
                             </div>
-                            <div class="metric-value h2 fw-bold text-dark mb-2 count-up" id="totalEmprendedores"
+                            <div class="display-5 fw-bold text-dark mb-2 count-up" id="totalEmprendedores"
                                 data-target="0">0</div>
                             <div class="metric-change text-success small">
                                 <i class="fas fa-arrow-up me-1"></i>
                                 <span>+0%</span> vs. período anterior
                             </div>
                         </div>
-                        <div class="icon-wrapper icon-primary">
+                        <div class="d-flex align-items-center justify-content-center text-primary">
                             <i class="fas fa-users fa-2x"></i>
                         </div>
                     </div>
@@ -216,25 +216,25 @@
 
         <!-- Tarjeta de Capacitación -->
         <div class="col-12 col-sm-6 col-lg-4">
-            <div class="summary-card card border-0 shadow-hover h-100 overflow-hidden">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
                 <div class="card-body p-4 position-relative">
-                    <div class="card-bg-pattern card-bg-success"></div>
+                    <div class="position-absolute top-0 end-0 translate-middle-y bg-success rounded-circle opacity-10" style="width: 120px; height: 120px; margin-top: 30px; margin-right: -30px;"></div>
                     <div class="d-flex justify-content-between align-items-start position-relative">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="category-badge badge-success">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-3 p-2 bg-success bg-opacity-10 text-success">
                                     <i class="fas fa-check-circle"></i>
                                 </span>
                                 <div class="text-uppercase fw-bold text-success small">Capacitación</div>
                             </div>
-                            <div class="metric-value h2 fw-bold text-dark mb-2 count-up" id="totalCapacitacion"
+                            <div class="display-5 fw-bold text-dark mb-2 count-up" id="totalCapacitacion"
                                 data-target="0">0</div>
                             <div class="metric-change text-success small">
                                 <i class="fas fa-arrow-up me-1"></i>
                                 <span>+0%</span> completados
                             </div>
                         </div>
-                        <div class="icon-wrapper icon-success">
+                        <div class="d-flex align-items-center justify-content-center text-success">
                             <i class="fas fa-graduation-cap fa-2x"></i>
                         </div>
                     </div>
@@ -250,25 +250,25 @@
 
         <!-- Tarjeta de Créditos -->
         <div class="col-12 col-sm-6 col-lg-4">
-            <div class="summary-card card border-0 shadow-hover h-100 overflow-hidden">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
                 <div class="card-body p-4 position-relative">
-                    <div class="card-bg-pattern card-bg-info"></div>
+                    <div class="position-absolute top-0 end-0 translate-middle-y bg-info rounded-circle opacity-10" style="width: 120px; height: 120px; margin-top: 30px; margin-right: -30px;"></div>
                     <div class="d-flex justify-content-between align-items-start position-relative">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="category-badge badge-info">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-3 p-2 bg-info bg-opacity-10 text-info">
                                     <i class="fas fa-dollar-sign"></i>
                                 </span>
                                 <div class="text-uppercase fw-bold text-info small">Créditos</div>
                             </div>
-                            <div class="metric-value h2 fw-bold text-dark mb-2 count-up" id="totalCreditos"
+                            <div class="display-5 fw-bold text-dark mb-2 count-up" id="totalCreditos"
                                 data-target="0">0</div>
                             <div class="metric-change text-info small">
                                 <i class="fas fa-dollar-sign me-1"></i>
                                 <span>$0</span> otorgados
                             </div>
                         </div>
-                        <div class="icon-wrapper icon-info">
+                        <div class="d-flex align-items-center justify-content-center text-info">
                             <i class="fas fa-dollar-sign fa-2x"></i>
                         </div>
                     </div>
@@ -287,13 +287,13 @@
     <div class="row g-4">
         <!-- Medio de Conocimiento -->
         <div class="col-12 col-xl-6">
-            <div class="chart-card card border-0 shadow-hover h-100">
-                <div class="card-header chart-header-primary border-0 py-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white border-0 py-3">
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
-                                <span class="chart-icon-badge">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded bg-white bg-opacity-25 p-2">
                                     <i class="fas fa-bullhorn"></i>
                                 </span>
                                 ¿Cómo te enteraste de la Fundación?
@@ -373,13 +373,13 @@
 
         <!-- Razón Recurre -->
         <div class="col-12 col-xl-6">
-            <div class="chart-card card border-0 shadow-hover h-100">
-                <div class="card-header chart-header-success border-0 py-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white border-0 py-3">
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
-                                <span class="chart-icon-badge">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded bg-white bg-opacity-25 p-2">
                                     <i class="fas fa-question-circle"></i>
                                 </span>
                                 Recurres a la Fundación para:
@@ -459,13 +459,13 @@
 
         <!-- Solicita Crédito -->
         <div class="col-12 col-xl-6">
-            <div class="chart-card card border-0 shadow-hover h-100">
-                <div class="card-header chart-header-info border-0 py-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-dark border-0 py-3">
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
-                                <span class="chart-icon-badge">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded bg-white bg-opacity-25 p-2">
                                     <i class="fas fa-hand-holding-usd"></i>
                                 </span>
                                 El crédito lo solicitarías para:
@@ -544,13 +544,13 @@
 
         <!-- Utiliza Crédito -->
         <div class="col-12 col-xl-6">
-            <div class="chart-card card border-0 shadow-hover h-100">
-                <div class="card-header chart-header-warning border-0 py-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning text-dark border-0 py-3">
                     <div
                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
-                                <span class="chart-icon-badge">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded bg-white bg-opacity-25 p-2">
                                     <i class="fas fa-shopping-cart"></i>
                                 </span>
                                 El crédito lo utilizarías para:

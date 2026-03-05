@@ -8,34 +8,13 @@
     <link rel="icon" href="../../../assets/images/logos/ico.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .card {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .preloader.hidden {
-            display: none;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="../../../assets/css/custom-overrides.css">
 </head>
 
-<body>
+<body class="bg-light">
     <!-- Preloader -->
-    <div class="preloader" id="preloader">
+    <div class="preloader-error" id="preloader">
         <div class="spinner-border text-warning" role="status">
             <span class="visually-hidden">Cargando...</span>
         </div>

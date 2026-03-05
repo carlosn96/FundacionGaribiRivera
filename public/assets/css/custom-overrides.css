@@ -1,10 +1,12 @@
 @charset "UTF-8";
 @import url(https://fonts.googleapis.com/css2?family=Work+Sans:wght@200;300;400;500;600;700;800&family=Poppins:wght@200;300;400;500;600;700;800&display=swap);
+
 /* DataTables pagination adjustments to ensure proper spacing and appearance
    Uses project CSS variables and Bootstrap values where available. */
 .dataTables_wrapper .dataTables_paginate {
 	text-align: right;
 }
+
 .dataTables_wrapper .dataTables_paginate .paginate_button {
 	display: inline-block;
 	min-width: 2.25rem;
@@ -17,9 +19,11 @@
 	text-decoration: none !important;
 	cursor: pointer;
 }
+
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
 	background-color: var(--bs-gray-100);
 }
+
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
 	color: #fff !important;
 	background-color: var(--bs-primary);
@@ -33,20 +37,25 @@
 }
 
 /* Override btn-danger to ensure a clear, accessible red (avoid near-black variant) */
-:root .btn-danger, .btn-danger {
+:root .btn-danger,
+.btn-danger {
 	--bs-btn-color: #fff;
-	--bs-btn-bg: #dc3545; /* Bootstrap default red */
+	--bs-btn-bg: #dc3545;
+	/* Bootstrap default red */
 	--bs-btn-border-color: #dc3545;
 	color: #fff !important;
 	background-color: #dc3545 !important;
 	border-color: #dc3545 !important;
 }
-.btn-danger:hover, .btn-danger:focus {
+
+.btn-danger:hover,
+.btn-danger:focus {
 	--bs-btn-bg: #c82333;
 	--bs-btn-border-color: #bd2130;
 	background-color: #c82333 !important;
 	border-color: #bd2130 !important;
 }
+
 .btn-danger:active {
 	background-color: #b21f2d !important;
 	border-color: #b21f2d !important;
@@ -54,13 +63,13 @@
 
 /* Ensure outline/box-shadow for focus uses red tint for accessibility */
 .btn-danger:focus {
-	box-shadow: 0 0 0 .2rem rgba(220,53,69,0.35) !important;
+	box-shadow: 0 0 0 .2rem rgba(220, 53, 69, 0.35) !important;
 }
 
 /* Fix: cloud icon size/alignment in "Datos y Exportación" headers */
 /* Targets the icon wrapper created inside modules that append to #impacto-container */
-#impacto-container .card-body .mb-2.text-primary > i.ti,
-#impacto-container .card-body .mb-2.text-primary > i {
+#impacto-container .card-body .mb-2.text-primary>i.ti,
+#impacto-container .card-body .mb-2.text-primary>i {
 	font-size: 2.25rem !important;
 	display: inline-block !important;
 	line-height: 1 !important;
@@ -70,4 +79,105 @@
 /* Ensure primary color applies to icon */
 #impacto-container .card-body .mb-2.text-primary {
 	color: var(--bs-primary) !important;
+}
+
+/* ================================ */
+/* FUNDACION GARIBI RIVERA IDENTITY */
+/* ================================ */
+:root {
+	/* Exact Institutional Colors */
+	--bs-primary: #183f37;
+	--bs-primary-rgb: 24, 63, 55;
+
+	--bs-warning: #e2b800;
+	/* Institutional Gold */
+	--bs-warning-rgb: 226, 184, 0;
+
+	--bs-success: #11998e;
+	--bs-success-rgb: 17, 153, 142;
+
+	--bs-info: #4facfe;
+	--bs-info-rgb: 79, 172, 254;
+
+	/* Typograpy & Backgrounds */
+	--bs-body-font-family: 'Work Sans', 'Poppins', sans-serif;
+	--bs-body-bg: #f8fafc;
+	--bs-body-color: #2d3748;
+
+	/* Modern Premium Radiuses */
+	--bs-border-radius: 0.75rem;
+	--bs-border-radius-sm: 0.5rem;
+	--bs-border-radius-lg: 1rem;
+	--bs-border-radius-xl: 1.25rem;
+	--bs-border-radius-2xl: 1.5rem;
+
+	/* Premium Shadows */
+	--bs-box-shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.03);
+	--bs-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+	--bs-box-shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Mode Overrides */
+[data-bs-theme="dark"] {
+	--bs-body-bg: #0f172a;
+	--bs-body-color: #f1f5f9;
+	--bs-border-color: #334155;
+	--bs-primary: #e2b800;
+	/* Use Gold for contrast in dark mode */
+	--bs-primary-rgb: 226, 184, 0;
+}
+
+/* ================================ */
+/* GLOBAL COMPONENT STANDARDIZATION */
+/* ================================ */
+.card {
+	border: none;
+	transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	box-shadow: var(--bs-box-shadow-sm) !important;
+	border-radius: var(--bs-border-radius-lg);
+}
+
+.card:hover {
+	box-shadow: var(--bs-box-shadow) !important;
+	transform: translateY(-4px);
+}
+
+.btn-primary {
+	--bs-btn-color: #fff;
+	--bs-btn-bg: var(--bs-primary);
+	--bs-btn-border-color: var(--bs-primary);
+	--bs-btn-hover-color: #fff;
+	--bs-btn-hover-bg: #112c26;
+	/* Darker Green */
+	--bs-btn-hover-border-color: #112c26;
+	--bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+	--bs-btn-active-color: #fff;
+	--bs-btn-active-bg: #112c26;
+	--bs-btn-active-border-color: #112c26;
+}
+
+.btn-warning {
+	--bs-btn-color: #fff;
+	--bs-btn-bg: var(--bs-warning);
+	--bs-btn-border-color: var(--bs-warning);
+	--bs-btn-hover-color: #fff;
+	--bs-btn-hover-bg: #b39100;
+	/* Darker Gold */
+	--bs-btn-hover-border-color: #b39100;
+	--bs-btn-focus-shadow-rgb: var(--bs-warning-rgb);
+	--bs-btn-active-color: #fff;
+	--bs-btn-active-bg: #b39100;
+	--bs-btn-active-border-color: #b39100;
+}
+
+.form-control {
+	background-color: var(--bs-body-bg);
+	border-radius: var(--bs-border-radius);
+	padding: 0.6rem 1rem;
+	font-size: 0.95rem;
+}
+
+.form-control:focus {
+	box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.15);
+	border-color: var(--bs-primary);
 }
