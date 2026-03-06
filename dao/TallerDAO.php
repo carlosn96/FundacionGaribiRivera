@@ -6,9 +6,10 @@ class TallerDAO extends DAO
     private const LISTAR_TALLERES = "listar_talleres";
     private const LISTAR_INSTRUCTORES = "listar_taller_instructor";
     private const LISTAR_NOMBRE_TALLERES = "SELECT id_taller id, CONCAT(nombre_taller, ' (', tipo_taller_descripcion, ')') nombre FROM listar_talleres";
-    private const ACTUALIZAR_TALLER = "CALL actualizar_taller(?,?,?,?,?,?)";
-    private const GUARDAR_TALLER = "CALL guardar_taller(?,?,?,?,?)";
+    private const ACTUALIZAR_TALLER = "CALL actualizar_taller(?,?,?,?,?,?,?)";
+    private const GUARDAR_TALLER = "CALL guardar_taller(?,?,?,?,?,?)";
     private const GUARDAR_INSTRUCTOR = "CALL guardar_instructor_taller(?)";
+    private const ACTUALIZAR_INSTRUCTOR = "CALL actualizar_instructor_taller(?)";
 
     private function listarTalleresCondicion($where)
     {
@@ -76,9 +77,21 @@ class TallerDAO extends DAO
         return $this->eliminarPorId("taller", "id_taller", $id);
     }
 
+    public function eliminarInstructor($id) 
+    {
+        return $this->eliminarPorId("taller_instructor", "id_instructor", $id);
+    }
+
     public function guardarInstructor(InstructorTaller $instructor)
     {
         $prep = $this->prepararInstruccion(self::GUARDAR_INSTRUCTOR);
+        $prep->agregarEntidad($instructor);
+        return $prep->ejecutar();
+    }
+
+    public function actualizarInstructor(InstructorTaller $instructor)
+    {
+        $prep = $this->prepararInstruccion(self::ACTUALIZAR_INSTRUCTOR);
         $prep->agregarEntidad($instructor);
         return $prep->ejecutar();
     }

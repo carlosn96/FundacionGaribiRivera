@@ -37,7 +37,7 @@ class AdminTaller extends Admin
         $observaciones = $rs["observaciones"];
         $instructor = isset($rs["nombreInstructor"]) ? $this->construirInstructor($rs) : $rs["instructor"];
         $numeroTaller = $rs["numeroTaller"] ?? 0;
-        $id = $rs["id"] ?? 0;
+        $id = $rs["idTaller"] ?? 0;
         return new Taller($nombre, $tipoTaller, $evaluacionHabilitada, $observaciones, $instructor, $numeroTaller, $id);
         //$taller->establecerTotalInscritos($this->dao->obtenerTotalInscritosPorTaller($taller->obtenerID()));
         //return $taller;
@@ -129,7 +129,7 @@ class AdminTaller extends Admin
 
     public function actualizarInstructor($instructor)
     {
-        return $this->dao->actualizarInstructor($instructor);
+        return $this->dao->actualizarInstructor($this->construirInstructor($instructor));
     }
 
     public function agregarTaller(Taller $taller)

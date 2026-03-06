@@ -19,8 +19,10 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link d-flex align-items-center rounded-pill" data-bs-toggle="tab"
-                        href="#newInstructorTab" role="tab" aria-controls="newInstructorTab" aria-selected="false">
-                        <i class="ti ti-user-plus fs-5 me-2"></i> Nuevo Instructor
+                        href="#newInstructorTab" role="tab" aria-controls="newInstructorTab" aria-selected="false"
+                        id="tabNuevoInstructor">
+                        <i class="ti ti-user-plus fs-5 me-2"></i> <span id="tabNuevoInstructorText">Nuevo
+                            Instructor</span>
                     </a>
                 </li>
             </ul>
@@ -80,6 +82,7 @@
                 <!-- Tab Pane for New Instructor Form -->
                 <div class="tab-pane fade" id="newInstructorTab" role="tabpanel" aria-labelledby="newInstructorTab">
                     <form id="instructorForm" class="needs-validation">
+                        <input type="hidden" id="idInstructor" name="idInstructor" value="0">
 
                         <!-- Section: Profile Picture -->
                         <div class="card shadow-sm border-0 mb-4">
@@ -177,10 +180,10 @@
 
                         <!-- Save Button -->
                         <div class="d-flex justify-content-end mb-5">
-                            <button type="submit"
+                            <button type="submit" id="btnGuardarInstructor"
                                 class="btn btn-primary rounded-pill d-flex align-items-center py-3 px-5 shadow">
                                 <i class="ti ti-device-floppy fs-4 me-2"></i>
-                                Registrar Instructor
+                                <span id="btnGuardarInstructorText">Registrar Instructor</span>
                             </button>
                         </div>
                     </form>

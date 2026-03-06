@@ -39,7 +39,25 @@ function ready() {
             }
         }
     });
+
+    // Solo resetear cuando se hace click manual en la pestaña de "Nuevo" 
+    // y para asegurar que es intencional, podemos hacerlo siempre.
+    $('#tabNuevoInstructor').on('click', function (e) {
+        // Si el texto dice "Editar", y el usuario hace click en el TAB, lo forzamos a volver a "Nuevo"
+        if ($("#idInstructor").val() !== "0") {
+            reseteoFormularioInstructor();
+        }
+    });
+
     fijarSubmitFormulario("instructorForm", urlAPI, "guardarInstructor");
+}
+
+function reseteoFormularioInstructor() {
+    $("#instructorForm")[0].reset();
+    $("#idInstructor").val("0");
+    $("#tabNuevoInstructorText").text("Nuevo Instructor");
+    $("#btnGuardarInstructorText").text("Registrar Instructor");
+    $("#previewImage").attr("src", "../../../assets/images/profile/user-1.jpg");
 }
 
 function configurarBusquedaInstructores() {
@@ -99,10 +117,13 @@ function construirCardsInstructores(instructores) {
                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 mb-3">Instructor</span>
                     
                     <div class="mt-auto w-100 bg-light border-top rounded-4 p-3 d-flex justify-content-center gap-3">
-                        <a href="../instructor/?id=${i.id}" class="btn btn-primary rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Detalles">
+                        <!-- <a href="../instructor/?id=${i.id}" class="btn btn-primary rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Detalles">
                             <i class="fs-5 ti ti-eye"></i>
+                        </a> -->
+                        <a href="javascript:void(0)" onclick="editarInstructor(${i.id})" class="btn btn-primary rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                            <i class="fs-5 ti ti-pencil"></i>
                         </a>
-                        <a href="javascript:void(0)" onclick="eliminarInstructor(${i.id})" class="btn btn-outline-danger rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
+                        <a href="javascript:void(0)" onclick="eliminarInstructor(${i.id})" class="btn btn-outline-danger rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
                             <i class="fs-5 ti ti-trash"></i>
                         </a>
                     </div>
@@ -142,13 +163,18 @@ function construirTablaInstructores(instructores) {
                 <td class="text-muted fw-medium">${instructor.telefono}</td>
                 <td class="text-end">
                     <div class="dropdown">
-                        <a href="javascript:void(0)" class="btn btn-light rounded-circle shadow-sm text-muted dropdown-toggle-hide d-flex align-items-center justify-content-center ms-auto" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false" style="width: 36px; height: 36px;">
+                        <a href="javascript:void(0)" class="btn btn-light rounded-circle shadow-sm text-muted dropdown-toggle-hide d-flex align-items-center justify-content-center ms-auto p-0 flex-shrink-0" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false" style="width: 36px; height: 36px; min-width: 36px; aspect-ratio: 1/1;">
                             <i class="ti ti-dots-vertical fs-5"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2 p-2" aria-labelledby="dropdownMenuButtonTable_${instructor.id}">
-                            <li>
+                            <!-- <li>
                                 <a class="dropdown-item d-flex align-items-center py-2 px-3 rounded-2 mb-1 text-primary" href="../instructor/?id=${instructor.id}">
                                     <i class="fs-4 ti ti-eye me-3"></i> Detalles
+                                </a>
+                            </li> -->
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 rounded-2 mb-1 text-primary" href="javascript:void(0)" onclick="editarInstructor(${instructor.id})">
+                                    <i class="fs-4 ti ti-pencil me-3"></i> Editar
                                 </a>
                             </li>
                             <li>
@@ -175,6 +201,36 @@ function eliminarInstructor(id) {
     alertaEliminar({
         mensajeAlerta: "Se eliminará el instructor",
         url: urlAPI,
-        data: { "case": "eliminarInstructor", "data": `id=${id}` }
+        data: { "case": "eliminarInstructor", "data": `idInstructor=${id}` }
     });
+}
+
+function editarInstructor(id) {
+    const instructor = allInstructores.find(i => i.id == id);
+    if (!instructor) return;
+
+    // Resetform firstly
+    reseteoFormularioInstructor();
+
+    // Populate data
+    $("#idInstructor").val(instructor.id);
+    $("#nombreInstructor").val(instructor.nombre);
+    $("#apellidoPaterno").val(instructor.apellidoPaterno);
+    $("#apellidoMaterno").val(instructor.apellidoMaterno);
+    $("#correoInstructor").val(instructor.correoElectronico);
+    $("#telefonoInstructor").val(instructor.telefono);
+
+    if (instructor.fotografia) {
+        $("#previewImage").attr("src", `data:image/jpeg;base64,${instructor.fotografia}`);
+    } else {
+        $("#previewImage").attr("src", "../../../assets/images/profile/user-1.jpg");
+    }
+
+    $("#tabNuevoInstructorText").text("Editar Instructor");
+    $("#btnGuardarInstructorText").text("Guardar Cambios");
+
+    // Switch to tab
+    const tabEl = document.querySelector('#tabNuevoInstructor');
+    const tab = new bootstrap.Tab(tabEl);
+    tab.show();
 }
