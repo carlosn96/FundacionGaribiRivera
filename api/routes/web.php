@@ -17,41 +17,25 @@
 
 $router->get(
     '/', function () use ($router) {
-        $appUrl = env('APP_URL');
+        $routes = $router->getRoutes();
+        $appUrl = rtrim(env('APP_URL'), '/');
+        $accessPoints = [];
+
+        foreach ($routes as $route) {
+            $method = isset($route['method']) ? $route['method'] : '';
+            $uri = isset($route['uri']) ? ltrim($route['uri'], '/') : '';
+            
+            if ($method && $uri !== '') {
+                $accessPoints[] = $method . ' ' . $appUrl . '/' . $uri;
+            }
+        }
+
         $result = [
-            'app'     => 'Fundacion Garibi Rivera API',
+            'app'               => 'Fundacion Garibi Rivera API',
             'framework-version' => $router->app->version(),
-            'app-version' => "2025.08.24",
-            'author'  => 'Juan Carlos Gonzalez A.',
-            'accesPoints' => [
-                'POST ' . $appUrl . '/auth/verify-email' => 'Verifica si un correo electrónico ya está registrado y envía un código de verificación si no lo está.',
-                'POST ' . $appUrl . '/auth/verify-code' => 'Verifica el código de verificación enviado al correo electrónico del usuario.',
-                'POST ' . $appUrl . '/auth/register' => 'Registra una nueva cuenta de usuario después de verificar el código.',
-                'POST ' . $appUrl . '/auth/login' => 'Autentica a un usuario y devuelve un token de acceso.',
-                'POST ' . $appUrl . '/auth/logout' => 'Cierra la sesión del usuario.',
-                'POST ' . $appUrl . '/auth/refresh' => 'Renueva el token de acceso del usuario.',
-                'GET ' . $appUrl . '/auth/me' => 'Obtiene la información del usuario autenticado.',
-                'POST ' . $appUrl . '/auth/forgot-password' => 'Solicita el envío de un código de verificación al correo electrónico del usuario para restablecer contraseña.',
-                'POST ' . $appUrl . '/auth/reset-password' => 'Verifica el código y actualiza la contraseña del usuario.',
-                'POST ' . $appUrl . '/linea-base/{idUsuario}' => 'Guarda la línea base completa para un usuario.',
-                'POST ' . $appUrl . '/linea-base/preliminar/{idUsuario}' => 'Guarda la sección preliminar de la línea base.',
-                'POST ' . $appUrl . '/linea-base/identificacion/{idUsuario}' => 'Guarda la sección de identificación de la línea base.',
-                'POST ' . $appUrl . '/linea-base/domicilio/{idUsuario}' => 'Guarda la sección de domicilio de la línea base.',
-                'POST ' . $appUrl . '/linea-base/socioeconomico/{idUsuario}' => 'Guarda la sección socioeconómica de la línea base.',
-                'POST ' . $appUrl . '/linea-base/negocio/{idUsuario}' => 'Guarda la sección de negocio de la línea base.',
-                'POST ' . $appUrl . '/linea-base/analisis-negocio/{idUsuario}' => 'Guarda la sección de análisis de negocio de la línea base.',
-                'POST ' . $appUrl . '/linea-base/administracion-ingresos/{idUsuario}' => 'Guarda la sección de administración de ingresos de la línea base.',
-                'GET ' . $appUrl . '/linea-base/catalogos/{tipo}' => 'Obtiene la lista de un catálogo específico (ej. estados-civiles, escolaridades, etc.).',
-                'GET ' . $appUrl . '/linea-base/catalogos' => 'Obtiene todos los catálogos disponibles.',
-                'GET ' . $appUrl . '/linea-base/catalogos/municipios/{estadoId}' => 'Obtiene los municipios para un estado específico.',
-                'GET ' . $appUrl . '/linea-base/catalogos/codigos-postales/{municipioId}' => 'Obtiene los códigos postales para un municipio específico.',
-                'GET ' . $appUrl . '/linea-base/catalogos/codigos-postales?per_page={per_page}' => 'Obtiene todos los códigos postales con paginación.',
-                'GET ' . $appUrl . '/linea-base/catalogos/codigos-postales/search?q={query}&per_page={per_page}' => 'Busca códigos postales por código postal o colonia con paginación.',
-                'GET ' . $appUrl . '/linea-base/catalogos/codigo-postal/{id}' => 'Obtiene un código postal específico por su ID.',
-                'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales?per_page={per_page}' => 'Obtiene todas las comunidades parroquiales con paginación.',
-                'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales/search?q={query}&per_page={per_page}' => 'Busca comunidades parroquiales por nombre con paginación.',
-                'GET ' . $appUrl . '/linea-base/catalogos/comunidades-parroquiales/{decanatoId}' => 'Obtiene las comunidades parroquiales para un decanato específico.'
-            ]
+            'app-version'       => "2025.08.24",
+            'author'            => 'Juan Carlos Gonzalez A.',
+            'accessPoints'      => $accessPoints
         ];
         return response()->json($result);
     }
