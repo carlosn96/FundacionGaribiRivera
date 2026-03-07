@@ -3,14 +3,15 @@
  * Main stylesheet entry point for Fundación Garibi Rivera admin template.
  *
  * This file imports all modular CSS files in the correct cascade order:
- *  1. themes.css            - Dark mode and color theme (Blue_Theme) overrides
- *  2. bootstrap-core.css    - Bootstrap v5.3.2 CSS variables and base/reboot styles
- *  3. bootstrap-layout.css  - Bootstrap grid system, containers, and responsive breakpoints
+ *  1. themes.css               - Dark mode and color theme (Blue_Theme) overrides
+ *  2. bootstrap-core.css       - Bootstrap v5.3.2 CSS variables and base/reboot styles
+ *  3. bootstrap-layout.css     - Bootstrap grid system, containers, and responsive breakpoints
  *  4. bootstrap-components.css - Bootstrap UI components (tables, forms, buttons, modals, etc.)
  *  5. bootstrap-utilities.css  - Bootstrap utility classes (spacing, display, flex, text, sizing)
- *  6. layout-sidebar.css    - Application layout wrappers and sidebar navigation
- *  7. navbar.css            - Topbar, header, and navigation dropdown components
- *  8. rtl.css               - Right-to-left (RTL) language support overrides
+ *  6. layout-sidebar.css       - Application layout wrappers and sidebar navigation
+ *  7. navbar.css               - Topbar, header, and navigation dropdown components
+ *  8. rtl.css                  - Right-to-left (RTL) language support overrides
+ *  9. custom-overrides.css     - Institutional brand palette and component overrides (must be last)
  */
 
 @import url('themes.css');
@@ -21,3 +22,4 @@
 @import url('layout-sidebar.css');
 @import url('navbar.css');
 @import url('rtl.css');
+@import url('custom-overrides.css');
