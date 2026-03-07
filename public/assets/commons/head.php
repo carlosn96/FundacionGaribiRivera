@@ -14,7 +14,6 @@
 <link rel="stylesheet" href="../../../assets/css/icons/fontawesome.css" />
 
 <link rel="stylesheet" href="../../../assets/css/styles.css" />
-<link rel="stylesheet" href="../../../assets/css/custom-overrides.css" />
 <link rel="stylesheet" href="../../../assets/fonts/tabler-icons/tabler-icons.css" />
 <!-- jvectormap  -->
 <link rel="stylesheet" href="../../../assets/libs/jvectormap/jquery-jvectormap.css">
