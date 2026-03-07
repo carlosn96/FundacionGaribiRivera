@@ -111,8 +111,8 @@
 }
 
 .auth-icon-circle--success {
-    background: rgba(25, 135, 84, 0.10);
-    color: #198754;
+    background: rgba(17, 153, 142, 0.10);
+    color: #11998e;
 }
 
 .auth-icon-circle--danger {
@@ -198,7 +198,7 @@
 }
 
 .was-validated .auth-input:valid {
-    border-color: #198754;
+    border-color: #11998e;
 }
 
 /* Validation via JS-toggled .is-invalid / .is-valid (e.g. email check) */
@@ -212,8 +212,8 @@
 }
 
 .auth-input.is-valid {
-    border-color: #198754;
-    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
+    border-color: #11998e;
+    box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
 }
 
 /* ─── Password Toggle ─── */

@@ -2,7 +2,7 @@
     /* Brand Colors */
     --primary: #183f37;
     --primary-dark: #0f2420;
-    --accent: #f3d03e;
+    --accent: #e2b800;
     --success: #11998e;
     --info: #4facfe;
 
@@ -84,7 +84,7 @@ body {
 }
 
 .navbar-brand img {
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 25px rgba(243, 208, 62, 0.4)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.6));
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 25px rgba(226, 184, 0, 0.4)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.6));
     position: relative;
     z-index: 1;
 }
@@ -127,19 +127,8 @@ body {
 }
 
 
-
-.nav-link:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.nav-link.active {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.12);
-}
-
 .dropdown-menu {
-    border: 2px solid var(--border) !important;
+    border: 2px solid var(--border-color) !important;
     border-radius: 12px !important;
     padding: 0.5rem 0;
 }
@@ -154,7 +143,7 @@ body {
 }
 
 .dropdown-item:hover {
-    background: var(--light-bg);
+    background: var(--bg-hover);
     color: var(--primary);
 }
 
@@ -170,13 +159,7 @@ body {
 
 .nav-link:hover .img-usuario {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(243, 208, 62, 0.4);
-}
-
-/* MAIN LAYOUT */
-main {
-    min-height: calc(100vh - 70px);
-    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(226, 184, 0, 0.4);
 }
 
 /* MAIN LAYOUT */
@@ -203,7 +186,7 @@ main {
     right: -10%;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(243, 208, 62, 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(226, 184, 0, 0.08) 0%, transparent 70%);
     border-radius: 50%;
 }
 
@@ -410,7 +393,6 @@ main {
     display: inline-block;
     padding: 0.3rem 0.7rem;
     background: rgba(24, 63, 55, 0.08);
-    /* Maybe change opacity for dark mode? Keeping for now */
     border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -634,14 +616,14 @@ main {
 }
 
 .btn-primary-action {
-    background: linear-gradient(135deg, var(--accent) 0%, #d4b534 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #c9a500 100%);
     color: var(--primary);
 }
 
 .btn-primary-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(243, 208, 62, 0.3);
-    color: #183f37;
+    box-shadow: 0 8px 20px rgba(226, 184, 0, 0.3);
+    color: var(--primary);
 }
 
 .btn-secondary-action {
@@ -771,7 +753,7 @@ main {
 
     .navbar-nav .nav-link:hover,
     .navbar-nav .nav-link.active {
-        background: var(--light-bg);
+        background: var(--bg-hover);
         color: var(--primary) !important;
     }
 
