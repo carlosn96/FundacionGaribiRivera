@@ -1,0 +1,603 @@
+/*
+ * layout-sidebar.css
+ * Custom application layout and sidebar navigation styles
+ * for Fundación Garibi Rivera admin template.
+ * Includes: main wrapper (#main-wrapper), page wrapper (.page-wrapper),
+ * left sidebar (.left-sidebar), scrollbar customizations (simplebar),
+ * brand logo, sidebar navigation links, icons, active/hover states,
+ * and collapsible arrow indicators.
+ */
+
+#main-wrapper {
+	position: relative;
+	background-color: #f6f9fb
+}
+
+body {
+	font-family: "Plus Jakarta Sans", sans-serif !important
+}
+
+.page-wrapper {
+	min-height: 100vh
+}
+
+.page-wrapper .body-wrapper>.container-fluid,
+.page-wrapper .body-wrapper>.container-lg,
+.page-wrapper .body-wrapper>.container-md,
+.page-wrapper .body-wrapper>.container-sm,
+.page-wrapper .body-wrapper>.container-xl,
+.page-wrapper .body-wrapper>.container-xxl {
+	transition: .2s ease-in;
+	padding-top: 16px !important
+}
+
+.body-wrapper {
+	position: relative;
+	min-height: 100vh
+}
+
+.body-wrapper>.container-fluid,
+.body-wrapper>.container-lg,
+.body-wrapper>.container-md,
+.body-wrapper>.container-sm,
+.body-wrapper>.container-xl,
+.body-wrapper>.container-xxl {
+	margin-bottom: 20px;
+	transition: .2s ease-in
+}
+
+a {
+	text-decoration: none
+}
+
+ul {
+	list-style: none;
+	padding: 0
+}
+
+@media (min-width:1300px) {
+	[data-layout=vertical] body .page-wrapper {
+		margin-left: 270px
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .page-wrapper {
+		margin-left: 65px
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .nav-small-cap {
+		text-align: center
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .nav-small-cap .nav-small-cap-icon {
+		display: inline-block
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .logo-img {
+		width: 40px;
+		overflow: hidden
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .sidebar-nav .has-arrow::after {
+		display: none
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .sidebar-nav .sidebar-list .sidebar-list-item {
+		text-align: center
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar {
+		width: 65px;
+		box-shadow: 0 10px 20px rgba(0, 0, 0, .12)
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar .brand-logo {
+		padding: 0 12px
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar .scroll-sidebar {
+		padding: 12px;
+		height: calc(100vh - 120px)
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar .fixed-profile,
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar .hide-menu {
+		display: none
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover {
+		width: 270px;
+		z-index: 50
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .logo-img {
+		width: 100%
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .nav-small-cap {
+		text-align: left
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .nav-small-cap .nav-small-cap-icon {
+		display: none
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .fixed-profile,
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .hide-menu,
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .sidebar-nav .has-arrow::after {
+		display: inline-block
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .sidebar-nav .sidebar-list .sidebar-list-item {
+		text-align: left
+	}
+
+	[data-layout=vertical] body[data-sidebartype=mini-sidebar] .left-sidebar:hover .logo-img {
+		width: 100%
+	}
+}
+
+html[data-boxed-layout=boxed] .container-fluid,
+html[data-boxed-layout=boxed] .container-lg,
+html[data-boxed-layout=boxed] .container-md,
+html[data-boxed-layout=boxed] .container-sm,
+html[data-boxed-layout=boxed] .container-xl,
+html[data-boxed-layout=boxed] .container-xxl {
+	max-width: 1300px;
+	margin: 0 auto
+}
+
+.with-horizontal {
+	display: none
+}
+
+.with-vertical {
+	display: block
+}
+
+pre.code-view {
+	margin: 0;
+	margin-top: -15px !important;
+	overflow: unset !important
+}
+
+pre.code-view code {
+	margin-bottom: -20px;
+	white-space: pre-wrap
+}
+
+pre.code-view code.hljs {
+	border-radius: .25rem;
+	overflow-y: unset !important
+}
+
+.left-sidebar {
+	width: 270px;
+	background-color: var(--bs-body-bg);
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	transition: .2s ease-in;
+	height: 100%;
+	z-index: 99;
+	box-shadow: 0 2px 6px rgba(37, 83, 185, .1)
+}
+
+.left-sidebar .scroll-sidebar {
+	padding: 0 16px;
+	overflow-y: auto;
+	height: calc(100% - 200px)
+}
+
+.left-sidebar .scroll-sidebar .simplebar-track.simplebar-horizontal {
+	visibility: hidden !important
+}
+
+.simplebar-scrollbar:before {
+	background: rgba(0, 0, 0, .5) !important
+}
+
+.brand-logo {
+	min-height: 70px;
+	padding: 0 16px
+}
+
+.sidebar-nav ul .sidebar-item .sidebar-link {
+	color: var(--bs-dark);
+	display: flex;
+	white-space: nowrap;
+	align-items: center;
+	line-height: 25px;
+	position: relative;
+	margin: 5px 0;
+	padding: 5px 0;
+	font-size: 15px;
+	text-decoration: none
+}
+
+.sidebar-nav ul .sidebar-item .sidebar-link .aside-icon {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: 0 0 !important
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item {
+	padding: 8px 0;
+	transition: all .4s ease-in-out;
+	font-size: 14px;
+	border-bottom: 0
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item.active,
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item:hover {
+	opacity: 1
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item>.sidebar-link {
+	margin: 0;
+	opacity: .6
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item>.sidebar-link .sidebar-icon {
+	flex-shrink: 0;
+	margin-left: 17px;
+	margin-right: 22px;
+	width: 6px;
+	height: 6px;
+	background-color: var(--bs-dark);
+	border-radius: 100%
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item:last-child {
+	margin-bottom: 16px
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link.active {
+	font-weight: 600;
+	opacity: 1
+}
+
+.sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link.active.has-arrow::after {
+	border-color: var(--bs-primary)
+}
+
+.sidebar-nav ul .sidebar-item .first-level.in .has-arrow::after {
+	top: 18px
+}
+
+.sidebar-nav ul .sidebar-item .two-level .sidebar-item .sidebar-link {
+	padding: 5px 15px
+}
+
+.sidebar-nav ul .sidebar-item .three-level .sidebar-item .sidebar-link {
+	padding: 5px 30px
+}
+
+.sidebar-nav .sidebar-list .sidebar-list-item {
+	padding: 10px 0
+}
+
+.nav-small-cap {
+	padding: 5px 2px;
+	margin-top: 20px;
+	font-weight: 600;
+	font-size: 12px;
+	text-transform: uppercase
+}
+
+.nav-small-cap .nav-small-cap-icon {
+	display: none
+}
+
+.collapse.in {
+	display: block
+}
+
+.danger-hover-bg,
+.indigo-hover-bg,
+.info-hover-bg,
+.primary-hover-bg,
+.secondary-hover-bg,
+.success-hover-bg,
+.warning-hover-bg {
+	position: relative;
+	transition: all .4s ease-in-out
+}
+
+.danger-hover-bg::before,
+.indigo-hover-bg::before,
+.info-hover-bg::before,
+.primary-hover-bg::before,
+.secondary-hover-bg::before,
+.success-hover-bg::before,
+.warning-hover-bg::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: -16px;
+	width: 0;
+	height: 100%;
+	z-index: -1;
+	border-radius: 0 24px 24px 0;
+	transition: all .4s ease-in-out
+}
+
+.danger-hover-bg.btn-toggle[aria-expanded=true]::before,
+.danger-hover-bg:hover::before,
+.indigo-hover-bg.btn-toggle[aria-expanded=true]::before,
+.indigo-hover-bg:hover::before,
+.info-hover-bg.btn-toggle[aria-expanded=true]::before,
+.info-hover-bg:hover::before,
+.primary-hover-bg.btn-toggle[aria-expanded=true]::before,
+.primary-hover-bg:hover::before,
+.secondary-hover-bg.btn-toggle[aria-expanded=true]::before,
+.secondary-hover-bg:hover::before,
+.success-hover-bg.btn-toggle[aria-expanded=true]::before,
+.success-hover-bg:hover::before,
+.warning-hover-bg.btn-toggle[aria-expanded=true]::before,
+.warning-hover-bg:hover::before {
+	width: calc(100% + 16px)
+}
+
+.sidebar-item.selected .warning-hover-bg::after {
+	color: var(--bs-warning)
+}
+
+.sidebar-item.selected .warning-hover-bg .aside-icon,
+.sidebar-item.selected .warning-hover-bg .hide-menu {
+	color: var(--bs-warning)
+}
+
+.warning-hover-bg:hover .aside-icon,
+.warning-hover-bg:hover .hide-menu {
+	color: var(--bs-warning)
+}
+
+.warning-hover-bg.active .aside-icon,
+.warning-hover-bg.active .hide-menu {
+	color: var(--bs-warning)
+}
+
+.danger-hover-bg:hover .aside-icon,
+.danger-hover-bg:hover .hide-menu {
+	color: var(--bs-danger)
+}
+
+.danger-hover-bg.active .aside-icon,
+.danger-hover-bg.active .hide-menu {
+	color: var(--bs-danger)
+}
+
+.sidebar-item.selected .danger-hover-bg::after {
+	color: var(--bs-danger)
+}
+
+.sidebar-item.selected .danger-hover-bg .aside-icon,
+.sidebar-item.selected .danger-hover-bg .hide-menu {
+	color: var(--bs-danger)
+}
+
+.success-hover-bg:hover .aside-icon,
+.success-hover-bg:hover .hide-menu {
+	color: var(--bs-success)
+}
+
+.success-hover-bg.active .aside-icon,
+.success-hover-bg.active .hide-menu {
+	color: var(--bs-success)
+}
+
+.sidebar-item.selected .success-hover-bg::after {
+	color: var(--bs-success)
+}
+
+.sidebar-item.selected .success-hover-bg .aside-icon,
+.sidebar-item.selected .success-hover-bg .hide-menu {
+	color: var(--bs-success)
+}
+
+.primary-hover-bg:hover .aside-icon,
+.primary-hover-bg:hover .hide-menu {
+	color: var(--bs-primary)
+}
+
+.primary-hover-bg.active .aside-icon,
+.primary-hover-bg.active .hide-menu {
+	color: var(--bs-primary)
+}
+
+.sidebar-item.selected .primary-hover-bg::after {
+	color: var(--bs-primary)
+}
+
+.sidebar-item.selected .primary-hover-bg .aside-icon,
+.sidebar-item.selected .primary-hover-bg .hide-menu {
+	color: var(--bs-primary)
+}
+
+.indigo-hover-bg:hover .aside-icon,
+.indigo-hover-bg:hover .hide-menu {
+	color: var(--bs-indigo)
+}
+
+.indigo-hover-bg.active .aside-icon,
+.indigo-hover-bg.active .hide-menu {
+	color: var(--bs-indigo)
+}
+
+.sidebar-item.selected .indigo-hover-bg::after {
+	color: var(--bs-indigo)
+}
+
+.sidebar-item.selected .indigo-hover-bg .aside-icon,
+.sidebar-item.selected .indigo-hover-bg .hide-menu {
+	color: var(--bs-indigo)
+}
+
+.info-hover-bg:hover .aside-icon,
+.info-hover-bg:hover .hide-menu {
+	color: var(--bs-info)
+}
+
+.info-hover-bg.active .aside-icon,
+.info-hover-bg.active .hide-menu {
+	color: var(--bs-info)
+}
+
+.sidebar-item.selected .info-hover-bg::after {
+	color: var(--bs-info)
+}
+
+.sidebar-item.selected .info-hover-bg .aside-icon,
+.sidebar-item.selected .info-hover-bg .hide-menu {
+	color: var(--bs-info)
+}
+
+.secondary-hover-bg:hover .aside-icon,
+.secondary-hover-bg:hover .hide-menu {
+	color: var(--bs-secondary)
+}
+
+.secondary-hover-bg.active .aside-icon,
+.secondary-hover-bg.active .hide-menu {
+	color: var(--bs-secondary)
+}
+
+.sidebar-item.selected .secondary-hover-bg::after {
+	color: var(--bs-secondary)
+}
+
+.sidebar-item.selected .secondary-hover-bg .aside-icon,
+.sidebar-item.selected .secondary-hover-bg .hide-menu {
+	color: var(--bs-secondary)
+}
+
+#sidebarnav .selected .danger-hover-bg::before,
+#sidebarnav .selected .indigo-hover-bg::before,
+#sidebarnav .selected .info-hover-bg::before,
+#sidebarnav .selected .primary-hover-bg::before,
+#sidebarnav .selected .secondary-hover-bg::before,
+#sidebarnav .selected .success-hover-bg::before,
+#sidebarnav .selected .warning-hover-bg::before {
+	width: calc(100% + 16px)
+}
+
+#sidebarnav .sidebar-item .danger-hover-bg.active::before,
+#sidebarnav .sidebar-item .indigo-hover-bg.active::before,
+#sidebarnav .sidebar-item .info-hover-bg.active::before,
+#sidebarnav .sidebar-item .primary-hover-bg.active::before,
+#sidebarnav .sidebar-item .secondary-hover-bg.active::before,
+#sidebarnav .sidebar-item .success-hover-bg.active::before,
+#sidebarnav .sidebar-item .warning-hover-bg.active::before {
+	width: calc(100% + 16px)
+}
+
+.danger-hover-bg::before {
+	background-color: var(--bs-danger-bg-subtle)
+}
+
+.warning-hover-bg::before {
+	background-color: var(--bs-warning-bg-subtle)
+}
+
+.success-hover-bg::before {
+	background-color: var(--bs-success-bg-subtle)
+}
+
+.primary-hover-bg::before {
+	background-color: var(--bs-primary-bg-subtle)
+}
+
+.indigo-hover-bg::before {
+	background-color: #e5e5e5
+}
+
+.info-hover-bg::before {
+	background-color: var(--bs-info-bg-subtle)
+}
+
+.secondary-hover-bg::before {
+	background-color: var(--bs-secondary-bg-subtle)
+}
+
+@media (min-width:1300px) {
+
+	[data-layout=vertical] [data-sidebartype=mini-sidebar] .left-sidebar .sidebar-nav ul .sidebar-item .first-level .sidebar-item>.sidebar-link,
+	[data-layout=vertical] [data-sidebartype=mini-sidebar] .left-sidebar .sidebar-profile .sidebar-link {
+		padding: 5px 0
+	}
+}
+
+@media (min-width:1300px) {
+	[data-layout=vertical] body.mini-sidebar .left-sidebar {
+		width: 65px
+	}
+
+	[data-layout=vertical] body.mini-sidebar .left-sidebar:hover {
+		width: 270px;
+		position: fixed;
+		height: 100vh
+	}
+
+	[data-layout=vertical] body.mini-sidebar .left-sidebar:hover .logo-part {
+		width: auto;
+		overflow: unset
+	}
+
+	[data-layout=vertical] body.mini-sidebar .left-sidebar .logo-part {
+		width: 34px;
+		overflow: hidden
+	}
+}
+
+@media (max-width:1299.98px) {
+	.left-sidebar {
+		width: 270px;
+		position: fixed;
+		left: -270px;
+		height: 100%
+	}
+
+	.show-sidebar .left-sidebar {
+		left: 0
+	}
+
+	.show-sidebar .dark-transparent {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, .5);
+		z-index: 10
+	}
+}
+
+.sidebar-nav .has-arrow {
+	position: relative
+}
+
+.sidebar-nav .has-arrow::after {
+	position: absolute;
+	content: "";
+	width: 7px;
+	height: 7px;
+	border-width: 1px 0 0 1px;
+	border-style: solid;
+	transform: rotate(135deg) translate(0, -50%);
+	transform-origin: top;
+	top: 26px;
+	right: 20px;
+	transition: all .3s ease-out
+}
+
+.sidebar-nav .has-arrow[aria-expanded=true]::after,
+.sidebar-nav li.active>.has-arrow::after,
+.sidebar-nav li>.has-arrow.active::after {
+	margin-top: -3px;
+	transform: rotate(-135deg) translate(0, -50%)
+}
