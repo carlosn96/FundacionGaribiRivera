@@ -26,9 +26,9 @@ class AdminEstadisticas extends Admin
     /**
      * Orquesta la obtención de datos estadísticos demográficos y los devuelve como Array.
      */
-    public function obtenerEstadisticasDemograficas($fechaInicio = '', $fechaFin = '', $idEtapa = 0)
+    public function obtenerEstadisticasDemograficas($fechaInicio = '', $fechaFin = '', $idEtapa = 0, $tipoReporte = 'inscritos')
     {
-        return $this->dao->obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa);
+        return $this->dao->obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa, $tipoReporte);
     }
 
     private function formatearRespuestaMultiple($respuesta)
@@ -48,9 +48,9 @@ class AdminEstadisticas extends Admin
         return $respuesta;
     }
 
-    public function obtenerEstadisticasDetalle($fechaInicio = '', $fechaFin = '', $idEtapa = 0)
+    public function obtenerEstadisticasDetalle($fechaInicio = '', $fechaFin = '', $idEtapa = 0, $tipoReporte = 'inscritos')
     {
-        return $this->dao->obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa);
+        return $this->dao->obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa, $tipoReporte);
     }
 
 }

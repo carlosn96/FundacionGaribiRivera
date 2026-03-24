@@ -160,13 +160,13 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
                                     <li>
-                                        <a class="dropdown-item" href="javascript:descargarPDF();">
-                                            <i class="fas fa-file-pdf me-2 text-danger"></i>PDF
+                                        <a class="dropdown-item" href="javascript:descargarInscritosPDF();">
+                                            <i class="fas fa-user-plus me-2 text-danger"></i>Inscritos
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="javascript:reportePreview();">
-                                            <i class="fas fa-eye me-2 text-success"></i>Preview
+                                        <a class="dropdown-item" href="javascript:descargarCapacitadosPDF();">
+                                            <i class="fas fa-user-graduate me-2 text-success"></i>Capacitados
                                         </a>
                                     </li>
                                 </ul>

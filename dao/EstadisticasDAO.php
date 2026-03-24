@@ -4,7 +4,7 @@ class EstadisticasDAO extends DAO
 {
     private const RECUPERAR_ESTADISTICAS_LINEA_BASE = "CALL consultar_estadisticas_linea_base (?,?,?)";
     private const RECUPERAR_ESTADISTICAS_LINEA_BASE_DETALLES = "SELECT CAMPOS FROM estadisticas_linea_base_detalles lb";
-    private const RECUPERAR_ESTADISTICAS_DEMOGRAFICAS = "CALL consultar_estadistica_demografica(?,?,?)";
+    private const RECUPERAR_ESTADISTICAS_DEMOGRAFICAS = "CALL consultar_estadistica_demografica(?,?,?,?)";
 
     /**
      * Obtiene las estadísticas agregadas para el dashboard de línea base.
@@ -48,7 +48,7 @@ class EstadisticasDAO extends DAO
      * 
      * @return array Un arreglo con los datos filtrados.
      */
-    private function obtenerDetalleLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin)
+    private function obtenerDetalleLineaBase($seleccion, $etapa, $fechaInicio, $fechaFin, $tipoReporte = 'inscritos')
     {
         // Inicializar el array de condiciones
         $condiciones = [];
@@ -61,6 +61,43 @@ class EstadisticasDAO extends DAO
         // Filtrar por etapa si no está vacía
         if ($etapa) {
             $condiciones[] = "lb.idEtapa = $etapa";
+        }
+
+        if ($tipoReporte === 'capacitados') {
+            if (!empty($etapa)) {
+                $condiciones[] = "lb.idUsuario IN (
+                    SELECT ue.id_usuario 
+                    FROM asistencia_taller a
+                    JOIN usuario_emprendedor ue ON a.id_emprendedor = ue.id_emprendedor
+                    JOIN taller t ON a.id_taller = t.id_taller
+                    WHERE a.id_etapa = $etapa
+                      AND a.asiste = 1
+                      AND t.id_tipo_taller = 1
+                    GROUP BY a.id_emprendedor
+                    HAVING COUNT(a.id_asistencia) >= (
+                          SELECT COUNT(ct.id_cronograma) * 0.8
+                        FROM cronograma_taller ct
+                        JOIN taller t2 ON ct.id_taller = t2.id_taller
+                        WHERE ct.id_etapa = $etapa AND t2.id_tipo_taller = 1
+                    )
+                )";
+            } else {
+                $condiciones[] = "lb.idUsuario IN (
+                    SELECT ue.id_usuario 
+                    FROM asistencia_taller a
+                    JOIN usuario_emprendedor ue ON a.id_emprendedor = ue.id_emprendedor
+                    JOIN taller t ON a.id_taller = t.id_taller
+                    WHERE a.asiste = 1
+                      AND t.id_tipo_taller = 1
+                    GROUP BY a.id_emprendedor, a.id_etapa
+                    HAVING COUNT(a.id_asistencia) >= (
+                          SELECT COUNT(ct.id_cronograma) * 0.8
+                        FROM cronograma_taller ct
+                        JOIN taller t2 ON ct.id_taller = t2.id_taller
+                        WHERE ct.id_etapa = a.id_etapa AND t2.id_tipo_taller = 1
+                    )
+                )";
+            }
         }
 
         // Si no hay filtros, no se agregan condiciones
@@ -119,12 +156,13 @@ class EstadisticasDAO extends DAO
      * 
      * @return array Un arreglo con los datos demográficos organizados por categoría.
      */
-    public function obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa)
+public function obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $idEtapa, $tipoReporte = 'inscritos')
     {
         $prep = $this->prepararInstruccion(self::RECUPERAR_ESTADISTICAS_DEMOGRAFICAS);
         $prep->agregarNullableString(empty($fechaInicio) ? null : $fechaInicio);
         $prep->agregarNullableString(empty($fechaFin) ? null : $fechaFin);
         $prep->agregarInt($idEtapa);
+        $prep->agregarInt($tipoReporte === 'capacitados' ? 1 : 0);
         
         $resultado = $prep->ejecutarConsultaMultiple();
 
@@ -152,9 +190,9 @@ class EstadisticasDAO extends DAO
         return $datos;
     }
 
-    public function obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa)
+    public function obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $idEtapa, $tipoReporte = 'inscritos')
     {
-        return $this->obtenerDetalleLineaBase('*', $idEtapa, $fechaInicio, $fechaFin);
+        return $this->obtenerDetalleLineaBase('*', $idEtapa, $fechaInicio, $fechaFin, $tipoReporte);
     }
 
 }

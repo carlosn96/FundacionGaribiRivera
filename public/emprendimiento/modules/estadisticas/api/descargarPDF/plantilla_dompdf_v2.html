@@ -5,164 +5,170 @@
     <meta charset="UTF-8">
     <title>{{TITULO}}</title>
     <style>
-        /* CSS SIMPLE - Solo estilos básicos compatibles con Dompdf */
         body {
-            font-family: Helvetica, Arial, sans-serif;
+            font-family: "DejaVu Sans", Helvetica, Arial, sans-serif;
             font-size: 10px;
-            color: #000000;
+            color: #24362E;
             margin: 0;
             padding: 0;
+            background-color: #FFFFFF;
+            line-height: 1.4;
         }
 
         table {
             border-collapse: collapse;
+            page-break-inside: auto;
         }
 
-        /* Clases de utilidad simples */
-        .bold {
-            font-weight: bold;
-        }
+        thead { display: table-header-group; }
+        tbody { display: table-row-group; }
+        tr    { page-break-inside: avoid; }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .text-left {
-            text-align: left;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .uppercase {
-            text-transform: uppercase;
-        }
-
-        /* Colores */
-        .bg-green {
-            background-color: #173F35;
-        }
-
-        .bg-yellow {
-            background-color: #F2D34F;
-        }
-
-        .bg-yellow-light {
-            background-color: #F8EEC2;
-        }
-
-        .bg-white {
-            background-color: #FFFFFF;
-        }
-
-        .bg-gray {
-            background-color: #F4F4F4;
-        }
-
-        .text-white {
-            color: #FFFFFF;
-        }
-
-        .text-green {
-            color: #173F35;
-        }
-
-        .text-green-dark {
-            color: #1F5A4A;
-        }
-
-        .text-yellow {
-            color: #F2D34F;
-        }
-
-        /* Bordes simples */
-        .border-yellow {
-            border: 2px solid #F2D34F;
-        }
-
-        .border-yellow-light {
-            border: 2px solid #F8EEC2;
-        }
-
-        .border-left-green {
-            border-left: 3px solid #173F35;
-        }
-
-        .border-left-yellow {
-            border-left: 3px solid #F2D34F;
-        }
-
-        .border-bottom {
-            border-bottom: 1px solid #E0E0E0;
-        }
-
-        .border-bottom-thick {
-            border-bottom: 4px solid #F2D34F;
-        }
-
-        .border-top {
-            border-top: 2px solid #F8EEC2;
-        }
-
-        /* Encabezado con contenido del footer */
-        .header-footer {
-            text-align: center;
-            font-size: 8px;
-            color: #1F5A4A;
-            background-color: #F8EEC2;
-            padding: 5px;
-            margin: 10px 0;
-            border: 1px solid #F2D34F;
-        }
-
-        /* Reglas de página para Dompdf */
         @page {
-            margin: 1cm;
+            margin: 1.1cm 1.2cm;
             size: A4;
         }
 
-        /* Para repetir encabezados de tabla en saltos de página */
-        thead {
-            display: table-header-group;
+        /* ── Tipografía ── */
+        .bold        { font-weight: bold; }
+        .text-center { text-align: center; }
+        .text-right  { text-align: right; }
+        .uppercase   { text-transform: uppercase; }
+        .text-xs  { font-size: 7.5px; }
+        .text-sm  { font-size: 9px; }
+        .text-md  { font-size: 10px; }
+        .text-lg  { font-size: 12px; }
+        .text-xl  { font-size: 15px; }
+        .text-2xl { font-size: 18px; }
+
+        /* ── Paleta ── */
+        .bg-green        { background-color: #13493B; }
+        .bg-green-soft   { background-color: #EAF0EC; }
+        .bg-yellow-light { background-color: #FBF5D8; }
+        .bg-white        { background-color: #FFFFFF; }
+        .text-white      { color: #FFFFFF; }
+        .text-green      { color: #13493B; }
+        .text-green-dark { color: #0F3A30; }
+        .text-muted      { color: #6B7A70; }
+        .text-yellow     { color: #C9A800; }
+
+        /* ── Separadores ── */
+        .section-rule {
+            height: 2px;
+            background-color: #13493B;
+            margin: 0 0 2px 0;
+        }
+        .section-rule-thin {
+            height: 1px;
+            background-color: #D4E0D8;
+            margin: 0 0 8px 0;
         }
 
-        tbody {
-            display: table-row-group;
+        /* ── Encabezado de meta-información ── */
+        .doc-meta {
+            font-size: 7.5px;
+            color: #5A6B62;
+            padding: 4px 0 6px 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid #D4E0D8;
+        }
+
+        /* ── Sección label (título de bloque) ── */
+        .section-label {
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #13493B;
+            padding: 10px 0 4px 0;
+        }
+
+        /* ── Tabla de datos genérica ── */
+        .data-table { width: 100%; }
+        .data-table th {
+            background-color: #13493B;
+            color: #FFFFFF;
+            font-size: 7.5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px 6px;
+            text-align: left;
+        }
+        .data-table td {
+            padding: 5px 6px;
+            font-size: 8.5px;
+            border-bottom: 1px solid #E8EEEA;
+        }
+        .data-table tr:nth-child(even) td { background-color: #F5F8F6; }
+        .data-table tr:nth-child(odd)  td { background-color: #FFFFFF; }
+
+        /* ── Tarjeta de estadística (totales) ── */
+        .stat-cell {
+            text-align: center;
+            padding: 10px 8px;
+        }
+        .stat-number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #13493B;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 7.5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #5A6B62;
+            margin-top: 3px;
+        }
+
+        /* ── Pill de filtro ── */
+        .filter-pill {
+            display: inline-block;
+            font-size: 8px;
+            color: #0F3A30;
+            padding: 2px 0;
+            margin-bottom: 1px;
+        }
+
+        /* ── Tarjeta de municipio ── */
+        .mun-card {
+            padding: 7px 9px;
+            border-bottom: 1px solid #E8EEEA;
+        }
+        .mun-badge {
+            background-color: #13493B;
+            color: #E8C94A;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            padding: 3px 8px;
+            min-width: 28px;
         }
     </style>
 </head>
 
 <body>
-    <!-- CONTENEDOR PRINCIPAL -->
-    <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-            <td>
 
-                <!-- ENCABEZADO CON CONTENIDO DEL FOOTER -->
-                {{ENCABEZADO_FOOTER}}
+    <!-- META / ENCABEZADO -->
+    {{ENCABEZADO_FOOTER}}
 
-                <!-- HEADER -->
-                {{HEADER}}
+    <!-- HEADER INSTITUCIONAL -->
+    {{HEADER}}
 
-                
+    <!-- FILTROS APLICADOS -->
+    {{FILTROS_SECTION}}
 
-                <!-- TOTALES GENERALES -->
-                {{TOTALES_GENERALES}}
+    <!-- TOTALES GENERALES -->
+    {{TOTALES_GENERALES}}
 
-                <!-- ESTADISTICAS DEMOGRAFICAS -->
-                {{ESTADISTICAS_DEMOGRAFICAS}}
+    <!-- ESTADISTICAS DEMOGRAFICAS -->
+    {{ESTADISTICAS_DEMOGRAFICAS}}
 
-                <!-- MUNICIPIOS -->
-                {{MUNICIPIOS_SECTION}}
+    <!-- MUNICIPIOS -->
+    {{MUNICIPIOS_SECTION}}
 
-                <!-- DETALLES PARTICIPANTES -->
-                {{DETALLES_PARTICIPANTES}}
-
-            </td>
-        </tr>
-    </table>
+    <!-- DETALLES PARTICIPANTES -->
+    {{DETALLES_PARTICIPANTES}}
 
 </body>
-
 </html>

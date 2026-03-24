@@ -1215,8 +1215,12 @@ function reportePreview() {
     exportar('api/reportePreview/index.php');
 }
 
-function descargarPDF() {
-    exportar('api/descargarPDF/index.php');
+function descargarInscritosPDF() {
+    exportar('api/descargarPDF/index.php?tipoReporte=inscritos');
+}
+
+function descargarCapacitadosPDF() {
+    exportar('api/descargarPDF/index.php?tipoReporte=capacitados');
 }
 
 function validarCamposFormularioEstadisticas() {

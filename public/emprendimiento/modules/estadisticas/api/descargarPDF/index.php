@@ -33,9 +33,10 @@ function obtenerEstadisticasDemograficas()
     $fechaInicio = $campos["fechaInicio"] ?? '';
     $fechaFin = $campos["fechaFin"] ?? '';
     $etapa = intval($campos["etapa"]);
+    $tipoReporte = $_GET["tipoReporte"] ?? 'inscritos';
 
-    $data = getAdminEstadisticas()->obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $etapa);
-    $detalles = getAdminEstadisticas()->obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $etapa);
+    $data = getAdminEstadisticas()->obtenerEstadisticasDemograficas($fechaInicio, $fechaFin, $etapa, $tipoReporte);
+    $detalles = getAdminEstadisticas()->obtenerEstadisticasDetalle($fechaInicio, $fechaFin, $etapa, $tipoReporte);
 
     // Ordenar detalles por fecha de creación
     if (is_array($detalles)) {
@@ -68,6 +69,9 @@ function prepararDatosParaPlantilla()
     $result = obtenerEstadisticasDemograficas();
     $filtros = [];
 
+    $tipo = isset($_GET["tipoReporte"]) && $_GET["tipoReporte"] === 'capacitados' ? 'Capacitados' : 'Inscritos';
+    $filtros[] = 'Tipo de Reporte: ' . $tipo;
+
     // Agregar filtros aplicados
     if (!empty($result['etapa'])) {
         $filtros[] = 'Filtro de Etapa: ' . $result['etapa'];
@@ -85,6 +89,7 @@ function prepararDatosParaPlantilla()
         'etapa' => $result['etapa'],
         'filtros' => $filtros,
         'fechaInicio' => $result['fechaInicio'],
-        'fechaFin' => $result['fechaFin']
+        'fechaFin' => $result['fechaFin'],
+        'tipoReporte' => $tipo
     ];
 }

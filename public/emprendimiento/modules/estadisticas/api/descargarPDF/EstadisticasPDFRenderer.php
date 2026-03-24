@@ -19,478 +19,361 @@ class EstadisticasPDFRenderer
         $options = $this->dompdf->getOptions();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', false);
+        $options->set('defaultFont', 'DejaVu Sans');
         $this->dompdf->setOptions($options);
         $this->dompdf->setPaper('A4', 'portrait');
         $this->template = file_get_contents(self::TEMPLATE_DOMPDF_PATH);
-
     }
 
     public function render($stream = true)
     {
-        // Para plantilla Dompdf
-        $html = $this->template;
-        $date = Util::obtenerFechaActual('d-m-Y H:i:s');
+        $html  = $this->template;
+        $date  = Util::obtenerFechaActual('d-m-Y H:i:s');
+        $tipo  = $this->tipoReporte();
 
-        // Reemplazar placeholders principales
-        $html = str_replace('{{TITULO}}', 'Estadísticas Demográficas - Fundación Garibi Rivera', $html);
-        $html = str_replace('{{FECHA_GENERACION}}', $date, $html);
-        $html = str_replace('{{HEADER}}', $this->generarHeader(), $html);
-        $html = str_replace('{{ENCABEZADO_FOOTER}}', $this->generarEncabezadoFooter(), $html);
-
-        // Generar secciones
-        $html = str_replace('{{FILTROS_SECTION}}', $this->generarSeccionFiltros(), $html);
-        $html = str_replace('{{TOTALES_GENERALES}}', $this->generarTotalesGenerales(), $html);
+        $html = str_replace('{{TITULO}}',               'Estadísticas Demográficas de Emprendedores ' . $tipo . ' - Fundación Garibi Rivera', $html);
+        $html = str_replace('{{FECHA_GENERACION}}',     $date,                                         $html);
+        $html = str_replace('{{ENCABEZADO_FOOTER}}',    $this->generarEncabezadoFooter(),              $html);
+        $html = str_replace('{{HEADER}}',               $this->generarHeader(),                        $html);
+        $html = str_replace('{{FILTROS_SECTION}}',      $this->generarSeccionFiltros(),                $html);
+        $html = str_replace('{{TOTALES_GENERALES}}',    $this->generarTotalesGenerales(),              $html);
         $html = str_replace('{{ESTADISTICAS_DEMOGRAFICAS}}', $this->generarEstadisticasDemograficas(), $html);
-        $html = str_replace('{{MUNICIPIOS_SECTION}}', $this->generarSeccionMunicipios(), $html);
-        $html = str_replace('{{DETALLES_PARTICIPANTES}}', $this->generarDetallesParticipantes(), $html);
+        $html = str_replace('{{MUNICIPIOS_SECTION}}',   $this->generarSeccionMunicipios(),             $html);
+        $html = str_replace('{{DETALLES_PARTICIPANTES}}', $this->generarDetallesParticipantes(),       $html);
 
-        $this->dompdf->loadHtml($html);
+        $this->dompdf->loadHtml($html, 'UTF-8');
         $this->dompdf->render();
 
         if ($stream && php_sapi_name() !== 'cli') {
-            $this->dompdf->stream(self::NOMBRE_PDF . " " . $date, array('Attachment' => true));
+            $nombrePdf = 'estadisticas_demograficas_' . strtolower($tipo) . '_' . str_replace([' ', ':'], '_', $date);
+            $this->dompdf->stream($nombrePdf, ['Attachment' => true]);
         } else {
             return $this->dompdf->output();
         }
     }
 
-    public function generarHeader()
+    /* ──────────────────────────────────────────────
+     * HELPERS
+     * ────────────────────────────────────────────── */
+
+    private function tipoReporte(): string
     {
-        $subtitulo = 'Reporte de Estadísticas';
-        if (!empty($this->data['etapa'])) {
-            $subtitulo .= ' - ' . $this->data['etapa'];
-        }
-
-        $html = '<table width="100%" cellpadding="15" cellspacing="0" style="margin-bottom: 15px;">';
-        $html .= '<tr>';
-        $html .= '<td class="bg-green text-white">';
-        $html .= '<div class="text-3xl bold">ESTADÍSTICAS DEMOGRÁFICAS</div>';
-        $html .= '<div class="text-lg" style="margin-top: 5px;">' . htmlspecialchars($subtitulo) . '</div>';
-        $html .= '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
-
-        return $html;
+        return (isset($this->data['tipoReporte']) && $this->data['tipoReporte'] === 'Capacitados')
+            ? 'Capacitados' : 'Inscritos';
     }
 
-    public function generarSeccionFiltros()
+    private function esc(string $v): string
+    {
+        return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+    }
+
+    private function sectionLabel(string $titulo): string
+    {
+        return '<div class="section-label">' . $titulo . '</div>'
+             . '<div class="section-rule"></div>'
+             . '<div class="section-rule-thin"></div>';
+    }
+
+    /* ──────────────────────────────────────────────
+     * META / ENCABEZADO FOOTER
+     * ────────────────────────────────────────────── */
+
+    private function generarEncabezadoFooter(): string
+    {
+        $fecha = Util::obtenerFechaActual('d/m/Y H:i:s');
+        $tipo  = $this->tipoReporte();
+
+        return '<div class="doc-meta">'
+             . '<span class="bold">Estadísticas Demográficas de Emprendedores ' . $tipo . '</span>'
+             . ' &nbsp;|&nbsp; Fecha de emisión: ' . $fecha
+             . ' &nbsp;|&nbsp; Fundación Garibi Rivera'
+             . '</div>';
+    }
+
+    /* ──────────────────────────────────────────────
+     * HEADER INSTITUCIONAL
+     * ────────────────────────────────────────────── */
+
+    public function generarHeader(): string
+    {
+        $tipo      = $this->tipoReporte();
+        $subtitulo = 'Reporte de Estadísticas';
+        if (!empty($this->data['etapa'])) {
+            $subtitulo .= ' — ' . $this->esc($this->data['etapa']);
+        }
+
+        return '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">'
+             . '<tr><td class="bg-green text-white" style="padding: 12px 14px;">'
+             . '<div class="text-xs uppercase" style="letter-spacing: 1px; opacity: 0.75; margin-bottom: 3px;">Fundación Garibi Rivera</div>'
+             . '<div class="text-2xl bold" style="line-height: 1.2;">Estadísticas Demográficas de Emprendedores ' . strtoupper($tipo) . '</div>'
+             . '<div class="text-sm" style="margin-top: 4px; opacity: 0.85;">' . $subtitulo . '</div>'
+             . '</td></tr>'
+             . '</table>';
+    }
+
+    /* ──────────────────────────────────────────────
+     * FILTROS
+     * ────────────────────────────────────────────── */
+
+    public function generarSeccionFiltros(): string
     {
         if (empty($this->data['filtros'])) {
             return '';
         }
 
-        $html = '<table width="100%" cellpadding="10" cellspacing="0" class="border-yellow" style="margin-bottom: 15px;">';
-        $html .= '<tr>';
-        $html .= '<td class="bg-yellow-light">';
-        $html .= '<div class="text-lg bold text-green" style="margin-bottom: 8px;">Filtros Aplicados</div>';
-
-        // Tabla interna para los filtros
-        $html .= '<table width="100%" cellpadding="0" cellspacing="0">';
+        $items = '';
         foreach ($this->data['filtros'] as $filtro) {
-            $html .= '<tr><td class="bg-white border-left-green text-sm" style="padding: 5px 10px; margin-bottom: 4px;">';
-            $html .= htmlspecialchars($filtro);
-            $html .= '</td></tr>';
+            $items .= '<div class="filter-pill">· ' . $this->esc($filtro) . '</div><br>';
         }
-        $html .= '</table>';
 
-        $html .= '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
-
-        return $html;
+        return '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">'
+             . '<tr>'
+             . '<td style="padding: 7px 10px; background-color: #F5F8F6; border-left: 3px solid #13493B;">'
+             . '<div class="text-xs bold uppercase text-muted" style="margin-bottom: 4px;">Filtros Aplicados</div>'
+             . $items
+             . '</td>'
+             . '</tr>'
+             . '</table>';
     }
 
-    public function generarTotalesGenerales()
+    /* ──────────────────────────────────────────────
+     * TOTALES GENERALES
+     * ────────────────────────────────────────────── */
+
+    public function generarTotalesGenerales(): string
     {
         $totales = $this->data['categorias']['totales'] ?? [];
         if (empty($totales)) {
             return '';
         }
 
-        $html = '<table width="100%" cellpadding="10" cellspacing="0" class="border-yellow-light" style="margin-bottom: 15px;">';
-        $html .= '<tr>';
-        $html .= '<td class="bg-white">';
-        $html .= '<div class="text-sm bold uppercase text-green-dark border-bottom-thick" style="padding-bottom: 5px; margin-bottom: 12px;">Totales Generales</div>';
+        $html = $this->sectionLabel('Totales Generales');
 
         foreach ($totales as $total) {
-            // Tabla de 1 fila con 3 columnas para los totales
-            $html .= '<table width="100%" cellpadding="10" cellspacing="0">';
-            $html .= '<tr>';
-
-            // Total Participantes
-            $html .= '<td width="33%" class="bg-yellow-light text-center" style="padding: 12px;">';
-            $html .= '<div class="text-3xl bold text-green" style="margin: 5px 0;">' . $total['totalParticipantes'] . '</div>';
-            $html .= '<div class="text-xs bold uppercase">Total Participantes</div>';
-            $html .= '</td>';
-
-            // Hombres
-            $html .= '<td width="33%" class="bg-yellow-light text-center" style="padding: 12px;">';
-            $html .= '<div class="text-3xl bold text-green" style="margin: 5px 0;">' . $total['totalHombres'] . '</div>';
-            $html .= '<div class="text-xs bold uppercase">Hombres</div>';
-            $html .= '</td>';
-
-            // Mujeres
-            $html .= '<td width="33%" class="bg-yellow-light text-center" style="padding: 12px;">';
-            $html .= '<div class="text-3xl bold text-green" style="margin: 5px 0;">' . $total['totalMujeres'] . '</div>';
-            $html .= '<div class="text-xs bold uppercase">Mujeres</div>';
-            $html .= '</td>';
-
-            $html .= '</tr>';
-            $html .= '</table>';
+            $html .= '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">'
+                   . '<tr>'
+                   . '<td width="33%" class="stat-cell" style="border-right: 1px solid #E8EEEA;">'
+                   . '<div class="stat-number">' . ($total['totalParticipantes'] ?? 0) . '</div>'
+                   . '<div class="stat-label">Total Participantes</div>'
+                   . '</td>'
+                   . '<td width="33%" class="stat-cell" style="border-right: 1px solid #E8EEEA;">'
+                   . '<div class="stat-number">' . ($total['totalHombres'] ?? 0) . '</div>'
+                   . '<div class="stat-label">Hombres</div>'
+                   . '</td>'
+                   . '<td width="33%" class="stat-cell">'
+                   . '<div class="stat-number">' . ($total['totalMujeres'] ?? 0) . '</div>'
+                   . '<div class="stat-label">Mujeres</div>'
+                   . '</td>'
+                   . '</tr>'
+                   . '</table>';
         }
-
-        $html .= '</td>';
-        $html .= '</tr>';
-        $html .= '</table>';
 
         return $html;
     }
 
-    public function generarEstadisticasDemograficas()
+    /* ──────────────────────────────────────────────
+     * ESTADÍSTICAS DEMOGRÁFICAS
+     * ────────────────────────────────────────────── */
+
+    public function generarEstadisticasDemograficas(): string
     {
         $rangosEdad = $this->data['categorias']['rangosEdad'] ?? [];
         if (empty($rangosEdad)) {
             return '';
         }
 
-        // Tabla principal de 1 fila con 2 columnas
-        $html = '<table width="100%" cellpadding="5" cellspacing="0" style="margin-bottom: 15px;">';
-        $html .= '<tr>';
+        /* -- Distribución por rangos (grilla 2 col) -- */
+        $html = $this->sectionLabel('Distribución por Rangos de Edad');
 
-        // COLUMNA 1: Distribución por Rangos de Edad
-        $html .= '<td width="48%" style="vertical-align: top; padding-right: 10px;">';
-        $html .= '<table width="100%" cellpadding="10" cellspacing="0" class="border-yellow-light">';
-        $html .= '<tr><td class="bg-white">';
-        $html .= '<div class="text-sm bold uppercase text-green-dark border-bottom-thick" style="padding-bottom: 5px; margin-bottom: 10px;">Distribución por Rangos de Edad</div>';
-
-        // Tabla interna 2x2 para los items
-        $html .= '<table width="100%" cellpadding="5" cellspacing="0">';
-        $itemCount = 0;
+        $html .= '<table width="100%" cellpadding="0" cellspacing="4" style="margin-bottom: 10px;">';
+        $i = 0;
         foreach ($rangosEdad as $rango) {
-            if ($itemCount % 2 === 0) {
-                $html .= '<tr>';
-            }
+            if ($i % 2 === 0) $html .= '<tr>';
 
-            $html .= '<td width="48%" class="bg-gray border-left-yellow" style="padding: 8px; margin-bottom: 5px;">';
-            $html .= '<table width="100%" cellpadding="0" cellspacing="0"><tr>';
-            $html .= '<td class="text-sm" style="width: 65%;">' . htmlspecialchars($rango['descripcion']) . '</td>';
-            $html .= '<td class="text-xl bold text-green text-right" style="width: 35%;">' . $rango['totalParticipantes'] . '</td>';
-            $html .= '</tr></table>';
-            $html .= '</td>';
+            $html .= '<td width="48%" style="padding: 6px 8px; background-color: #F5F8F6; border-left: 2px solid #13493B;">'
+                   . '<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                   . '<td class="text-sm text-green-dark">' . $this->esc($rango['descripcion'] ?? '-') . '</td>'
+                   . '<td class="text-xl bold text-green text-right">' . ($rango['totalParticipantes'] ?? 0) . '</td>'
+                   . '</tr></table>'
+                   . '</td>';
 
-            if ($itemCount % 2 === 1) {
+            if ($i % 2 === 1) {
                 $html .= '</tr>';
-            } elseif ($itemCount === count($rangosEdad) - 1) {
-                // Completar fila si es impar y es el último
-                $html .= '<td width="48%"></td>';
-                $html .= '</tr>';
+            } elseif ($i === count($rangosEdad) - 1) {
+                $html .= '<td width="48%"></td></tr>';
             }
-            $itemCount++;
+            $i++;
         }
         $html .= '</table>';
 
-        $html .= '</td></tr></table>';
-        $html .= '</td>';
-
-        // COLUMNA 2: Desglose por género
-        $html .= '<td width="48%" style="vertical-align: top; padding-left: 10px;">';
-        // Verificar si hay algún rango de edad con datos de género
-        $hasGeneroData = false;
-        foreach ($rangosEdad as $rango) {
-            if (!empty($rango['totalHombres']) || !empty($rango['totalMujeres'])) {
-                $hasGeneroData = true;
-                break;
-            }
+        /* -- Desglose por género y edad -- */
+        $hasGenero = false;
+        foreach ($rangosEdad as $r) {
+            if (!empty($r['totalHombres']) || !empty($r['totalMujeres'])) { $hasGenero = true; break; }
         }
 
-        if ($hasGeneroData) {
-            $html .= '<table width="100%" cellpadding="10" cellspacing="0" class="border-yellow-light">';
-            $html .= '<tr><td class="bg-white">';
-            $html .= '<div class="text-sm bold uppercase text-green-dark border-bottom-thick" style="padding-bottom: 5px; margin-bottom: 10px;">Desglose por Género y Edad</div>';
+        if ($hasGenero) {
+            $html .= $this->sectionLabel('Desglose por Género y Edad');
 
-            // Tabla de datos
-            $html .= '<table width="100%" cellpadding="8" cellspacing="0">';
-            $html .= '<tr class="bg-green text-white text-xs bold uppercase">';
-            $html .= '<td width="40%">Rango de Edad</td>';
-            $html .= '<td width="20%" class="text-center">Total</td>';
-            $html .= '<td width="20%" class="text-center">Hombres</td>';
-            $html .= '<td width="20%" class="text-center">Mujeres</td>';
-            $html .= '</tr>';
+            $html .= '<table class="data-table" style="margin-bottom: 10px;">'
+                   . '<thead><tr>'
+                   . '<th width="40%">Rango de Edad</th>'
+                   . '<th width="20%" style="text-align:center;">Total</th>'
+                   . '<th width="20%" style="text-align:center;">Hombres</th>'
+                   . '<th width="20%" style="text-align:center;">Mujeres</th>'
+                   . '</tr></thead>'
+                   . '<tbody>';
 
-            $rowIndex = 0;
             foreach ($rangosEdad as $rango) {
-                $bgClass = ($rowIndex % 2 === 0) ? 'bg-yellow-light' : 'bg-white';
-                $html .= '<tr class="' . $bgClass . ' text-sm border-bottom">';
-                $html .= '<td width="40%" class="bold text-green">' . htmlspecialchars($rango['descripcion']) . '</td>';
-                $html .= '<td width="20%" class="text-center">' . $rango['totalParticipantes'] . '</td>';
-                $html .= '<td width="20%" class="text-center">' . $rango['totalHombres'] . '</td>';
-                $html .= '<td width="20%" class="text-center">' . $rango['totalMujeres'] . '</td>';
-                $html .= '</tr>';
-                $rowIndex++;
+                $html .= '<tr>'
+                       . '<td class="bold text-green">' . $this->esc($rango['descripcion'] ?? '-') . '</td>'
+                       . '<td class="text-center">' . ($rango['totalParticipantes'] ?? 0) . '</td>'
+                       . '<td class="text-center">' . ($rango['totalHombres'] ?? 0) . '</td>'
+                       . '<td class="text-center">' . ($rango['totalMujeres'] ?? 0) . '</td>'
+                       . '</tr>';
             }
 
-            $html .= '</table>';
-            $html .= '</td></tr></table>';
+            $html .= '</tbody></table>';
         }
-        $html .= '</td>';
-
-        $html .= '</tr>';
-        $html .= '</table>';
 
         return $html;
     }
 
-    public function generarSeccionMunicipios()
+    /* ──────────────────────────────────────────────
+     * MUNICIPIOS
+     * ────────────────────────────────────────────── */
+
+    public function generarSeccionMunicipios(): string
     {
         $municipios = $this->data['categorias']['municipios'] ?? [];
         if (empty($municipios)) {
             return '';
         }
 
-        $html = '<table width="100%" cellpadding="10" cellspacing="0" style="margin-bottom: 15px;">';
-        $html .= '<tr><td>';
+        $html = $this->sectionLabel('Participantes por Municipio');
 
-        // Título de sección
-        $html .= '<div class="text-2xl bold text-green border-bottom-thick" style="padding-bottom: 8px; margin-bottom: 12px;">Participantes por Municipio</div>';
-
-        // Dividir los municipios en chunks de 20 para las tarjetas
-        $cardChunks = array_chunk($municipios, 20);
-        $chunkIndex = 0;
-
-        foreach ($cardChunks as $chunk) {
-            if ($chunkIndex > 0) {
-                // Salto de página antes de cada chunk adicional de tarjetas
-                $html .= '<div style="page-break-before: always;"></div>';
-                // Repetir título en páginas siguientes
-                $html .= '<div class="text-2xl bold text-green border-bottom-thick" style="padding-bottom: 8px; margin-bottom: 12px;">Participantes por Municipio (Continuación)</div>';
-            }
-
-            // Tabla de items de municipios (2 columnas) para este chunk
-            $html .= '<table width="100%" cellpadding="5" cellspacing="0" style="margin-bottom: 15px;">';
-            $itemCount = 0;
-            foreach ($chunk as $municipio) {
-                if ($itemCount % 2 === 0) {
-                    $html .= '<tr>';
-                }
-
-                $html .= '<td width="48%" class="bg-white border-yellow-light" style="padding: 10px; margin-bottom: 8px;">';
-                $html .= '<table width="100%" cellpadding="0" cellspacing="0"><tr>';
-                $html .= '<td class="text-md bold text-green" style="width: 70%;">' . htmlspecialchars($municipio['descripcion']) . '</td>';
-                $html .= '<td class="bg-green text-yellow bold text-lg text-center" style="width: 30%; padding: 4px 8px;">' . $municipio['totalParticipantes'] . '</td>';
-                $html .= '</tr></table>';
-                $html .= '</td>';
-
-                if ($itemCount % 2 === 1) {
-                    $html .= '</tr>';
-                } elseif ($itemCount === count($chunk) - 1) {
-                    // Completar fila si es impar y es el último
-                    $html .= '<td width="48%"></td>';
-                    $html .= '</tr>';
-                }
-                $itemCount++;
-            }
-            $html .= '</table>';
-
-            $chunkIndex++;
-        }
-
-        // Tabla detallada de municipios
-        // Dividir los municipios en chunks de 15 filas
-        $chunks = array_chunk($municipios, 15);
+        $chunks     = array_chunk($municipios, 20);
         $chunkIndex = 0;
 
         foreach ($chunks as $chunk) {
             if ($chunkIndex > 0) {
-                // Salto de página antes de cada chunk adicional
                 $html .= '<div style="page-break-before: always;"></div>';
-                // Repetir título en páginas siguientes
-                $html .= '<div class="text-2xl bold text-green border-bottom-thick" style="padding-bottom: 8px; margin-bottom: 12px;">Participantes por Municipio (Continuación)</div>';
+                $html .= $this->sectionLabel('Participantes por Municipio (Continuación)');
             }
 
-            // Tabla para este chunk
-            $html .= '<table width="100%" cellpadding="8" cellspacing="0" style="margin-bottom: 15px;">';
-            $html .= '<thead>';
-            $html .= '<tr class="bg-green text-white text-xs bold uppercase">';
-            $html .= '<td width="50%">Municipio</td>';
-            $html .= '<td width="20%" class="text-center">Total Participantes</td>';
-            $html .= '<td width="15%" class="text-center">Hombres</td>';
-            $html .= '<td width="15%" class="text-center">Mujeres</td>';
-            $html .= '</tr>';
-            $html .= '</thead>';
-            $html .= '<tbody>';
-
-            $rowIndex = $chunkIndex * 20;
+            $html .= '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">';
+            $i = 0;
             foreach ($chunk as $municipio) {
-                $bgClass = ($rowIndex % 2 === 0) ? 'bg-yellow-light' : 'bg-white';
-                $html .= '<tr class="' . $bgClass . ' text-sm border-bottom">';
-                $html .= '<td width="50%" class="bold text-green">' . htmlspecialchars($municipio['descripcion']) . '</td>';
-                $html .= '<td width="20%" class="text-center">' . $municipio['totalParticipantes'] . '</td>';
-                $html .= '<td width="15%" class="text-center">' . $municipio['totalHombres'] . '</td>';
-                $html .= '<td width="15%" class="text-center">' . $municipio['totalMujeres'] . '</td>';
-                $html .= '</tr>';
-                $rowIndex++;
+                if ($i % 2 === 0) $html .= '<tr>';
+
+                $total = $municipio['totalParticipantes'] ?? 0;
+                $totalH = $municipio['totalHombres'] ?? 0;
+                $totalM = $municipio['totalMujeres'] ?? 0;
+                $nombre = $this->esc($municipio['descripcion'] ?? '-');
+
+                // Separador horizontal entre filas de tarjetas
+                $borderTop = $i >= 2 ? 'border-top: 1px solid #E8EEEA;' : '';
+
+                $html .= '<td width="50%" style="padding: 6px 8px; ' . $borderTop . '">'
+                       . '<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                       . '<td class="text-md bold text-green" style="width: 65%;">' . $nombre . '</td>'
+                       . '<td style="width: 35%;">'
+                       . '<div class="mun-badge">' . $total . '</div>'
+                       . '</td>'
+                       . '</tr><tr>'
+                       . '<td colspan="2" class="text-xs text-muted" style="padding-top: 2px;">'
+                       . 'Hombres: <span class="bold text-green-dark">' . $totalH . '</span>'
+                       . '&nbsp;&nbsp;Mujeres: <span class="bold text-green-dark">' . $totalM . '</span>'
+                       . '</td>'
+                       . '</tr></table>'
+                       . '</td>';
+
+                if ($i % 2 === 1) {
+                    $html .= '</tr>';
+                } elseif ($i === count($chunk) - 1) {
+                    $html .= '<td width="50%"></td></tr>';
+                }
+                $i++;
             }
-
-            $html .= '</tbody>';
             $html .= '</table>';
-
             $chunkIndex++;
         }
 
-        $html .= '</td></tr></table>';
         return $html;
     }
 
-    public function generarDetallesParticipantes()
+    /* ──────────────────────────────────────────────
+     * LISTADO DETALLADO DE PARTICIPANTES
+     * ────────────────────────────────────────────── */
+
+    public function generarDetallesParticipantes(): string
     {
         $detalles = $this->data['detalles'] ?? [];
         if (empty($detalles)) {
-            return '<table width="100%" cellpadding="20" cellspacing="0" style="margin-bottom: 15px;"><tr><td class="bg-yellow-light text-center text-md text-green" style="font-style: italic;">No hay detalles de participantes disponibles para mostrar.</td></tr></table>';
+            return '<div style="page-break-before: always;"></div>'
+                 . '<div style="padding: 20px; text-align: center; color: #6B7A70; font-style: italic; font-size: 9px;">No hay detalles de participantes disponibles.</div>';
         }
 
-        $totalParticipantes = count($detalles);
+        $total = count($detalles);
 
-        // Forzar salto de página antes de la tabla de detalles
+        // Siempre en nueva página
         $html = '<div style="page-break-before: always;"></div>';
-        $html .= '<table width="100%" cellpadding="10" cellspacing="0" style="margin-bottom: 15px;">';
-        $html .= '<tr><td>';
 
-        // Título
-        $html .= '<div class="text-2xl bold text-green border-bottom-thick" style="padding-bottom: 8px; margin-bottom: 12px;">Listado Detallado de Participantes</div>';
+        $html .= $this->sectionLabel('Listado Detallado de Participantes');
 
-        // Badge de total
-        $html .= '<div class="bg-yellow text-green bold text-lg" style="padding: 8px 15px; margin-bottom: 12px; display: inline-block;">Total de Participantes: ' . $totalParticipantes . '</div>';
+        // Badge total
+        $html .= '<div style="margin-bottom: 8px;">'
+               . '<span style="background-color: #13493B; color: #E8C94A; font-weight: bold; font-size: 9px; padding: 4px 10px;">'
+               . 'Total de Participantes: ' . $total
+               . '</span>'
+               . '</div>';
 
-        // Dividir los detalles en chunks de 20 filas
-        $chunks = array_chunk($detalles, 20);
+        $chunks     = array_chunk($detalles, 22);
         $chunkIndex = 0;
 
         foreach ($chunks as $chunk) {
             if ($chunkIndex > 0) {
-                // Salto de página antes de cada chunk adicional
                 $html .= '<div style="page-break-before: always;"></div>';
-                // Repetir título en páginas siguientes
-                $html .= '<div class="text-2xl bold text-green border-bottom-thick" style="padding-bottom: 8px; margin-bottom: 12px;">Listado Detallado de Participantes (Continuación)</div>';
+                $html .= $this->sectionLabel('Listado Detallado de Participantes (Continuación)');
             }
 
-            // Tabla para este chunk
-            $html .= '<table width="100%" cellpadding="4" cellspacing="0" style="font-size: 8px; margin-bottom: 15px;">';
-            $html .= '<thead>';
-            $html .= '<tr class="bg-green text-white text-xs bold uppercase">';
-            $html .= '<td width="4%" style="padding: 6px 4px;">N°</td>';
-            $html .= '<td width="13%" style="padding: 6px 4px;">Emprendedor</td>';
-            $html .= '<td width="17%" style="padding: 6px 4px;">Correo</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Teléfono</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Edad</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Giro</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Municipio</td>';
-            $html .= '<td width="8%" style="padding: 6px 4px;">Colonia</td>';
-            $html .= '</tr>';
-            $html .= '</thead>';
-            $html .= '<tbody>';
+            $html .= '<table class="data-table" style="margin-bottom: 12px;">'
+                   . '<thead><tr>'
+                   . '<th width="4%"  style="text-align:center;">N°</th>'
+                   . '<th width="14%">Emprendedor</th>'
+                   . '<th width="18%">Correo</th>'
+                   . '<th width="10%">Teléfono</th>'
+                   . '<th width="5%"  style="text-align:center;">Edad</th>'
+                   . '<th width="16%">Giro</th>'
+                   . '<th width="13%">Municipio</th>'
+                   . '<th width="20%">Colonia</th>'
+                   . '</tr></thead>'
+                   . '<tbody>';
 
-            $rowIndex = $chunkIndex * 20;
+            $rowIndex = $chunkIndex * 22;
             foreach ($chunk as $detalle) {
-                $bgClass = ($rowIndex % 2 === 0) ? 'bg-yellow-light' : 'bg-white';
-                $html .= '<tr class="' . $bgClass . ' border-bottom">';
-                $html .= '<td class="text-center" width="4%" style="padding: 6px 4px;">' . ($rowIndex + 1) . '</td>';
-                $html .= '<td class="bold text-green" width="13%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['emprendedor'] ?? '-') . '</td>';
-                $html .= '<td width="17%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['correo'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['tel'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['edad'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['giro'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['municipio'] ?? '-') . '</td>';
-                $html .= '<td width="8%" style="padding: 6px 4px;">' . htmlspecialchars($detalle['colonia'] ?? '-') . '</td>';
-                $html .= '</tr>';
+                $giro = $this->esc($detalle['giro'] ?? '');
+                $giroDisplay = (!$giro || strtolower($giro) === 'no especificado')
+                    ? '<span style="color:#9AA59F; font-style:italic;">—</span>'
+                    : $giro;
+
+                $html .= '<tr>'
+                       . '<td style="text-align:center;">' . ($rowIndex + 1) . '</td>'
+                       . '<td class="bold text-green">' . $this->esc($detalle['emprendedor'] ?? '-') . '</td>'
+                       . '<td class="text-muted">' . $this->esc($detalle['correo'] ?? '-') . '</td>'
+                       . '<td>' . $this->esc($detalle['tel'] ?? '-') . '</td>'
+                       . '<td style="text-align:center;">' . $this->esc((string)($detalle['edad'] ?? '-')) . '</td>'
+                       . '<td>' . $giroDisplay . '</td>'
+                       . '<td>' . $this->esc($detalle['municipio'] ?? '-') . '</td>'
+                       . '<td class="text-muted">' . $this->esc($detalle['colonia'] ?? '-') . '</td>'
+                       . '</tr>';
                 $rowIndex++;
             }
 
-            $html .= '</tbody>';
-            $html .= '</table>';
-
+            $html .= '</tbody></table>';
             $chunkIndex++;
         }
 
-        $html .= '</td></tr></table>';
-
         return $html;
-    }
-
-    private function generarEncabezadoFooter()
-    {
-        $fecha = Util::obtenerFechaActual('d/m/Y H:i:s');
-        $html = '<div class="header-footer">';
-        $html .= 'Estadísticas Demográficas | Documento generado el ' . $fecha . ' | Fundación Garibi Rivera';
-        $html .= '</div>';
-        return $html;
-    }
-
-    private function generarTablaParticipantesCorporativa()
-    {
-        $detalles = $this->data['detalles'] ?? [];
-        $html = '';
-
-        foreach ($detalles as $participante) {
-            $nombre = htmlspecialchars($participante['emprendedor'] ?? 'N/A');
-            $edad = htmlspecialchars($participante['edad'] ?? 'N/A');
-            $giro = htmlspecialchars($participante['giro'] ?? 'No especificado');
-            $municipio = htmlspecialchars($participante['municipio'] ?? 'N/A');
-            $colonia = htmlspecialchars($participante['colonia'] ?? 'N/A');
-
-            $bizClass = ($giro === 'No especificado' || $giro === 'No Especificado') ?
-                "text-gray-400 italic" : "text-gray-700";
-
-            $html .= "<tr>";
-            $html .= "<td>{$nombre}</td>";
-            $html .= "<td class=\"text-center text-gray-500 tabular-nums\">{$edad}</td>";
-            $html .= "<td class=\"{$bizClass}\">{$giro}</td>";
-            $html .= "<td><span class=\"badge\">{$municipio}</span></td>";
-            $html .= "<td class=\"text-gray-500 text-xs\">{$colonia}</td>";
-            $html .= "</tr>";
-        }
-
-        return $html;
-    }
-
-    private function prepararDatosGraficas()
-    {
-        $municipalityData = [];
-        $ageData = [
-            'labels' => ['13-17', '18-35', '36-59', '60+'],
-            'hombres' => [0, 0, 0, 0],
-            'mujeres' => [0, 0, 0, 0]
-        ];
-
-        // Procesar datos de municipios
-        if (isset($this->data['categorias']['municipios'])) {
-            foreach ($this->data['categorias']['municipios'] as $mun) {
-                $municipalityData[] = [
-                    'label' => $mun['descripcion'] ?? 'N/A',
-                    'value' => $mun['totalParticipantes'] ?? 0
-                ];
-            }
-        }
-
-        // Procesar datos de rangos de edad
-        if (isset($this->data['categorias']['rangosEdad'])) {
-            foreach ($this->data['categorias']['rangosEdad'] as $rango) {
-                $index = 0;
-                $desc = strtolower($rango['descripcion'] ?? '');
-                if (strpos($desc, '18') !== false)
-                    $index = 1;
-                else if (strpos($desc, '36') !== false)
-                    $index = 2;
-                else if (strpos($desc, '60') !== false)
-                    $index = 3;
-
-                $ageData['hombres'][$index] = $rango['totalHombres'] ?? 0;
-                $ageData['mujeres'][$index] = $rango['totalMujeres'] ?? 0;
-            }
-        }
-
-        return [
-            'municipalityData' => $municipalityData,
-            'ageData' => $ageData
-        ];
     }
 }
