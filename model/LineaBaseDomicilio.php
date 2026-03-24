@@ -11,11 +11,11 @@ class LineaBaseDomicilio {
     private ?string $numeroInterior;
     private int $codigoPostal;
     private string $colonia;
-    private int $comunidadParroquial;
+    private int|null $comunidadParroquial;
 
     public function __construct(string $calle, string $calleCruce1, 
             string $calleCruce2, string $numeroExterior, ?string $numeroInterior, 
-            int $codigoPostal, string $colonia, int $comunidadParroquial) {
+            int $codigoPostal, string $colonia, int|null $comunidadParroquial) {
         $this->calle = $calle;
         $this->calleCruce1 = $calleCruce1;
         $this->calleCruce2 = $calleCruce2;
@@ -58,7 +58,7 @@ class LineaBaseDomicilio {
         return $this->codigoPostal;
     }
 
-    public function getComunidadParroquial(): int {
+    public function getComunidadParroquial(): int|null {
         return $this->comunidadParroquial;
     }
 
@@ -86,7 +86,7 @@ class LineaBaseDomicilio {
         $this->codigoPostal = $codigoPostal;
     }
 
-    public function setComunidadParroquial(int $comunidadParroquial): void {
+    public function setComunidadParroquial(int|null $comunidadParroquial): void {
         $this->comunidadParroquial = $comunidadParroquial;
     }
 }

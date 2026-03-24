@@ -14,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 use App\Utils\StringHelper;
 
 use App\Models\Usuario;
@@ -61,10 +62,21 @@ class LineaBaseController extends Controller
 
             return ApiResponse::success($lb->resource(), 'Línea base guardada exitosamente');
         } catch (ValidationException $e) {
-            return ApiResponse::error($e->validator->errors()->first('idEtapa'));
+            $mensaje = $e->validator->errors()->first() ?: 'Error de validación al guardar la línea base.';
+            return ApiResponse::error($mensaje, ApiResponse::HTTP_UNPROCESSABLE_ENTITY);
         } catch (QueryException $e) {
+            Log::error('Error de base de datos al guardar línea base', [
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return ApiResponse::error('Error en la base de datos al guardar la línea base: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            Log::error('Error inesperado al guardar línea base', [
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return ApiResponse::error('Error al guardar la línea base: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -157,7 +169,7 @@ class LineaBaseController extends Controller
                 'numero_interior' => StringHelper::getValidValueOrNull($data, 'numeroInterior'),
                 'id_codigo_postal' => StringHelper::intValue($data['codigoPostal']),
                 'colonia' => $data['colonia'],
-                'id_comunidad_parroquial' => $data['comunidadParroquial'],
+                'id_comunidad_parroquial' => StringHelper::getValidValueOrNull($data, 'comunidadParroquial'),
             ];
             StringHelper::cleanArrayString($mappedData);
             LineaBaseDomicilio::updateOrCreate(['id_linea_base' => $idLineaBase], $mappedData);

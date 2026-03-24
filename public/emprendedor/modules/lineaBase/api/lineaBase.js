@@ -4,7 +4,7 @@ const urlAPI = "api/LineaBaseAPI.php";
 function ready() {
     bloquearSeccion($("#contenido"));
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
-        print(rs);
+        //print(rs);
         if (rs.existeLineaBase) {
             redireccionar("../lineaBaseVista/");
         } else {
@@ -194,7 +194,10 @@ function configurarCampoCodigoPostal($campoCodigo, fnLlenadoCampos) {
 }
 
 function configurarCampoComunidadParroquial() {
-    $("#comunidadParroquial").select2({
+    var $comunidadParroquial = $("#comunidadParroquial");
+    var $noConozcoParroquia = $("#noConozcoParroquia");
+
+    $comunidadParroquial.select2({
         placeholder: "Buscar parroquia...",
         language: {
             inputTooShort: function (args) {
@@ -237,9 +240,34 @@ function configurarCampoComunidadParroquial() {
         },
         minimumInputLength: 3,
         templateSelection: function (data) {
+            if (!data || !data.idComunidad) {
+                $("#idComunidad").val("");
+                return data && data.text ? data.text : "";
+            }
             $("#idComunidad").val(data.idComunidad);
             return data.text;
         },
         dropdownParent: $("#lineaBaseForm")
     });
+
+    function toggleComunidadParroquial(habilitar) {
+        if (habilitar) {
+            $comunidadParroquial.prop("disabled", false);
+            $comunidadParroquial.prop("required", true);
+        } else {
+            $comunidadParroquial.val(null).trigger("change");
+            $("#idComunidad").val("");
+            $comunidadParroquial.prop("required", false);
+            $comunidadParroquial.prop("disabled", true);
+        }
+    }
+
+    $noConozcoParroquia.off("change.noConozcoParroquia").on("change.noConozcoParroquia", function () {
+        toggleComunidadParroquial(!$(this).is(":checked"));
+    });
+
+    // Estado inicial al cargar
+    if ($noConozcoParroquia.length > 0) {
+        toggleComunidadParroquial(!$noConozcoParroquia.is(":checked"));
+    }
 }

@@ -44,6 +44,8 @@ class LineaBaseResource extends JsonResource
                 ];
             }),
             'domicilio' => $this->whenLoaded('domicilio', function () {
+                $comunidadParroquial = $this->domicilio->comunidadParroquial;
+                $decanato = optional($comunidadParroquial)->decanato;
                 return [
                     'codigoPostal' => $this->domicilio->codigoPostal->only(['id_codigo', 'codigo_postal']),
                     'estado' => $this->domicilio->codigoPostal->municipio->estado,
@@ -54,9 +56,9 @@ class LineaBaseResource extends JsonResource
                     'calleCruce2' => $this->domicilio->calle_cruce_2,
                     'numeroExterior' => $this->domicilio->numero_exterior,
                     'numeroInterior' => $this->domicilio->numero_interior,
-                    'comunidadParroquial' => $this->domicilio->comunidadParroquial->only(['id_comunidad', 'nombre']),
-                    'decanato' => $this->domicilio->comunidadParroquial->decanato->only(['id_decanato', 'nombre']),
-                    'vicaria' => $this->domicilio->comunidadParroquial->decanato->vicaria,
+                    'comunidadParroquial' => $comunidadParroquial ? $comunidadParroquial->only(['id_comunidad', 'nombre']) : null,
+                    'decanato' => $decanato ? $decanato->only(['id_decanato', 'nombre']) : null,
+                    'vicaria' => optional($decanato)->vicaria,
                 ];
             }),
             'socioeconomico' => $this->whenLoaded('socioeconomico', function () {

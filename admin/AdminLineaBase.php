@@ -130,7 +130,7 @@ class AdminLineaBase extends Admin {
         $numeroInterior = empty($data["numInterior"]) ? null : $data["numInterior"];
         $codigoPostal = $data["idCodigoPostal"];
         $colonia = $data["colonia"];
-        $comunidadParroquial = $data["comunidadParroquial"];
+        $comunidadParroquial = $data["comunidadParroquial"]??null;
         return new LineaBaseDomicilio($calle, $calleCruce1, $calleCruce2,
                 $numeroExterior, $numeroInterior,
                 $codigoPostal, $colonia, $comunidadParroquial);

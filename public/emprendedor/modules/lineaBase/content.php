@@ -149,13 +149,13 @@
                     <div class="col-12 col-md-2">
                         <div class="mb-3">
                             <label class="form-label" for="numExterior">No. exterior:</label>
-                            <input type="text" class="form-control" id="numExterior" name="numExterior" required="">
+                            <input maxlength="10" type="text" class="form-control" id="numExterior" name="numExterior" required="">
                         </div>
                     </div>
                     <div class="col-12 col-md-2">
                         <div class="mb-1">
                             <label class="form-label" for="numInterior">No. interior:</label>
-                            <input type="text" class="form-control" id="numInterior" name="numInterior">
+                            <input maxlength="10" type="text" class="form-control" id="numInterior" name="numInterior">
                         </div>
                     </div>
                 </div>
@@ -177,6 +177,10 @@
                 <div class="row">
                     <div class="col-12">
                         <label class="form-label" for="comunidadParroquial">Parroquia o comunidad parroquial:</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="noConozcoParroquia" name="noConozcoParroquia" value="1">
+                            <label class="form-check-label" for="noConozcoParroquia">No conozco mi parroquia</label>
+                        </div>
                         <select class="select2-data-ajax form-control" id="comunidadParroquial" name="comunidadParroquial" required=""></select>
                         <input type="hidden" id="idComunidad" name="idComunidad" />
                     </div>
