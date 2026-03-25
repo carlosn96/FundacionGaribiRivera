@@ -8,7 +8,5 @@ renderizarPlantillaEmprendimiento(
         'api/estadisticas.js',
         '../../../assets/libs/apexcharts/dist/apexcharts.min.js',
         'api/dashboardUI.js'
-    ], [
-        'extraStyles.css'
     ],
 );
