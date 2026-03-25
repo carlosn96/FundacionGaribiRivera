@@ -57,6 +57,196 @@ function ready() {
     });
 }
 
+
+function construirTablaGenerica(data, columnas, contenedor, idTabla) {
+    const claseTabla = "table table-hover align-middle text-nowrap mb-1";
+    const dataTabla = data.map(emprendedor => {
+        let fila = {};
+        columnas.forEach(columna => {
+            fila[columna.nombre] = columna.generar(emprendedor);
+        });
+        return fila;
+    });
+
+    if (dataTabla.length !== 0) {
+        construirTablaDataTable(dataTabla, claseTabla, contenedor, idTabla, "");
+    } else {
+        const $tablaVacia = $('<table>', { class: claseTabla, id: idTabla });
+        const $thead = $('<thead>').append($('<tr>'));
+        const $tfoot = $('<tfoot>').append($('<tr>'));
+
+        columnas.forEach(columna => {
+            $thead.find('tr').append($('<th>', { text: columna.titulo }));
+            $tfoot.find('tr').append($('<th>', { text: columna.titulo }));
+        });
+
+        $tablaVacia.append($thead);
+        $tablaVacia.append('<tbody></tbody>');
+        $tablaVacia.append($tfoot);
+
+        $("#" + contenedor).empty().append($tablaVacia);
+        crearDataTable("#" + idTabla, []);
+    }
+}
+
+// Specific function for entrepreneurs with baseline
+function construirTablaEmprendedores(data) {
+    const columnas = [
+        { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => {
+            const etapaObj = todasLasEtapas.find(e => e.idEtapa == emprendedor.idEtapa);
+            return etapaObj ? `<span class="badge bg-light text-dark border">${etapaObj.nombre}</span>` : "Sin etapa";
+        } },
+        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
+        { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo },
+        { nombre: "Linea base", titulo: "Linea base", generar: (emprendedor) => crearBotonesLineaBase(emprendedor) }
+    ];
+    construirTablaGenerica(data.emprendedores, columnas, "tablaEmprendedoresContenedor", "tablaEmprendedores");
+}
+
+// Specific function for entrepreneurs without baseline
+function construirTablaEmprendedoresSinLineaBase(data) {
+    const columnas = [
+        { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => emprendedor.etapa },
+        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
+        { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo }/*,
+        {
+            nombre: "Seleccionar", titulo: "Seleccionar", generar: (emprendedor) =>
+                `<input type="checkbox" class="form-check-input" name="seleccionar_emprendedor" value="${emprendedor.idUsuario}" />`
+        } // Checkbox to select entrepreneur*/
+    ];
+    construirTablaGenerica(data, columnas, "tablaEmprendedoresSinLineaBaseContenedor", "tablaEmprendedoresSinLineaBase");
+}
+
+
+function crearBotonesLineaBase(emprendedor) {
+    return $('<div>', { class: 'btn-group btn-group-sm' }).append(
+        $('<button>', {
+            type: 'button',
+            class: 'btn btn-outline-success',
+            title: 'Ver línea base',
+            html: '<i class="ti ti-file-search me-1" aria-hidden="true"></i>Ver',
+            click: function (e) {
+                e.preventDefault();
+                lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
+            }
+        }),
+        $('<button>', {
+            type: 'button',
+            class: 'btn btn-sm btn-outline-success dropdown-toggle',
+            'data-bs-toggle': 'dropdown',
+            'aria-expanded': 'false',
+            'aria-label': 'Abrir más acciones de línea base',
+            title: 'Más acciones de línea base',
+            html: '<span class="visually-hidden">Más acciones</span>'
+        }),
+        $('<ul>', { class: 'dropdown-menu' }).append(
+            $('<li>').append(
+                $('<a>', {
+                    class: 'dropdown-item',
+                    href: '#',
+                    click: function (e) {
+                        e.preventDefault();
+                        lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
+                    }
+                }).append(
+                    $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver línea base' }),
+                    'Ver línea base'
+                )
+            ),
+            $('<li>').append(
+                $('<a>', {
+                    class: 'dropdown-item',
+                    href: '#',
+                    click: function (e) {
+                        e.preventDefault();
+                        lineaBaseAction('inicial', 'Modificar', emprendedor.idUsuario);
+                    }
+                }).append(
+                    $('<i>', { class: 'ti ti-edit me-2', title: 'Editar línea base' }),
+                    'Editar línea base'
+                )
+            ),
+            $('<li>').append(
+                $('<a>', {
+                    class: 'dropdown-item',
+                    href: '#',
+                    click: function (e) {
+                        e.preventDefault();
+                        lineaBaseAction('inicial', 'Descargar', emprendedor.idUsuario);
+                    }
+                }).append(
+                    $('<i>', { class: 'ti ti-download me-2', title: 'Descargar línea base' }),
+                    'Descargar línea base'
+                )
+            ),
+            $('<li>').append($('<hr>', { class: 'dropdown-divider' })),
+            $('<li>').append(
+                $('<a>', {
+                    class: 'dropdown-item text-danger',
+                    href: '#',
+                    click: function (e) {
+                        e.preventDefault();
+                        eliminarlineaBase('inicial', emprendedor.idUsuario);
+                    }
+                }).append(
+                    $('<i>', { class: 'ti ti-trash me-2', title: 'Eliminar línea base' }),
+                    'Eliminar línea base'
+                )
+            )
+        )
+    );
+}
+
+
+function lineaBaseAction(tipo, action, id) {
+    const data = {
+        idUsuario: id,
+        tipo: tipo
+    };
+    crearPeticion(urlAPI, { case: 'lineaBaseAction', data: $.param(data) }, (rs) => {
+        if (rs.success) {
+            redireccionar("../lineaBase" + action);
+        } else {
+            mostrarMensajeError("Intenta más tarde: " + rs.msg);
+        }
+    });
+}
+
+function eliminarSeguimientoCaso(id) {
+    alertaEliminar({
+        mensajeAlerta: "Se eliminará el seguimiento de caso",
+        url: urlAPI,
+        data: { "case": "eliminarSeguimientoCaso", "data": `id=${id}` }
+    });
+}
+
+
+function eliminarlineaBase(tipo, idUsuario) {
+    alertaEliminar({
+        mensajeAlerta: "La información de la linea base " + tipo + " ya no estará disponible",
+        url: urlAPI,
+        data: { case: "eliminarLineaBase", data: $.param({ tipo: tipo, usuario: idUsuario }) }
+    });
+}
+
+function eliminarSeleccionados() {
+    const idsSeleccionados = [];
+    $("input[name='seleccionar_emprendedor']:checked").each(function () {
+        idsSeleccionados.push($(this).val());
+    });
+
+    if (idsSeleccionados.length === 0) {
+        mostrarMensajeError("No se han seleccionado emprendedores.", false);
+        return;
+    }
+
+    alertaEliminar({
+        mensajeAlerta: "Los emprendedores seleccionados serán eliminados permanentemente.",
+        url: urlAPI,
+        data: { case: "eliminarEmprendedoresSeleccionados", data: $.param({ ids: idsSeleccionados }) }
+    });
+}
+
 function inicializarFiltros(etapas) {
     crearBotonesTipoEtapa(etapas);
     actualizarDropdownEtapas(etapas);
@@ -146,208 +336,4 @@ function actualizarBotonDropdown() {
     } else {
         $button.text(`${count} etapas seleccionadas`);
     }
-}
-
-function construirTablaGenerica(data, columnas, contenedor, idTabla) {
-    const claseTabla = "table table-hover align-middle text-nowrap mb-1";
-    const dataTabla = data.map(emprendedor => {
-        let fila = {};
-        columnas.forEach(columna => {
-            fila[columna.nombre] = columna.generar(emprendedor);
-        });
-        return fila;
-    });
-
-    if (dataTabla.length !== 0) {
-        construirTablaDataTable(dataTabla, claseTabla, contenedor, idTabla, "");
-    } else {
-        const $tablaVacia = $('<table>', { class: claseTabla, id: idTabla });
-        const $thead = $('<thead>').append($('<tr>'));
-        const $tfoot = $('<tfoot>').append($('<tr>'));
-
-        columnas.forEach(columna => {
-            $thead.find('tr').append($('<th>', { text: columna.titulo }));
-            $tfoot.find('tr').append($('<th>', { text: columna.titulo }));
-        });
-
-        $tablaVacia.append($thead);
-        $tablaVacia.append('<tbody></tbody>');
-        $tablaVacia.append($tfoot);
-
-        $("#" + contenedor).empty().append($tablaVacia);
-        crearDataTable("#" + idTabla, []);
-    }
-}
-
-// Specific function for entrepreneurs with baseline
-function construirTablaEmprendedores(data) {
-    const columnas = [
-        { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => generarListaEtapas(emprendedor.idEtapa, todasLasEtapas, emprendedor.idLineaBase) },
-        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
-        { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo },
-        { nombre: "Linea base", titulo: "Linea base", generar: (emprendedor) => crearBotonesLineaBase(emprendedor) }
-    ];
-    construirTablaGenerica(data.emprendedores, columnas, "tablaEmprendedoresContenedor", "tablaEmprendedores");
-}
-
-// Specific function for entrepreneurs without baseline
-function construirTablaEmprendedoresSinLineaBase(data) {
-    const columnas = [
-        { nombre: "Etapa", titulo: "Etapa", generar: (emprendedor) => emprendedor.etapa },
-        { nombre: "Nombre", titulo: "Nombre", generar: (emprendedor) => `<a href="./../actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>` },
-        { nombre: "Correo electrónico", titulo: "Correo electrónico", generar: (emprendedor) => emprendedor.correo }/*,
-        {
-            nombre: "Seleccionar", titulo: "Seleccionar", generar: (emprendedor) =>
-                `<input type="checkbox" class="form-check-input" name="seleccionar_emprendedor" value="${emprendedor.idUsuario}" />`
-        } // Checkbox to select entrepreneur*/
-    ];
-    construirTablaGenerica(data, columnas, "tablaEmprendedoresSinLineaBaseContenedor", "tablaEmprendedoresSinLineaBase");
-}
-
-
-function crearBotonesLineaBase(emprendedor) {
-    return $('<div>', { class: 'btn-group' }).append(
-        $('<button>', {
-            type: 'button',
-            class: 'btn btn-sm btn-outline-success dropdown-toggle',
-            'data-bs-toggle': 'dropdown',
-            'aria-expanded': 'false',
-            text: 'Inicial'
-        }),
-        $('<ul>', { class: 'dropdown-menu' }).append(
-            $('<li>').append(
-                $('<a>', {
-                    class: 'dropdown-item',
-                    href: '#',
-                    click: function (e) {
-                        e.preventDefault();
-                        lineaBaseAction('inicial', 'Ver', emprendedor.idUsuario);
-                    }
-                }).append(
-                    $('<i>', { class: 'ti ti-file-search me-2', title: 'Ver' }),
-                    'Ver'
-                )
-            ),
-            $('<li>').append(
-                $('<a>', {
-                    class: 'dropdown-item',
-                    href: '#',
-                    click: function (e) {
-                        e.preventDefault();
-                        lineaBaseAction('inicial', 'Modificar', emprendedor.idUsuario);
-                    }
-                }).append(
-                    $('<i>', { class: 'ti ti-edit me-2', title: 'Modificar' }),
-                    'Modificar'
-                )
-            ),
-            $('<li>').append(
-                $('<a>', {
-                    class: 'dropdown-item',
-                    href: '#',
-                    click: function (e) {
-                        e.preventDefault();
-                        lineaBaseAction('inicial', 'Descargar', emprendedor.idUsuario);
-                    }
-                }).append(
-                    $('<i>', { class: 'ti ti-download me-2', title: 'Descargar' }),
-                    'Descargar'
-                )
-            ),
-            $('<li>').append(
-                $('<a>', {
-                    class: 'dropdown-item',
-                    href: '#',
-                    click: function (e) {
-                        e.preventDefault();
-                        eliminarlineaBase('inicial', emprendedor.idUsuario);
-                    }
-                }).append(
-                    $('<i>', { class: 'ti ti-trash me-2', title: 'Eliminar' }),
-                    'Eliminar'
-                )
-            )
-        )
-    );
-}
-
-
-function lineaBaseAction(tipo, action, id) {
-    const data = {
-        idUsuario: id,
-        tipo: tipo
-    };
-    crearPeticion(urlAPI, { case: 'lineaBaseAction', data: $.param(data) }, (rs) => {
-        if (rs.success) {
-            redireccionar("../lineaBase" + action);
-        } else {
-            mostrarMensajeError("Intenta más tarde: " + rs.msg);
-        }
-    });
-}
-
-function eliminarSeguimientoCaso(id) {
-    alertaEliminar({
-        mensajeAlerta: "Se eliminará el seguimiento de caso",
-        url: urlAPI,
-        data: { "case": "eliminarSeguimientoCaso", "data": `id=${id}` }
-    });
-}
-
-function generarListaEtapas(etapa, listaEtapas, idLineaBase) {
-    const $selector = $('<select>', {
-        class: 'form-select form-select-sm',
-        name: 'etapas',
-        'data-id-linea-base': idLineaBase
-    });
-    listaEtapas.forEach(val => {
-        const $option = $('<option>', {
-            value: val.idEtapa,
-            text: val.nombre
-        });
-        if (val.idEtapa === etapa)
-            $option.prop('selected', true);
-        $selector.append($option);
-    });
-
-    $selector.change(function () {
-        const data = $.param({
-            etapa: $(this).val(),
-            lineaBase: $(this).data("id-linea-base")
-        });
-        crearPeticion(urlAPI, { case: "actualizarEtapa", data: data }, (res) => {
-            if (res.es_valor_error === false) {
-                refresh();
-            }
-        });
-    });
-
-    return $selector;
-}
-
-
-function eliminarlineaBase(tipo, idUsuario) {
-    alertaEliminar({
-        mensajeAlerta: "La información de la linea base " + tipo + " ya no estará disponible",
-        url: urlAPI,
-        data: { case: "eliminarLineaBase", data: $.param({ tipo: tipo, usuario: idUsuario }) }
-    });
-}
-
-function eliminarSeleccionados() {
-    const idsSeleccionados = [];
-    $("input[name='seleccionar_emprendedor']:checked").each(function () {
-        idsSeleccionados.push($(this).val());
-    });
-
-    if (idsSeleccionados.length === 0) {
-        mostrarMensajeError("No se han seleccionado emprendedores.", false);
-        return;
-    }
-
-    alertaEliminar({
-        mensajeAlerta: "Los emprendedores seleccionados serán eliminados permanentemente.",
-        url: urlAPI,
-        data: { case: "eliminarEmprendedoresSeleccionados", data: $.param({ ids: idsSeleccionados }) }
-    });
 }

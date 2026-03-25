@@ -38,6 +38,13 @@ class LineaBaseAdministracionAPI extends API
         $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
     }
 
+    function avanzarFortalecimiento()
+    {
+        $idUsuario = $this->getData("usuario");
+        $idEtapa = $this->getData("etapa");
+        $this->enviarResultadoOperacion(getAdminLineaBase()->avanzarFortalecimiento($idUsuario, $idEtapa));
+    }
+
     function recuperarSeguimientoCaso()
     {
         $this->enviarRespuesta(["seguimientoCaso" => getAdminEmprendedor()->recuperarSeguimientoCaso($this->data["idLineaBase"])]);
