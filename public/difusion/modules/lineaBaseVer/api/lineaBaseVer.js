@@ -1,732 +1,335 @@
 const urlAPI = "api/LineaBaseVerAPI.php";
 
 function ready() {
-    crearPeticion(urlAPI, {case: 'recuperarInfoLineaBase'}, (res) => {
+    crearPeticion(urlAPI, { case: 'recuperarInfoLineaBase' }, (res) => {
+        $("#lb-loader").hide();
+        $("#lb-main-container").fadeIn(400);
+
         const emprendedor = res.emprendedor;
-        $("#tipoLineaBase").text(res.tipo);
+        
+        // Sidebar Init
+        const badge = $("#lb-badge-tipo");
+        badge.text(res.tipo.toUpperCase());
+        badge.removeClass('inicial final').addClass(res.tipo.toLowerCase());
+        
+        $("#lb-profile-name").text(`${emprendedor.nombre} ${emprendedor.apellidos}`);
+        $("#lb-profile-img").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
+
         if (res.existeLineaBase) {
             const data = res.data;
-            $("#content").append(res.tipo === 'inicial' ? crearLineaBaseInicial(data) : crearLineaBaseFinal(data));
-            $("#fechaCreacion").html("<strong>Información actualizada a la fecha: </strong> <span>"+data.fechaCreacion+"</span>");
+            $("#lb-date-val").text(data.fechaCreacion);
+
+            const sections = res.tipo === 'inicial' 
+                ? prepararLineaBaseInicial(data) 
+                : prepararLineaBaseFinal(data);
+
+            renderizarSecciones(sections);
         } else {
-            $("#content").append(renderizarSecciones([construirSeccionNoLineaBase()]));
+            $("#lb-date-val").text("Sin registro");
+            renderizarSecciones([
+                {
+                    title: "Sin información",
+                    icon: "ti ti-alert-circle",
+                    fields: [
+                        { label: "Aviso", value: "Línea base no disponible.", icon: "ti ti-info-circle", colSpan: true }
+                    ]
+                }
+            ]);
+        }
+    });
+}
+
+function prepararLineaBaseFinal(data) {
+    const sections = [
+        obtenerDatosPreliminarFinal(data.preliminar),
+        obtenerDatosSocioeconomico(data.socioeconomico)
+    ];
+    if (data.negocio) {
+        sections.push(
+            obtenerDatosNegocio(data.negocio),
+            obtenerDatosAnalisisNegocio(data.analisisNegocio),
+            obtenerDatosAdministracionIngresos(data.administracionIngresos)
+        );
+    } else {
+        sections.push(obtenerDatosNoNegocio());
+    }
+    return sections;
+}
+
+function prepararLineaBaseInicial(data) {
+    const sections = [
+        obtenerDatosPreliminarInicial(data.preliminar),
+        obtenerDatosIdentificacion(data.identificacion),
+        obtenerDatosDomicilio(data.domicilio),
+        obtenerDatosSocioeconomico(data.socioeconomico)
+    ];
+    if (data.negocio) {
+        sections.push(
+            obtenerDatosNegocio(data.negocio),
+            obtenerDatosAnalisisNegocio(data.analisisNegocio),
+            obtenerDatosAdministracionIngresos(data.administracionIngresos)
+        );
+    } else {
+        sections.push(obtenerDatosNoNegocio());
+    }
+    return sections;
+}
+
+// ==============================================
+// RENDER ENGINE
+// ==============================================
+function renderizarSecciones(sections) {
+    const contentArea = $("#lb-content-area");
+    const navMenu = $("#lb-nav-menu");
+    
+    contentArea.empty();
+    navMenu.empty();
+
+    const tmplSection = document.getElementById('tmpl-section');
+    const tmplDataItem = document.getElementById('tmpl-data-item');
+
+    sections.forEach((sec, idx) => {
+        const secId = `sec-${sec.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        
+        // Agregar enlace de navegación
+        navMenu.append(`
+            <li class="nav-item">
+                <a href="#${secId}" class="nav-link text-muted d-flex align-items-center gap-2 px-3 py-2 rounded-3" style="transition: all 0.2s;" onmouseover="this.classList.add('bg-light', 'text-dark')" onmouseout="this.classList.remove('bg-light', 'text-dark')">
+                    <i class="${sec.icon} fs-5"></i> <span class="fw-medium">${sec.title}</span>
+                </a>
+            </li>
+        `);
+
+        // Clonar y rellenar sección
+        const secNode = tmplSection.content.cloneNode(true);
+        const sectionEl = secNode.querySelector('.lb-section');
+        sectionEl.id = secId;
+        sectionEl.style.animationDelay = `${idx * 0.1}s`;
+
+        sectionEl.querySelector('.lb-section-icon i').className = sec.icon;
+        sectionEl.querySelector('.lb-section-title').textContent = sec.title;
+        
+        const gridEl = sectionEl.querySelector('.lb-data-grid');
+
+        // Llenar campos de datos de la sección
+        if (sec.fields && sec.fields.length > 0) {
+            sec.fields.forEach(field => {
+                const itemNode = tmplDataItem.content.cloneNode(true);
+                const itemEl = itemNode.querySelector('.lb-data-item');
+                
+                if (field.colSpan) {
+                    itemEl.classList.remove('col-sm-6', 'col-xxl-4');
+                    itemEl.classList.add('col-12');
+                }
+
+                itemEl.querySelector('.lb-data-label i').className = `text-${field.color || 'primary'} ${field.icon || 'ti ti-point'}`;
+                itemEl.querySelector('.label-text').textContent = field.label;
+                
+                const valWrapper = itemEl.querySelector('.lb-data-value');
+                if (typeof field.value === 'string' && field.value.includes('<li>')) {
+                    // It's html list
+                    valWrapper.innerHTML = `<ul>${field.value}</ul>`;
+                } else {
+                    valWrapper.innerHTML = field.value || 'N/A';
+                }
+
+                if (field.sub) {
+                    const subEl = document.createElement('small');
+                    subEl.className = 'lb-data-sub';
+                    subEl.innerHTML = field.sub;
+                    itemEl.querySelector('.lb-data-value-wrapper').appendChild(subEl);
+                }
+
+                gridEl.appendChild(itemNode);
+            });
         }
 
-        $("#nombreEmprendedor").text(emprendedor.nombre + " " + emprendedor.apellidos);
-        $("#perfilEmprendedor").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
+        contentArea.append(secNode);
     });
 }
 
-function crearLineaBaseFinal(data) {
-    const sections = [
-        construirSeccionPreliminarFinal(data.preliminar),
-        construirSeccionSocioeconomico(data.socioeconomico)
-    ];
-    if (data.negocio) {
-        sections.push(construirSeccionNegocio(data.negocio),
-                construirSeccionAnalisisNegocio(data.analisisNegocio),
-                construirSeccionAdministracionIngresos(data.administracionIngresos));
-    } else {
-        sections.push(construirSeccionNoInfoNegocio());
-    }
-    return renderizarSecciones(sections);
-}
-
-function crearLineaBaseInicial(data) {
-    const sections = [
-        construirSeccionPreliminarInicial(data.preliminar),
-        construirSeccionIdentificacion(data.identificacion),
-        construirSeccionDomicilio(data.domicilio),
-        construirSeccionSocioeconomico(data.socioeconomico)
-    ];
-    if (data.negocio) {
-        sections.push(construirSeccionNegocio(data.negocio),
-                construirSeccionAnalisisNegocio(data.analisisNegocio),
-                construirSeccionAdministracionIngresos(data.administracionIngresos));
-    } else {
-        sections.push(construirSeccionNoInfoNegocio());
-    }
-
-    return renderizarSecciones(sections);
-}
-
-function renderizarSecciones(sections) {
-    let html = `
-    <div id="content">
-        <div class="position-relative overflow-hidden">
-            <div class="position-relative overflow-hidden rounded-3">
-                <img src="../../../assets/images/backgrounds/profilebg.jpg" alt="spike-img" class="w-100">
-            </div>
-            <div class="card mx-9 mt-n5">
-                <div class="card-body pb-0">
-                    <div class="d-md-flex align-items-center justify-content-between text-center text-md-start">
-                        <div class="d-md-flex align-items-center">
-                            <div class="rounded-circle position-relative mb-9 mb-md-0 d-inline-block">
-                                <img id="perfilEmprendedor" class="img-fluid rounded-circle" width="100" height="100">
-                            </div>
-                            <div class="ms-0 ms-md-3 mb-9 mb-md-0">
-                                <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
-                                    <h4 class="me-7 mb-0 fs-7" id="nombreEmprendedor"></h4>
-                                </div>
-                                <p class="fs-4 mb-1">Emprendedor</p>
-                                <p id="fechaCreacion"></p>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-outline-warning px-3 shadow-none" onclick="descargarLineaBase()">
-                            <i class="ti ti-download fs-4 me-2"></i>Descargar línea base
-                        </button>
-                    </div>
-                    <!-- Navegación de tabs -->
-                    <ul class="nav nav-pills user-profile-tab mt-4 justify-content-center justify-content-md-start" id="pills-tab" role="tablist">
-    `;
-
-    // Crear los tabs (nav-pills) para cada sección
-    sections.forEach((section, index) => {
-        html += `
-            <li class="nav-item me-2 me-md-3" role="presentation">
-                <button class="nav-link position-relative rounded-0 ${index === 0 ? 'active' : ''} d-flex align-items-center justify-content-center bg-transparent py-6" id="pills-${section.title.toLowerCase().replace(/\s/g, '-')}-tab" data-bs-toggle="pill" data-bs-target="#pills-${section.title.toLowerCase().replace(/\s/g, '-')}" type="button" role="tab" aria-controls="pills-${section.title.toLowerCase().replace(/\s/g, '-')}" aria-selected="${index === 0 ? 'true' : 'false'}">
-                    <i class="${section.icon} me-0 me-md-6 fs-6"></i>
-                    <span class="d-none d-md-block">${section.title}</span>
-                </button>
-            </li>
-        `;
-    });
-
-    html += `</ul></div></div></div>`;
-
-    // Crear contenido de las pestañas (tab-content)
-    html += `<div class="tab-content mx-10" id="pills-tabContent">`;
-
-    sections.forEach((section, index) => {
-        html += `
-        <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" id="pills-${section.title.toLowerCase().replace(/\s/g, '-')}" role="tabpanel" aria-labelledby="pills-${section.title.toLowerCase().replace(/\s/g, '-')}-tab" tabindex="0">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">${section.title}</h5>
-                    <div class="card-text">${section.content}</div>
-                </div>
-            </div>
-        </div>
-        `;
-    });
-
-    html += `</div></div>`;
-
-    return html;
-}
-
-function construirSeccionIdentificacion(identificacion) {
+// ==============================================
+// ADAPTERS (Transformers from JSON to field arrays)
+// ==============================================
+function obtenerDatosIdentificacion(identificacion) {
     return {
         icon: 'ti ti-user',
         title: 'Identificación',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-a-b"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Género</h6>
-                    <p class="mb-0">${identificacion.genero}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-calendar"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Edad</h6>
-                    <p class="mb-0">${identificacion.edad}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-heart"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Estado Civil</h6>
-                    <p class="mb-0">${identificacion.estadoCivil.descripcion}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-book"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Escolaridad</h6>
-                    <p class="mb-0">${identificacion.escolaridad.descripcion}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-disabled"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">¿Presentas alguna dispacidad?</h6>
-                    <p class="mb-0">${identificacion.discapacidad}</p>
-                </div>
-            </div>
-        `
+        fields: [
+            { label: 'Género', value: identificacion.genero, icon: 'ti ti-a-b', color: 'primary' },
+            { label: 'Edad', value: identificacion.edad, icon: 'ti ti-calendar', color: 'success' },
+            { label: 'Estado Civil', value: identificacion.estadoCivil.descripcion, icon: 'ti ti-heart', color: 'warning' },
+            { label: 'Escolaridad', value: identificacion.escolaridad.descripcion, icon: 'ti ti-book', color: 'info' },
+            { label: '¿Presentas alguna discapacidad?', value: identificacion.discapacidad, icon: 'ti ti-disabled', color: 'danger' }
+        ]
     };
 }
 
-function construirSeccionPreliminarFinal(preliminar) {
+function obtenerDatosPreliminarFinal(preliminar) {
     return {
         icon: 'ti ti-home-2',
         title: 'Preliminar',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bookmark-question"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">¿Consideras que hubo algún beneficio a nivel personal después de la formación o acompañamiento?</h6>
-                    <p class="mb-0">${preliminar.huboBeneficiosPersonal.res}</p>
-                    <p class="mb-0">${preliminar.beneficios !== null ? preliminar.beneficios : ''}</p>
-                </div>
-            </div>
-        `
+        fields: [
+            { 
+                label: 'Beneficio personal tras formación', 
+                value: preliminar.huboBeneficiosPersonal.res, 
+                sub: preliminar.beneficios !== null ? preliminar.beneficios : '',
+                icon: 'ti ti-bookmark-question', 
+                color: 'success',
+                colSpan: true
+            }
+        ]
     };
 }
 
-function construirSeccionPreliminarInicial(preliminar) {
-    const listaMedios = preliminar.listaMedioConoceFundacion.map(i => `
-        <li>
-            <i class="${i.icon} text-info"></i> ${i.descripcion}
-        </li>
-    `).join('');
-    var credito = '';
-    if (preliminar.razonRecurreFundacion.descripcion.includes("Crédito")) {
-        credito = `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-credit-card"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">${preliminar.solicitaCredito.descripcion}</h6>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-arrow-right-circle"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">${preliminar.utilizaCredito.descripcion}</h6>
-                </div>
-            </div>
-        `;
+function obtenerDatosPreliminarInicial(preliminar) {
+    const fields = [];
+    const listaMedios = preliminar.listaMedioConoceFundacion.map(i => `<li>${i.descripcion}</li>`).join('');
+    
+    fields.push({
+        label: '¿Cómo te enteraste de la Fundación?',
+        value: listaMedios,
+        icon: 'ti ti-eye-question',
+        color: 'info',
+        colSpan: true
+    });
+
+    if (preliminar.otroMedioConoceFundacion) {
+        fields.push({ label: 'Otro Medio', value: preliminar.otroMedioConoceFundacion, icon: 'ti ti-share', color: 'secondary' });
     }
+
+    fields.push({ label: 'Recurres a la Fundación para:', value: preliminar.razonRecurreFundacion.descripcion, icon: 'ti ti-bell-question', color: 'warning' });
+    
+    if (preliminar.otraRazonRecurreFundacion) {
+        fields.push({ label: 'Otra Razón', value: preliminar.otraRazonRecurreFundacion, icon: 'ti ti-alert-circle', color: 'danger' });
+    }
+
+    if (preliminar.razonRecurreFundacion.descripcion.includes("Crédito")) {
+        fields.push(
+            { label: 'Solicita Crédito', value: preliminar.solicitaCredito.descripcion, icon: 'ti ti-credit-card', color: 'success' },
+            { label: 'Utiliza Crédito', value: preliminar.utilizaCredito.descripcion, icon: 'ti ti-arrow-right-circle', color: 'primary' }
+        );
+    }
+
+    fields.push({ label: 'Tiempo para formarse a la semana', value: preliminar.tiempoDedicaCapacitacion.descripcion, icon: 'ti ti-clock', color: 'success' });
+
     return {
         icon: 'ti ti-home-2',
         title: 'Preliminar',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-eye-question"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">¿Cómo te enteraste de la Fundación?</h6>
-                    <ul>${listaMedios}</ul>
-                </div>
-            </div>
-            ${preliminar.otroMedioConoceFundacion ? `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-secondary-subtle text-secondary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-share"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Otro Medio:</h6>
-                    <p class="mb-0">${preliminar.otroMedioConoceFundacion}</p>
-                </div>
-            </div>
-            ` : ''}
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bell-question"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Recurres a la Fundación para:</h6>
-                    <p class="mb-0">${preliminar.razonRecurreFundacion.descripcion}</p>
-                </div>
-            </div>
-            ${preliminar.otraRazonRecurreFundacion ? `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-alert-circle"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Otra Razón:</h6>
-                    <p class="mb-0">${preliminar.otraRazonRecurreFundacion}</p>
-                </div>
-            </div>
-            ` : ''}
-            ${credito}
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-clock"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">¿Cuánto tiempo a la semana puedes dedicar para formarte/capacitarte de manera permanente?</h6>
-                    <p class="mb-0">${preliminar.tiempoDedicaCapacitacion.descripcion}</p>
-                </div>
-            </div>
-        `
+        fields: fields
     };
 }
 
-function construirSeccionDomicilio(domicilio) {
-    const fields = [
-        {
-            label: 'Dirección',
-            value: `${domicilio.calle}, ${domicilio.numeroExterior} (Int. ${domicilio.numeroInterior ? domicilio.numeroInterior : 'N/A'})`,
-            icon: 'ti ti-home',
-            bgColor: 'primary'
-        },
-        {label: 'Entre Calle', value: domicilio.calleCruce1, icon: 'ti ti-arrow-right', bgColor: 'warning'},
-        {label: 'Y Calle', value: domicilio.calleCruce2, icon: 'ti ti-arrow-left-right', bgColor: 'danger'},
-        {label: 'Código Postal', value: `${domicilio.codigoPostal.codigo} (${domicilio.codigoPostal.colonia})`, icon: 'ti ti-location-pin', bgColor: 'primary'},
-        {label: 'Municipio', value: domicilio.municipio.nombre, icon: 'ti ti-home-bolt', bgColor: 'secondary'},
-        {label: 'Estado', value: domicilio.estado, icon: 'ti ti-map-pin', bgColor: 'info'},
-        {label: 'Comunidad Parroquial', value: domicilio.comunidadParroquial.nombre, icon: 'ti ti-building-church', bgColor: 'success', extraInfo: `Decanato: "${domicilio.comunidadParroquial.decanato}", Vicaría: "${domicilio.comunidadParroquial.vicaria}"`}
-    ];
-
-    const content = `
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            ${fields.map(field => {
-        return `
-                    <div class="col">
-                        <div class="card shadow-sm border-0 rounded-3">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="bg-${field.bgColor}-subtle text-${field.bgColor} fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="${field.icon}"></i>
-                                </div>
-                                <div class="ms-4">
-                                    <h6 class="mb-1">${field.label}</h6>
-                                    <p class="mb-0">${field.value}</p>
-                                    ${field.extraInfo ? `<p class="mb-0">${field.extraInfo}</p>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-    }).join('')}
-        </div>
-    `;
-
+function obtenerDatosDomicilio(domicilio) {
     return {
         icon: 'ti ti-map-pin',
         title: 'Domicilio',
-        content: content
+        fields: [
+            { 
+                label: 'Dirección', 
+                value: `${domicilio.calle}, ${domicilio.numeroExterior} (Int. ${domicilio.numeroInterior ? domicilio.numeroInterior : 'N/A'})`, 
+                icon: 'ti ti-home', 
+                color: 'primary',
+                colSpan: true
+            },
+            { label: 'Entre Calle', value: domicilio.calleCruce1, icon: 'ti ti-arrow-right', color: 'warning' },
+            { label: 'Y Calle', value: domicilio.calleCruce2, icon: 'ti ti-arrow-left-right', color: 'danger' },
+            { label: 'Código Postal', value: `${domicilio.codigoPostal.codigo} (${domicilio.codigoPostal.colonia})`, icon: 'ti ti-location-pin', color: 'primary' },
+            { label: 'Municipio', value: domicilio.municipio.nombre, icon: 'ti ti-home-bolt', color: 'secondary' },
+            { label: 'Estado', value: domicilio.estado, icon: 'ti ti-map-pin', color: 'info' },
+            { 
+                label: 'Comunidad Parroquial', 
+                value: domicilio.comunidadParroquial.nombre, 
+                sub: `Decanato: "${domicilio.comunidadParroquial.decanato}", Vicaría: "${domicilio.comunidadParroquial.vicaria}"`,
+                icon: 'ti ti-building-church', 
+                color: 'success',
+                colSpan: true
+            }
+        ]
     };
 }
 
-
-
-function construirSeccionSocioeconomico(socioeconomico) {
+function obtenerDatosSocioeconomico(socioeconomico) {
     return {
         icon: 'ti ti-wallet',
         title: 'Socioeconómico',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-users"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Cantidad de Dependientes</h6>
-                    <p class="mb-0">${socioeconomico.cantidadDependientes}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-briefcase"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Ocupación Actual</h6>
-                    <p class="mb-0">${socioeconomico.ocupacionActual.descripcion}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-wallet"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Ingreso Mensual</h6>
-                    <p class="mb-0">${socioeconomico.ingresoMensual.descripcion}</p>
-                </div>
-            </div>
-        `
+        fields: [
+            { label: 'Cantidad de Dependientes', value: socioeconomico.cantidadDependientes, icon: 'ti ti-users', color: 'primary' },
+            { label: 'Ocupación Actual', value: socioeconomico.ocupacionActual.descripcion, icon: 'ti ti-briefcase', color: 'success' },
+            { label: 'Ingreso Mensual', value: socioeconomico.ingresoMensual.descripcion, icon: 'ti ti-wallet', color: 'info' }
+        ]
     };
 }
 
-function construirSeccionNegocio(negocio) {
-    const content = `
-    <!-- Otras tarjetas del negocio -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div class="col">
-                <div class="card border-light shadow-sm rounded-3">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <div class="bg-primary-subtle text-primary rounded-circle p-3">
-                            <i class="ti ti-credit-card fs-16"></i>
-                        </div>
-                        <div class="ms-4">
-                            <h6 class="mb-1">Nombre del Negocio</h6>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;">${negocio.nombre}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-light shadow-sm rounded-3">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <div class="bg-info-subtle text-info rounded-circle p-3">
-                            <i class="ti ti-phone fs-16"></i>
-                        </div>
-                        <div class="ms-4">
-                            <h6 class="mb-1">Teléfono</h6>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;">${negocio.telefono}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-light shadow-sm rounded-3">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <div class="bg-success-subtle text-success rounded-circle p-3">
-                            <i class="ti ti-calendar fs-16"></i>
-                        </div>
-                        <div class="ms-4">
-                            <h6 class="mb-1">Antigüedad</h6>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;">${negocio.antiguedad}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-light shadow-sm rounded-3">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <div class="bg-danger-subtle text-danger rounded-circle p-3">
-                            <i class="ti ti-devices-dollar fs-16"></i>
-                        </div>
-                        <div class="ms-4">
-                            <h6 class="mb-1">Giro</h6>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;">${negocio.giro.descripcion}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-light shadow-sm rounded-3">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <div class="bg-secondary-subtle text-secondary rounded-circle p-3">
-                            <i class="ti ti-devices-dollar fs-16"></i>
-                        </div>
-                        <div class="ms-4">
-                            <h6 class="mb-1">Actividad</h6>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;">${negocio.actividad.descripcion}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tarjeta de la Dirección -->
-        <div class="card border-light mb-4 rounded-3 shadow-sm">
-            <div class="card-body p-4">
-                <h5 class="text-dark mb-3">Dirección</h5>
-                <div class="d-flex flex-wrap mb-3">
-                    <div class="d-flex align-items-center mb-2 me-4">
-                        <div class="bg-primary-subtle text-primary rounded-circle p-3">
-                            <i class="ti ti-location-pin fs-16"></i>
-                        </div>
-                        <div class="ms-3">
-                            <p class="mb-0">Calle ${negocio.calle}, # ${negocio.numExterior} ${negocio.numInterior ? `(Int. ${negocio.numInterior})` : ''}, entre ${negocio.calleCruce1} y ${negocio.calleCruce2}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-wrap mb-3">
-                    <div class="d-flex align-items-center mb-2 me-4">
-                        <div class="bg-primary-subtle text-primary rounded-circle p-3">
-                            <i class="ti ti-location-pin fs-16"></i>
-                        </div>
-                        <div class="ms-3">
-                            <p class="mb-0"><strong>Código Postal:</strong> ${negocio.codigoPostal.codigo} (${negocio.codigoPostal.colonia})</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-2 me-4">
-                        <div class="bg-info-subtle text-info rounded-circle p-3">
-                            <i class="ti ti-map fs-16"></i>
-                        </div>
-                        <div class="ms-3">
-                            <p class="mb-0"><strong>Municipio:</strong> ${negocio.municipio.nombre}</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bg-warning-subtle text-warning rounded-circle p-3">
-                            <i class="ti ti-map-pin fs-16"></i>
-                        </div>
-                        <div class="ms-3">
-                            <p class="mb-0"><strong>Estado:</strong> ${negocio.estado}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tarjeta de Cantidad de Empleados (Destacada) -->
-        <div class="card border-warning mb-4 rounded-3 shadow-lg">
-            <div class="card-body p-4">
-                <h5 class="text-warning mb-3"><strong>Cantidad de Empleados</strong></h5>
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning-subtle text-warning rounded-circle p-3">
-                        <i class="ti ti-users fs-16"></i>
-                    </div>
-                    <div class="ms-3">
-                        <p class="mb-0">${negocio.cantEmpleados.descripcion}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
+function obtenerDatosNegocio(negocio) {
     return {
         icon: 'ti ti-home-dollar',
         title: 'Negocio',
-        content: content
+        fields: [
+            { label: 'Nombre del Negocio', value: negocio.nombre, icon: 'ti ti-credit-card', color: 'primary', colSpan: true },
+            { label: 'Teléfono', value: negocio.telefono, icon: 'ti ti-phone', color: 'info' },
+            { label: 'Antigüedad', value: negocio.antiguedad, icon: 'ti ti-calendar', color: 'success' },
+            { label: 'Giro', value: negocio.giro.descripcion, icon: 'ti ti-devices-dollar', color: 'danger' },
+            { label: 'Actividad', value: negocio.actividad.descripcion, icon: 'ti ti-devices-dollar', color: 'secondary' },
+            { 
+                label: 'Dirección del Negocio', 
+                value: `Calle ${negocio.calle}, # ${negocio.numExterior} ${negocio.numInterior ? `(Int. ${negocio.numInterior})` : ''}, entre ${negocio.calleCruce1} y ${negocio.calleCruce2}`,
+                sub: `CP: ${negocio.codigoPostal.codigo} (${negocio.codigoPostal.colonia}), ${negocio.municipio.nombre}, ${negocio.estado}`,
+                icon: 'ti ti-location-pin', 
+                color: 'primary',
+                colSpan: true
+            },
+            { label: 'Cantidad de Empleados', value: negocio.cantEmpleados.descripcion, icon: 'ti ti-users', color: 'warning' }
+        ]
     };
 }
 
-// Función para "Análisis del Negocio"
-function construirSeccionAnalisisNegocio(analisisNegocio) {
+function obtenerDatosAnalisisNegocio(anal) {
     return {
         icon: 'ti ti-chart-arrows',
         title: 'Análisis del Negocio',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-chart-area-line-filled"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Registra Entrada y Salida</h6>
-                    <p class="mb-0">${analisisNegocio.registraEntradaSalida.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-dollar-sign"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Asigna Sueldo</h6>
-                    <p class="mb-0">${analisisNegocio.asignaSueldo.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-money"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Conoce Utilidades</h6>
-                    <p class="mb-0">${analisisNegocio.conoceUtilidades.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-flag"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Identifica Competencia</h6>
-                    <p class="mb-0">${analisisNegocio.competencia.identifica.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-users"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Clientes del Negocio</h6>
-                    <p class="mb-0">${analisisNegocio.clientesNegocio}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-rocket"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Ventajas del Negocio</h6>
-                    <p class="mb-0">${analisisNegocio.ventajasNegocio}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-alert-circle"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Problemas del Negocio</h6>
-                    <p class="mb-0">${analisisNegocio.problemasNegocio}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-trending-up"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Conoce Productos con Mayor Utilidad</h6>
-                    <p class="mb-0">${analisisNegocio.conoceProductosMayorUtilidad.conoce.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-piggy-bank"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Ahorro Mensual</h6>
-                    <p class="mb-0">${analisisNegocio.ahorro.asigna.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bar-chart"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Punto de Equilibrio</h6>
-                    <p class="mb-0">${analisisNegocio.conocePuntoEquilibrio.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-list"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Separa Gastos</h6>
-                    <p class="mb-0">${analisisNegocio.separaGastos.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-file"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Elabora Presupuesto</h6>
-                    <p class="mb-0">${analisisNegocio.elaboraPresupuesto.res}</p>
-                </div>
-            </div>
-        `
+        fields: [
+            { label: 'Registra Entrada y Salida', value: anal.registraEntradaSalida.res, icon: 'ti ti-chart-area-line-filled', color: 'primary' },
+            { label: 'Asigna Sueldo', value: anal.asignaSueldo.res, icon: 'ti ti-dollar-sign', color: 'info' },
+            { label: 'Conoce Utilidades', value: anal.conoceUtilidades.res, icon: 'ti ti-money', color: 'success' },
+            { label: 'Identifica Competencia', value: anal.competencia.identifica.res, icon: 'ti ti-flag', color: 'warning' },
+            { label: 'Clientes del Negocio', value: anal.clientesNegocio, icon: 'ti ti-users', color: 'danger' },
+            { label: 'Ventajas del Negocio', value: anal.ventajasNegocio, icon: 'ti ti-rocket', color: 'primary' },
+            { label: 'Problemas del Negocio', value: anal.problemasNegocio, icon: 'ti ti-alert-circle', color: 'info', colSpan: true },
+            { label: 'Conoce Productos con Mayor Utilidad', value: anal.conoceProductosMayorUtilidad.conoce.res, icon: 'ti ti-trending-up', color: 'success' },
+            { label: 'Ahorro Mensual', value: anal.ahorro.asigna.res, icon: 'ti ti-piggy-bank', color: 'warning' },
+            { label: 'Punto de Equilibrio', value: anal.conocePuntoEquilibrio.res, icon: 'ti ti-bar-chart', color: 'danger' },
+            { label: 'Separa Gastos', value: anal.separaGastos.res, icon: 'ti ti-list', color: 'primary' },
+            { label: 'Elabora Presupuesto', value: anal.elaboraPresupuesto.res, icon: 'ti ti-file', color: 'info' }
+        ]
     };
 }
 
-// Función para "Administración de Ingresos"
-function construirSeccionAdministracionIngresos(administracionIngresos) {
+function obtenerDatosAdministracionIngresos(admin) {
     return {
         icon: 'ti ti-archive',
         title: 'Administración de Ingresos',
-        content: `
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-clipboard"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Sueldo Mensual</h6>
-                    <p class="mb-0">${administracionIngresos.sueldoMensual}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-currency-dollar"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Monto Mensual Ventas</h6>
-                    <p class="mb-0">${administracionIngresos.montoMensualVentas}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-credit-card"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Monto Mensual Egresos</h6>
-                    <p class="mb-0">${administracionIngresos.montoMensualEgresos}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-currency-yen"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Monto Mensual Utilidades</h6>
-                    <p class="mb-0">${administracionIngresos.montoMensualUtilidades}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-danger-subtle text-danger fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-building"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Negocio como Fuente de Ingresos Personal</h6>
-                    <p class="mb-0">${administracionIngresos.esNegocioPrincipalFuentePersonal.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-primary-subtle text-primary fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-home"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Negocio como Fuente de Ingresos Familiar</h6>
-                    <p class="mb-0">${administracionIngresos.esNegocioPrincipalFuenteFamiliar.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-info-subtle text-info fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-save"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Hábito de Ahorro</h6>
-                    <p class="mb-0">${administracionIngresos.habitoAhorro.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-success-subtle text-success fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-bank"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Sistema de Ahorro</h6>
-                    <p class="mb-0">${administracionIngresos.sistemaAhorro.cuenta.res}</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-9">
-                <div class="bg-warning-subtle text-warning fs-14 round-40 rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="ti ti-cash"></i>
-                </div>
-                <div class="ms-6">
-                    <h6 class="mb-1">Monto de Ahorro Mensual</h6>
-                    <p class="mb-0">${administracionIngresos.montoAhorroMensual}</p>
-                </div>
-            </div>
-        `
+        fields: [
+            { label: 'Sueldo Mensual', value: admin.sueldoMensual, icon: 'ti ti-clipboard', color: 'primary' },
+            { label: 'Monto Mensual Ventas', value: admin.montoMensualVentas, icon: 'ti ti-currency-dollar', color: 'info' },
+            { label: 'Monto Mensual Egresos', value: admin.montoMensualEgresos, icon: 'ti ti-credit-card', color: 'success' },
+            { label: 'Monto Mensual Utilidades', value: admin.montoMensualUtilidades, icon: 'ti ti-currency-yen', color: 'warning' },
+            { label: 'Negocio como Fuente de Ingresos Personal', value: admin.esNegocioPrincipalFuentePersonal.res, icon: 'ti ti-building', color: 'danger' },
+            { label: 'Negocio como Fuente de Ingresos Familiar', value: admin.esNegocioPrincipalFuenteFamiliar.res, icon: 'ti ti-home', color: 'primary' },
+            { label: 'Hábito de Ahorro', value: admin.habitoAhorro.res, icon: 'ti ti-save', color: 'info' },
+            { label: 'Sistema de Ahorro', value: admin.sistemaAhorro.cuenta.res, icon: 'ti ti-bank', color: 'success' },
+            { label: 'Monto de Ahorro Mensual', value: admin.montoAhorroMensual, icon: 'ti ti-cash', color: 'warning' }
+        ]
     };
 }
 
-
-function construirSeccionNoInfoNegocio() {
-    return construirSeccionNoInfo("Negocio", "Información del negocio no disponible", "Se ha indicado que no cuenta con un negocio.");
-}
-
-function construirSeccionNoLineaBase() {
-    return construirSeccionNoInfo("Sin información", "Línea base no disponible", "");
-}
-
-function construirSeccionNoInfo(titulo, mensaje, subtitulo) {
-    const content = `
-        <div class="alert alert-warning text-primary role="alert">
-            <h5 class="text-dark mb-3"><strong>${mensaje}</strong></h5>
-            <p class="text-muted">${subtitulo}</p>
-        </div>
-    `;
+function obtenerDatosNoNegocio() {
     return {
         icon: 'ti ti-alert-circle',
-        title: titulo,
-        content: content
+        title: 'Negocio',
+        fields: [
+            { label: 'Sin negocio', value: 'Se ha indicado que no cuenta con un negocio.', icon: 'ti ti-info-circle', colSpan: true, color: 'secondary' }
+        ]
     };
 }
 
