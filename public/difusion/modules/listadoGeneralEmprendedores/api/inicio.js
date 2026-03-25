@@ -148,7 +148,11 @@ function construirTablaEmprendedores(emprendedores) {
     const claseTabla = "table table-hover align-middle text-nowrap mb-1";
     $.each(emprendedores, (i, emprendedor) => {
         data.push({
-            "Nombre": emprendedor.nombre + " " + emprendedor.apellidos,
+            "Etapa": generarListaEtapas(emprendedor.id_etapa, todasLasEtapas, emprendedor.id_linea_base, emprendedor.id),
+            "Nombre": $("<a>", {
+                href: `../verEmprendedor?id=${emprendedor.id_emprendedor}`,
+                class: "text-primary text-decoration-none fw-semibold"
+            }).text(`${emprendedor.nombre} ${emprendedor.apellidos}`).prop('outerHTML'),
             "Teléfono": $("<a>", {
                 href: "https://wa.me/" + emprendedor.numero_celular.replace(/[\s\(\)-]/g, '').trim(),
                 target: "_blank"
@@ -165,7 +169,7 @@ function construirTablaEmprendedores(emprendedores) {
         construirTablaDataTable(data, claseTabla, "container", "tablaEmprendedores");
     } else {
         const $tablaVacia = $('<table>', {class: claseTabla, id: "tablaEmprendedores"});
-        const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Nombre"})).append($('<th>', {text: "Telefono"})).append($('<th>', {text: "Correo"})));
+        const $thead = $('<thead>').append($('<tr>').append($('<th>', {text: "Etapa"})).append($('<th>', {text: "Nombre"})).append($('<th>', {text: "Telefono"})).append($('<th>', {text: "Correo"})));
         $tablaVacia.append($thead);
         $("#container").empty().append($tablaVacia);
         crearDataTable("#tablaEmprendedores");
@@ -204,3 +208,163 @@ function crearBotonesAccion(id) {
 
     return group.prop("outerHTML");
 }
+
+function generarListaEtapas(etapa, listaEtapas, idLineaBase, idUsuario) {
+    let nombreEtapa = "Sin etapa";
+    const etapaObj = listaEtapas.find(e => e.idEtapa == etapa);
+    if (etapaObj) {
+        nombreEtapa = etapaObj.nombre;
+    }
+
+    const $container = $('<div>', { class: 'd-flex align-items-center gap-2' });
+    const $texto = $('<span>', { text: nombreEtapa, class: 'badge bg-light text-dark border' });
+    
+    // Solo mostrar el boton si el emprendedor tiene una linea base, porque si no no se puede actualizar la etapa
+    if (idLineaBase) {
+        const $btnModificar = $('<button>', {
+            type: 'button',
+            class: 'btn btn-sm btn-link text-secondary p-0 mb-0 border-0 text-decoration-none',
+            title: 'Cambiar etapa',
+            html: '<i class="ti ti-pencil fs-5"></i>'
+        });
+
+        $btnModificar.click(function() {
+            abrirModalModificarEtapa(etapa, listaEtapas, idLineaBase, idUsuario);
+        });
+        $container.append($texto, $btnModificar);
+    } else {
+        $container.append($texto);    
+    }
+
+    return $container[0];
+}
+
+function abrirModalModificarEtapa(etapaActualId, listaEtapas, idLineaBase, idUsuario) {
+    let $modal = $('#modalModificarEtapa');
+    if ($modal.length === 0) {
+        const modalHtml = `
+        <div class="modal fade" id="modalModificarEtapa" tabindex="-1" aria-labelledby="modalModificarEtapaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-light border-bottom">
+                        <h5 class="modal-title" id="modalModificarEtapaLabel">
+                            <i class="ti ti-pencil me-2 text-primary"></i>Gestionar etapa de línea base
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <section class="mb-4 pb-3 border-bottom">
+                            <h6 class="fw-semibold mb-2">Cambiar etapa actual</h6>
+                            <p class="text-muted mb-3">Seleccione la nueva etapa para este emprendedor y guarde el cambio.</p>
+                            <label for="selectModificarEtapa" class="form-label fw-bold">Nueva etapa</label>
+                            <div class="mb-3 d-flex gap-2">
+                                <select class="form-select" id="selectModificarEtapa"></select>
+                                <button type="button" class="btn btn-primary text-nowrap" id="btnGuardarEtapa">
+                                    <i class="ti ti-device-floppy me-1"></i> Guardar
+                                </button>
+                            </div>
+                        </section>
+                        <section>
+                            <h6 class="fw-semibold mb-2">Avanzar a fortalecimiento</h6>
+                            <p class="text-muted mb-3">Elija una etapa de fortalecimiento a la que desea avanzar al emprendedor.</p>
+                            <label for="selectFortalecimiento" class="form-label fw-bold">Etapa de fortalecimiento</label>
+                            <div class="mb-3 d-flex gap-2">
+                                <select class="form-select" id="selectFortalecimiento"></select>
+                                <button type="button" class="btn btn-warning text-nowrap" id="btnAvanzarFortalecimiento">
+                                    <i class="ti ti-arrow-right me-1"></i> Avanzar
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="modal-footer justify-content-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="ti ti-x me-2"></i>Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        $('body').append(modalHtml);
+        $modal = $('#modalModificarEtapa');
+    }
+
+    const $select = $('#selectModificarEtapa');
+    $select.empty();
+    listaEtapas.forEach(val => {
+        const $option = $('<option>', {
+            value: val.idEtapa,
+            text: val.nombre
+        });
+        if (val.idEtapa === etapaActualId) {
+            $option.prop('selected', true);
+        }
+        $select.append($option);
+    });
+
+    const $selectFortalecimiento = $('#selectFortalecimiento');
+    $selectFortalecimiento.empty();
+    const etapasFortalecimiento = listaEtapas.filter(e => typeof e.tipo === 'object' && e.tipo !== null && typeof e.tipo.val !== 'undefined' && e.tipo.val.toLowerCase().includes('fortalecimiento'));
+    etapasFortalecimiento.forEach(val => {
+        const $option = $('<option>', {
+            value: val.idEtapa,
+            text: val.nombre
+        });
+        $selectFortalecimiento.append($option);
+    });
+
+    if (etapasFortalecimiento.length === 0) {
+        $selectFortalecimiento.append($('<option>', { text: 'No hay etapas de fortalecimiento', disabled: true, selected: true }));
+        $('#btnAvanzarFortalecimiento').prop('disabled', true);
+    } else {
+        $('#btnAvanzarFortalecimiento').prop('disabled', false);
+    }
+
+    $('#btnGuardarEtapa').off('click').on('click', function() {
+        const nuevaEtapa = $select.val();
+        if (nuevaEtapa == etapaActualId) {
+            const bsModal = bootstrap.Modal.getInstance($modal[0]);
+            bsModal.hide();
+            return;
+        }
+
+        const data = $.param({
+            etapa: nuevaEtapa,
+            lineaBase: idLineaBase
+        });
+        crearPeticion(urlAPI, { case: "actualizarEtapa", data: data }, (res) => {
+            if (res.es_valor_error === false) {
+                const bsModal = bootstrap.Modal.getInstance($modal[0]);
+                bsModal.hide();
+                location.reload();
+            } else {
+                mostrarMensajeError("Error al actualizar la etapa: " + res.mensaje);
+            }
+        });
+    });
+
+    $('#btnAvanzarFortalecimiento').off('click').on('click', function() {
+        const etapaFortalecimiento = $selectFortalecimiento.val();
+        if (!etapaFortalecimiento) return;
+
+        const data = $.param({
+            etapa: etapaFortalecimiento,
+            usuario: idUsuario
+        });
+
+        crearPeticion(urlAPI, { case: "avanzarFortalecimiento", data: data }, (res) => {
+            if (res.es_valor_error === false) {
+                const bsModal = bootstrap.Modal.getInstance($modal[0]);
+                bsModal.hide();
+                mostrarMensajeOk("Emprendedor avanzado a fortalecimiento correctamente.");
+            } else {
+                mostrarMensajeError("Error: " + res.mensaje, false);
+            }
+        });
+    });
+
+    const bsModal = new bootstrap.Modal($modal[0]);
+    bsModal.show();
+}
+
+
+

@@ -31,6 +31,25 @@ class InicioAdminProyectosAPI extends API {
     function eliminarEmprendedor() {
         $this->enviarResultadoOperacion(getAdminEmprendedor()->eliminarEmprendedor($this->getData("id")));
     }
+
+    function actualizarEtapa()
+    {
+        $idLineaBase = $this->getData("lineaBase");
+        $idEtapa = $this->getData("etapa");
+        $this->enviarResultadoOperacion(getAdminLineaBase()->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa));
+    }
+
+    function avanzarFortalecimiento()
+    {
+        $idUsuario = $this->getData("usuario");
+        $idEtapa = $this->getData("etapa");
+        $resultado = getAdminLineaBase()->avanzarFortalecimiento($idUsuario, $idEtapa);
+        if (is_array($resultado)) {
+            $this->enviarRespuesta($resultado);
+            return;
+        }
+        $this->enviarResultadoOperacion((bool) $resultado);
+    }
 }
 
 Util::iniciarAPI(InicioAdminProyectosAPI::class);
