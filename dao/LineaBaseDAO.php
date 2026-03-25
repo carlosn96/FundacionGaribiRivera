@@ -343,6 +343,22 @@ class LineaBaseDAO extends DAO {
         return $prep->ejecutar();
     }
 
+    public function avanzarFortalecimiento($idUsuario, $idEtapa) {
+        try {
+            $prep = $this->prepararInstruccion("INSERT INTO usuario_emprendedor_fortalecimiento (id_usuario, id_etapa) VALUES (?, ?)");
+            $prep->agregarInt($idUsuario);
+            $prep->agregarInt($idEtapa);
+            return $prep->ejecutar();
+        } catch (mysqli_sql_exception $exc) {
+            if ((int) $exc->getCode() === 1062) {
+                return Util::enum("El usuario ya fue avanzado previamente a fortalecimiento", true);
+            }
+            return Util::enum("Error de base de datos al avanzar a fortalecimiento", true);
+        } catch (Exception $exc) {
+            return Util::enum("Error inesperado al avanzar a fortalecimiento", true);
+        }
+    }
+
     public function actualizarParametrosImpacto($params, $tipo, $idUsuario): bool {
         $tabla = "";
         foreach (self::TIPOS_LINEA_BASE as $tipoLineaBase) {

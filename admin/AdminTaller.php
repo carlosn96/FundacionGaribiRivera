@@ -309,4 +309,9 @@ class AdminTaller extends Admin
     {
         return $this->dao->eliminarCuestionarioExamen($idTaller);
     }
+
+    public function recuperarAsistenciasEmprendedor($idEmprendedor)
+    {
+        return $this->dao->recuperarAsistenciasEmprendedor($idEmprendedor);
+    }
 }

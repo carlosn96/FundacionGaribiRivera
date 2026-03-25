@@ -20,7 +20,11 @@ class AdminEmprendedor extends Admin
 
     public function get($id)
     {
-        $emprendedor = $this->dao->listar($id)[0];
+        $resultado = $this->dao->listar($id);
+        if (empty($resultado)) {
+            return null;
+        }
+        $emprendedor = $resultado[0];
         $emprendedor["idEmprendedor"] = $emprendedor["id_emprendedor"];
         unset($emprendedor["id_emprendedor"]);
         return $emprendedor;
@@ -29,6 +33,16 @@ class AdminEmprendedor extends Admin
     public function listarPorEtapa($idEtapa)
     {
         return $this->dao->listarPorEtapa($idEtapa);
+    }
+
+    public function listarEnFortalecimiento()
+    {
+        return $this->dao->listarEnFortalecimiento();
+    }
+
+    public function eliminarEmprendedorFortalecimiento($idFortalecimiento)
+    {
+        return $this->dao->eliminarEmprendedorFortalecimiento($idFortalecimiento);
     }
 
     public function guardarSeguimientoCaso($data)

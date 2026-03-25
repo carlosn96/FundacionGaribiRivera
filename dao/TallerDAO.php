@@ -148,4 +148,19 @@ class TallerDAO extends DAO
         $prep->agregarString($observacion !== null ? $observacion : "");
         return $prep->ejecutar();
     }
+
+    public function recuperarAsistenciasEmprendedor($idEmprendedor)
+    {
+        $sql = "SELECT t.nombreTaller as nombre_taller, 
+                       DATE_FORMAT(a.fecha, '%d/%m/%Y') as fecha,
+                       a.observacion as descripcion,
+                       a.asiste as asistio
+                FROM asistencia_taller a
+                JOIN listar_talleres t ON a.id_taller = t.idTaller
+                WHERE a.id_emprendedor = ?
+                ORDER BY a.fecha DESC";
+        $prep = $this->prepararInstruccion($sql);
+        $prep->agregarInt($idEmprendedor);
+        return $prep->ejecutarConsultaMultiple();
+    }
 }

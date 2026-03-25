@@ -264,6 +264,10 @@ class AdminLineaBase extends Admin {
         return $this->dao->actualizarEtapaEnLineaBase($idLineaBase, $idEtapa);
     }
 
+    public function avanzarFortalecimiento($idUsuario, $idEtapa) {
+        return $this->dao->avanzarFortalecimiento($idUsuario, $idEtapa);
+    }
+
     public function actualizarParametrosImpacto($params, $tipo, $id): bool {
         return $this->dao->actualizarParametrosImpacto($params, $tipo, $id);
     }

@@ -11,6 +11,7 @@ class EmprendedorDAO extends DAO
     private const RECUPERAR_SEGUIMIENTO_CASO = "SELECT * FROM recuperar_seguimiento_caso WHERE idLineaBase = ?";
     private const LISTAR_EMPRENDEDORES = "listar_emprendedores";
     private const LISTAR_EMPRENDEDORES_ETAPA = "listar_emprendedores_por_etapa";
+    private const LISTAR_EMPRENDEDORES_FORTALECIMIENTO = "select * from listar_emprendedores_fortalecimiento";
 
     public function guardarSeguimientoCaso(SeguimientoCaso $seguimiento)
     {
@@ -84,6 +85,16 @@ class EmprendedorDAO extends DAO
             $where = " WHERE id_etapa $condicion";
         }
         return $this->listarEmprendedores(self::LISTAR_EMPRENDEDORES_ETAPA . $where);
+    }
+
+    public function listarEnFortalecimiento()
+    {
+        return $this->ejecutarInstruccionResult(self::LISTAR_EMPRENDEDORES_FORTALECIMIENTO);
+    }
+
+    public function eliminarEmprendedorFortalecimiento($idFortalecimiento)
+    {
+        return $this->eliminarPorId("usuario_emprendedor_fortalecimiento", "id", $idFortalecimiento);
     }
 
     private function listarEmprendedores($tabla, $where = "")
