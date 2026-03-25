@@ -13,6 +13,7 @@ function inicializarPlantilla($dir, $aside, $scripts = [], $styles = [])
         // Incluir estilos adicionales, si los hay
         foreach ($styles as $style) {
             echo '<link rel="stylesheet" href="' . $style . '">';
+            
         }
         ?>
 
