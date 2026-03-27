@@ -50,7 +50,8 @@ function inicializarEventos() {
     });
 
     // Evento para abrir el modal de edición de referencia
-    $(document).on('click', '.btn-editar-referencia', function () {
+    $(document).on('click', '.btn-editar-referencia', function (e) {
+        e.preventDefault();
         const emprendedorId = $(this).data('id');
         emprendedorActual = historialData.find(item => item.id_emprendedor == emprendedorId);
 
@@ -85,15 +86,14 @@ function inicializarEventos() {
     });
 }
 
-function cargarDatos() {
+async function cargarDatos() {
     mostrarCargando();
 
-    crearPeticion(urlAPI, { case: "getHistorialEmprendedores" }, function (res) {
-        //console.log('Respuesta recibida:', res);
-
-        historialData = res.historial || [];
+    try {
+        const res = await CobranzaController.getHistorialEmprendedores();
+        historialData = (res.data && res.data.historial) ? res.data.historial : [];
         filteredData = [...historialData];
-
+        
         if (historialData.length === 0) {
             mostrarMensajeVacio();
             return;
@@ -101,15 +101,10 @@ function cargarDatos() {
 
         actualizarContadores();
         aplicarFiltros();
-    }, function (xhr, status, error) {
+    } catch (error) {
         mostrarError();
-        try {
-            const errorResponse = JSON.parse(xhr.responseText);
-            console.error('Error parseado:', errorResponse);
-        } catch (e) {
-            console.error('No se pudo parsear la respuesta como JSON');
-        }
-    });
+        console.error('Error al cargar datos:', error);
+    }
 }
 
 function exportarDatos() {
@@ -388,11 +383,45 @@ function generarTabla(data) {
                     </div>
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-outline-primary btn-editar-referencia" 
-                            title="Editar Referencia"
-                            data-id="${item.id_emprendedor}">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                    ${(item.referencia && item.referencia !== null && item.referencia !== '') ? `
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu shadow border-0 dropdown-menu-end">
+                                <li>
+                                    <h6 class="dropdown-header small text-uppercase fw-bold text-muted opacity-75">Opciones de Crédito</h6>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider opacity-50">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item btn-editar-referencia d-flex align-items-center py-2" href="javascript:void(0)" data-id="${item.id_emprendedor}">
+                                        <i class="fas fa-edit me-2 text-primary opacity-75"></i>
+                                        <span>Editar Referencia</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="../expediente/?id=${item.id_emprendedor}">
+                                        <i class="fas fa-folder-open me-2 text-info opacity-75"></i>
+                                        <span>Expediente</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="../pagos/?id=${item.id_emprendedor}">
+                                        <i class="fas fa-money-bill-wave me-2 text-success opacity-75"></i>
+                                        <span>Pagos</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    ` : `
+                        <button type="button" class="btn btn-sm btn-outline-primary btn-editar-referencia border-0" 
+                                title="Asignar Referencia"
+                                data-id="${item.id_emprendedor}">
+                            <i class="fas fa-plus-circle me-1"></i>Referencia
+                        </button>
+                    `}
                 </td>
             </tr>
         `;
@@ -429,32 +458,26 @@ function formatearFecha(fecha) {
     return fecha;
 }
 
-function actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento) {
-    crearPeticion(urlAPI, {
-        case: "actualizarReferencia",
-        data: $.param({
-            id: emprendedorId,
-            referencia: referencia,
-            fechaOtorgamiento: fechaOtorgamiento
-        })
-    }, function (res) {
+async function actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento) {
+    try {
+        const res = await CobranzaController.actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento);
         //console.log('Respuesta:', res);
 
-        if (res.success) {
+        if (res.status === 200 || res.status === 201) {
             const index = historialData.findIndex(item => item.id_emprendedor == emprendedorId);
             if (index !== -1) {
                 historialData[index].referencia = referencia;
                 historialData[index].fecha_credito = fechaOtorgamiento;
             }
             aplicarFiltros();
-            mostrarNotificacion(res.msg || 'Referencia actualizada correctamente', 'success');
+            mostrarNotificacion(res.message || 'Referencia actualizada correctamente', 'success');
         } else {
-            mostrarNotificacion(res.msg || 'Error al actualizar la referencia', 'danger');
+            mostrarNotificacion(res.message || 'Error al actualizar la referencia', 'danger');
         }
-    }, function (err) {
+    } catch (err) {
         console.error('Error:', err);
         mostrarNotificacion('Error de conexión al actualizar la referencia', 'danger');
-    });
+    }
 }
 
 function mostrarNotificacion(mensaje, tipo = 'success') {

@@ -1,4 +1,5 @@
 <div class="container-fluid px-3 px-md-4 py-4">
+
     <div class="card border-0 shadow-sm">
         <!-- Header -->
         <div class="card-header bg-white border-bottom-0 pt-4 pb-3">
@@ -68,13 +69,13 @@
             <!-- Contenido de pestañas -->
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-all" role="tabpanel">
-                    <div id="tabla-all-container"></div>
+                    <div class="historial-scroll" id="tabla-all-container"></div>
                 </div>
                 <div class="tab-pane fade" id="pills-capacitacion" role="tabpanel">
-                    <div id="tabla-capacitacion-container"></div>
+                    <div class="historial-scroll" id="tabla-capacitacion-container"></div>
                 </div>
                 <div class="tab-pane fade" id="pills-credito" role="tabpanel">
-                    <div id="tabla-credito-container"></div>
+                    <div class="historial-scroll" id="tabla-credito-container"></div>
                 </div>
             </div>
         </div>

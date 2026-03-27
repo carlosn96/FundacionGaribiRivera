@@ -4,8 +4,7 @@ require_once '../../includes/cobranzaTemplate.php';
 
 renderizarPlantillaCobranza(
     __DIR__, [
-    'api/historialEmprendedores.js',
-    'api/cobranzaController.js',
+        'api/pagosController.js'
     ],
     ['assets/styles.css']
 );

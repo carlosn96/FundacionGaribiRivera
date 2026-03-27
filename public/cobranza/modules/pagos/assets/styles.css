@@ -1,0 +1,82 @@
+/* Custom Aesthetic: Clean Utilitarian Dashboard */
+.pagos-module {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+.metric-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+.dashboard-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #111827;
+}
+.accent-number {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+.table-minimalist {
+    font-size: 0.9rem;
+}
+.table-minimalist th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+}
+.table-minimalist td {
+    vertical-align: middle;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+.btn-utilitarian {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+.btn-dark-util {
+    background: #111827;
+    color: #fff;
+}
+.btn-dark-util:hover {
+    background: #1f2937;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.2);
+}
+.btn-light-util {
+    background: #fff;
+    color: #374151;
+    border-color: #d1d5db;
+}
+.btn-light-util:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+.progress-slim {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #f3f4f6;
+    overflow: hidden;
+}
+.modal-modern {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.1);
+}
+.modal-modern .modal-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: #f9fafb;
+    border-radius: 16px 16px 0 0;
+}

@@ -3,10 +3,10 @@
 require '../../../../loader.php';
 require '../../../assets/commons/template.php';
 
-function renderizarPlantillaEmprendimiento($dir, $scripts = [])
+function renderizarPlantillaCobranza($dir, $scripts = [], $styles = [])
 {
     $aside = "../../includes/aside.php";
-    inicializarPlantilla($dir, $aside, $scripts);
+    inicializarPlantilla($dir, $aside, $scripts, $styles);
 }
 
 Sesion::controlarPermisosAcceso(TipoUsuario::ENCARGADO_CREDITO_COBRANZA);
