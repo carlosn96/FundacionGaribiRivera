@@ -25,13 +25,13 @@
                 <form id="loginForm">
                     <label class="auth-label" for="correo">Correo electrónico</label>
                     <div class="auth-field">
-                        <input value="carlos_n96@hotmail.com" type="email" value="" class="auth-input" id="correo" name="correo" placeholder="tu@correo.com"
+                        <input type="email" value="" class="auth-input" id="correo" name="correo" placeholder="tu@correo.com"
                             required autocomplete="email">
                     </div>
 
                     <label class="auth-label" for="contrasena">Contraseña</label>
                     <div class="auth-field">
-                        <input value="321654987Aa" type="password" class="auth-input auth-input--with-toggle" id="contrasena"
+                        <input type="password" class="auth-input auth-input--with-toggle" id="contrasena"
                             name="contrasena" value="" placeholder="••••••••" required autocomplete="current-password">
                         <button class="auth-pw-toggle" type="button" id="togglePassword"
                             aria-label="Mostrar contraseña">
