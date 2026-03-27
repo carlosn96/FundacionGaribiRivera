@@ -77,3 +77,30 @@ $router->group(
 
     }
 );
+
+$router->group(
+    ['prefix' => 'cobranza'], function () use ($router) {
+        $router->get('/historial-emprendedores', 'CobranzaController@getHistorialEmprendedores');
+        $router->post('/referencia', 'CobranzaController@actualizarReferencia');
+        $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
+        $router->post('/expediente', 'CobranzaController@saveExpediente');
+
+        // ---- Pagos ----
+        $router->get('/pagos/{idEmprendedor}', 'PagoController@getPagos');
+        $router->get('/pagos/{idEmprendedor}/fechas', 'PagoController@getFechasPendientes');
+        
+        $router->post('/pagos', 'PagoController@agregarPago');
+        $router->delete('/pagos/{idPago}', 'PagoController@eliminarPago');
+        $router->put('/pagos/{idPago}/fecha-recepcion', 'PagoController@actualizarFechaRecepcionPago');
+        
+        $router->post('/pagos-parciales', 'PagoController@agregarPagoParcial');
+        $router->put('/pagos-parciales/{idPago}', 'PagoController@modificarPagoParcial');
+        $router->delete('/pagos-parciales/{idPago}', 'PagoController@eliminarPagoParcial');
+    }
+);
+
+$router->group(
+    ['prefix' => 'emprendedor'], function () use ($router) {
+        $router->get('/perfil/{id}', 'EmprendedorController@getPerfil');
+    }
+);

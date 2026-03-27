@@ -96,7 +96,7 @@ function mostrarMensajeResultado(result) {
 }
 
 
-function mostrarMensajeOk(msg = "OK", reloading = true, fnthen = () => {}) {
+function mostrarMensajeOk(msg = "OK", reloading = true, fnthen = () => { }) {
     mostrarMensajeReload("Operación completa", "success", msg, reloading, fnthen);
     //location.reload();
 }
@@ -109,11 +109,11 @@ function mostrarMensajeAdvertencia(msg, reloading = true) {
     mostrarMensajeReload("Atención", "warning", msg, reloading);
 }
 
-function mostrarMensajeInfo(msg, reloading = true, fnthen = () => {}) {
+function mostrarMensajeInfo(msg, reloading = true, fnthen = () => { }) {
     return mostrarMensajeReload("Información:", "info", msg, reloading, fnthen);
 }
 
-function mostrarMensajeThen(title, type, msg, then, moreOptions = {}, thenCancel = () => {}) {
+function mostrarMensajeThen(title, type, msg, then, moreOptions = {}, thenCancel = () => { }) {
     mostrarMensaje(title, type, msg, moreOptions).then((rs) => {
         if (rs.isConfirmed) {
             then();
@@ -123,7 +123,7 @@ function mostrarMensajeThen(title, type, msg, then, moreOptions = {}, thenCancel
     });
 }
 
-function mostrarMensajeReload(title, type, msg, reloading = true, fnthen = () => {}) {
+function mostrarMensajeReload(title, type, msg, reloading = true, fnthen = () => { }) {
     return mostrarMensajeThen(title, type, msg, reloading ? refresh : fnthen);
 }
 
@@ -148,6 +148,48 @@ function refresh() {
     location.reload();
 }
 
+// Función para obtener la URL base del API considerando localhost y producción
+function getApiBaseUrl() {
+    const host = window.location.hostname;
+    const isLocalhost = host === 'localhost' || host === '127.0.0.1';
+    const basePath = isLocalhost ? '/FundacionGaribiRivera' : '';
+    return `${window.location.protocol}//${host}${basePath}/api/`;
+}
+
+// Función más eficiente para hacer llamadas al API usando Fetch
+async function apiRequest(endpoint, method = 'GET', body = undefined, headers = {}) {
+    try {
+        const opts = {
+            method,
+            headers: { 'Content-Type': 'application/json', ...headers },
+            body: method === 'POST' && body ? JSON.stringify(body) : undefined,
+        };
+        const getApiUrl = getApiBaseUrl();
+        const fullUrl = endpoint.startsWith('http') ? endpoint : getApiUrl + endpoint;
+
+        const res = await fetch(fullUrl, opts);
+
+        if (!res.ok) {
+            const errorText = await res.text().catch(() => null);
+            const err = new Error(res.statusText || 'HTTP error');
+            err.status = res.status;
+            err.body = errorText;
+            throw err;
+        }
+
+        const textRes = await res.text();
+        try {
+            return JSON.parse(textRes);
+        } catch (e) {
+            return textRes;
+        }
+    } catch (err) {
+        if (err.name === 'AbortError') throw new Error('Request aborted');
+        throw err;
+    }
+}
+
+
 function crearBotonMenuDesplegable(title, enlaces, color) {
     var links = "";
     enlaces.forEach(function (link) {
@@ -158,13 +200,13 @@ function crearBotonMenuDesplegable(title, enlaces, color) {
         }
     });
     return "<div class='btn-group'>" +
-            "<button id='group' type='button' class='btn btn-round btn-sm btn-outline-" + color + " dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>" +
-            title +
-            "</button>" +
-            "<ul class='dropdown-menu'>" +
-            links +
-            "</ul>" +
-            "</div>";
+        "<button id='group' type='button' class='btn btn-round btn-sm btn-outline-" + color + " dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>" +
+        title +
+        "</button>" +
+        "<ul class='dropdown-menu'>" +
+        links +
+        "</ul>" +
+        "</div>";
 }
 
 /**
@@ -182,17 +224,17 @@ function crearBotonMenuDesplegable(title, enlaces, color) {
  */
 function crearBoton(title, clase, icono, value, id, action) {
     return "<button type='button' " +
-            "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
-            "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
-            "<span class='btn-label'><i class='" + icono + "'></i></span> " + title + "</button>";
+        "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
+        "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
+        "<span class='btn-label'><i class='" + icono + "'></i></span> " + title + "</button>";
 }
 
 function crearBotonIcon(title, clase, icono, value, id, action) {
     return "<button type='button' " +
-            "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
-            "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
-            "<i class='" + icono + "'></i>" +
-            "</button>";
+        "class='" + clase + " position-relative' data-bs-toggle='tooltip' data-bs-placement='top' " +
+        "data-bs-title='" + title + "' value='" + value + "' onclick='" + action + "()' id='" + id + "'>" +
+        "<i class='" + icono + "'></i>" +
+        "</button>";
 }
 
 /**
@@ -211,12 +253,12 @@ function crearBotonIcon(title, clase, icono, value, id, action) {
 function crearBotonEliminar(opcionesPeticion) {
     var idRegistro = opcionesPeticion.idRegistro;
     var tituloBoton = opcionesPeticion.tituloBoton ?
-            opcionesPeticion.tituloBoton : "";
+        opcionesPeticion.tituloBoton : "";
     return crearBoton(
-            tituloBoton,
-            opcionesPeticion.clase ? opcionesPeticion.clase : "btn btn-outline-danger btn-raised btn-sm btn-rounded",
-            "far fa-trash-alt",
-            idRegistro, "btnEliminar" + idRegistro, "alertaEliminar(" + JSON.stringify(opcionesPeticion) + ")");
+        tituloBoton,
+        opcionesPeticion.clase ? opcionesPeticion.clase : "btn btn-outline-danger btn-raised btn-sm btn-rounded",
+        "far fa-trash-alt",
+        idRegistro, "btnEliminar" + idRegistro, "alertaEliminar(" + JSON.stringify(opcionesPeticion) + ")");
 }
 
 function alertaEliminar(opcionesPeticion) {
@@ -224,7 +266,7 @@ function alertaEliminar(opcionesPeticion) {
     var url = opcionesPeticion.url;
     var data = opcionesPeticion.data;
     var fn = opcionesPeticion.fnSuccess ? opcionesPeticion.fnSuccess : mostrarMensajeResultado;
-    var fnCancel = opcionesPeticion.fnCancel ? opcionesPeticion.fnCancel : () => {};
+    var fnCancel = opcionesPeticion.fnCancel ? opcionesPeticion.fnCancel : () => { };
     mostrarMensajeThen("¿Estás seguro?", "warning", msg, function () {
         //crearPeticion(url, data, print);
         crearPeticion(url, data, fn);
@@ -250,7 +292,7 @@ function crearColumnaHeaderTabla(value, clase = "") {
 
 function toMoneda(numero) {
     //return numeral(numero).format('$ 0,0.00');
-    return numero.length !== 0 ? Intl.NumberFormat("es-MX", {style: "currency", currency: "MXN", minimunFractionDigits: 2}).format(numero) : "";
+    return numero.length !== 0 ? Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimunFractionDigits: 2 }).format(numero) : "";
 }
 
 function deshabilitarHabilitarInput(input) {
@@ -347,7 +389,7 @@ function crearDataTableFlexible(idTabla, buttons = [], opts = {}) {
 
 function calcuarEdad(fechaNacimiento) {
     return parseInt((new Date() - new Date(fechaNacimiento)) /
-            (1000 * 60 * 60 * 24 * 365));
+        (1000 * 60 * 60 * 24 * 365));
 }
 
 function extraerFechaHora(input, fechaHora) {
@@ -377,11 +419,11 @@ function getFormatDate(fecha, format = "DD-MM-YYYY, HH:mm") {
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
     return format
-            .replace('YYYY', year)
-            .replace('MM', month)
-            .replace('DD', day)
-            .replace('HH', hours)
-            .replace('mm', minutes);
+        .replace('YYYY', year)
+        .replace('MM', month)
+        .replace('DD', day)
+        .replace('HH', hours)
+        .replace('mm', minutes);
 }
 
 function getFechaHoraActual() {
@@ -401,7 +443,7 @@ function domicilioStr(domicilio) {
     if (domicilio.calle !== null && domicilio.calle.length > 0) {
         asentamiento = domicilio.asentamiento;
         return " Calle " + domicilio.calle + " " + asentamiento.nombre +
-                " (" + asentamiento.tipoAsentamiento.text + ") " + asentamiento.municipio.text + " " + asentamiento.estado.text;
+            " (" + asentamiento.tipoAsentamiento.text + ") " + asentamiento.municipio.text + " " + asentamiento.estado.text;
     } else {
         return "Sin domicilio";
     }
@@ -441,7 +483,7 @@ function separarPalabras(str) {
 }
 
 function descargarTablaCSV(idTabla, nombreArchivo) {
-    $("#" + idTabla).first().table2csv({"filename": nombreArchivo + ".csv"});
+    $("#" + idTabla).first().table2csv({ "filename": nombreArchivo + ".csv" });
 }
 
 function print(res) {
@@ -521,20 +563,20 @@ function crearGroupCheckbox($contenedor, arrayObjetos, name) {
 }
 
 function construirInputCheckbox(id, value, name, text, checked = false) {
-    return $('<div>', {class: 'form-check'})
-            .append($('<input>', {
-                class: 'form-check-input',
-                type: 'checkbox',
-                id: id,
-                value: value,
-                name: `${name}[]`,
-                checked: checked
-            }))
-            .append($('<label>', {
-                class: 'form-check-label',
-                for : id,
-                text: text
-            }));
+    return $('<div>', { class: 'form-check' })
+        .append($('<input>', {
+            class: 'form-check-input',
+            type: 'checkbox',
+            id: id,
+            value: value,
+            name: `${name}[]`,
+            checked: checked
+        }))
+        .append($('<label>', {
+            class: 'form-check-label',
+            for: id,
+            text: text
+        }));
 }
 
 function crearGroupRadio(idSelector, arrayObjetos, name, required = true) {
@@ -562,12 +604,12 @@ function construirInputRadio(id, value, name, text, required, checked = false, c
     }
     var radioLabel = $('<label>', {
         class: 'form-check-label',
-        for : id,
+        for: id,
         html: typeof text === 'object' ? text.html() : text
     });
-    return $('<div>', {class: 'form-check'})
-            .append(radioInput)
-            .append(radioLabel);
+    return $('<div>', { class: 'form-check' })
+        .append(radioInput)
+        .append(radioLabel);
 }
 
 function extraerParametrosURL(location) {
@@ -593,17 +635,17 @@ function construirTabla(data, tableClass, container, tableID) {
     });
     const keys = Object.keys(data[0]);
     const $thead = $('<thead>').append(
-            $('<tr>').append(keys.map(key => $('<th>', {text: key})))
-            );
+        $('<tr>').append(keys.map(key => $('<th>', { text: key })))
+    );
 
     const $tbody = $('<tbody>').append(
-            data.map(item => $('<tr>').append(
-                        keys.map(key => $('<td>', {html: item[key]}))
-                        ))
-            );
+        data.map(item => $('<tr>').append(
+            keys.map(key => $('<td>', { html: item[key] }))
+        ))
+    );
     const $tfoot = $('<tfoot>').append(
-            $('<tr>').append(keys.map(key => $('<th>', {text: key})))
-            );
+        $('<tr>').append(keys.map(key => $('<th>', { text: key })))
+    );
     $tabla.append($thead, $tbody, $tfoot);
     $(`#${container}`).empty().append($tabla);
 }
@@ -673,4 +715,21 @@ const boostrapColors = [
 function getRandomBoostrapColor() {
     const rnd = Math.floor(Math.random() * boostrapColors.length);
     return boostrapColors[rnd];
+}
+
+/**
+ * Muestra u oculta el estado de carga en un botón
+ * @param {jQuery} $btn Botón a modificar
+ * @param {boolean} loading Estado de carga
+ */
+function loadingBtn($btn, loading) {
+    if (loading) {
+        $btn.prop('disabled', true);
+        $btn.data('original-text', $btn.html());
+        $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...');
+    } else {
+        $btn.prop('disabled', false);
+        const originalText = $btn.data('original-text');
+        if (originalText) $btn.html(originalText);
+    }
 }
