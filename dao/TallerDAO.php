@@ -110,11 +110,11 @@ class TallerDAO extends DAO
 
     public function recuperarListaInscritos($idTaller, $idEtapa)
     {
-        $sql = "SELECT e.id, e.nombre, e.apellidos, e.correo_electronico, e.numero_celular, e.fotografia,
+        $sql = "SELECT e.id_emprendedor id, e.nombre, e.apellidos, e.correo_electronico, e.numero_celular, e.fotografia,
                        COALESCE(a.asiste, 0) as asiste, a.observacion
                 FROM listar_emprendedores_por_etapa e
                 LEFT JOIN asistencia_taller a 
-                       ON e.id = a.id_emprendedor AND a.id_taller = ? AND a.id_etapa = ?
+                       ON e.id_emprendedor = a.id_emprendedor AND a.id_taller = ? AND a.id_etapa = ?
                 WHERE e.id_etapa = ?";
 
         $prep = $this->prepararInstruccion($sql);
