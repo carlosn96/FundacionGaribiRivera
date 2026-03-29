@@ -98,6 +98,13 @@
                                     <input type="text" class="form-control bg-light" id="telefono" name="telefono" readonly>
                                 </div>
                             </div>
+                            <div class="col-12 col-md-6">
+                                <label for="fechaEntrega" class="form-label fw-semibold small text-muted text-uppercase mb-1">Fecha Otorgamiento</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-calendar-alt text-muted"></i></span>
+                                    <input type="date" class="form-control bg-light" id="fechaEntrega" name="fechaEntrega" readonly disabled>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,18 +121,11 @@
                     <div class="card-body p-4">
                         <div class="row g-4">
                             <!-- Fila 1: Monto y Entrega -->
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-12">
                                 <label for="montoSolicitado" class="form-label fw-semibold small text-muted text-uppercase mb-1">Monto solicitado <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"><i class="fas fa-dollar-sign text-success"></i></span>
                                     <input type="number" class="form-control fw-bold" id="montoSolicitado" name="montoSolicitado" step="0.01" min="0" required>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="fechaEntrega" class="form-label fw-semibold small text-muted text-uppercase mb-1">Fecha de entrega <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-calendar-alt text-primary"></i></span>
-                                    <input type="date" class="form-control" id="fechaEntrega" name="fechaEntrega" required>
                                 </div>
                             </div>
 
@@ -208,5 +208,50 @@
             </div>
         </div>
     </form>
+</div>
+<!-- Modal Actualizar Referencia (Se muestra si no hay fecha de crédito) -->
+<div class="modal fade" id="modalActualizarReferencia" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form id="form-actualizar-referencia">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-semibold">
+                        <i class="fas fa-edit text-primary me-2"></i>Completar Información de Crédito
+                    </h5>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted small">
+                        Se detecta que la información de crédito del emprendedor <strong id="nombreEmprendedorRef"></strong> está incompleta (falta asignar la <strong>referencia</strong> o la <strong>fecha de otorgamiento</strong>). Es obligatorio completar ambos datos para gestionar su expediente.
+                    </p>
+                    <div class="mb-3">
+                        <label for="numeroReferencia" class="form-label fw-bold small text-uppercase text-muted mb-1">
+                            Número de Referencia
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fas fa-hashtag text-primary"></i></span>
+                            <input type="text" class="form-control" id="numeroReferencia" name="numeroReferencia" placeholder="Ej. 123456" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaOtorgamiento" class="form-label fw-bold small text-uppercase text-muted mb-1">
+                            Fecha de Otorgamiento
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fas fa-calendar-alt text-primary"></i></span>
+                            <input type="date" class="form-control" id="fechaOtorgamiento" name="fechaOtorgamiento" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light btn-sm" id="btn-cancelar-modal">
+                        <i class="fas fa-arrow-left me-2"></i>Regresar
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold" id="btnGuardarReferencia">
+                        <i class="fas fa-check me-2"></i>Guardar e Iniciar Expediente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 

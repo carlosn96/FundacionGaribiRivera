@@ -76,6 +76,15 @@ function inicializarEventos() {
         const fechaOtorgamiento = $('#fechaOtorgamiento').val();
 
         if (emprendedorActual) {
+            // DETECCIÓN DE CAMBIOS: Si no se cambió nada, no enviamos la petición
+            const fechaActual = emprendedorActual.fecha_credito ? emprendedorActual.fecha_credito.split(' ')[0] : '';
+            if (numeroReferencia == emprendedorActual.referencia && fechaOtorgamiento == fechaActual) {
+                mostrarNotificacion('No se detectaron cambios en la información', 'info');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarReferencia'));
+                modal.hide();
+                return;
+            }
+
             actualizarReferencia(emprendedorActual.id_emprendedor, numeroReferencia, fechaOtorgamiento);
 
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarReferencia'));
@@ -207,8 +216,8 @@ function aplicarFiltros() {
             item.nombre.toLowerCase().includes(searchTerm) ||
             item.apellidos.toLowerCase().includes(searchTerm) ||
             item.correo_electronico.toLowerCase().includes(searchTerm) ||
-            item.numero_celular.includes(searchTerm) ||
-            (item.referencia && item.referencia.toLowerCase().includes(searchTerm));
+            String(item.numero_celular).includes(searchTerm) ||
+            (item.referencia && String(item.referencia).toLowerCase().includes(searchTerm));
 
         const matchReferencia = !referenciaFilter ||
             (referenciaFilter === 'con' && item.referencia && item.referencia !== null && item.referencia !== '') ||
@@ -244,8 +253,8 @@ function ordenarDatos() {
             valueA = `${a.nombre} ${a.apellidos}`.toLowerCase();
             valueB = `${b.nombre} ${b.apellidos}`.toLowerCase();
         } else if (sortConfig.column === 'referencia') {
-            valueA = a.referencia || '';
-            valueB = b.referencia || '';
+            valueA = String(a.referencia || '');
+            valueB = String(b.referencia || '');
 
             if (!valueA && !valueB) return 0;
             if (!valueA) return 1;
@@ -476,7 +485,16 @@ async function actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento
         }
     } catch (err) {
         console.error('Error:', err);
-        mostrarNotificacion('Error de conexión al actualizar la referencia', 'danger');
+        let errorMsg = 'Error de conexión al actualizar la referencia';
+        if (err.body) {
+            try {
+                const parsed = JSON.parse(err.body);
+                errorMsg = parsed.message || errorMsg;
+            } catch (e) {
+                errorMsg = err.body || errorMsg;
+            }
+        }
+        mostrarNotificacion(errorMsg, 'danger');
     }
 }
 

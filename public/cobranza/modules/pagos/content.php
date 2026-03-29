@@ -32,7 +32,7 @@
                     </div>
                     <h3 class="fw-bold text-dark mb-3">Expediente Incompleto</h3>
                     <p class="text-muted mb-4 fs-6">
-                        No se pueden registrar ni visualizar pagos porque este emprendedor aún no cuenta con un expediente financiero o un plan de cobro asignado.
+                        No se pueden registrar ni visualizar pagos porque el emprendedor <strong id="nombre-emprendedor-incompleto" class="text-dark"></strong> aún no cuenta con un expediente financiero o un plan de cobro asignado.
                     </p>
                     <a href="#" id="cta-expediente" class="btn btn-warning fw-bold text-dark px-4 py-2 rounded-pill shadow-sm">
                         <i class="fas fa-arrow-right me-2"></i> Crear Expediente Financiero

@@ -8,6 +8,10 @@ class ExpedienteController {
     static async saveExpediente(data) {
         return await apiRequest(this.prefix, 'POST', data);
     }
+
+    static async actualizarReferencia(data) {
+        return await apiRequest('cobranza/referencia', 'POST', data);
+    }
 }
 
 
@@ -24,9 +28,19 @@ async function ready() {
     
     try {
         const responsePerfil = await ExpedienteController.getPerfilEmprendedor(id);
-        // Los recursos de la API (Resources) devuelven un objeto envuelto en la propiedad 'data'
         const perfil = (responsePerfil && responsePerfil.data) ? responsePerfil.data : responsePerfil;
         
+        // REGLA: Si no tiene referencia O no tiene fecha de crédito, pedimos completarlo antes de seguir
+        if (!perfil.fechaCredito || !perfil.referencia) {
+            $('#nombreEmprendedorRef').text(`${perfil.nombre} ${perfil.apellidos}`);
+            $('#numeroReferencia').val(perfil.referencia || '');
+            $('#fechaOtorgamiento').val(perfil.fechaCredito || '');
+
+            const modal = new bootstrap.Modal(document.getElementById('modalActualizarReferencia'));
+            modal.show();
+            return;
+        }
+
         llenarInformacion(perfil, perfil.expediente);
     } catch (error) {
         console.error(error);
@@ -53,7 +67,6 @@ function inicializarEventos() {
                 const formData = {
                     id_emprendedor: id,
                     montoSolicitado: $('#montoSolicitado').val(),
-                    fechaEntrega: $('#fechaEntrega').val(),
                     fechaInicio: $('#fechaInicio').val(),
                     fechaTermino: $('#fechaTermino').val(),
                     cantidadDocumentosElaborados: $('#cantidadDocumentosElaborados').val(),
@@ -102,6 +115,56 @@ function inicializarEventos() {
 
     $('#fechaEntrega').on('change', function() {
         calcularFechas();
+    });
+
+    // Eventos para el modal de completado de referencia
+    $('#btn-cancelar-modal').on('click', () => {
+        window.location.href = '../inicio/';
+    });
+
+    $('#form-actualizar-referencia').on('submit', function(e) {
+        e.preventDefault();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        
+        const data = {
+            id: id,
+            referencia: $('#numeroReferencia').val(),
+            fechaOtorgamiento: $('#fechaOtorgamiento').val()
+        };
+
+        (async () => {
+            try {
+                loadingBtn($('#btnGuardarReferencia'), true);
+                const response = await ExpedienteController.actualizarReferencia(data);
+                
+                if (response && (response.status === 200 || response.status === 201)) {
+                    mostrarMensajeOk('Información de crédito guardada. Iniciando expediente...');
+                    
+                    // Recargar la página para entrar en flujo normal con la nueva data
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    mostrarMensajeError(response.message || 'Error al actualizar referencia');
+                }
+            } catch (error) {
+                console.error(error);
+                let msg = 'Error de red al actualizar referencia';
+                if (error.body) {
+                    try {
+                        const res = JSON.parse(error.body);
+                        msg = res.message || msg;
+                    } catch (e) {
+                        msg = error.body || msg;
+                    }
+                }
+                mostrarMensajeError(msg);
+            } finally {
+                loadingBtn($('#btnGuardarReferencia'), false);
+            }
+        })();
     });
 }
 
@@ -183,6 +246,7 @@ function llenarInformacion(perfil, expediente) {
         $('#apellidos').val(perfil.apellidos);
         $('#referencia').val(perfil.referencia || 'N/A');
         $('#telefono').val(perfil.telefono);
+        $('#fechaEntrega').val(perfil.fechaCredito).trigger('change');
         
         $('#nombre-completo-sidebar').text(`${perfil.nombre} ${perfil.apellidos}`);
         $('#referencia-sidebar').text(perfil.referencia || 'Sin Expediente');
@@ -195,7 +259,6 @@ function llenarInformacion(perfil, expediente) {
 
     if (expediente) {
         $('#montoSolicitado').val(expediente.montoSolicitado).trigger('input');
-        $('#fechaEntrega').val(expediente.fechaEntrega);
         $('#fechaInicio').val(expediente.fechaInicio);
         $('#fechaTermino').val(expediente.fechaTermino);
         $('#cantidadDocumentosElaborados').val(expediente.cantidadDocumentosElaborados).trigger('input');

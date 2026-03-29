@@ -28,7 +28,6 @@ class EmprendedorExpediente extends Model
     protected $fillable = [
         'id_emprendedor',
         'monto_solicitado',
-        'fecha_entrega',
         'fecha_inicio',
         'fecha_termino',
         'cantidad_documentos_elaborados',

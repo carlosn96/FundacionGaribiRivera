@@ -21,7 +21,6 @@ class EmprendedorExpedienteResource extends JsonResource
         return [
             'id_emprendedor' => $this->id_emprendedor,
             'montoSolicitado' => (float)$this->monto_solicitado,
-            'fechaEntrega' => $this->fecha_entrega,
             'fechaInicio' => $this->fecha_inicio,
             'fechaTermino' => $this->fecha_termino,
             'cantidadDocumentosElaborados' => (int)$this->cantidad_documentos_elaborados,

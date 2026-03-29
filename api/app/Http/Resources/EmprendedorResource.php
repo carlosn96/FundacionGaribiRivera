@@ -19,6 +19,7 @@ class EmprendedorResource extends JsonResource
             'nombre' => optional($this->usuario)->nombre,
             'apellidos' => optional($this->usuario)->apellidos,
             'referencia' => $this->referencia,
+            'fechaCredito' => $this->fecha_credito,
             'telefono' => optional($this->usuario)->numero_celular,
             'graduado' => (bool)$this->graduado,
             'fechaGraduacion' => $this->fecha_graduacion,

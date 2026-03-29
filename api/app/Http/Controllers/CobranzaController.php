@@ -8,6 +8,7 @@ use App\Http\Responses\ApiResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\EmprendedorExpedienteResource;
 use App\Models\EmprendedorExpediente;
+use Illuminate\Validation\Rule;
 use App\Models\Emprendedor;
 
 class CobranzaController extends Controller
@@ -43,25 +44,32 @@ class CobranzaController extends Controller
      */
     public function actualizarReferencia(Request $request)
     {
+        $id = $request->input('id');
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
-            'referencia' => 'required',
-            'fechaOtorgamiento' => 'required|date'
+            'referencia' => [
+                'required',
+                Rule::unique('usuario_emprendedor', 'referencia')->ignore($id, 'id_emprendedor')
+            ],
+            'fechaOtorgamiento' => 'nullable|date'
+        ], [
+            'referencia.unique' => 'El número de referencia ya está asignado a otro emprendedor.'
         ]);
 
         if ($validator->fails()) {
-            return ApiResponse::error('Datos invalidos: ' . json_encode($validator->errors()), ApiResponse::HTTP_BAD_REQUEST);
+            return ApiResponse::error($validator->errors()->first(), ApiResponse::HTTP_BAD_REQUEST);
         }
 
         try {
-            $emprendedor = Emprendedor::find($request->input('id'));
+            $emprendedor = Emprendedor::find($id);
             
             if (!$emprendedor) {
                 return ApiResponse::notFound('Emprendedor no encontrado');
             }
 
             $emprendedor->referencia = $request->input('referencia');
-            $emprendedor->fecha_credito = $request->input('fechaOtorgamiento');
+            $fecha = $request->input('fechaOtorgamiento');
+            $emprendedor->fecha_credito = empty($fecha) ? null : $fecha;
             $updated = $emprendedor->save();
 
             return ApiResponse::success([], $updated > 0 ? "Actualización exitosa" : "No se encontró el registro o no hubo cambios");
@@ -98,7 +106,6 @@ class CobranzaController extends Controller
         $validator = Validator::make($request->all(), [
             'id_emprendedor' => 'required|integer',
             'montoSolicitado' => 'required|numeric|min:0',
-            'fechaEntrega' => 'required|date',
             'fechaInicio' => 'nullable|date',
             'fechaTermino' => 'nullable|date',
             'cantidadDocumentosElaborados' => 'required|integer|min:0',
@@ -116,7 +123,6 @@ class CobranzaController extends Controller
         try {
             $data = [
                 'monto_solicitado' => $request->input('montoSolicitado'),
-                'fecha_entrega' => $request->input('fechaEntrega'),
                 'fecha_inicio' => $request->input('fechaInicio') ?: null,
                 'fecha_termino' => $request->input('fechaTermino') ?: null,
                 'cantidad_documentos_elaborados' => $request->input('cantidadDocumentosElaborados'),

@@ -79,6 +79,8 @@ async function recargarTodaLaInformacion(id) {
 
         // Verificar existencia de expediente
         if (!perfil || !perfil.expediente) {
+            $('#nombre-completo-sidebar').text(`${perfil.nombre} ${perfil.apellidos}`);
+            $('#nombre-emprendedor-incompleto').text(`${perfil.nombre} ${perfil.apellidos}`);
             $('#panel-pagos').addClass('d-none');
             $('#cta-expediente').attr('href', `../expediente/?id=${id}`);
             $('#estado-incompleto').removeClass('d-none');

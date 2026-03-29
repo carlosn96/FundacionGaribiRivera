@@ -107,7 +107,7 @@
                         <label for="fechaOtorgamiento" class="form-label fw-medium">
                             <i class="fas fa-calendar-alt text-primary me-2"></i>Fecha de Otorgamiento de Crédito
                         </label>
-                        <input type="date" class="form-control" id="fechaOtorgamiento" required>
+                        <input type="date" class="form-control" id="fechaOtorgamiento">
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
