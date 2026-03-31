@@ -65,6 +65,7 @@ if (!$email) {
             
             // As a fallback to strictly ensure we can display the error on screen if needed:
             Util::redirigir($root . ERROR_DISPLAY_URL . 'missing_user_email_debug&debug=' . urlencode(substr($response, 0, 200)));
+            exit();
         }
     } else {
         // Log the exact error for debugging
@@ -73,17 +74,20 @@ if (!$email) {
         // Si la API rechaza el token, borramos la cookie y redirigimos
         setcookie('access_token', '', time() - 3600, '/');
         Util::redirigir($root . ERROR_DISPLAY_URL . 'api_unauthorized_code_' . $httpCode);
+        exit();
     }
 }
 
 if (!$email) {
-    Util::redirigir($root . ERROR_DISPLAY_URL . 'missing_user_email');
+    Util::redirigir($root . ERROR_DISPLAY_URL . 'missing_user_email_final');
+    exit();
 }
 
 $adminUsuario = getAdminUsuario();
 $usuario = $adminUsuario->buscarUsuarioPorCorreo($email);
 if (!$usuario) {
     Util::redirigir($root . ERROR_DISPLAY_URL . 'user_not_found');
+    exit();
 }
 
 // Iniciar sesión
@@ -92,3 +96,4 @@ Sesion::iniciarSesionNueva($usuario, false); // No recordar por defecto
 // Redirigir al módulo correspondiente
 $urlUsuario = $usuario['tipo_usuario']['url'] ?? 'dashboard';
 Util::redirigir($root . '/public/' . $urlUsuario);
+exit();

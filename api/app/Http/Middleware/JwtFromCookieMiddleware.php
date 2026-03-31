@@ -21,10 +21,18 @@ class JwtFromCookieMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        // Intentar obtener el token de la cookie o del header Authorization
         $token = $request->cookie('access_token');
 
+        if (!$token && $request->hasHeader('Authorization')) {
+            $header = $request->header('Authorization');
+            if (strpos($header, 'Bearer ') === 0) {
+                $token = substr($header, 7);
+            }
+        }
+
         if (!$token) {
-            return ApiResponse::unauthorized('Token not provided in cookie.');
+            return ApiResponse::unauthorized('Token not provided in cookie or header.');
         }
 
         try {
