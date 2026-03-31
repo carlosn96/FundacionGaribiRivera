@@ -47,7 +47,7 @@ trait RespondsWithToken
             $sameSite // samesite
         );
 
-        return ApiResponse::success($user, $message, $status)
+        return ApiResponse::success(array_merge($user->toArray(), ['access_token' => $token]), $message, $status)
             ->withCookie($cookie)
             ->withCookie($refreshCookie);
     }

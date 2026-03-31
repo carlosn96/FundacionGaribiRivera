@@ -78,7 +78,13 @@ $('#loginForm').submit(function (event) {
     }, function (response) {
         console.log(response);
         if (response.status === 200 || response.access_token || response.data) {
-            redireccionar(getBasePath() + '/public/bridge_login/index.php');
+            const token = response.data && response.data.access_token ? response.data.access_token : null;
+            const redirectUrl = getBasePath() + '/public/bridge_login/index.php';
+            if (token) {
+                redireccionar(redirectUrl + '?token=' + encodeURIComponent(token));
+            } else {
+                redireccionar(redirectUrl);
+            }
         } else {
             resetButtonState();
             mostrarMensajeError(response.message || 'Inicio de sesión fallido', false);
