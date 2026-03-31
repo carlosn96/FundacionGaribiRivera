@@ -9,5 +9,6 @@
 <!-- solar icons -->
 <script src="../../../assets/libs/iconify/iconify-icon.min.js"></script>
 <script src="../../../assets/libs/sweetalert2/dist/sweetalert2.min.js"></script>
+<script src="../../../assets/js/apiRequest.js"></script>
 <script src="../../../assets/js/util.js"></script>
 <script src="../../../assets/js/preloader.js"></script>

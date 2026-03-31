@@ -71,33 +71,20 @@ $('#loginForm').submit(function (event) {
         spinner.addClass('d-none');
     };
 
-    crearPeticion('api/IndexAPI.php', {
-        case: 'iniciarSesion',
-        data: $.param({
-            "correo": correo,
-            "contrasena": contrasena,
-            "recordar": $('#rememberMe').is(':checked') ? 1 : 0
-        })
+    apiPostRequest('auth/login', {
+        correo: correo,
+        contrasena: contrasena,
+        rememberMe: $('#rememberMe').is(':checked')
     }, function (response) {
-        if (response.es_valor_error) {
-            resetButtonState();
-            Swal.fire({
-                icon: 'error',
-                title: 'Inicio de sesión fallido',
-                text: response.mensaje,
-                showConfirmButton: false,
-                timer: 2000
-            });
+        console.log(response);
+        if (response.status === 200 || response.access_token || response.data) {
+            redireccionar(getBasePath() + '/public/bridge_login/index.php');
         } else {
-            // On successful login, the page will refresh, so no need to reset the button.
-            refresh();
+            resetButtonState();
+            mostrarMensajeError(response.message || 'Inicio de sesión fallido', false);
         }
-    }, function (xhr, status, error) {
+    }, function (error) {
         resetButtonState();
-        Swal.fire({
-            icon: 'error',
-            title: 'Error en la solicitud',
-            text: 'Hubo un problema al procesar la respuesta del servidor. Inténtalo de nuevo más tarde.'
-        });
+        procesarErrorApi(error);
     });
 });

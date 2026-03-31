@@ -36,6 +36,7 @@
 <script src="../../../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
 <script src="../../../assets/libs/sweetalert2/dist/sweetalert2.min.js"></script>
 <script src="../../../assets/js/util.js"></script>
+<script src="../../../assets/js/apiRequest.js"></script>
 <script src="../../../assets/js/form-wizard.js"></script>
 <script src="../../../assets/js/controlSesion.js"></script>
 

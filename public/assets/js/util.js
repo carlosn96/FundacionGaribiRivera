@@ -148,48 +148,6 @@ function refresh() {
     location.reload();
 }
 
-// Función para obtener la URL base del API considerando localhost y producción
-function getApiBaseUrl() {
-    const host = window.location.hostname;
-    const isLocalhost = host === 'localhost' || host === '127.0.0.1';
-    const basePath = isLocalhost ? '/FundacionGaribiRivera' : '';
-    return `${window.location.protocol}//${host}${basePath}/api/`;
-}
-
-// Función más eficiente para hacer llamadas al API usando Fetch
-async function apiRequest(endpoint, method = 'GET', body = undefined, headers = {}) {
-    try {
-        const opts = {
-            method,
-            headers: { 'Content-Type': 'application/json', ...headers },
-            body: method === 'POST' && body ? JSON.stringify(body) : undefined,
-        };
-        const getApiUrl = getApiBaseUrl();
-        const fullUrl = endpoint.startsWith('http') ? endpoint : getApiUrl + endpoint;
-
-        const res = await fetch(fullUrl, opts);
-
-        if (!res.ok) {
-            const errorText = await res.text().catch(() => null);
-            const err = new Error(res.statusText || 'HTTP error');
-            err.status = res.status;
-            err.body = errorText;
-            throw err;
-        }
-
-        const textRes = await res.text();
-        try {
-            return JSON.parse(textRes);
-        } catch (e) {
-            return textRes;
-        }
-    } catch (err) {
-        if (err.name === 'AbortError') throw new Error('Request aborted');
-        throw err;
-    }
-}
-
-
 function crearBotonMenuDesplegable(title, enlaces, color) {
     var links = "";
     enlaces.forEach(function (link) {
@@ -732,4 +690,46 @@ function loadingBtn($btn, loading) {
         const originalText = $btn.data('original-text');
         if (originalText) $btn.html(originalText);
     }
+}
+
+/**
+ * Obtiene el base path del proyecto dinámicamente.
+ * Analiza la ruta del propio script (por ej: '/assets/js/util.js') para inferir la carpeta pública
+ * y, a partir de ella, inferir el directorio padre (el base path real).
+ * @returns {string} El path base (ej: '/NuevoNombreProyecto' o '')
+ */
+function getBasePath() {
+    // 1. Buscamos el script en el DOM para saber desde qué ruta se sirvieron los assets
+    const scripts = document.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+        const src = scripts[i].src;
+        if (src && src.includes('/assets/js/')) {
+            const url = new URL(src);
+            const path = url.pathname;
+            
+            const assetsIndex = path.indexOf('/assets/js/');
+            if (assetsIndex !== -1) {
+                // publicPath es la ruta hasta donde está la carpeta pública (ej. '/MiProyecto/public')
+                const publicPath = path.substring(0, assetsIndex);
+                
+                // El base path es el directorio padre de la carpeta pública (ej. '/MiProyecto')
+                const lastSlash = publicPath.lastIndexOf('/');
+                if (lastSlash !== -1) {
+                    return publicPath.substring(0, lastSlash);
+                }
+                return '';
+            }
+        }
+    }
+
+    // 2. Fallback de emergencia asumiendo el primer segmento en localhost si nada funciona
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+        const partes = window.location.pathname.split('/');
+        if (partes.length > 1 && partes[1] !== '') {
+            return '/' + partes[1];
+        }
+    }
+    
+    return '';
 }

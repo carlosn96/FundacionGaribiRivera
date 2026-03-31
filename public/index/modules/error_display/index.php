@@ -50,7 +50,7 @@
                         'invalid_or_expired_exp' => 'Token expirado o inválido.',
                         'invalid_email' => 'Correo electrónico del token inválido.',
                     ];
-                    $message = $messages[$error] ?? 'Error desconocido.';
+                    $message = $messages[$error] ?? 'Error desconocido: ' . htmlspecialchars($error);
                     ?>
                     <div class="auth-alert auth-alert--danger">
                         <i class="fas fa-info-circle me-1"></i>
