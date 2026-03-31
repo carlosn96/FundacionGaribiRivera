@@ -57,6 +57,15 @@ if (!$email) {
     if ($httpCode === 200) {
         $apiResult = json_decode($response, true);
         $email = $apiResult['data']['correo_electronico'] ?? null;
+        
+        if (!$email) {
+            // Log response error for debugging in production
+            $errorLog = "Time: " . date('Y-m-d H:i:s') . "\nURL: $apiUrl\nHttpCode: $httpCode\nJSON Error: " . json_last_error_msg() . "\nDecode Result: " . print_r($apiResult, true) . "\nResponse: $response\n\n";
+            file_put_contents(__DIR__ . '/debug_bridge.log', $errorLog, FILE_APPEND);
+            
+            // As a fallback to strictly ensure we can display the error on screen if needed:
+            Util::redirigir($root . ERROR_DISPLAY_URL . 'missing_user_email_debug&debug=' . urlencode(substr($response, 0, 200)));
+        }
     } else {
         // Log the exact error for debugging
         file_put_contents(__DIR__ . '/debug_bridge.log', "Time: " . date('Y-m-d H:i:s') . "\nURL: $apiUrl\nHttpCode: $httpCode\nResponse: $response\n\n", FILE_APPEND);

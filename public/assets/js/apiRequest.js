@@ -60,7 +60,6 @@ function mostrarResultadoApi(result) {
 }
 
 function procesarErrorApi(err) {
-    console.error("Error en la petición API:", err);
     let msg = err.body || err.message;
     try {
         const parsed = JSON.parse(err.body);
@@ -69,20 +68,20 @@ function procesarErrorApi(err) {
 
     if (typeof mostrarMensajeError === 'function') {
         if (err.status === 0 || err.message === 'Failed to fetch') {
-            mostrarMensajeError("Error de conexión o servidor no disponible.");
+            mostrarMensajeError(msg);
         } else if (err.status === 401) {
-            mostrarMensajeError("No autorizado. Credenciales inválidas o sesión caducada.");
+            mostrarMensajeError(msg);
         } else if (err.status === 404) {
             if (typeof mostrarMensajeAdvertencia === 'function') {
-                mostrarMensajeAdvertencia('Recurso no encontrado.');
+                mostrarMensajeAdvertencia(msg);
             } else {
-                mostrarMensajeError('Recurso no encontrado.');
+                mostrarMensajeError(msg);
             }
         } else {
-            mostrarMensajeError('Error: ' + msg);
+            mostrarMensajeError(msg);
         }
     } else {
-        alert('Error: ' + msg);
+        alert(msg);
     }
 }
 
