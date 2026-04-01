@@ -273,7 +273,5 @@ function formatearFecha(fecha) {
     }
 }
 
-// Initialize when document is ready
-$(document).ready(function() {
-    ready();
-});
+// La inicialización del módulo la dispara controlSesion.js
+// después de verificar la sesión.
