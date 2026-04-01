@@ -60,16 +60,30 @@ $('#loginForm').submit(function (event) {
     const buttonText = $(this).find('#buttonText');
     const spinner = $(this).find('#spinner');
 
-    // --- Start loading state ---
-    submitButton.prop('disabled', true);
-    buttonText.addClass('opacity-0');
-    spinner.removeClass('d-none');
+    if (submitButton.hasClass('auth-btn--loading')) {
+        return;
+    }
 
-    const resetButtonState = () => {
-        submitButton.prop('disabled', false);
-        buttonText.removeClass('opacity-0');
-        spinner.addClass('d-none');
+    const setButtonLoadingState = (isLoading) => {
+        submitButton.prop('disabled', isLoading);
+        submitButton.toggleClass('auth-btn--loading', isLoading);
+        submitButton.attr('aria-busy', isLoading ? 'true' : 'false');
+        submitButton.attr('aria-disabled', isLoading ? 'true' : 'false');
+        buttonText.toggleClass('opacity-0', isLoading);
+        spinner.toggleClass('d-none', !isLoading);
+        buttonText.text(isLoading ? 'Entrando...' : 'Entrar');
     };
+
+    let requestSettled = false;
+    const resetButtonState = () => {
+        if (requestSettled) {
+            return;
+        }
+        requestSettled = true;
+        setButtonLoadingState(false);
+    };
+
+    setButtonLoadingState(true);
 
     apiPostRequest('auth/login', {
         correo: correo,
@@ -86,8 +100,8 @@ $('#loginForm').submit(function (event) {
                 redireccionar(redirectUrl);
             }
         } else {
-            resetButtonState();
             mostrarMensajeError(response.message || 'Inicio de sesión fallido', false);
+            resetButtonState();
         }
     }, function (error) {
         resetButtonState();
