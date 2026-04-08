@@ -16,6 +16,7 @@ async function apiRequest(endpoint, method = 'GET', body = undefined, headers = 
             method,
             headers: { ...headers },
             body: fetchBody,
+            credentials: 'include'
         };
 
         if (!isFormData && fetchBody) {
