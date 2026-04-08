@@ -1,215 +1,648 @@
 <div class="container-fluid px-3 px-md-4 py-4">
-    <!-- Header/Navigation -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="../inicio/" class="text-decoration-none text-muted fw-medium">Cobranza</a></li>
-                    <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">Expediente</li>
-                </ol>
-            </nav>
-            <h1 class="fw-bold h2 mb-0 d-flex align-items-center text-dark" style="letter-spacing: -0.02em;">
-                <i class="fas fa-folder-open text-primary me-3 opacity-75"></i>
-                Expediente del Emprendedor
-            </h1>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-light btn-sm d-flex align-items-center border" id="btn-cancelar" type="button">
-                <i class="fas fa-arrow-left me-2 text-muted"></i> Volver al Listado
+    <!-- ============ HEADER DASHBOARD ============ -->
+    <div class="dashboard-header mb-4" id="dashboard-header">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <button class="btn btn-sm btn-back" id="btn-cancelar" type="button">
+                <i class="fas fa-arrow-left me-1"></i> Volver
             </button>
+            <span class="badge-etapa" id="badge-etapa">Sin etapa</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="avatar-ring">
+                <img src="" alt="" id="foto-emprendedor" class="d-none">
+                <div class="avatar-placeholder" id="icono-usuario"><i class="fas fa-user"></i></div>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold" id="nombre-completo-header">— —</h3>
+                <div class="d-flex gap-4 mt-2">
+                    <div>
+                        <div class="meta-label">N° Referencia</div>
+                        <div class="meta-value" id="referencia-header">—</div>
+                    </div>
+                    <div>
+                        <div class="meta-label">N° Expediente</div>
+                        <div class="meta-value" id="num-expediente-header">—</div>
+                    </div>
+                    <div>
+                        <div class="meta-label">Teléfono</div>
+                        <div class="meta-value" id="telefono-header">—</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <form id="form-expediente">
-        <div class="row g-4">
-            <!-- Sidebar / Resumen -->
-            <div class="col-12 col-lg-4 order-lg-2">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 24px; z-index: 1;">
-                    <div class="card-body p-4 text-center">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3 overflow-hidden" style="width: 80px; height: 80px;">
-                            <img src="" alt="Foto" id="foto-emprendedor" class="w-100 h-100 object-fit-cover d-none">
-                            <i class="fas fa-user-tie fa-3x text-primary" id="icono-usuario"></i>
+    <div class="row g-4">
+        <!-- ============ MAIN CONTENT ============ -->
+        <div class="col-12 col-lg-8">
+            <!-- TABS NAV -->
+            <ul class="nav nav-tabs-dashboard mb-4" id="dashboardTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-datos" type="button" role="tab">
+                        <i class="fas fa-user"></i> Información
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-financiero" type="button" role="tab">
+                        <i class="fas fa-coins"></i> Financiero
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-aval" type="button" role="tab">
+                        <i class="fas fa-user-shield"></i> Aval
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inmueble" type="button" role="tab">
+                        <i class="fas fa-home"></i> Inmueble
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-resumen" type="button" role="tab">
+                        <i class="fas fa-file-alt"></i> Resumen Ejecutivo
+                    </button>
+                </li>
+            </ul>
+
+            <!-- TABS CONTENT -->
+            <div class="tab-content">
+                <!-- ======== TAB: DATOS PERSONALES + DOMICILIOS ======== -->
+                <div class="tab-pane fade show active" id="tab-datos" role="tabpanel">
+                    <!-- Domicilio Personal (readonly, de línea base) -->
+                    <div class="card section-card mb-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-map-marker-alt me-2" style="color:var(--bs-primary)"></i>Domicilio Personal</h6>
+                            <span class="section-badge">Solo lectura</span>
                         </div>
-                        <h5 class="fw-bold mb-1" id="nombre-completo-sidebar">--- ---</h5>
-                        <p class="text-muted small mb-4" id="referencia-sidebar">Sin Expediente</p>
-                        <hr class="opacity-25 my-4">
-                        <div class="text-start">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted small text-uppercase fw-semibold">Monto Solicitado</span>
-                                <span class="fw-bold text-dark" id="resumen-monto">$0.00</span>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Calle</div>
+                                    <div class="field-value" id="dom-personal-calle">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">No. Exterior</div>
+                                    <div class="field-value" id="dom-personal-ext">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">No. Interior</div>
+                                    <div class="field-value" id="dom-personal-int">—</div>
+                                </div>
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Entre calles</div>
+                                    <div class="field-value" id="dom-personal-cruces">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">C.P.</div>
+                                    <div class="field-value" id="dom-personal-cp">—</div>
+                                </div>
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Colonia</div>
+                                    <div class="field-value" id="dom-personal-colonia">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">Municipio</div>
+                                    <div class="field-value" id="dom-personal-municipio">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">Estado</div>
+                                    <div class="field-value" id="dom-personal-estado">—</div>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted small text-uppercase fw-semibold">Mensualidades</span>
-                                <span class="fw-bold text-dark" id="resumen-mensualidades">0</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted small text-uppercase fw-semibold">Estatus</span>
-                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 rounded-pill">Revision</span>
-                            </div>
-                            <!-- Acceso a Pagos (Se muestra por JS si existe expediente) -->
-                            <div class="mt-4 pt-3 border-top border-opacity-25 d-none" id="panel-acceso-pagos">
-                                <a href="#" id="link-pagos" class="btn btn-outline-success w-100 fw-bold rounded-pill text-uppercase tracking-widest small">
-                                    <i class="fas fa-wallet me-2"></i> Gestión de Pagos
-                                </a>
+                        </div>
+                    </div>
+                    <!-- Domicilio del Negocio (readonly, de línea base) -->
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-store me-2" style="color:#16a34a"></i>Domicilio del Negocio</h6>
+                            <span class="section-badge">Solo lectura</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Nombre del Negocio</div>
+                                    <div class="field-value" id="dom-negocio-nombre">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">Teléfono</div>
+                                    <div class="field-value" id="dom-negocio-tel">—</div>
+                                </div>
+                                <div class="info-field info-field--separator"></div>
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Calle</div>
+                                    <div class="field-value" id="dom-negocio-calle">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">No. Exterior</div>
+                                    <div class="field-value" id="dom-negocio-ext">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">No. Interior</div>
+                                    <div class="field-value" id="dom-negocio-int">—</div>
+                                </div>
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Entre calles</div>
+                                    <div class="field-value" id="dom-negocio-cruces">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">C.P.</div>
+                                    <div class="field-value" id="dom-negocio-cp">—</div>
+                                </div>
+                                <div class="info-field info-field--wide">
+                                    <div class="field-label">Colonia</div>
+                                    <div class="field-value" id="dom-negocio-colonia">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">Municipio</div>
+                                    <div class="field-value" id="dom-negocio-municipio">—</div>
+                                </div>
+                                <div class="info-field">
+                                    <div class="field-label">Estado</div>
+                                    <div class="field-value" id="dom-negocio-estado">—</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Principal / Campos -->
-            <div class="col-12 col-lg-8 order-lg-1">
-                <!-- Sección 1: Datos Personales -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
-                        <h5 class="fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-user text-primary me-2 fs-6"></i>
-                            Información del Emprendedor
-                        </h5>
-                        <p class="text-muted small mb-0">Información básica recuperada del perfil.</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
-                                <label for="nombre" class="form-label fw-semibold small text-muted text-uppercase mb-1">Nombre</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-tag text-muted"></i></span>
-                                    <input type="text" class="form-control bg-light" id="nombre" name="nombre" readonly>
+                <!-- ======== TAB: DATOS DEL AVAL ======== -->
+                <div class="tab-pane fade" id="tab-aval" role="tabpanel">
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-user-shield me-2" style="color:#6366f1"></i>Datos del Aval</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-aval" novalidate>
+
+                                <!-- Sección: Identificación -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Identificación del Aval</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-9">
+                                            <label class="field-label">Nombre Completo <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="aval-nombre" name="nombreCompleto" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="field-label">Edad <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="aval-edad" name="edad" min="1" max="120" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Parentesco <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="aval-parentesco" name="idParentesco" required>
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label class="field-label">Celular <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-mobile-alt"></i></span>
+                                                <input type="tel" maxlength="15" class="form-control" id="aval-celular" name="celular" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Tel. Fijo</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                <input type="tel" maxlength="15" class="form-control" id="aval-telfijo" name="telFijo">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="apellidos" class="form-label fw-semibold small text-muted text-uppercase mb-1">Apellidos</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-tag text-muted"></i></span>
-                                    <input type="text" class="form-control bg-light" id="apellidos" name="apellidos" readonly>
+
+                                <!-- Sección: Domicilio -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Domicilio del Aval</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="field-label">Calle <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="aval-calle" name="calle" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="field-label">No. Exterior <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="aval-ext" name="numeroExterior" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="field-label">No. Interior</label>
+                                            <input type="text" class="form-control" id="aval-int" name="numeroInterior">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="field-label">Entre las calles <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="aval-cruce1" name="calleCruce1" placeholder="Primera calle" required>
+                                                <span class="input-group-text text-muted" style="font-size:0.7rem;">y</span>
+                                                <input type="text" class="form-control" id="aval-cruce2" name="calleCruce2" placeholder="Segunda calle" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="field-label">C.P. <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="aval-cp" name="idCodigoPostal" required>
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Colonia <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="aval-colonia" name="colonia" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Municipio</label>
+                                            <input type="text" class="form-control input-readonly" id="aval-municipio" readonly>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Estado</label>
+                                            <input type="text" class="form-control input-readonly" id="aval-estado" readonly>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="referencia" class="form-label fw-semibold small text-muted text-uppercase mb-1">No. expediente</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-hashtag text-muted"></i></span>
-                                    <input type="text" class="form-control bg-light" id="referencia" name="referencia" readonly>
+
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-save" id="btn-guardar-aval">
+                                        <i class="fas fa-save me-2"></i>Guardar Aval
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="telefono" class="form-label fw-semibold small text-muted text-uppercase mb-1">Teléfono</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-phone text-muted"></i></span>
-                                    <input type="text" class="form-control bg-light" id="telefono" name="telefono" readonly>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="fechaEntrega" class="form-label fw-semibold small text-muted text-uppercase mb-1">Fecha Otorgamiento</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-calendar-alt text-muted"></i></span>
-                                    <input type="date" class="form-control bg-light" id="fechaEntrega" name="fechaEntrega" readonly disabled>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sección 2: Datos del Expediente -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
-                        <h5 class="fw-bold text-dark d-flex align-items-center">
-                            <i class="fas fa-file-invoice-dollar text-primary me-2 fs-6"></i>
-                            Información Financiera del Apoyo
-                        </h5>
-                        <p class="text-muted small mb-0">Detalles del crédito o apoyo solicitado.</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-4">
-                            <!-- Fila 1: Monto y Entrega -->
-                            <div class="col-12 col-md-12">
-                                <label for="montoSolicitado" class="form-label fw-semibold small text-muted text-uppercase mb-1">Monto solicitado <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-dollar-sign text-success"></i></span>
-                                    <input type="number" class="form-control fw-bold" id="montoSolicitado" name="montoSolicitado" step="0.01" min="0" required>
-                                </div>
-                            </div>
+                <!-- ======== TAB: INMUEBLE EN GARANTÍA ======== -->
+                <div class="tab-pane fade" id="tab-inmueble" role="tabpanel">
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-home me-2" style="color:#d97706"></i>Domicilio del Inmueble en Garantía</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-inmueble" novalidate>
 
-                            <!-- Fila 2: Inicio y Término -->
-                            <div class="col-12 col-md-6">
-                                <label for="fechaInicio" class="form-label fw-semibold small text-muted text-uppercase mb-1">Fecha inicio</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-calendar-check text-info"></i></span>
-                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                                <!-- Sección: Ubicación -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Ubicación del Inmueble</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="field-label">Calle <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="inmueble-calle" name="calle" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="field-label">No. Exterior <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="inmueble-ext" name="numeroExterior" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="field-label">No. Interior</label>
+                                            <input type="text" class="form-control" id="inmueble-int" name="numeroInterior">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="field-label">Entre las calles <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="inmueble-cruce1" name="calleCruce1" placeholder="Primera calle" required>
+                                                <span class="input-group-text text-muted" style="font-size:0.7rem;">y</span>
+                                                <input type="text" class="form-control" id="inmueble-cruce2" name="calleCruce2" placeholder="Segunda calle" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="field-label">C.P. <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="inmueble-cp" name="idCodigoPostal" required>
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Colonia <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="inmueble-colonia" name="colonia" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Municipio</label>
+                                            <input type="text" class="form-control input-readonly" id="inmueble-municipio" readonly>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Estado</label>
+                                            <input type="text" class="form-control input-readonly" id="inmueble-estado" readonly>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="fechaTermino" class="form-label fw-semibold small text-muted text-uppercase mb-1">Fecha término</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-calendar-times text-danger"></i></span>
-                                    <input type="date" class="form-control" id="fechaTermino" name="fechaTermino">
-                                </div>
-                            </div>
 
-                            <hr class="opacity-10 my-1">
-
-                            <!-- Fila 3: Cantidad Mensualidades y Extras -->
-                            <div class="col-12 col-md-6">
-                                <label for="cantidadDocumentosElaborados" class="form-label fw-semibold small text-muted text-uppercase mb-1">Cant. mensualidades <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-list-ol"></i></span>
-                                    <input type="number" class="form-control" id="cantidadDocumentosElaborados" name="cantidadDocumentosElaborados" required>
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-save" id="btn-guardar-inmueble">
+                                        <i class="fas fa-save me-2"></i>Guardar Inmueble
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="cantidadDocumentosExtraElaborados" class="form-label fw-semibold small text-muted text-uppercase mb-1">Cant. extras</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-plus"></i></span>
-                                    <input type="number" class="form-control" id="cantidadDocumentosExtraElaborados" name="cantidadDocumentosExtraElaborados">
-                                </div>
-                            </div>
-
-                            <!-- Fila 4: Montos Mensualidad y Extras -->
-                            <div class="col-12 col-md-6">
-                                <label for="montoDocumento" class="form-label fw-semibold small text-muted text-uppercase mb-1">Monto mensualidad</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-hand-holding-usd text-success"></i></span>
-                                    <input type="number" class="form-control" id="montoDocumento" name="montoDocumento" step="0.01">
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="montoPorDocumentoExtra" class="form-label fw-semibold small text-muted text-uppercase mb-1">Monto extra</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-gift text-warning"></i></span>
-                                    <input type="number" class="form-control" id="montoPorDocumentoExtra" name="montoPorDocumentoExtra" step="0.01">
-                                </div>
-                            </div>
-
-                            <hr class="opacity-10 my-1">
-
-                            <!-- Fila 5: Aportaciones Solidarias -->
-                            <div class="col-12 col-md-6">
-                                <label for="cantAportacionesSolidariasPactado" class="form-label fw-semibold small text-muted text-uppercase mb-1">Aportaciones pactadas</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-people-carry"></i></span>
-                                    <input type="number" class="form-control" id="cantAportacionesSolidariasPactado" name="cantAportacionesSolidariasPactado">
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="montoAportacionSolidariaPactado" class="form-label fw-semibold small text-muted text-uppercase mb-1">Monto aportación</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-coins text-warning"></i></span>
-                                    <input type="number" class="form-control" id="montoAportacionSolidariaPactado" name="montoAportacionSolidariaPactado" step="0.01">
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
-                    <!-- Submit forms Footer -->
-                    <div class="card-footer bg-transparent border-top p-4 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-dark px-4 py-2 fw-bold d-flex align-items-center shadow-sm" id="btn-guardar">
-                            <i class="fas fa-save me-2 text-white-50"></i> Guardar Expediente
-                        </button>
+                </div>
+
+                <!-- ======== TAB: RESUMEN EJECUTIVO ======== -->
+                <div class="tab-pane fade" id="tab-resumen" role="tabpanel">
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-file-alt me-2" style="color:#0891b2"></i>Resumen Ejecutivo del Préstamo</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-resumen" novalidate>
+
+                                <!-- ── BLOQUE 1: Identificación del Proyecto ── -->
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="fas fa-lightbulb" style="color:#f59e0b"></i>
+                                        Identificación del Proyecto
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label class="field-label">Nombre del Proyecto <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="resumen-nombre-proyecto" name="nombreProyecto" placeholder="Ej. Panadería Artesanal San Rafael" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Viabilidad <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="resumen-viabilidad" name="idViabilidad" required>
+                                                <option value="">— Seleccione —</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="field-label">Descripción del Proyecto <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="resumen-proyecto" name="resumenProyecto" rows="3" placeholder="Describe brevemente el proyecto, su actividad y alcance..." required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ── BLOQUE 2: Análisis Financiero ── -->
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="fas fa-chart-bar" style="color:#16a34a"></i>
+                                        Análisis Financiero
+                                    </div>
+
+                                    <!-- Métricas monetarias como tarjetas destacadas -->
+                                    <div class="presupuesto-grid mb-3">
+                                        <div class="presupuesto-item">
+                                            <div class="presupuesto-label">Importe Solicitado <span class="text-danger">*</span></div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="resumen-importe-solicitado" name="importeSolicitado" step="0.01" placeholder="0.00" required>
+                                            </div>
+                                        </div>
+                                        <div class="presupuesto-item">
+                                            <div class="presupuesto-label">Inversión Emprendedor <span class="text-danger">*</span></div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="resumen-inversion" name="inversionEmprendedor" step="0.01" placeholder="0.00" required>
+                                            </div>
+                                        </div>
+                                        <div class="presupuesto-item">
+                                            <div class="presupuesto-label">Sugerido por Coordinador <span class="text-danger">*</span></div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="resumen-sugerido" name="importeSugeridoCoordinador" step="0.01" placeholder="0.00" required>
+                                            </div>
+                                        </div>
+                                        <div class="presupuesto-item presupuesto-item--aprobado">
+                                            <div class="presupuesto-label">Monto Aprobado</div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control input-readonly fw-bold" id="resumen-aprobado" readonly placeholder="—">
+                                            </div>
+                                            <div class="field-hint mt-1">Tomado del expediente financiero</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ── BLOQUE 3: Diagnóstico Social ── -->
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <i class="fas fa-user-md" style="color:#6366f1"></i>
+                                        Diagnóstico Social
+                                    </div>
+
+                                    <!-- Tarjeta de dictamen destacada -->
+                                    <div class="diagnostico-card mb-3">
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-4">
+                                                <label class="field-label">Resultado del Diagnóstico <span class="text-danger">*</span></label>
+                                                <select class="form-select diagnostico-select" id="resumen-diagnostico" name="idDiagnosticoSocial" required>
+                                                    <option value="">— Seleccione —</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label class="field-label">Nivel de Vulnerabilidad <span class="text-danger">*</span></label>
+                                                <select class="form-select" id="resumen-vulnerabilidad" name="idVulnerabilidad" required>
+                                                    <option value="">— Seleccione —</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-12">
+                                            <label class="field-label">Observaciones del Diagnóstico <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="resumen-observaciones" name="observaciones" rows="2" placeholder="Notas adicionales del diagnóstico social..." required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- Responsables moved here -->
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="field-label">Quién otorga el diagnóstico <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-muted"><i class="fas fa-user-md"></i></span>
+                                                <input type="text" class="form-control" id="resumen-quien-diagnostico" name="quienOtorgaDiagnostico" placeholder="Nombre del trabajador social" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="field-label">Aprobado por Auxiliar de Dirección <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-muted"><i class="fas fa-user-check"></i></span>
+                                                <input type="text" class="form-control" id="resumen-aprobado-por" name="aprobadoPorAuxiliarDireccion" placeholder="Nombre del auxiliar" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-save" id="btn-guardar-resumen">
+                                        <i class="fas fa-save me-2"></i>Guardar Resumen
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======== TAB: FINANCIERO (expediente original) ======== -->
+                <div class="tab-pane fade" id="tab-financiero" role="tabpanel">
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-coins me-2" style="color:#16a34a"></i>Información Financiera del Apoyo</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form-expediente" novalidate>
+
+                                <!-- Sección: Datos Generales -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Datos Generales</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="field-label">N° Expediente</label>
+                                            <input type="text" class="form-control" id="numeroExpediente" name="numeroExpediente" placeholder="Ej. 001-2026" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Fecha Otorgamiento</label>
+                                            <input type="date" class="form-control input-readonly" id="fechaEntrega" readonly disabled>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Monto Solicitado <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-success"><i class="fas fa-dollar-sign"></i></span>
+                                                <input type="number" class="form-control fw-bold" id="montoSolicitado" name="montoSolicitado" step="0.01" min="0" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección: Plazos y Vigencia -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Plazos y Vigencia</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="field-label">Fecha Inicio</label>
+                                            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="field-label">Fecha Término</label>
+                                            <input type="date" class="form-control" id="fechaTermino" name="fechaTermino">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección: Estructura de Pagos -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Mensualidades</div>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="field-label">Cant. Mensualidades <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="cantidadDocumentosElaborados" name="cantidadDocumentosElaborados" min="0" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Monto por Mensualidad</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="montoDocumento" name="montoDocumento" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Total Mensualidades</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-muted"><i class="fas fa-calculator"></i></span>
+                                                <input type="number" class="form-control input-readonly fw-bold" id="totalMensualidades" readonly placeholder="Calculado">
+                                            </div>
+                                            <div class="field-hint">Cant. × Monto mensualidad</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección: Pagos Extra y Aportaciones -->
+                                <div class="form-section">
+                                    <div class="form-section-title">Extras y Aportaciones Solidarias</div>
+                                    <div class="row g-3">
+                                        <!-- Fila 1: Extras -->
+                                        <div class="col-md-4">
+                                            <label class="field-label">Cant. Extras</label>
+                                            <input type="number" class="form-control" id="cantidadDocumentosExtraElaborados" name="cantidadDocumentosExtraElaborados" min="0">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Monto Extra</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="montoPorDocumentoExtra" name="montoPorDocumentoExtra" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Total Extras</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-muted"><i class="fas fa-calculator"></i></span>
+                                                <input type="number" class="form-control input-readonly fw-bold" id="totalExtras" readonly placeholder="Calculado">
+                                            </div>
+                                            <div class="field-hint">Cant. × Monto extra</div>
+                                        </div>
+
+                                        <!-- Fila 2: Aportaciones -->
+                                        <div class="col-md-4">
+                                            <label class="field-label">Aportaciones Pactadas</label>
+                                            <input type="number" class="form-control" id="cantAportacionesSolidariasPactado" name="cantAportacionesSolidariasPactado" min="0">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Monto Aportación</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="montoAportacionSolidariaPactado" name="montoAportacionSolidariaPactado" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="field-label">Total Aportaciones</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-muted"><i class="fas fa-calculator"></i></span>
+                                                <input type="number" class="form-control input-readonly fw-bold" id="totalAportaciones" readonly placeholder="Calculado">
+                                            </div>
+                                            <div class="field-hint">Cant. × Monto aportación</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-save" id="btn-guardar">
+                                        <i class="fas fa-save me-2"></i>Guardar Información Financiera
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.tab-content -->
+        </div>
+
+        <!-- ============ SIDEBAR ============ -->
+        <div class="col-12 col-lg-4">
+            <div class="sidebar-summary sticky-top" style="top:24px; z-index:1;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-muted text-uppercase mb-3" style="font-size:0.72rem; letter-spacing:0.08em;">Resumen del Crédito</h6>
+                    <div class="summary-row">
+                        <span class="text-muted small fw-semibold">Monto Solicitado</span>
+                        <span class="fw-bold" id="resumen-monto">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted small fw-semibold">Mensualidades</span>
+                        <span class="fw-bold" id="resumen-mensualidades">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted small fw-semibold">Diagnóstico</span>
+                        <span class="status-badge status-badge--secondary" id="resumen-diagnostico-badge">Sin dictamen</span>
+                    </div>
+
+                    <hr class="opacity-10 my-3">
+                    <h6 class="fw-bold text-muted text-uppercase mb-3" style="font-size:0.72rem; letter-spacing:0.08em;">Accesos Rápidos</h6>
+
+                    <div class="d-flex flex-column gap-2">
+                        <a href="javascript:void(0);" class="quick-action d-none" id="link-pagos">
+                            <i class="fas fa-wallet icon-box--pagos"></i> Administración de Pagos
+                        </a>
+                        <a href="javascript:void(0);" class="quick-action" id="link-pagare" style="opacity:0.5; pointer-events: none;">
+                            <i class="fas fa-file-signature icon-box--pagare"></i>
+                            Pagaré <span class="status-badge status-badge--secondary ms-auto" id="badge-pagare">Bloqueado</span>
+                        </a>
+                        <a href="javascript:void(0);" class="quick-action" id="link-contrato" style="opacity:0.5; pointer-events: none;">
+                            <i class="fas fa-file-contract icon-box--contrato"></i>
+                            Contrato <span class="status-badge status-badge--secondary ms-auto" id="badge-contrato">Bloqueado</span>
+                        </a>
+                        <a href="javascript:void(0);" class="quick-action" id="link-tarjeta" style="opacity:0.5; pointer-events: none;">
+                            <i class="fas fa-file-invoice-dollar icon-box--tarjeta" style="color:var(--bs-teal); background-color:rgba(32, 201, 151, 0.1);"></i>
+                            Tarjeta de Pagos <span class="status-badge status-badge--secondary ms-auto" id="badge-tarjeta">Bloqueado</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
+
+    </div><!-- /.row -->
 </div>
-<!-- Modal Actualizar Referencia (Se muestra si no hay fecha de crédito) -->
+
+<!-- Modal Actualizar Referencia -->
 <div class="modal fade" id="modalActualizarReferencia" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -221,37 +654,22 @@
                 </div>
                 <div class="modal-body pt-2">
                     <p class="text-muted small">
-                        Se detecta que la información de crédito del emprendedor <strong id="nombreEmprendedorRef"></strong> está incompleta (falta asignar la <strong>referencia</strong> o la <strong>fecha de otorgamiento</strong>). Es obligatorio completar ambos datos para gestionar su expediente.
+                        Se detecta que la información de <strong id="nombreEmprendedorRef"></strong> está incompleta. Es obligatorio completar la <strong>referencia</strong> y la <strong>fecha de otorgamiento</strong>.
                     </p>
                     <div class="mb-3">
-                        <label for="numeroReferencia" class="form-label fw-bold small text-uppercase text-muted mb-1">
-                            Número de Referencia
-                        </label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="fas fa-hashtag text-primary"></i></span>
-                            <input type="text" class="form-control" id="numeroReferencia" name="numeroReferencia" placeholder="Ej. 123456" required>
-                        </div>
+                        <label for="numeroReferencia" class="field-label">Número de Referencia</label>
+                        <input type="text" class="form-control form-control-sm" id="numeroReferencia" name="numeroReferencia" required>
                     </div>
                     <div class="mb-3">
-                        <label for="fechaOtorgamiento" class="form-label fw-bold small text-uppercase text-muted mb-1">
-                            Fecha de Otorgamiento
-                        </label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="fas fa-calendar-alt text-primary"></i></span>
-                            <input type="date" class="form-control" id="fechaOtorgamiento" name="fechaOtorgamiento" required>
-                        </div>
+                        <label for="fechaOtorgamiento" class="field-label">Fecha de Otorgamiento</label>
+                        <input type="date" class="form-control form-control-sm" id="fechaOtorgamiento" name="fechaOtorgamiento" required>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light btn-sm" id="btn-cancelar-modal">
-                        <i class="fas fa-arrow-left me-2"></i>Regresar
-                    </button>
-                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold" id="btnGuardarReferencia">
-                        <i class="fas fa-check me-2"></i>Guardar e Iniciar Expediente
-                    </button>
+                    <button type="button" class="btn btn-light btn-sm" id="btn-cancelar-modal"><i class="fas fa-arrow-left me-2"></i>Regresar</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold" id="btnGuardarReferencia"><i class="fas fa-check me-2"></i>Guardar e Iniciar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-

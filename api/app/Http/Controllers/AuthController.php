@@ -26,23 +26,24 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validatedData = $this->validateLoginRequest($request);
-        $inputCredentials = $validatedData;
-        $rememberMe = $validatedData['rememberMe'] ?? false;
-
-        $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
-        if (!$user) {
-            return ApiResponse::unauthorized('Correo no encontrado.');
-        }
-        if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
-            return ApiResponse::unauthorized('Contraseña incorrecta.');
-        }
-        JWTAuth::factory()->setTTL($rememberMe ? 60 : 15); // 60 minutos si rememberMe, sino 15 minutos
-        auth()->login($user);
         try {
+            $validatedData = $this->validateLoginRequest($request);
+            $inputCredentials = $validatedData;
+            $rememberMe = $validatedData['rememberMe'] ?? false;
+
+            $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
+            if (!$user) {
+                return ApiResponse::unauthorized('Correo no encontrado.');
+            }
+            if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
+                return ApiResponse::unauthorized('Contraseña incorrecta.');
+            }
+            JWTAuth::factory()->setTTL($rememberMe ? 60 : 15); // 60 minutos si rememberMe, sino 15 minutos
+            auth()->login($user);
+
             $token = JWTAuth::fromUser($user);
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al generar el token. ' . $e->getMessage(), 500);
+            return ApiResponse::error('Ha ocurrido un error. ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
         return $this->respondWithToken($token, $user);
     }
@@ -62,7 +63,7 @@ class AuthController extends Controller
 
     public function me()
     {
-       // Log::info('Fetching authenticated user info for user ID: ' . auth()->id());
+        // Log::info('Fetching authenticated user info for user ID: ' . auth()->id());
         return ApiResponse::success(auth()->user(), "User retrieved successfully.");
     }
 

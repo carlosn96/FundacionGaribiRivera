@@ -27,6 +27,10 @@ use App\Models\LineaBase\Catalogos\Municipio;
 use App\Models\LineaBase\Catalogos\ComunidadParroquial;
 use App\Models\LineaBase\Catalogos\AntiguedadNegocio;
 use App\Models\LineaBase\Catalogos\Genero;
+use App\Models\LineaBase\Catalogos\Parentesco;
+use App\Models\LineaBase\Catalogos\Viabilidad;
+use App\Models\LineaBase\Catalogos\DiagnosticoSocial;
+use App\Models\LineaBase\Catalogos\Vulnerabilidad;
 
 class LineaBaseCatalogosController extends Controller
 {
@@ -38,6 +42,10 @@ class LineaBaseCatalogosController extends Controller
         'actividades-negocio' => NegocioActividad::class,
         'antiguedad-negocio' => AntiguedadNegocio::class,
         'genero' => Genero::class,
+        'parentesco' => Parentesco::class,
+        'viabilidades' => Viabilidad::class,
+        'diagnostico-social' => DiagnosticoSocial::class,
+        'vulnerabilidades' => Vulnerabilidad::class,
     ];
     // Método unificado para obtener catálogos
     public function getCatalogo($tipo): JsonResponse
@@ -192,9 +200,13 @@ class LineaBaseCatalogosController extends Controller
                 "select" => [
                     EstadoCivil::class,
                     Escolaridad::class,
+                    Parentesco::class,
                     NegocioGiro::class,
                     NegocioActividad::class,
                     AntiguedadNegocio::class,
+                    Viabilidad::class,
+                    DiagnosticoSocial::class,
+                    Vulnerabilidad::class,
                 ]
             ];
 
@@ -235,10 +247,10 @@ class LineaBaseCatalogosController extends Controller
                 return $data;
             } else {
                 $mappedData = $data->map(function ($item) {
-                    return [
+                    return array_merge($item->toArray(), [
                         'id' => $item->getKey(),
                         'descripcion' => $item->descripcion ?? $item->nombre ?? 'Sin descripción'
-                    ];
+                    ]);
                 });
                 return $mappedData;
             }

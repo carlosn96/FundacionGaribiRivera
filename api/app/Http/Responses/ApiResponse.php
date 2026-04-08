@@ -101,6 +101,11 @@ class ApiResponse
         );
     }
 
+    public static function errorInterno($message = 'Internal Server Error'): JsonResponse
+    {
+        return self::error($message, self::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
     public static function notFound(string $message = 'Resource not found'): JsonResponse
     {
         return self::error($message, self::HTTP_NOT_FOUND);

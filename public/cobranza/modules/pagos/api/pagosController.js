@@ -196,8 +196,9 @@ function llenarInformacionDelEmprendedor() {
     $('#nombre-completo').text(`${perfil.nombre} ${perfil.apellidos}`);
     $('#referencia').text(perfil.referencia || 'N/A');
     
-    if (perfil.usuario.fotografia_base64) {
-        $('#foto-emprendedor-pagos').attr('src', 'data:image/png;base64,' + perfil.usuario.fotografia_base64).removeClass('d-none');
+    const usuario = perfil.usuario || {};
+    if (usuario.fotografiaBase64) {
+        $('#foto-emprendedor-pagos').attr('src', 'data:image/png;base64,' + usuario.fotografiaBase64).removeClass('d-none');
         $('#icono-default').addClass('d-none');
     }
 

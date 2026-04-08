@@ -2,12 +2,12 @@ class CobranzaController {
     static prefix = 'cobranza/';
 
     static async getHistorialEmprendedores() {
-        return await apiRequest(this.prefix + 'historial-emprendedores', 'GET');
+        return await apiGetRequest(this.prefix + 'historial-emprendedores', 'GET');
     }
 
     static async actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento) {
         const body = {
-            id: emprendedorId,
+            idEmprendedor: emprendedorId,
             referencia: referencia,
             fechaOtorgamiento: fechaOtorgamiento
         };

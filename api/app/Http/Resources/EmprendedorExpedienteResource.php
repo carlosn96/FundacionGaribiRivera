@@ -19,16 +19,22 @@ class EmprendedorExpedienteResource extends JsonResource
         }
 
         return [
-            'id_emprendedor' => $this->id_emprendedor,
-            'montoSolicitado' => (float)$this->monto_solicitado,
-            'fechaInicio' => $this->fecha_inicio,
-            'fechaTermino' => $this->fecha_termino,
-            'cantidadDocumentosElaborados' => (int)$this->cantidad_documentos_elaborados,
+            'idExpediente'                      => $this->id_expediente,
+            'idEmprendedor'                     => $this->id_emprendedor,
+            'numeroExpediente'                  => $this->numero_expediente,
+            'montoSolicitado'                   => (float)$this->monto_solicitado,
+            'fechaInicio'                       => $this->fecha_inicio,
+            'fechaTermino'                      => $this->fecha_termino,
+            'cantidadDocumentosElaborados'      => (int)$this->cantidad_documentos_elaborados,
             'cantidadDocumentosExtraElaborados' => (int)$this->cantidad_documentos_extra_elaborados,
-            'montoDocumento' => (float)$this->monto_documento,
-            'montoPorDocumentoExtra' => (float)$this->monto_por_documento_extra,
+            'montoDocumento'                    => (float)$this->monto_documento,
+            'montoPorDocumentoExtra'            => (float)$this->monto_por_documento_extra,
             'cantAportacionesSolidariasPactado' => (int)$this->cant_aportaciones_solidarias_pactado,
-            'montoAportacionSolidariaPactado' => (float)$this->monto_aportacion_solidaria_pactado
+            'montoAportacionSolidariaPactado'   => (float)$this->monto_aportacion_solidaria_pactado,
+            // Secciones del expediente (requeridas con eager loading)
+            'aval'             => new ExpedienteAvalResource($this->whenLoaded('aval')),
+            'inmuebleGarantia' => new ExpedienteInmuebleGarantiaResource($this->whenLoaded('inmuebleGarantia')),
+            'resumenEjecutivo' => new ExpedienteResumenEjecutivoResource($this->whenLoaded('resumenEjecutivo')),
         ];
     }
 }

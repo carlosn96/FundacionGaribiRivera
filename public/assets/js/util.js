@@ -101,12 +101,12 @@ function mostrarMensajeOk(msg = "OK", reloading = true, fnthen = () => { }) {
     //location.reload();
 }
 
-function mostrarMensajeError(msg = "No se ha podido completar la operacion ...", reloading = true) {
-    mostrarMensajeReload("Error", "error", msg, reloading);
+function mostrarMensajeError(msg = "No se ha podido completar la operacion ...", reloading = true, fnthen = () => { }) {
+    mostrarMensajeReload("Error", "error", msg, reloading, fnthen);
 }
 
-function mostrarMensajeAdvertencia(msg, reloading = true) {
-    mostrarMensajeReload("Atención", "warning", msg, reloading);
+function mostrarMensajeAdvertencia(msg, reloading = true, fnthen = () => { }) {
+    mostrarMensajeReload("Atención", "warning", msg, reloading, fnthen);
 }
 
 function mostrarMensajeInfo(msg, reloading = true, fnthen = () => { }) {
@@ -444,7 +444,7 @@ function descargarTablaCSV(idTabla, nombreArchivo) {
     $("#" + idTabla).first().table2csv({ "filename": nombreArchivo + ".csv" });
 }
 
-function print(res) {
+function printl(res) {
     console.log(res);
 }
 

@@ -79,11 +79,16 @@ $router->group(
 );
 
 $router->group(
-    ['prefix' => 'cobranza'], function () use ($router) {
+    ['prefix' => 'cobranza', 'middleware' => 'jwt.cookie'], function () use ($router) {
         $router->get('/historial-emprendedores', 'CobranzaController@getHistorialEmprendedores');
         $router->post('/referencia', 'CobranzaController@actualizarReferencia');
         $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
-        $router->post('/expediente', 'CobranzaController@saveExpediente');
+        $router->post('/expediente', 'CobranzaController@saveInfoFinanciera');
+
+        // Secciones del expediente
+        $router->post('/expediente/aval', 'CobranzaController@saveAval');
+        $router->post('/expediente/inmueble-garantia', 'CobranzaController@saveInmuebleGarantia');
+        $router->post('/expediente/resumen-ejecutivo', 'CobranzaController@saveResumenEjecutivo');
 
         // ---- Pagos ----
         $router->get('/pagos/{idEmprendedor}', 'PagoController@getPagos');
@@ -96,11 +101,13 @@ $router->group(
         $router->post('/pagos-parciales', 'PagoController@agregarPagoParcial');
         $router->put('/pagos-parciales/{idPago}', 'PagoController@modificarPagoParcial');
         $router->delete('/pagos-parciales/{idPago}', 'PagoController@eliminarPagoParcial');
+        $router->get('/imprimir-contrato/{id}', 'CobranzaController@getContratoPdf');
+        $router->get('/imprimir-tarjeta-pagos/{id}', 'CobranzaController@getTarjetaPagosPdf');
     }
 );
 
 $router->group(
-    ['prefix' => 'emprendedor'], function () use ($router) {
+    ['prefix' => 'emprendedor', 'middleware' => 'jwt.cookie'], function () use ($router) {
         $router->get('/perfil/{id}', 'EmprendedorController@getPerfil');
     }
 );

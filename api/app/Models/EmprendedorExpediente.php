@@ -27,6 +27,7 @@ class EmprendedorExpediente extends Model
      */
     protected $fillable = [
         'id_emprendedor',
+        'numero_expediente',
         'monto_solicitado',
         'fecha_inicio',
         'fecha_termino',
@@ -44,6 +45,24 @@ class EmprendedorExpediente extends Model
     public function emprendedor()
     {
         return $this->belongsTo(Emprendedor::class, 'id_emprendedor', 'id_emprendedor');
+    }
+
+    /** Datos del aval del crédito */
+    public function aval()
+    {
+        return $this->hasOne(ExpedienteAval::class, 'id_expediente', 'id_expediente');
+    }
+
+    /** Domicilio del inmueble en garantía */
+    public function inmuebleGarantia()
+    {
+        return $this->hasOne(ExpedienteInmuebleGarantia::class, 'id_expediente', 'id_expediente');
+    }
+
+    /** Resumen ejecutivo del préstamo */
+    public function resumenEjecutivo()
+    {
+        return $this->hasOne(ExpedienteResumenEjecutivo::class, 'id_expediente', 'id_expediente');
     }
 }
 

@@ -4,7 +4,7 @@ const urlAPI = "api/LineaBaseAPI.php";
 function ready() {
     bloquearSeccion($("#content"));
     crearPeticion(urlAPI, {case: "consultarLineaBase"}, function (rs) {
-            print(rs);
+        printl(rs);
         if (rs.lineaBase && rs.lineaBase.existeLineaBase) {
             const data = rs.lineaBase.data;
             const emprendedor = rs.emprendedor;

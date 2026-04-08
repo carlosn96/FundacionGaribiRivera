@@ -21,8 +21,12 @@ class JwtFromCookieMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Intentar obtener el token de la cookie o del header Authorization
+        // Intentar obtener el token de la cookie, del query string o del header Authorization
         $token = $request->cookie('access_token');
+
+        if (!$token) {
+            $token = $request->query('token');
+        }
 
         if (!$token && $request->hasHeader('Authorization')) {
             $header = $request->header('Authorization');

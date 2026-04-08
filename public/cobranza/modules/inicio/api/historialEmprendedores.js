@@ -53,14 +53,14 @@ function inicializarEventos() {
     $(document).on('click', '.btn-editar-referencia', function (e) {
         e.preventDefault();
         const emprendedorId = $(this).data('id');
-        emprendedorActual = historialData.find(item => item.id_emprendedor == emprendedorId);
+        emprendedorActual = historialData.find(item => item.idEmprendedor == emprendedorId);
 
         if (emprendedorActual) {
             $('#nombreEmprendedorRef').text(`${emprendedorActual.nombre} ${emprendedorActual.apellidos}`);
             $('#numeroReferencia').val(emprendedorActual.referencia || '');
             
             // Formatear la fecha para el input type="date" (YYYY-MM-DD)
-            const fechaCredito = emprendedorActual.fecha_credito ? emprendedorActual.fecha_credito.split(' ')[0] : '';
+            const fechaCredito = emprendedorActual.fechaCredito ? emprendedorActual.fechaCredito.split(' ')[0] : '';
             $('#fechaOtorgamiento').val(fechaCredito);
 
             const modal = new bootstrap.Modal(document.getElementById('modalActualizarReferencia'));
@@ -77,7 +77,7 @@ function inicializarEventos() {
 
         if (emprendedorActual) {
             // DETECCIÓN DE CAMBIOS: Si no se cambió nada, no enviamos la petición
-            const fechaActual = emprendedorActual.fecha_credito ? emprendedorActual.fecha_credito.split(' ')[0] : '';
+            const fechaActual = emprendedorActual.fechaCredito ? emprendedorActual.fechaCredito.split(' ')[0] : '';
             if (numeroReferencia == emprendedorActual.referencia && fechaOtorgamiento == fechaActual) {
                 mostrarNotificacion('No se detectaron cambios en la información', 'info');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarReferencia'));
@@ -85,7 +85,7 @@ function inicializarEventos() {
                 return;
             }
 
-            actualizarReferencia(emprendedorActual.id_emprendedor, numeroReferencia, fechaOtorgamiento);
+            actualizarReferencia(emprendedorActual.idEmprendedor, numeroReferencia, fechaOtorgamiento);
 
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarReferencia'));
             modal.hide();
@@ -150,9 +150,9 @@ function exportarDatos() {
     dataToExport.forEach(function (item) {
         const nombreCompleto = `${item.nombre} ${item.apellidos}`;
         const referencia = item.referencia || 'Sin referencia';
-        const fechaCredito = item.fecha_credito || 'N/A';
+        const fechaCredito = item.fechaCredito || 'N/A';
 
-        csv += `${escapeCsvValue(item.id_emprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correo_electronico)},${escapeCsvValue(item.numero_celular)},${escapeCsvValue(referencia)},${escapeCsvValue(fechaCredito)}\n`;
+        csv += `${escapeCsvValue(item.idEmprendedor)},${escapeCsvValue(nombreCompleto)},${escapeCsvValue(item.correoElectronico)},${escapeCsvValue(item.numeroCelular)},${escapeCsvValue(referencia)},${escapeCsvValue(fechaCredito)}\n`;
     });
 
     const bom = "\uFEFF";
@@ -215,8 +215,8 @@ function aplicarFiltros() {
         const matchSearch = !searchTerm ||
             item.nombre.toLowerCase().includes(searchTerm) ||
             item.apellidos.toLowerCase().includes(searchTerm) ||
-            item.correo_electronico.toLowerCase().includes(searchTerm) ||
-            String(item.numero_celular).includes(searchTerm) ||
+            item.correoElectronico.toLowerCase().includes(searchTerm) ||
+            String(item.numeroCelular).includes(searchTerm) ||
             (item.referencia && String(item.referencia).toLowerCase().includes(searchTerm));
 
         const matchReferencia = !referenciaFilter ||
@@ -353,9 +353,9 @@ function generarTabla(data) {
                </span>`
             : '<span class="text-muted"><i class="fas fa-minus"></i></span>';
         
-        const fechaCredito = item.fecha_credito
+        const fechaCredito = item.fechaCredito
             ? `<small class="text-success d-block mt-1">
-                   <i class="fas fa-calendar-check me-1"></i>${formatearFecha(item.fecha_credito)}
+                   <i class="fas fa-calendar-check me-1"></i>${formatearFecha(item.fechaCredito)}
                </small>`
             : '';
 
@@ -382,12 +382,12 @@ function generarTabla(data) {
                 </td>
                 <td>
                     <div class="small">
-                        <a href="mailto:${item.correo_electronico}" class="text-decoration-none text-dark d-flex align-items-center mb-1">
+                        <a href="mailto:${item.correoElectronico}" class="text-decoration-none text-dark d-flex align-items-center mb-1">
                             <i class="fas fa-envelope text-primary me-2"></i>
-                            <span class="text-truncate" style="max-width: 200px;">${item.correo_electronico}</span>
+                            <span class="text-truncate" style="max-width: 200px;">${item.correoElectronico}</span>
                         </a>
-                        <a href="tel:${item.numero_celular}" class="text-decoration-none text-dark d-flex align-items-center">
-                            <i class="fas fa-phone text-success me-2"></i>${item.numero_celular}
+                        <a href="tel:${item.numeroCelular}" class="text-decoration-none text-dark d-flex align-items-center">
+                            <i class="fas fa-phone text-success me-2"></i>${item.numeroCelular}
                         </a>
                     </div>
                 </td>
@@ -405,19 +405,19 @@ function generarTabla(data) {
                                     <hr class="dropdown-divider opacity-50">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item btn-editar-referencia d-flex align-items-center py-2" href="javascript:void(0)" data-id="${item.id_emprendedor}">
+                                    <a class="dropdown-item btn-editar-referencia d-flex align-items-center py-2" href="javascript:void(0)" data-id="${item.idEmprendedor}">
                                         <i class="fas fa-edit me-2 text-primary opacity-75"></i>
                                         <span>Editar Referencia</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="../expediente/?id=${item.id_emprendedor}">
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="../expediente/?id=${item.idEmprendedor}">
                                         <i class="fas fa-folder-open me-2 text-info opacity-75"></i>
                                         <span>Expediente</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="../pagos/?id=${item.id_emprendedor}">
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="../pagos/?id=${item.idEmprendedor}">
                                         <i class="fas fa-money-bill-wave me-2 text-success opacity-75"></i>
                                         <span>Pagos</span>
                                     </a>
@@ -427,7 +427,7 @@ function generarTabla(data) {
                     ` : `
                         <button type="button" class="btn btn-sm btn-outline-primary btn-editar-referencia border-0" 
                                 title="Asignar Referencia"
-                                data-id="${item.id_emprendedor}">
+                                data-id="${item.idEmprendedor}">
                             <i class="fas fa-plus-circle me-1"></i>Referencia
                         </button>
                     `}
@@ -473,10 +473,10 @@ async function actualizarReferencia(emprendedorId, referencia, fechaOtorgamiento
         //console.log('Respuesta:', res);
 
         if (res.status === 200 || res.status === 201) {
-            const index = historialData.findIndex(item => item.id_emprendedor == emprendedorId);
+            const index = historialData.findIndex(item => item.idEmprendedor == emprendedorId);
             if (index !== -1) {
                 historialData[index].referencia = referencia;
-                historialData[index].fecha_credito = fechaOtorgamiento;
+                historialData[index].fechaCredito = fechaOtorgamiento;
             }
             aplicarFiltros();
             mostrarNotificacion(res.message || 'Referencia actualizada correctamente', 'success');

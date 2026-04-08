@@ -14,19 +14,44 @@ class EmprendedorResource extends JsonResource
      */
     public function toArray($request)
     {
+        // Extraer datos de línea base si están cargados
+        $lineaBase = $this->whenLoaded('lineaBase');
+        $etapa = null;
+        $domicilioPersonal = null;
+        $domicilioNegocio = null;
+
+        if ($lineaBase instanceof \App\Models\LineaBase\LineaBase) {
+            // Etapa de formación
+            $etapaModel = optional($lineaBase->etapa);
+            $etapa = $etapaModel ? [
+                'idEtapa' => $etapaModel->id_etapa,
+                'nombre'  => $etapaModel->nombre,
+            ] : null;
+
+            // Domicilio personal
+            $domicilioPersonal = new DomicilioResource($lineaBase->domicilio);
+
+            // Domicilio del negocio
+            $neg = $lineaBase->negocio;
+            $domicilioNegocio = null;
+            if ($neg) {
+                $domicilioNegocio = (new DomicilioResource($neg))->resolve();
+                $domicilioNegocio['nombreNegocio'] = $neg->nombre;
+                $domicilioNegocio['telefono']      = $neg->telefono;
+            }
+        }
+
         return [
-            'id' => $this->id_emprendedor,
-            'nombre' => optional($this->usuario)->nombre,
-            'apellidos' => optional($this->usuario)->apellidos,
-            'referencia' => $this->referencia,
-            'fechaCredito' => $this->fecha_credito,
-            'telefono' => optional($this->usuario)->numero_celular,
-            'graduado' => (bool)$this->graduado,
+            'id'              => $this->id_emprendedor,
+            'referencia'      => $this->referencia,
+            'fechaCredito'    => $this->fecha_credito,
+            'graduado'        => (bool)$this->graduado,
             'fechaGraduacion' => $this->fecha_graduacion,
-            // Carga opcional del expediente si está disponible
+            'etapa'              => $etapa,
+            'domicilioPersonal'  => $domicilioPersonal,
+            'domicilioNegocio'   => $domicilioNegocio,
             'expediente' => new EmprendedorExpedienteResource($this->whenLoaded('expediente')),
-            // Información básica de usuario si es necesario exponer más
-            'usuario' => $this->whenLoaded('usuario')
+            'usuario'    => new UsuarioResource($this->whenLoaded('usuario')),
         ];
     }
 }

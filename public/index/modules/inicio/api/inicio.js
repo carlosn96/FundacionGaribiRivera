@@ -92,19 +92,29 @@ $('#loginForm').submit(function (event) {
     }, function (response) {
         console.log(response);
         if (response.status === 200 || response.access_token || response.data) {
-            const token = response.data && response.data.access_token ? response.data.access_token : null;
+            const token = response.access_token || (response.data ? response.data.access_token : null);
             const redirectUrl = getBasePath() + '/public/bridge_login/index.php';
-            if (token) {
-                redireccionar(redirectUrl + '?token=' + encodeURIComponent(token));
-            } else {
-                redireccionar(redirectUrl);
-            }
+            redireccionar(token ? `${redirectUrl}?token=${encodeURIComponent(token)}` : redirectUrl);
         } else {
-            mostrarMensajeError(response.message || 'Inicio de sesión fallido', false);
-            resetButtonState();
+            const errorMsg = response.message || response.mensaje || 'Inicio de sesión fallido';
+            mostrarMensajeError(errorMsg, false, function() {
+                resetButtonState();
+            });
         }
-    }, function (error) {
-        resetButtonState();
-        procesarErrorApi(error);
+    }, function (err) {
+        let errorMsg = 'Ocurrió un error en la solicitud.';
+        if (err.body) {
+            try {
+                const parsed = JSON.parse(err.body);
+                errorMsg = parsed.message || errorMsg;
+            } catch (e) {
+                errorMsg = err.body || errorMsg;
+            }
+        } else if (err.message) {
+            errorMsg = err.message;
+        }
+        mostrarMensajeError(errorMsg, false, function() {
+            resetButtonState();
+        });
     });
 });

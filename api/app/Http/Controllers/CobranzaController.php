@@ -6,10 +6,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\HistorialEmprendedorResource;
 use App\Http\Resources\EmprendedorExpedienteResource;
 use App\Models\EmprendedorExpediente;
+use App\Models\ExpedienteAval;
+use App\Models\ExpedienteInmuebleGarantia;
+use App\Models\ExpedienteResumenEjecutivo;
 use Illuminate\Validation\Rule;
 use App\Models\Emprendedor;
+use App\Utils\StringHelper;
+use Carbon\Carbon;
+use App\Models\LineaBase\LineaBase;
+use App\Utils\ContractHelper;
+use App\Http\Controllers\PdfController;
+
 
 class CobranzaController extends Controller
 {
@@ -19,21 +29,16 @@ class CobranzaController extends Controller
     public function getHistorialEmprendedores()
     {
         try {
-            // Seleccionamos todo de la vista (o tabla) 'listar_emprendedores'
-            $historial = DB::table('listar_emprendedores')->get();
-            
-            // Convertimos la fotografía binaria a base64 tal como lo hace el backend legacy
-            $historial = $historial->map(function ($row) {
-                if (!empty($row->fotografia)) {
-                    $row->fotografia = base64_encode($row->fotografia);
-                }
-                return $row;
-            });
+            $historial = DB::table('listar_emprendedores')
+                ->join("linea_base", "listar_emprendedores.id", "linea_base.id_usuario")
+                ->select("listar_emprendedores.*")->get();
+
+            $historial = HistorialEmprendedorResource::collection($historial);
 
             return ApiResponse::success([
                 'historial' => $historial
             ], 'Historial obtenido correctamente');
-            
+
         } catch (\Exception $e) {
             return ApiResponse::error('Error al obtener historial: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -44,12 +49,11 @@ class CobranzaController extends Controller
      */
     public function actualizarReferencia(Request $request)
     {
-        $id = $request->input('id');
+        $idEmprendedor = $request->input('idEmprendedor');
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-            'referencia' => [
+            'idEmprendedor' => [
                 'required',
-                Rule::unique('usuario_emprendedor', 'referencia')->ignore($id, 'id_emprendedor')
+                Rule::unique('usuario_emprendedor', 'referencia')->ignore($idEmprendedor, 'id_emprendedor')
             ],
             'fechaOtorgamiento' => 'nullable|date'
         ], [
@@ -61,8 +65,8 @@ class CobranzaController extends Controller
         }
 
         try {
-            $emprendedor = Emprendedor::find($id);
-            
+            $emprendedor = Emprendedor::find($idEmprendedor);
+
             if (!$emprendedor) {
                 return ApiResponse::notFound('Emprendedor no encontrado');
             }
@@ -73,19 +77,25 @@ class CobranzaController extends Controller
             $updated = $emprendedor->save();
 
             return ApiResponse::success([], $updated > 0 ? "Actualización exitosa" : "No se encontró el registro o no hubo cambios");
-            
+
         } catch (\Exception $e) {
             return ApiResponse::error('Error al actualizar: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Obtiene el expediente de un emprendedor desde la base de datos
+     * Obtiene el expediente completo (con aval, inmueble, resumen ejecutivo)
      */
     public function getExpediente($id)
     {
         try {
-            $expediente = EmprendedorExpediente::where('id_emprendedor', $id)->first();
+            $expediente = EmprendedorExpediente::with([
+                'aval.codigoPostal.municipio.estado',
+                'inmuebleGarantia.codigoPostal.municipio.estado',
+                'resumenEjecutivo.viabilidad',
+                'resumenEjecutivo.diagnosticoSocial',
+                'resumenEjecutivo.vulnerabilidadRel',
+            ])->where('id_emprendedor', $id)->first();
 
             if (!$expediente) {
                 return ApiResponse::success(null, 'Sin expediente');
@@ -99,12 +109,19 @@ class CobranzaController extends Controller
     }
 
     /**
-     * Guarda o actualiza un expediente de emprendedor
+     * Guarda o actualiza el expediente financiero del emprendedor
      */
-    public function saveExpediente(Request $request)
+    public function saveInfoFinanciera(Request $request)
     {
+        $idEmprendedor = $request->input('idEmprendedor');
         $validator = Validator::make($request->all(), [
-            'id_emprendedor' => 'required|integer',
+            'idEmprendedor' => 'required|integer',
+            'numeroExpediente' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('emprendedor_expediente', 'numero_expediente')->ignore($idEmprendedor, 'id_emprendedor')
+            ],
             'montoSolicitado' => 'required|numeric|min:0',
             'fechaInicio' => 'nullable|date',
             'fechaTermino' => 'nullable|date',
@@ -114,14 +131,17 @@ class CobranzaController extends Controller
             'montoPorDocumentoExtra' => 'nullable|numeric|min:0',
             'cantAportacionesSolidariasPactado' => 'nullable|integer|min:0',
             'montoAportacionSolidariaPactado' => 'nullable|numeric|min:0',
+        ], [
+            'numeroExpediente.unique' => "El número de expediente {$request->input('numeroExpediente')} ya está asignado a otro emprendedor."
         ]);
 
         if ($validator->fails()) {
-            return ApiResponse::error('Datos inválidos: ' . json_encode($validator->errors()), ApiResponse::HTTP_BAD_REQUEST);
+            return ApiResponse::error($validator->errors()->first(), ApiResponse::HTTP_BAD_REQUEST);
         }
 
         try {
             $data = [
+                'numero_expediente' => StringHelper::getValidValueOrNull($request->all(), 'numeroExpediente'),
                 'monto_solicitado' => $request->input('montoSolicitado'),
                 'fecha_inicio' => $request->input('fechaInicio') ?: null,
                 'fecha_termino' => $request->input('fechaTermino') ?: null,
@@ -134,18 +154,310 @@ class CobranzaController extends Controller
             ];
 
             $expediente = EmprendedorExpediente::updateOrCreate(
-                ['id_emprendedor' => $request->input('id_emprendedor')],
+                ['id_emprendedor' => $request->input('idEmprendedor')],
                 $data
             );
 
             return ApiResponse::success([
                 'expediente' => new EmprendedorExpedienteResource($expediente)
-            ], 'Expediente guardado correctamente');
+            ], 'Información financiera guardada correctamente');
 
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al guardar el expediente: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error('Error al guardar la información financiera: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Guarda o actualiza los datos del aval del expediente
+     */
+    public function saveAval(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'idExpediente' => 'required|integer|exists:emprendedor_expediente,id_expediente',
+            'nombreCompleto' => 'required|string|max:255',
+            'edad' => 'required|integer|min:1|max:120',
+            'idParentesco' => 'required|integer|exists:cat_parentescos,id_parentesco',
+            'relacionParentesco' => 'nullable|string|max:100',
+            'celular' => 'required|string|max:15',
+            'telFijo' => 'nullable|string|max:15',
+            'calle' => 'required|string|max:255',
+            'calleCruce1' => 'required|string|max:255',
+            'calleCruce2' => 'required|string|max:255',
+            'numeroExterior' => 'required|string|max:20',
+            'numeroInterior' => 'nullable|string|max:20',
+            'idCodigoPostal' => 'required|integer|exists:linea_base_cpostal,id_codigo',
+            'colonia' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error($validator->errors()->first(), ApiResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $aval = ExpedienteAval::updateOrCreate(
+                ['id_expediente' => $request->input('idExpediente')],
+                [
+                    'nombre_completo' => $request->input('nombreCompleto'),
+                    'edad' => $request->input('edad'),
+                    'id_parentesco' => $request->input('idParentesco'),
+                    'relacion_parentesco' => $request->input('relacionParentesco', ''),
+                    'celular' => $request->input('celular'),
+                    'tel_fijo' => $request->input('telFijo'),
+                    'calle' => $request->input('calle'),
+                    'calle_cruce_1' => $request->input('calleCruce1'),
+                    'calle_cruce_2' => $request->input('calleCruce2'),
+                    'numero_exterior' => $request->input('numeroExterior'),
+                    'numero_interior' => $request->input('numeroInterior'),
+                    'id_codigo_postal' => $request->input('idCodigoPostal'),
+                    'colonia' => $request->input('colonia'),
+                ]
+            );
+
+            return ApiResponse::success(['aval' => new \App\Http\Resources\ExpedienteAvalResource($aval)], 'Datos del aval guardados correctamente');
+
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al guardar el aval: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Guarda o actualiza el domicilio del inmueble en garantía
+     */
+    public function saveInmuebleGarantia(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'idExpediente' => 'required|integer|exists:emprendedor_expediente,id_expediente',
+            'calle' => 'required|string|max:255',
+            'numeroExterior' => 'required|string|max:20',
+            'numeroInterior' => 'nullable|string|max:20',
+            'calleCruce1' => 'required|string|max:255',
+            'calleCruce2' => 'required|string|max:255',
+            'idCodigoPostal' => 'required|integer|exists:linea_base_cpostal,id_codigo',
+            'colonia' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error($validator->errors()->first(), ApiResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $inmueble = ExpedienteInmuebleGarantia::updateOrCreate(
+                ['id_expediente' => $request->input('idExpediente')],
+                [
+                    'calle' => $request->input('calle'),
+                    'numero_exterior' => $request->input('numeroExterior'),
+                    'numero_interior' => $request->input('numeroInterior'),
+                    'calle_cruce_1' => $request->input('calleCruce1'),
+                    'calle_cruce_2' => $request->input('calleCruce2'),
+                    'id_codigo_postal' => $request->input('idCodigoPostal'),
+                    'colonia' => $request->input('colonia'),
+                ]
+            );
+
+            return ApiResponse::success(['inmueble' => new \App\Http\Resources\ExpedienteInmuebleGarantiaResource($inmueble)], 'Domicilio del inmueble guardado correctamente');
+
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al guardar el inmueble: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Guarda o actualiza el resumen ejecutivo del préstamo
+     */
+    public function saveResumenEjecutivo(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'idExpediente' => 'required|integer|exists:emprendedor_expediente,id_expediente',
+            'nombreProyecto' => 'required|string|max:255',
+            'resumenProyecto' => 'required|string',
+            'idViabilidad' => 'required|integer|exists:cat_viabilidades,id_viabilidad',
+            'idDiagnosticoSocial' => 'required|integer|exists:cat_diagnosticos_sociales,id_diagnostico_social',
+            'quienOtorgaDiagnostico' => 'required|string|max:255',
+            'observaciones' => 'required|string',
+            'idVulnerabilidad' => 'required|integer|exists:cat_vulnerabilidades,id_vulnerabilidad',
+            'importeSolicitado' => 'required|numeric|min:0',
+            'inversionEmprendedor' => 'required|numeric|min:0',
+            'importeSugeridoCoordinador' => 'required|numeric|min:0',
+            'aprobadoPorAuxiliarDireccion' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error($validator->errors()->first(), ApiResponse::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $resumen = ExpedienteResumenEjecutivo::updateOrCreate(
+                ['id_expediente' => $request->input('idExpediente')],
+                [
+                    'nombre_proyecto' => $request->input('nombreProyecto'),
+                    'resumen_proyecto' => $request->input('resumenProyecto'),
+                    'id_viabilidad' => $request->input('idViabilidad'),
+                    'id_diagnostico_social' => $request->input('idDiagnosticoSocial'),
+                    'quien_otorga_diagnostico' => $request->input('quienOtorgaDiagnostico'),
+                    'observaciones' => $request->input('observaciones'),
+                    'id_vulnerabilidad' => $request->input('idVulnerabilidad'),
+                    'importe_solicitado' => $request->input('importeSolicitado'),
+                    'inversion_emprendedor' => $request->input('inversionEmprendedor'),
+                    'importe_sugerido_coordinador' => $request->input('importeSugeridoCoordinador'),
+                    'aprobado_por_auxiliar_direccion' => $request->input('aprobadoPorAuxiliarDireccion'),
+                ]
+            );
+
+            return ApiResponse::success(['resumen' => new \App\Http\Resources\ExpedienteResumenEjecutivoResource($resumen)], 'Resumen ejecutivo guardado correctamente');
+
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al guardar el resumen ejecutivo: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Reune los datos y solicita al PdfController la generación del contrato de préstamo en PDF.
+     */
+    public function getContratoPdf($id)
+    {
+        try {
+            $emprendedor = Emprendedor::with([
+                'usuario',
+                'expediente.aval.parentesco',
+                'expediente.aval.codigoPostal.municipio.estado',
+                'expediente.inmuebleGarantia.codigoPostal.municipio.estado',
+                'expediente.resumenEjecutivo',
+            ])->find($id);
+
+            if (!$emprendedor || !$emprendedor->usuario || !$emprendedor->expediente) {
+                return ApiResponse::notFound('Información insuficiente para generar el contrato.');
+            }
+
+            // Cargar la última línea base para el domicilio del emprendedor
+            $lineaBase = LineaBase::with(['domicilio.codigoPostal.municipio.estado', 'negocio.codigoPostal.municipio.estado'])
+                ->where('id_usuario', $emprendedor->usuario->id)
+                ->latest('id_linea_base')
+                ->first();
+
+            $domicilio = $lineaBase ? $lineaBase->domicilio : null;
+            $domicilio_negocio = $lineaBase ? $lineaBase->negocio : null;
+            $expediente = $emprendedor->expediente;
+            $aval = $expediente->aval;
+            $domicilio_aval = $aval ? $aval : null;
+            $inmueble = $expediente->inmuebleGarantia;
+
+            // Datos calculados
+            $monto = floatval($expediente->monto_solicitado);
+            $monto_letras = ContractHelper::numeroALetras($monto);
+            
+            $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos) 
+                ? intval($expediente->resumenEjecutivo->numero_pagos) 
+                : 12;
+            
+            $montoMensual = $num_pagos > 0 ? $monto / $num_pagos : 0;
+            $montoMensual_letras = ContractHelper::numeroALetras($montoMensual);
+
+            // Fecha del crédito
+            $fechaCreditoRaw = $emprendedor->fecha_credito;
+            $fecha_actual = Carbon::now('America/Mexico_City');
+            $fecha_credito = $fechaCreditoRaw ? Carbon::parse($fechaCreditoRaw) : $fecha_actual;
+            $fecha_letras = ContractHelper::formatearFechaLarga($fecha_credito);
+
+            $viewData = [
+                'emprendedor' => $emprendedor,
+                'expediente' => $expediente,
+                'domicilio' => $domicilio,
+                'domicilio_negocio' => $domicilio_negocio,
+                'aval' => $aval,
+                'domicilio_aval' => $domicilio_aval,
+                'inmueble' => $inmueble,
+                'monto' => $monto,
+                'monto_letras' => $monto_letras,
+                'num_pagos' => $num_pagos,
+                'monto_mensual' => $montoMensual,
+                'monto_mensual_letras' => $montoMensual_letras,
+                'fecha_letras' => $fecha_letras
+            ];
+
+            $pdfController = new PdfController();
+            $pdfController->renderPdfBase(
+                'contrato_pdf', // $viewName
+                $viewData,      // $viewData
+                "Contrato_{$emprendedor->usuario->nombre}.pdf", // $filename
+            );
+
+        } catch (\Exception $e) {
+            return ApiResponse::errorInterno('Error al generar el contrato: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reune los datos y solicita al PdfController la generación de la tarjeta de pagos en PDF.
+     */
+    public function getTarjetaPagosPdf($id)
+    {
+        try {
+            $emprendedor = Emprendedor::with([
+                'usuario',
+                'expediente.resumenEjecutivo',
+            ])->find($id);
+
+            if (!$emprendedor || !$emprendedor->usuario || !$emprendedor->expediente) {
+                return ApiResponse::notFound('Información insuficiente para generar la tarjeta de pagos.');
+            }
+
+            $expediente = $emprendedor->expediente;
+
+            $monto = floatval($expediente->monto_solicitado);
+            $num_pagos = intval($expediente->cantidad_documentos_elaborados);
+            if ($num_pagos == 0) {
+                $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos) 
+                             ? intval($expediente->resumenEjecutivo->numero_pagos) 
+                             : 12;
+            }
+
+            $montoMensual = floatval($expediente->monto_documento);
+            if ($montoMensual == 0 && $num_pagos > 0) {
+                $montoMensual = $monto / $num_pagos;
+            }
+
+            $fechaCreditoRaw = $emprendedor->fecha_credito ?: Carbon::now('America/Mexico_City');
+            $fecha_credito = Carbon::parse($fechaCreditoRaw);
+
+            // Calculate payments list
+            $pagos = [];
+            $saldo = $monto;
+            
+            for ($i = 1; $i <= $num_pagos; $i++) {
+                $pagoMonto = $montoMensual;
+                $saldo -= $pagoMonto;
+                if ($saldo < 0) {
+                    $pagoMonto += $saldo; // ajuste final
+                    $saldo = 0;
+                }
+                $fecha_pago = (clone $fecha_credito)->addMonths($i);
+                $pagos[] = [
+                    'numero' => $i,
+                    'fecha' => $fecha_pago->format('d/m/Y'),
+                    'monto' => $pagoMonto,
+                    'saldo' => $saldo > 0 ? $saldo : 0
+                ];
+                if ($saldo <= 0) break;
+            }
+
+            $viewData = [
+                'emprendedor' => $emprendedor,
+                'expediente' => $expediente,
+                'monto' => $monto,
+                'num_pagos' => $num_pagos,
+                'monto_mensual' => $montoMensual,
+                'pagos' => $pagos
+            ];
+
+            $pdfController = new PdfController();
+            $pdfController->renderPdfBase(
+                'tarjeta_pagos_pdf', // $viewName
+                $viewData,      // $viewData
+                "Tarjeta_Pagos_{$emprendedor->usuario->nombre}.pdf", // $filename
+            );
+
+        } catch (\Exception $e) {
+            return ApiResponse::errorInterno('Error al generar la tarjeta de pagos: ' . $e->getMessage());
         }
     }
 }
-
-

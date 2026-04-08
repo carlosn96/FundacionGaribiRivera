@@ -67,10 +67,11 @@ function procesarErrorApi(err) {
     } catch (e) { }
 
     if (typeof mostrarMensajeError === 'function') {
+        mostrarMensajeError(msg);
         if (err.status === 0 || err.message === 'Failed to fetch') {
-            mostrarMensajeError(msg);
+            
         } else if (err.status === 401) {
-            mostrarMensajeError(msg);
+            cerrarSesion();
         } else if (err.status === 404) {
             if (typeof mostrarMensajeAdvertencia === 'function') {
                 mostrarMensajeAdvertencia(msg);
