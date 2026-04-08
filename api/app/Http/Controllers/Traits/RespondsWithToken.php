@@ -11,10 +11,9 @@ trait RespondsWithToken
     protected function respondWithToken($token, $user, $message = 'Authenticated', $status = 200)
     {
         $expiresIn = JWTAuth::factory()->getTTL(); // en minutos
-
-        $secure = env('APP_ENV') === 'production';
-        $domain = env('APP_ENV') === 'production' ? env('APP_DOMAIN', null) : null; // En desarrollo, usar null para evitar problemas de dominio
-        $sameSite = $secure ? 'None' : 'Lax';
+        $secure = true;
+        $domain = env('APP_ENV') === 'production' ? '.fundaciongaribirivera.com' : null;
+        $sameSite = 'None';
 
         $cookie = Cookie::create(
             'access_token',
