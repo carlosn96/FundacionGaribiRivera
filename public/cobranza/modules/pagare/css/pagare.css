@@ -1,0 +1,512 @@
+/* =========================================================
+   MÓDULO PAGARÉ — Estilos Premium con compatibilidad Print
+   ========================================================= */
+
+/* ---- Tokens de marca ---- */
+:root {
+    --fgr-green:    #173f36;
+    --fgr-green-md: #1e5448;
+    --fgr-gold:     #b8972a;
+    --fgr-gold-lt:  #f5e9c4;
+    --fgr-paper:    #fdfcf8;
+    --fgr-border:   #c8c0a8;
+    --fgr-text:     #0f1f1a;
+    --fgr-muted:    #4a5568;
+    --doc-width:    186mm;   /* Ancho interior carta */
+}
+
+
+/* ---- Fondo general (pantalla) ---- */
+body {
+    background: #e8edf2 !important;
+}
+
+/* ---- Toolbar ---- */
+.pagare-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #fff;
+    border-bottom: 1px solid #dde3ea;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.btn-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--bs-body-font-family);
+}
+
+.btn-tool--back {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+.btn-tool--back:hover { background: #e2e8f0; }
+
+.btn-tool--print {
+    background: var(--fgr-green);
+    color: #fff;
+}
+.btn-tool--print:hover { background: var(--fgr-green-md); }
+
+/* ---- Contenedor de la hoja ---- */
+.print-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 0 1.5rem 2.5rem;
+}
+
+/* ---- Documento ---- */
+.pagare-doc {
+    background: var(--fgr-paper);
+    width: 216mm;
+    min-height: 279mm;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid var(--fgr-border);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--bs-body-font-family);
+    color: var(--fgr-text);
+    position: relative;
+    overflow: hidden;
+}
+
+/*  Acento dorado lateral */
+.pagare-doc::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--fgr-gold) 0%, var(--fgr-green) 100%);
+}
+
+/* ---- Header institucional ---- */
+.doc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--fgr-green);
+    padding: 1rem 1.8rem 1rem 2rem;
+    color: #fff;
+}
+
+.doc-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.doc-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.doc-header__name {
+    font-family: var(--bs-body-font-family);
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+}
+
+.doc-header__sub {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.65);
+    margin-top: 0.15rem;
+    letter-spacing: 0.02em;
+}
+
+.doc-header__doctype-label {
+    font-family: var(--bs-body-font-family);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--fgr-gold);
+}
+
+.doc-header__doctype-label--secondary {
+    color: rgba(255,255,255,0.5);
+    font-size: 1.1rem;
+}
+
+/* ---- Barra de metadatos ---- */
+.doc-meta-bar {
+    display: flex;
+    border-bottom: 2px solid var(--fgr-green);
+    background: #fff;
+}
+
+.doc-meta-sep {
+    width: 1px;
+    background: var(--fgr-border);
+    flex-shrink: 0;
+}
+
+.doc-meta-cell {
+    flex: 1;
+    padding: 0.7rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doc-meta-cell--highlight {
+    background: var(--fgr-gold-lt);
+}
+
+.doc-meta-label {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fgr-green);
+    margin-bottom: 0.2rem;
+}
+
+.doc-meta-value {
+    font-family: var(--bs-body-font-family);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--fgr-text);
+    text-align: center;
+}
+
+.doc-meta-value--big {
+    font-size: 1.35rem;
+    color: var(--fgr-green);
+}
+
+/* ---- Cuerpo del documento ---- */
+.doc-body {
+    padding: 1.2rem 2.2rem 0.8rem 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-text {
+    font-size: 0.97rem;
+    line-height: 1.6;
+    text-align: justify;
+    margin-bottom: 0.5rem;
+}
+
+.doc-emphasis {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.doc-amount-words {
+    background: var(--fgr-gold-lt);
+    border: 1px solid var(--fgr-gold);
+    border-radius: 4px;
+    padding: 0.35rem 1rem;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--fgr-green);
+    letter-spacing: 0.01em;
+    margin-bottom: 0.8rem;
+}
+
+.doc-clauses {
+    font-size: 0.83rem;
+    line-height: 1.5;
+    color: #1a2e28;
+    text-align: justify;
+    border-top: 1px solid #d8d0be;
+    padding-top: 0.6rem;
+}
+
+.doc-clauses p {
+    margin-bottom: 0.35rem;
+}
+
+/* ---- Otorgante + lugar fecha ---- */
+.doc-footer-info {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.8rem;
+    align-items: flex-start;
+}
+
+.doc-issuer-box {
+    flex: 1;
+    border: 1.5px solid var(--fgr-green);
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.doc-issuer-row {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px dashed #d0cfc5;
+    padding: 0.18rem 0;
+}
+.doc-issuer-row:last-child { border-bottom: none; }
+
+.doc-issuer-label {
+    font-weight: 700;
+    color: var(--fgr-green);
+    min-width: 90px;
+    flex-shrink: 0;
+    font-family: var(--bs-body-font-family);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-top: 1px;
+}
+
+.doc-issuer-value {
+    font-size: 0.9rem;
+}
+
+.doc-place-date {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.doc-place {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--fgr-green);
+    letter-spacing: 0.04em;
+}
+
+.doc-date {
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-top: 0.15rem;
+}
+
+/* ---- Área de firma ---- */
+.doc-signature-area {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.doc-signature-slot {
+    text-align: center;
+    min-width: 220px;
+}
+
+.doc-signature-line {
+    border-top: 1px solid var(--fgr-text);
+    height: 0;
+    background: none;
+    margin-bottom: 0.4rem;
+}
+
+.doc-signature-label {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fgr-muted);
+}
+
+/* ---- Pie del documento ---- */
+.doc-footer-bar {
+    background: var(--fgr-green);
+    color: rgba(255,255,255,0.55);
+    font-family: var(--bs-body-font-family);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-align: center;
+    padding: 0.45rem;
+    text-transform: uppercase;
+}
+
+/* ---- REVERSO ---- */
+.pagare-doc--back { background: #fff; }
+
+.doc-back-body {
+    padding: 1.8rem 2.2rem 1.4rem 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-section-title {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fgr-green);
+    border-left: 3px solid var(--fgr-gold);
+    padding-left: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.doc-back-name {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--fgr-green);
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--fgr-border);
+}
+
+.doc-back-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.doc-address-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.doc-address-field--wide { grid-column: span 2; }
+.doc-address-field--full { grid-column: span 3; }
+
+.doc-back-field {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.doc-address-field { /* mismo base */
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.doc-back-field__label {
+    font-family: var(--bs-body-font-family);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fgr-muted);
+    margin-bottom: 0.2rem;
+}
+
+.doc-back-field__value {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fgr-text);
+}
+
+/* =========================================================
+   ESTILOS DE IMPRESIÓN — PDF compatible
+   ========================================================= */
+@media print {
+    @page {
+        size: letter;
+        margin: 5mm;
+    }
+
+    /* ---- Ocultar TODA la UI del sistema ---- */
+    .pagare-toolbar,
+    .no-print,
+    aside,
+    #main-wrapper > aside,
+    .left-sidebar,
+    .topbar,
+    header,
+    footer,
+    nav,
+    .navbar,
+    .sidebar-nav {
+        display: none !important;
+    }
+
+    *, *::before, *::after {
+        box-shadow: none !important;
+    }
+
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        font-size: 11pt !important;
+    }
+
+    /* Permitir que todos los contenedores fluyan sin márgenes */
+    #main-wrapper,
+    .page-wrapper,
+    .body-wrapper,
+    .container-fluid,
+    main,
+    .row,
+    .align-items-stretch {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    .print-wrapper {
+        padding: 0 !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column;
+    }
+
+    .pagare-doc {
+        width: 100% !important;
+        min-height: 260mm !important; /* Ligeramente menor a carta para evitar una segunda página extra */
+        box-shadow: none !important;
+        border: none !important;
+        page-break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pagare-doc::before {
+        display: none;
+    }
+
+    .doc-header,
+    .doc-footer-bar,
+    .doc-meta-cell--highlight,
+    .doc-amount-words,
+    .doc-meta-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .page-break-before {
+        page-break-before: always;
+        margin-top: 0 !important;
+    }
+}

@@ -1,0 +1,291 @@
+
+:root {
+    --fgr-green:    #173f36;
+    --fgr-green-md: #1e5448;
+    --fgr-gold:     #b8972a;
+    --fgr-gold-lt:  #f5e9c4;
+    --fgr-paper:    #ffffff;
+    --fgr-border:   #e2e8f0;
+    --fgr-text:     #0f1f1a;
+    --fgr-muted:    #4a5568;
+}
+
+body { background: #e8edf2 !important; }
+
+/* ---- Toolbar ---- */
+.contract-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #fff;
+    border-bottom: 1px solid #dde3ea;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.btn-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--bs-body-font-family);
+}
+
+.btn-tool--back  { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+.btn-tool--back:hover  { background: #e2e8f0; }
+.btn-tool--print { background: var(--fgr-green); color: #fff; }
+.btn-tool--print:hover { background: var(--fgr-green-md); }
+.btn-tool--pdf { background: #dc3545; color: #fff; }
+.btn-tool--pdf:hover { background: #c82333; }
+
+/* ---- Contenedor de hojas ---- */
+.print-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1.5rem 2.5rem;
+    gap: 20px;
+}
+
+/* ---- Hoja individual ---- */
+.contract-doc {
+    background: var(--fgr-paper);
+    width: 216mm;
+    min-height: 279mm;
+    padding: 20mm 20mm 15mm 25mm;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--fgr-border);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--bs-body-font-family);
+    color: var(--fgr-text);
+    line-height: 1.5;
+    font-size: 10.5pt;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.doc-body  { flex: 1; }
+
+.doc-footer {
+    text-align: right;
+    font-size: 8pt;
+    color: var(--fgr-muted);
+    border-top: 1px solid #edf2f7;
+    padding-top: 5mm;
+}
+
+h5, h6 {
+    color: var(--fgr-green);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.declaration-section p,
+.clause-item p { text-align: justify; margin-bottom: 8px; }
+
+.declaration-section strong,
+.clause-item strong { color: #000; }
+
+.underline-span {
+    border-bottom: 1px solid #000;
+    padding-bottom: 1px;
+    display: inline-block;
+}
+
+/* Firmas */
+.signature-grid { width: 100%; }
+.sig-title { font-weight: bold; font-size: 9pt; margin-bottom: 30px; }
+.sig-space { height: 60px; }
+.sig-name  { font-size: 9pt; border-top: 1px solid #000; padding-top: 5px; margin: 0 20px; }
+
+.sig-html-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.sig-html-cell  { border: 1px solid #000; padding: 10px 14px; text-align: center; vertical-align: top; width: 50%; }
+
+/* =========================================================
+   ESTILOS DE IMPRESION
+   ========================================================= */
+@media print {
+    @page { size: letter portrait; margin: 10mm 12mm; }
+
+    .contract-toolbar,
+    .no-print,
+    aside,
+    #main-wrapper > aside,
+    .left-sidebar,
+    header,
+    footer,
+    .topbar,
+    nav,
+    .navbar,
+    .sidebar-nav {
+        display: none !important;
+    }
+
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    #main-wrapper,
+    .page-wrapper,
+    .body-wrapper,
+    .container-fluid,
+    main,
+    .row,
+    .align-items-stretch {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    .print-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+    }
+
+    .contract-doc {
+        width: 100% !important;
+        min-height: 240mm !important; /* Altura segura que evita que Chrome fuerce una segunda hoja en blanco */
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        break-before: auto !important;
+        break-after: auto !important;
+        break-inside: auto !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+        page-break-inside: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: visible !important;
+    }
+
+    .contract-doc + .contract-doc {
+        break-before: page !important;
+        page-break-before: always !important;
+    }
+
+    .contract-doc:last-child {
+        break-after: auto !important;
+        page-break-after: auto !important;
+    }
+
+    .page-break-before {
+        break-before: page !important;
+        page-break-before: always !important;
+    }
+
+    .doc-body {
+        flex: 1 !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .doc-footer {
+        text-align: right !important;
+        font-size: 8pt !important;
+        border-top: 1px solid #ccc !important;
+        padding-top: 4mm !important;
+        margin-top: auto !important;
+        display: block !important;
+    }
+
+    .sig-html-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: avoid !important;
+    }
+
+    .sig-html-cell {
+        border: 1px solid #000 !important;
+        padding: 8px 12px !important;
+        text-align: center !important;
+        vertical-align: top !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    .sig-space {
+        height: 45px !important;
+    }
+
+    .sig-name {
+        font-size: 9pt !important;
+        margin: 0 10px !important;
+        white-space: normal !important;
+    }
+
+    /* Ajuste fino para que las paginas 2 y 3 no desborden */
+    #contract-p2 .doc-body,
+    #contract-p3 .doc-body {
+        font-size: 9.7pt !important;
+        line-height: 1.28 !important;
+    }
+
+    /* Compactar pagina 1 para evitar que se parta en 2 hojas fisicas */
+    #contract-p1 .doc-body {
+        font-size: 9.55pt !important;
+        line-height: 1.23 !important;
+    }
+
+    #contract-p1 p {
+        margin-bottom: 1.7mm !important;
+    }
+
+    #contract-p1 .mb-4,
+    #contract-p1 .mt-4,
+    #contract-p1 .mt-3 {
+        margin-top: 1.8mm !important;
+        margin-bottom: 1.8mm !important;
+    }
+
+    #contract-p2 p,
+    #contract-p3 p {
+        margin-bottom: 2.2mm !important;
+    }
+
+    #contract-p2 ol,
+    #contract-p3 ol,
+    #contract-p3 ul {
+        margin-top: 1.6mm !important;
+        margin-bottom: 2.2mm !important;
+        padding-left: 6mm !important;
+    }
+
+    #contract-p2 li,
+    #contract-p3 li {
+        margin-bottom: 0.8mm !important;
+    }
+
+    #contract-p2 .my-4,
+    #contract-p3 .my-4 {
+        margin-top: 2.2mm !important;
+        margin-bottom: 2.2mm !important;
+    }
+
+    .contract-doc .mt-3 { margin-top: 2.2mm !important; }
+    .contract-doc .mt-4 { margin-top: 3mm !important; }
+
+    .signature-grid {
+        page-break-inside: avoid;
+    }
+}
