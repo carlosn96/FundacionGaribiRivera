@@ -49,37 +49,79 @@ async function apiRequest(endpoint, method = 'GET', body = undefined, headers = 
 }
 
 function mostrarResultadoApi(result) {
-    if (result && (result.status === 'success' || result.status === 200 || result.status === 201)) {
+    // Si result es un string, intentamos convertirlo a objeto si parece JSON
+    let resObj = result;
+    if (typeof result === 'string' && (result.startsWith('{') || result.startsWith('['))) {
+        try { resObj = JSON.parse(result); } catch (e) { }
+    }
+
+    const isSuccess = resObj && (
+        resObj.status === 'success' || 
+        resObj.status === 200 || 
+        resObj.status === 201 || 
+        resObj.ok === true ||
+        resObj.success === true
+    );
+    const hasError = resObj && (resObj.es_valor_error === true || resObj.error === true);
+
+    if (isSuccess && !hasError) {
         if (typeof mostrarMensajeOk === 'function') {
-            mostrarMensajeOk(result.message || "Operación completada correctamente.");
+            mostrarMensajeOk(resObj.message || resObj.mensaje || "Operación completada correctamente.");
         }
     } else {
         if (typeof mostrarMensajeError === 'function') {
-            mostrarMensajeError(result.message || "Ocurrió un error en la operación.");
+            const msg = resObj.message || resObj.mensaje || "Ocurrió un error en la operación.";
+            mostrarMensajeError(msg);
         }
     }
 }
 
 function procesarErrorApi(err) {
-    let msg = err.body || err.message;
-    try {
-        const parsed = JSON.parse(err.body);
-        msg = parsed.message || msg;
-    } catch (e) { }
+    let msg = "Ocurrió un error en la operación.";
+    
+    // Intentar extraer mensaje del body si existe
+    if (err.body) {
+        try {
+            const parsed = typeof err.body === 'string' ? JSON.parse(err.body) : err.body;
+            msg = parsed.message || parsed.mensaje || msg;
+            
+            // Si hay errores de validación en campo 'errors'
+            if (parsed.errors && typeof parsed.errors === 'object') {
+                const errorEntries = Object.entries(parsed.errors);
+                if (errorEntries.length > 0) {
+                    const [field, messages] = errorEntries[0];
+                    if (Array.isArray(messages) && messages.length > 0) {
+                        msg = messages[0];
+                    }
+                }
+            }
+        } catch (e) {
+            msg = err.body;
+        }
+    } else if (err.message) {
+        msg = err.message;
+    }
 
     if (typeof mostrarMensajeError === 'function') {
-        mostrarMensajeError(msg);
-        if (err.status === 0 || err.message === 'Failed to fetch') {
-            
-        } else if (err.status === 401) {
-            cerrarSesion();
+        if (err.status === 401) {
+            // Para 401 (Sesión expirada/inválida), cerrar sesión tras confirmación del usuario
+            mostrarMensajeError(msg, false, () => {
+                if (typeof cerrarSesion === 'function') {
+                    cerrarSesion();
+                } else {
+                    window.location.reload();
+                }
+            });
         } else if (err.status === 404) {
             if (typeof mostrarMensajeAdvertencia === 'function') {
                 mostrarMensajeAdvertencia(msg);
             } else {
                 mostrarMensajeError(msg);
             }
+        } else if (err.status === 0 || err.message === 'Failed to fetch') {
+            mostrarMensajeError("No se pudo conectar con el servidor. Verifique su conexión.", false);
         } else {
+            // Un solo llamado a mostrarMensajeError para evitar parpadeos
             mostrarMensajeError(msg);
         }
     } else {
