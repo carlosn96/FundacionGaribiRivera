@@ -16,10 +16,11 @@ class CookieService
 
         // Si el host contiene el dominio de producción, activamos puente de subdominios
         if (strpos($host, $prodDomain) !== false) {
-            $domain = $prodDomain; // Sin el punto inicial es más compatible hoy en día
+            $domain = '.' . $prodDomain; // El punto es el estándar más seguro para subdominios
             $secure = true;
             $sameSite = 'None'; 
         } else {
+            // Entorno local: localhost, 127.0.0.1, etc.
             $domain = null; 
             $secure = false;
             $sameSite = 'Lax';

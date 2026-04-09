@@ -21,8 +21,16 @@ class JwtFromCookieMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // 1. Obtener el token de acceso (Probamos Request -> PHP Raw -> Query -> Header)
+        // 1. Obtener el token de acceso (Máxima redundancia)
         $accessToken = $request->cookie('access_token') ?: ($_COOKIE['access_token'] ?? null);
+
+        // Si sigue fallando, intentamos parsear la cabecera 'Cookie' cruda
+        if (!$accessToken && $request->headers->has('cookie')) {
+            $rawCookies = $request->headers->get('cookie');
+            if (preg_match('/access_token=([^;]+)/', $rawCookies, $matches)) {
+                $accessToken = $matches[1];
+            }
+        }
 
         if (!$accessToken) {
             $accessToken = $request->query('token');
@@ -37,8 +45,15 @@ class JwtFromCookieMiddleware
 
         try {
             if (!$accessToken) {
-                // Si falta el access, buscamos el refresh (Request o PHP Raw)
+                // Si falta el access, buscamos el refresh (Misma redundancia)
                 $refreshToken = $request->cookie('refresh_token') ?: ($_COOKIE['refresh_token'] ?? null);
+                
+                if (!$refreshToken && $request->headers->has('cookie')) {
+                    $rawCookies = $request->headers->get('cookie');
+                    if (preg_match('/refresh_token=([^;]+)/', $rawCookies, $matches)) {
+                        $refreshToken = $matches[1];
+                    }
+                }
                 
                 if ($refreshToken) {
                     throw new TokenExpiredException('Access token missing, fallback to refresh');
