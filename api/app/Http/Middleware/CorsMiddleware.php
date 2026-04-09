@@ -11,11 +11,15 @@ class CorsMiddleware
     {
         $allowedOriginsEnv = env('CORS_ALLOWED_ORIGINS', 'http://localhost');
         $origin = $request->header('Origin');
+        $prodDomain = env('PARENT_DOMAIN_PRODUCTION', 'fundaciongaribirivera.com');
 
         $allowedOrigins = explode(',', $allowedOriginsEnv);
 
-        if (!in_array($origin,  $allowedOrigins)) {
-            return $next($request); // If origin not allowed, continue without CORS headers
+        // Permitir si está en el .env O si es un subdominio de la fundación en producción
+        $isAllowed = in_array($origin, $allowedOrigins) || ($origin && strpos($origin, $prodDomain) !== false);
+
+        if (!$isAllowed) {
+            return $next($request);
         }
 
         $headers = [

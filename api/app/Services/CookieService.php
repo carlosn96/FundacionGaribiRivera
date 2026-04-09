@@ -14,12 +14,13 @@ class CookieService
         $host = request()->getHost();
         $prodDomain = env('PARENT_DOMAIN_PRODUCTION', 'fundaciongaribirivera.com');
 
+        // Si el host contiene el dominio de producción, activamos puente de subdominios
         if (strpos($host, $prodDomain) !== false) {
-            $domain = '.' . $prodDomain;
+            $domain = $prodDomain; // Sin el punto inicial es más compatible hoy en día
             $secure = true;
-            $sameSite = 'None';
+            $sameSite = 'None'; 
         } else {
-            $domain = null;
+            $domain = null; 
             $secure = false;
             $sameSite = 'Lax';
         }

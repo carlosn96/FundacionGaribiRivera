@@ -21,8 +21,8 @@ class JwtFromCookieMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // 1. Obtener el token de acceso desde diferentes fuentes
-        $accessToken = $request->cookie('access_token');
+        // 1. Obtener el token de acceso (Probamos Request -> PHP Raw -> Query -> Header)
+        $accessToken = $request->cookie('access_token') ?: ($_COOKIE['access_token'] ?? null);
 
         if (!$accessToken) {
             $accessToken = $request->query('token');
@@ -37,9 +37,10 @@ class JwtFromCookieMiddleware
 
         try {
             if (!$accessToken) {
-                // Si el access_token no existe (ej. el navegador lo borró al expirar),
-                // pero SÍ tenemos un refresh_token, forzamos el bloque de refresco automático.
-                if ($request->cookie('refresh_token')) {
+                // Si falta el access, buscamos el refresh (Request o PHP Raw)
+                $refreshToken = $request->cookie('refresh_token') ?: ($_COOKIE['refresh_token'] ?? null);
+                
+                if ($refreshToken) {
                     throw new TokenExpiredException('Access token missing, fallback to refresh');
                 }
                 throw new JWTException('Token not provided');
