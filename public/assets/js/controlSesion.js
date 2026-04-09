@@ -14,7 +14,7 @@ $(document).ready(function () {
     };
 
     //print("Validando sesión ...");
-    crearPeticion("../../../../controller/RevisorSesion.php", {"case": "verificarSesion"}, function (res) {
+    crearPeticion("../../../../controller/RevisorSesion.php", { "case": "verificarSesion" }, function (res) {
         //print(res);
         const usuario = res.usuario;
         const inicioSesionPath = res.root;
@@ -49,9 +49,11 @@ $(document).ready(function () {
 });
 
 function cerrarSesion() {
-    crearPeticion("../../../../controller/RevisorSesion.php", {"case": "cerrarSesion"}, (res) => {
+    crearPeticion("../../../../controller/RevisorSesion.php", { "case": "cerrarSesion" }, (res) => {
         if (!res.sesionActiva) {
-           apiRequest('auth/logout', 'POST');
+            apiPostRequest('auth/logout', undefined, () => {
+                redireccionar("../../../../");
+            });
         } else {
             mostrarMensajeError("Error al cerrar sesión. Por favor, inténtalo de nuevo.", false);
         }
