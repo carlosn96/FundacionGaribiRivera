@@ -40,6 +40,14 @@
                         <span class="hide-menu ps-1">Inicio</span>
                     </a>
                 </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link info-hover-bg" href="../configuracion" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-info-subtle rounded-1">
+                            <iconify-icon icon="solar:settings-bold-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Configuración Contrato</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- End Sidebar navigation -->
