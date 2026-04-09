@@ -11,13 +11,18 @@ class CookieService
      */
     private static function getCommonAttributes()
     {
+        // Forzamos el dominio con el punto inicial para compartir entre subdominios.
+        // Solo lo dejamos en null si estamos en localhost (detección automática).
+        $isLocal = in_array(request()->getHost(), ['localhost', '127.0.0.1']);
+        $domain = $isLocal ? null : ('.' . env('PARENT_DOMAIN_PRODUCTION', 'fundaciongaribirivera.com'));
+
         return [
             'path' => '/',
-            'domain' => env('APP_ENV') === 'production' ? '.fundaciongaribirivera.com' : null,
-            'secure' => true,      // HTTPS required
-            'httpOnly' => true,    // JS cannot access
+            'domain' => $domain,
+            'secure' => !$isLocal,
+            'httpOnly' => true,
             'raw' => false,
-            'sameSite' => 'None',  // Allows cross-site requests if frontend is separate
+            'sameSite' => 'None', // Indispensable para que el token cruce entre admin y emprendedores.
         ];
     }
 
