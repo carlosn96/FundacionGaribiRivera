@@ -1,65 +1,73 @@
 <div class="container-fluid px-3 px-md-4 py-4">
     <!-- ============ HEADER DASHBOARD ============ -->
     <div class="dashboard-header mb-4" id="dashboard-header">
-        <div class="d-flex justify-content-between align-items-start mb-3">
+        <!-- Fila 1: Navegación y etapa -->
+        <div class="header-nav-row">
             <button class="btn btn-sm btn-back" id="btn-cancelar" type="button">
                 <i class="fas fa-arrow-left me-1"></i> Volver
             </button>
             <span class="badge-etapa" id="badge-etapa">Sin etapa</span>
         </div>
-        <div class="d-flex align-items-center gap-3">
+        <!-- Fila 2: Avatar + datos -->
+        <div class="header-identity-row">
             <div class="avatar-ring">
                 <img src="" alt="" id="foto-emprendedor" class="d-none">
                 <div class="avatar-placeholder" id="icono-usuario"><i class="fas fa-user"></i></div>
             </div>
-            <div>
+            <div class="header-identity-info">
                 <h3 class="mb-0 fw-bold" id="nombre-completo-header">— —</h3>
-                <div class="d-flex gap-4 mt-2">
-                    <div>
+                <div class="header-meta-row">
+                    <div class="header-meta-item">
                         <div class="meta-label">N° Referencia</div>
                         <div class="meta-value" id="referencia-header">—</div>
                     </div>
-                    <div>
+                    <div class="header-meta-item">
                         <div class="meta-label">N° Expediente</div>
                         <div class="meta-value" id="num-expediente-header">—</div>
                     </div>
-                    <div>
+                    <div class="header-meta-item">
                         <div class="meta-label">Teléfono</div>
                         <div class="meta-value" id="telefono-header">—</div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Fila 3: Zona de peligro (solo visible cuando hay expediente) -->
+        <div class="header-danger-row d-none" id="header-danger-zone">
+            <button type="button" class="btn btn-danger-ghost d-none" id="btn-eliminar-expediente">
+                <i class="fas fa-trash-alt me-1"></i>Eliminar Expediente
+            </button>
+        </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-3 g-md-4">
         <!-- ============ MAIN CONTENT ============ -->
         <div class="col-12 col-lg-8">
             <!-- TABS NAV -->
-            <ul class="nav nav-tabs-dashboard mb-4" id="dashboardTabs" role="tablist">
+            <ul class="nav nav-tabs-dashboard mb-3 mb-md-4" id="dashboardTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-datos" type="button" role="tab">
-                        <i class="fas fa-user"></i> Información
+                        <i class="fas fa-user"></i><span class="tab-label"> Información</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-financiero" type="button" role="tab">
-                        <i class="fas fa-coins"></i> Financiero
+                        <i class="fas fa-coins"></i><span class="tab-label"> Financiero</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-aval" type="button" role="tab">
-                        <i class="fas fa-user-shield"></i> Aval
+                        <i class="fas fa-user-shield"></i><span class="tab-label"> Aval</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inmueble" type="button" role="tab">
-                        <i class="fas fa-home"></i> Inmueble
+                        <i class="fas fa-home"></i><span class="tab-label"> Inmueble</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-resumen" type="button" role="tab">
-                        <i class="fas fa-file-alt"></i> Resumen Ejecutivo
+                        <i class="fas fa-file-alt"></i><span class="tab-label"> Resumen</span>
                     </button>
                 </li>
             </ul>

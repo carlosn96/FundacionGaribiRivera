@@ -12,6 +12,10 @@ class ExpedienteAPI {
         return apiPostRequest(this.prefix, data, fnSuccess, fnError);
     }
 
+    static deleteExpediente(id) {
+        return apiDeleteRequest(this.prefix + '/' + id);
+    }
+
     static actualizarReferencia(data, fnSuccess, fnError) {
         return apiPostRequest('cobranza/referencia', data, fnSuccess, fnError);
     }

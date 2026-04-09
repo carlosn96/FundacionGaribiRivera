@@ -4,6 +4,7 @@ namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use function Laravel\Prompts\select;
 
 class ApiResponse
 {
@@ -84,11 +85,29 @@ class ApiResponse
     {
         return response()->json(
             [
-            'message' => $message,
-            'data' => $data,
-            'status' => $statusCode,
-            ], $statusCode
+                'message' => $message,
+                'data' => $data,
+                'status' => $statusCode,
+            ],
+            $statusCode
         );
+    }
+
+    public static function created($data = [], string $message = 'Resource created successfully'): JsonResponse
+    {
+        return self::success($data, $message, self::HTTP_CREATED);
+    }
+
+    public static function updated($data = [], string $message = 'Resource updated successfully'): JsonResponse
+    {
+        return self::success($data, $message, self::HTTP_OK);
+    }
+
+    public static function deleted(bool $isDeleted): JsonResponse
+    {
+        return $isDeleted ?
+            response()->json(status: self::HTTP_NO_CONTENT) :
+            self::error('Error al eliminar el expediente', ApiResponse::HTTP_CONFLICT);
     }
 
     public static function error(string|array $message = 'Error', int $statusCode = self::HTTP_BAD_REQUEST): JsonResponse

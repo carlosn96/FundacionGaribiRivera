@@ -84,6 +84,7 @@ $router->group(
         $router->post('/referencia', 'CobranzaController@actualizarReferencia');
         $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
         $router->post('/expediente', 'CobranzaController@saveInfoFinanciera');
+        $router->delete('/expediente/{id}', 'CobranzaController@eliminarExpediente');
 
         // Secciones del expediente
         $router->post('/expediente/aval', 'CobranzaController@saveAval');

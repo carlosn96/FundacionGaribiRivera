@@ -37,6 +37,16 @@ async function apiRequest(endpoint, method = 'GET', body = undefined, headers = 
         }
 
         const textRes = await res.text();
+
+        // Estandarización de respuestas exitosas sin contenido (ej. 204 No Content)
+        if (!textRes && res.ok) {
+            return {
+                status: res.status,
+                ok: res.ok,
+                message: res.status === 204 ? "Operación completada" : "OK",
+            };
+        }
+
         try {
             return JSON.parse(textRes);
         } catch (e) {
@@ -56,35 +66,32 @@ function mostrarResultadoApi(result) {
     }
 
     const isSuccess = resObj && (
-        resObj.status === 'success' || 
-        resObj.status === 200 || 
-        resObj.status === 201 || 
+        resObj.status === 'success' ||
+        resObj.status === 200 ||
+        resObj.status === 201 ||
+        resObj.status === 204 ||
         resObj.ok === true ||
         resObj.success === true
     );
     const hasError = resObj && (resObj.es_valor_error === true || resObj.error === true);
 
     if (isSuccess && !hasError) {
-        if (typeof mostrarMensajeOk === 'function') {
-            mostrarMensajeOk(resObj.message || resObj.mensaje || "Operación completada correctamente.");
-        }
+        mostrarMensajeOk(resObj.message || resObj.mensaje);
     } else {
-        if (typeof mostrarMensajeError === 'function') {
-            const msg = resObj.message || resObj.mensaje || "Ocurrió un error en la operación.";
-            mostrarMensajeError(msg);
-        }
+        const msg = resObj.message || resObj.mensaje || "Ocurrió un error en la operación.";
+        mostrarMensajeError(msg);
     }
 }
 
 function procesarErrorApi(err) {
     let msg = "Ocurrió un error en la operación.";
-    
+
     // Intentar extraer mensaje del body si existe
     if (err.body) {
         try {
             const parsed = typeof err.body === 'string' ? JSON.parse(err.body) : err.body;
             msg = parsed.message || parsed.mensaje || msg;
-            
+
             // Si hay errores de validación en campo 'errors'
             if (parsed.errors && typeof parsed.errors === 'object') {
                 const errorEntries = Object.entries(parsed.errors);

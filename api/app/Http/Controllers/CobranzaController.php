@@ -344,11 +344,11 @@ class CobranzaController extends Controller
             // Datos calculados
             $monto = floatval($expediente->monto_solicitado);
             $monto_letras = ContractHelper::numeroALetras($monto);
-            
-            $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos) 
-                ? intval($expediente->resumenEjecutivo->numero_pagos) 
+
+            $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos)
+                ? intval($expediente->resumenEjecutivo->numero_pagos)
                 : 12;
-            
+
             $montoMensual = $num_pagos > 0 ? $monto / $num_pagos : 0;
             $montoMensual_letras = ContractHelper::numeroALetras($montoMensual);
 
@@ -406,9 +406,9 @@ class CobranzaController extends Controller
             $monto = floatval($expediente->monto_solicitado);
             $num_pagos = intval($expediente->cantidad_documentos_elaborados);
             if ($num_pagos == 0) {
-                $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos) 
-                             ? intval($expediente->resumenEjecutivo->numero_pagos) 
-                             : 12;
+                $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos)
+                    ? intval($expediente->resumenEjecutivo->numero_pagos)
+                    : 12;
             }
 
             $montoMensual = floatval($expediente->monto_documento);
@@ -422,7 +422,7 @@ class CobranzaController extends Controller
             // Calculate payments list
             $pagos = [];
             $saldo = $monto;
-            
+
             for ($i = 1; $i <= $num_pagos; $i++) {
                 $pagoMonto = $montoMensual;
                 $saldo -= $pagoMonto;
@@ -437,7 +437,8 @@ class CobranzaController extends Controller
                     'monto' => $pagoMonto,
                     'saldo' => $saldo > 0 ? $saldo : 0
                 ];
-                if ($saldo <= 0) break;
+                if ($saldo <= 0)
+                    break;
             }
 
             $viewData = [
@@ -459,5 +460,28 @@ class CobranzaController extends Controller
         } catch (\Exception $e) {
             return ApiResponse::errorInterno('Error al generar la tarjeta de pagos: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Elimina el expediente completo (aval, inmueble, resumen) de un emprendedor
+     */
+    public function eliminarExpediente($id)
+    {
+
+        return DB::transaction(function () use ($id) {
+            $expediente = EmprendedorExpediente::where('id_emprendedor', $id)->first();
+
+            if (!$expediente) {
+                return ApiResponse::notFound('Expediente no encontrado');
+            }
+            
+            $expediente->aval()->delete();
+            $expediente->inmuebleGarantia()->delete();
+            $expediente->resumenEjecutivo()->delete();
+            $deleted = $expediente->delete();
+
+            return ApiResponse::deleted($deleted);
+        });
+
     }
 }

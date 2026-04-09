@@ -18,6 +18,27 @@ function originarTabFinanciero() {
     $('#cantidadDocumentosExtraElaborados, #montoPorDocumentoExtra').on('input', () => actualizarTotalesSecundarios());
     $('#cantAportacionesSolidariasPactado, #montoAportacionSolidariaPactado').on('input', () => actualizarTotalesSecundarios());
 
+    // Botón Eliminar Expediente
+    $('#btn-eliminar-expediente').on('click', function() {
+        mostrarMensajeThen(
+            "¿Eliminar expediente completo?",
+            "warning",
+            "Esta acción borrará la información financiera, el aval, el inmueble y el resumen ejecutivo. Esta acción no se puede deshacer.",
+            () => {
+                loadingBtn($(this), true);
+                ExpedienteAPI.deleteExpediente(window._idEmprendedor).finally(() => {
+                    loadingBtn($(this), false);
+                });
+            },
+            {
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar todo",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#d33"
+            }
+        );
+    });
+
     // Configurar validación personalizada para la suma de montos
     $.validator.addMethod("montoTotalValido", function(value, element) {
         const solicitado = parseFloat($('#montoSolicitado').val()) || 0;
@@ -76,6 +97,8 @@ function originarTabFinanciero() {
                     if (res.data && res.data.expediente) {
                         window._idExpediente = res.data.expediente.idExpediente;
                         $('#num-expediente-header').text($('#numeroExpediente').val() || '—');
+                        $('#btn-eliminar-expediente').removeClass('d-none');
+                        $('#header-danger-zone').removeClass('d-none');
                     }
                 }
             }).finally(() => {
@@ -86,18 +109,26 @@ function originarTabFinanciero() {
 }
 
 function llenarTabFinanciero(expediente) {
-    $('#numeroExpediente').val(expediente.numeroExpediente || '');
-    $('#num-expediente-header').text(expediente.numeroExpediente || '—');
-    $('#montoSolicitado').val(expediente.montoSolicitado).trigger('input');
-    $('#fechaInicio').val(expediente.fechaInicio);
-    $('#fechaTermino').val(expediente.fechaTermino);
-    $('#cantidadDocumentosElaborados').val(expediente.cantidadDocumentosElaborados).trigger('input');
-    $('#cantidadDocumentosExtraElaborados').val(expediente.cantidadDocumentosExtraElaborados);
-    $('#montoDocumento').val(expediente.montoDocumento);
-    $('#montoPorDocumentoExtra').val(expediente.montoPorDocumentoExtra);
-    $('#cantAportacionesSolidariasPactado').val(expediente.cantAportacionesSolidariasPactado);
-    $('#montoAportacionSolidariaPactado').val(expediente.montoAportacionSolidariaPactado);
-    $('#resumen-aprobado').val(expediente.montoSolicitado);
+    if (expediente) {
+        $('#btn-eliminar-expediente').removeClass('d-none');
+        $('#header-danger-zone').removeClass('d-none');
+    } else {
+        $('#btn-eliminar-expediente').addClass('d-none');
+        $('#header-danger-zone').addClass('d-none');
+    }
+
+    $('#numeroExpediente').val(expediente?.numeroExpediente || '');
+    $('#num-expediente-header').text(expediente?.numeroExpediente || '—');
+    $('#montoSolicitado').val(expediente?.montoSolicitado).trigger('input');
+    $('#fechaInicio').val(expediente?.fechaInicio);
+    $('#fechaTermino').val(expediente?.fechaTermino);
+    $('#cantidadDocumentosElaborados').val(expediente?.cantidadDocumentosElaborados).trigger('input');
+    $('#cantidadDocumentosExtraElaborados').val(expediente?.cantidadDocumentosExtraElaborados);
+    $('#montoDocumento').val(expediente?.montoDocumento);
+    $('#montoPorDocumentoExtra').val(expediente?.montoPorDocumentoExtra);
+    $('#cantAportacionesSolidariasPactado').val(expediente?.cantAportacionesSolidariasPactado);
+    $('#montoAportacionSolidariaPactado').val(expediente?.montoAportacionSolidariaPactado);
+    $('#resumen-aprobado').val(expediente?.montoSolicitado);
     actualizarTotalesSecundarios();
 }
 
