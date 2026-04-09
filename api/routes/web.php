@@ -80,6 +80,9 @@ $router->group(
 
 $router->group(
     ['prefix' => 'cobranza', 'middleware' => 'jwt.cookie'], function () use ($router) {
+        $router->get('/configuracion-contrato', 'ContratoController@getConfiguracion');
+        $router->post('/configuracion-contrato', 'ContratoController@saveConfiguracion');
+        
         $router->get('/historial-emprendedores', 'CobranzaController@getHistorialEmprendedores');
         $router->post('/referencia', 'CobranzaController@actualizarReferencia');
         $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
@@ -102,7 +105,8 @@ $router->group(
         $router->post('/pagos-parciales', 'PagoController@agregarPagoParcial');
         $router->put('/pagos-parciales/{idPago}', 'PagoController@modificarPagoParcial');
         $router->delete('/pagos-parciales/{idPago}', 'PagoController@eliminarPagoParcial');
-        $router->get('/imprimir-contrato/{id}', 'CobranzaController@getContratoPdf');
+        $router->get('/imprimir-contrato/{id}', 'ContratoController@pdf');
+        $router->get('/contrato-html/{id}', 'ContratoController@html');
         $router->get('/imprimir-tarjeta-pagos/{id}', 'CobranzaController@getTarjetaPagosPdf');
     }
 );

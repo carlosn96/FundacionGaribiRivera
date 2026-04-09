@@ -16,10 +16,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Emprendedor;
 use App\Utils\StringHelper;
 use Carbon\Carbon;
-use App\Models\LineaBase\LineaBase;
-use App\Utils\ContractHelper;
 use App\Http\Controllers\PdfController;
-
 
 class CobranzaController extends Controller
 {
@@ -310,81 +307,6 @@ class CobranzaController extends Controller
         }
     }
 
-    /**
-     * Reune los datos y solicita al PdfController la generación del contrato de préstamo en PDF.
-     */
-    public function getContratoPdf($id)
-    {
-        try {
-            $emprendedor = Emprendedor::with([
-                'usuario',
-                'expediente.aval.parentesco',
-                'expediente.aval.codigoPostal.municipio.estado',
-                'expediente.inmuebleGarantia.codigoPostal.municipio.estado',
-                'expediente.resumenEjecutivo',
-            ])->find($id);
-
-            if (!$emprendedor || !$emprendedor->usuario || !$emprendedor->expediente) {
-                return ApiResponse::notFound('Información insuficiente para generar el contrato.');
-            }
-
-            // Cargar la última línea base para el domicilio del emprendedor
-            $lineaBase = LineaBase::with(['domicilio.codigoPostal.municipio.estado', 'negocio.codigoPostal.municipio.estado'])
-                ->where('id_usuario', $emprendedor->usuario->id)
-                ->latest('id_linea_base')
-                ->first();
-
-            $domicilio = $lineaBase ? $lineaBase->domicilio : null;
-            $domicilio_negocio = $lineaBase ? $lineaBase->negocio : null;
-            $expediente = $emprendedor->expediente;
-            $aval = $expediente->aval;
-            $domicilio_aval = $aval ? $aval : null;
-            $inmueble = $expediente->inmuebleGarantia;
-
-            // Datos calculados
-            $monto = floatval($expediente->monto_solicitado);
-            $monto_letras = ContractHelper::numeroALetras($monto);
-
-            $num_pagos = ($expediente->resumenEjecutivo && $expediente->resumenEjecutivo->numero_pagos)
-                ? intval($expediente->resumenEjecutivo->numero_pagos)
-                : 12;
-
-            $montoMensual = $num_pagos > 0 ? $monto / $num_pagos : 0;
-            $montoMensual_letras = ContractHelper::numeroALetras($montoMensual);
-
-            // Fecha del crédito
-            $fechaCreditoRaw = $emprendedor->fecha_credito;
-            $fecha_actual = Carbon::now('America/Mexico_City');
-            $fecha_credito = $fechaCreditoRaw ? Carbon::parse($fechaCreditoRaw) : $fecha_actual;
-            $fecha_letras = ContractHelper::formatearFechaLarga($fecha_credito);
-
-            $viewData = [
-                'emprendedor' => $emprendedor,
-                'expediente' => $expediente,
-                'domicilio' => $domicilio,
-                'domicilio_negocio' => $domicilio_negocio,
-                'aval' => $aval,
-                'domicilio_aval' => $domicilio_aval,
-                'inmueble' => $inmueble,
-                'monto' => $monto,
-                'monto_letras' => $monto_letras,
-                'num_pagos' => $num_pagos,
-                'monto_mensual' => $montoMensual,
-                'monto_mensual_letras' => $montoMensual_letras,
-                'fecha_letras' => $fecha_letras
-            ];
-
-            $pdfController = new PdfController();
-            $pdfController->renderPdfBase(
-                'contrato_pdf', // $viewName
-                $viewData,      // $viewData
-                "Contrato_{$emprendedor->usuario->nombre}.pdf", // $filename
-            );
-
-        } catch (\Exception $e) {
-            return ApiResponse::errorInterno('Error al generar el contrato: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Reune los datos y solicita al PdfController la generación de la tarjeta de pagos en PDF.
