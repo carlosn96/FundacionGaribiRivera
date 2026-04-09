@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
+use App\Models\Emprendedor;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\ApiResponse;
@@ -163,6 +165,8 @@ class RegisterController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $user = Usuario::create(
                 [
                     'nombre' => $request->input('nombre'),
@@ -175,10 +179,17 @@ class RegisterController extends Controller
                 ]
             );
 
+            Emprendedor::create([
+                'id_usuario' => $user->id
+            ]);
+            
+            DB::commit();
+
             auth()->login($user);
             $token = JWTAuth::fromUser($user);
             return $this->respondWithToken($token, $user, 'Registro completo.', ApiResponse::HTTP_CREATED);
         } catch (\Exception $e) {
+            DB::rollBack();
             return ApiResponse::error(
                 'No se pudo registrar al usuario. ' . $e->getMessage(),
                 ApiResponse::HTTP_INTERNAL_SERVER_ERROR

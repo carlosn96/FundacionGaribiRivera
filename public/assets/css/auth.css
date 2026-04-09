@@ -321,6 +321,29 @@
 
 .auth-btn--loading #spinner {
     color: #fff;
+    vertical-align: middle;
+}
+
+/* Fallback spinner-border animation if bootstrap-components is not loaded or overridden */
+@keyframes spinner-border-rotate {
+    to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: .15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: .75s linear infinite spinner-border-rotate;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: .15em;
 }
 
 .auth-btn-spinner-center {

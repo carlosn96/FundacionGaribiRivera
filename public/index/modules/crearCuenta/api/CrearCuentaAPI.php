@@ -38,21 +38,6 @@ class CrearCuentaAPI extends API {
         $this->enviarRespuesta(['success' => AdminMailer::enviarCorreoVerificacionCuenta($this->data["correo"], $codigo)]);
     }
 
-    function crearNuevaCuenta() {
-        // Obtener los datos del formulario
-        $nombre = $this->data['nombre'];
-        $apellidos = $this->data['apellidos'];
-        $correo = $this->data['correo'];
-        $numeroCelular = $this->data['numero_celular'];
-        $contrasena = $this->data['contrasena'];
-        $idTipoUsuario = TipoUsuario::EMPRENDEDOR; // Definir el valor del idTipoUsuario como "1"
-        // Enviar respuesta en formato JSON
-        if ((new AdminUsuario())->insertarUsuario($nombre, $apellidos, $correo, $numeroCelular, $contrasena, $idTipoUsuario)) {
-            $this->enviarRespuesta(['success' => true]);
-        } else {
-            $this->enviarRespuesta(['success' => false]);
-        }
-    }
 
     function reenviarCodigoCrearCuenta() {
         $codigo = $_SESSION["preregistro"]["codigo"];

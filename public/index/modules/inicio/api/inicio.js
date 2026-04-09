@@ -69,7 +69,6 @@ $('#loginForm').submit(function (event) {
         submitButton.toggleClass('auth-btn--loading', isLoading);
         submitButton.attr('aria-busy', isLoading ? 'true' : 'false');
         submitButton.attr('aria-disabled', isLoading ? 'true' : 'false');
-        buttonText.toggleClass('opacity-0', isLoading);
         spinner.toggleClass('d-none', !isLoading);
         buttonText.text(isLoading ? 'Entrando...' : 'Entrar');
     };
@@ -97,9 +96,8 @@ $('#loginForm').submit(function (event) {
             redireccionar(token ? `${redirectUrl}?token=${encodeURIComponent(token)}` : redirectUrl);
         } else {
             const errorMsg = response.message || response.mensaje || 'Inicio de sesión fallido';
-            mostrarMensajeError(errorMsg, false, function() {
-                resetButtonState();
-            });
+            mostrarMensajeError(errorMsg, false);
+            resetButtonState();
         }
     }, function (err) {
         let errorMsg = 'Ocurrió un error en la solicitud.';
@@ -113,8 +111,7 @@ $('#loginForm').submit(function (event) {
         } else if (err.message) {
             errorMsg = err.message;
         }
-        mostrarMensajeError(errorMsg, false, function() {
-            resetButtonState();
-        });
+        mostrarMensajeError(errorMsg, false);
+        resetButtonState();
     });
 });
