@@ -2,12 +2,14 @@
 
 namespace App\Exceptions;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use App\Exceptions\DatabaseErrorHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -49,6 +51,22 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($this->isDatabaseException($exception)) {
+            return ApiResponse::errorInterno(DatabaseErrorHandler::handle($exception));
+        }
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Verifica si la excepción es de tipo base de datos.
+     *
+     * @param Throwable $exception
+     * @return bool
+     */
+    protected function isDatabaseException(Throwable $exception): bool
+    {
+        $isQueryException = class_exists('\Illuminate\Database\QueryException') && $exception instanceof \Illuminate\Database\QueryException;
+        $isPDOException = $exception instanceof \PDOException;
+        return $isPDOException || $isQueryException;
     }
 }
