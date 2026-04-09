@@ -25,26 +25,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        try {
-            $validatedData = $this->validateLoginRequest($request);
-            $inputCredentials = $validatedData;
-            $rememberMe = $validatedData['rememberMe'] ?? false;
+        $validatedData = $this->validateLoginRequest($request);
+        $inputCredentials = $validatedData;
+        $rememberMe = $validatedData['rememberMe'] ?? false;
 
-            $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
-            if (!$user) {
-                return ApiResponse::unauthorized('Correo no encontrado.');
-            }
-            if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
-                return ApiResponse::unauthorized('Contraseña incorrecta.');
-            }
-            JWTAuth::factory()->setTTL($rememberMe ? 60 : 30); // 60 minutos si rememberMe, sino 15 minutos
-            auth()->login($user);
-
-            $token = JWTAuth::fromUser($user);
-            return $this->respondWithToken($token, $user);
-        } catch (\Exception $e) {
-            return ApiResponse::error('Ha ocurrido un error. ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        $user = Usuario::where('correo_electronico', $inputCredentials['correo'])->first();
+        if (!$user) {
+            return ApiResponse::unauthorized('Correo no encontrado.');
         }
+        if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
+            return ApiResponse::unauthorized('Contraseña incorrecta.');
+        }
+        JWTAuth::factory()->setTTL($rememberMe ? 60 : 30); // 60 minutos si rememberMe, sino 30 minutos
+        auth()->login($user);
+
+        $token = JWTAuth::fromUser($user);
+        return $this->respondWithToken($token, $user);
     }
 
     protected function validateLoginRequest(Request $request)

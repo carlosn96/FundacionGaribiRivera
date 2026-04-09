@@ -91,17 +91,46 @@ class ApiResponse
         );
     }
 
-    public static function error(string $message = 'Error', int $statusCode = self::HTTP_BAD_REQUEST): JsonResponse
+    public static function error(string|array $message = 'Error', int $statusCode = self::HTTP_BAD_REQUEST): JsonResponse
     {
-        return response()->json(
-            [
+        [$message, $details] = self::normalizeErrorPayload($message);
+        $payload = [
             'message' => $message,
             'status' => $statusCode,
-            ], $statusCode
-        );
+        ];
+        if ($details !== null) {
+            $payload['details'] = $details;
+        }
+        return response()->json($payload, $statusCode);
     }
 
-    public static function errorInterno($message = 'Internal Server Error'): JsonResponse
+    /**
+     * Normaliza el input de error para soportar string o array
+     * con llaves asociativas (message/details) o posicionales [message, details].
+     *
+     * @param string|array $message
+     * @return array{0:string,1:mixed}
+     */
+    private static function normalizeErrorPayload(string|array $message): array
+    {
+        $details = null;
+
+        if (!is_array($message)) {
+            return [$message, $details];
+        }
+
+        if (array_key_exists('message', $message) || array_key_exists('details', $message)) {
+            $msg = $message['message'] ?? null;
+            $details = $message['details'] ?? null;
+            return [$msg ?? 'Error', $details];
+        }
+
+        $msg = $message[0] ?? null;
+        $details = $message[1] ?? null;
+        return [$msg ?? 'Error', $details];
+    }
+
+    public static function errorInterno(string|array $message = 'Internal Server Error'): JsonResponse
     {
         return self::error($message, self::HTTP_INTERNAL_SERVER_ERROR);
     }
