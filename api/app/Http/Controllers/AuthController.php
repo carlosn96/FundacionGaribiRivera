@@ -6,13 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Http\Responses\ApiResponse;
-use Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Cookie;
-use Carbon\Carbon;
 use App\Http\Controllers\Traits\RespondsWithToken;
 use App\Services\MailService;
 use App\Services\SessionService;
+use App\Services\CookieService;
+
 
 class AuthController extends Controller
 {
@@ -38,14 +37,14 @@ class AuthController extends Controller
             if (!Hash::check($inputCredentials['contrasena'], $user->contrasena)) {
                 return ApiResponse::unauthorized('Contraseña incorrecta.');
             }
-            JWTAuth::factory()->setTTL($rememberMe ? 60 : 15); // 60 minutos si rememberMe, sino 15 minutos
+            JWTAuth::factory()->setTTL($rememberMe ? 60 : 30); // 60 minutos si rememberMe, sino 15 minutos
             auth()->login($user);
 
             $token = JWTAuth::fromUser($user);
+            return $this->respondWithToken($token, $user);
         } catch (\Exception $e) {
             return ApiResponse::error('Ha ocurrido un error. ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return $this->respondWithToken($token, $user);
     }
 
     protected function validateLoginRequest(Request $request)
@@ -98,19 +97,14 @@ class AuthController extends Controller
                 }
             }
 
-            // Eliminar cookie del token
-            try {
-                Cookie::queue(Cookie::forget('access_token'));
-            } catch (\Throwable $t) {
-                // Fallback manual si Cookie facade no puede
-                @setcookie('access_token', '', time() - 3600, '/', '', true, true);
-            }
+            return ApiResponse::success(null, 'Sesión cerrada correctamente')
+                ->withCookie(CookieService::forget('access_token'))
+                ->withCookie(CookieService::forget('refresh_token'));
 
-            return ApiResponse::success(null, 'Sesión cerrada correctamente');
         } catch (\Throwable $e) {
-            // Fallback final: garantizar JSON y limpiar cookie
-            @setcookie('access_token', '', time() - 3600, '/', '', true, true);
-            return ApiResponse::success(null, 'Sesión cerrada');
+            return ApiResponse::success(null, 'Sesión cerrada de forma forzada')
+                ->withCookie(CookieService::forget('access_token'))
+                ->withCookie(CookieService::forget('refresh_token'));
         }
     }
 

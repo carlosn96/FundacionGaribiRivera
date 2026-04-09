@@ -51,9 +51,9 @@ $(document).ready(function () {
 function cerrarSesion() {
     crearPeticion("../../../../controller/RevisorSesion.php", {"case": "cerrarSesion"}, (res) => {
         if (!res.sesionActiva) {
-            redireccionar("../../../../");
+           apiRequest('auth/logout', 'POST');
         } else {
-            mostrarMensajeError("Error al cerrar sesión. Por favor, inténtalo de nuevo.");
+            mostrarMensajeError("Error al cerrar sesión. Por favor, inténtalo de nuevo.", false);
         }
     });
 }
