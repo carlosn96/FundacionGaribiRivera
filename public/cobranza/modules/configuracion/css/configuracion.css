@@ -1,0 +1,47 @@
+/* ============================================================
+   Configuración del Contrato — Módulo de cobranza
+   Importa el sistema de diseño compartido del módulo expediente
+   ============================================================ */
+
+/* Importar clases compartidas: btn-save, btn-danger-ghost, section-card,
+   form-section, field-label, sidebar-summary, quick-action, etc. */
+@import '../../expediente/css/expediente.css';
+
+
+/* ── Avatar del header ── */
+.cfg-header-avatar {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+/* ── Íconos coloreados por sección (alinea con el patrón del proyecto) ── */
+.icon-primary  { color: var(--bs-primary); }
+.icon-amber    { color: #d97706; }
+.icon-indigo   { color: #6366f1; }
+
+/* ── Sidebar posicionamiento ── */
+.cfg-sidebar {
+    top: 24px;
+    z-index: 1;
+}
+
+/* ── Tipografía del título del sidebar ── */
+.cfg-sidebar-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+}
+
+/* ── Accesos informativos (no interactivos) ── */
+.cfg-quick-info {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+/* ── Card-header con botón a la derecha (testigos) ── */
+.cfg-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
