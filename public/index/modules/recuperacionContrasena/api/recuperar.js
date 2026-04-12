@@ -14,8 +14,8 @@ $(document).ready(function () {
                 $('#spinner').addClass('d-none');
                 if (response.es_valor_error) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
+                        icon: 'info',
+                        title: 'Atención',
                         text: response.mensaje
                     });
                 } else {

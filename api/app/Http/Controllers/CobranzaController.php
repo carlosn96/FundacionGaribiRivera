@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\HistorialEmprendedorResource;
 use App\Http\Resources\EmprendedorExpedienteResource;
 use App\Models\EmprendedorExpediente;
 use App\Models\ExpedienteAval;
@@ -20,27 +19,6 @@ use App\Http\Controllers\PdfController;
 
 class CobranzaController extends Controller
 {
-    /**
-     * Obtiene el historial de emprendedores llamando a la vista "listar_emprendedores"
-     */
-    public function getHistorialEmprendedores()
-    {
-        try {
-            $historial = DB::table('listar_emprendedores')
-                ->join("linea_base", "listar_emprendedores.id", "linea_base.id_usuario")
-                ->select("listar_emprendedores.*")->get();
-
-            $historial = HistorialEmprendedorResource::collection($historial);
-
-            return ApiResponse::success([
-                'historial' => $historial
-            ], 'Historial obtenido correctamente');
-
-        } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener historial: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     /**
      * Actualiza la referencia y la fecha de crédito de un emprendedor
      */

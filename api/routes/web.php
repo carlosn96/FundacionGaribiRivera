@@ -83,7 +83,6 @@ $router->group(
         $router->get('/configuracion-contrato', 'ContratoController@getConfiguracion');
         $router->post('/configuracion-contrato', 'ContratoController@saveConfiguracion');
         
-        $router->get('/historial-emprendedores', 'CobranzaController@getHistorialEmprendedores');
         $router->post('/referencia', 'CobranzaController@actualizarReferencia');
         $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
         $router->post('/expediente', 'CobranzaController@saveInfoFinanciera');
@@ -114,5 +113,6 @@ $router->group(
 $router->group(
     ['prefix' => 'emprendedor', 'middleware' => 'jwt.cookie'], function () use ($router) {
         $router->get('/perfil/{id}', 'EmprendedorController@getPerfil');
+        $router->get('/historial', 'EmprendedorController@getHistorialEmprendedores');
     }
 );

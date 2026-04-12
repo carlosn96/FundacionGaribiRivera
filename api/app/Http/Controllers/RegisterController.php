@@ -60,14 +60,14 @@ class RegisterController extends Controller
             SessionService::unset($correo);
             $msg = 'Correo verificado exitosamente';
             $now = Carbon::now();
-            $exp = $now->copy()->addMinutes(15);
+            $exp = $now->copy()->addMinutes(30);
 
             // Claims JWT completos
             $customClaims = [
                 'sub' => $correo,                  // identificador único (temporal)
                 'email' => $correo,               // info adicional
                 'iat' => $now->timestamp,         // emitido en
-                'exp' => $exp->timestamp,         // expira en 15 min
+                'exp' => $exp->timestamp,         // expira en 30 min
                 'nbf' => $now->timestamp,         // válido desde ahora
                 'iss' => 'fundacion-api',         // identificador del emisor
                 'jti' => uniqid(),                // JWT ID único
@@ -81,7 +81,7 @@ class RegisterController extends Controller
             $cookie = Cookie::create(
                 'access_token',
                 $token,
-                15, // minutes
+                30, // minutes
                 '/', // path
                 null, // domain
                 true, // secure (use the $secure variable)

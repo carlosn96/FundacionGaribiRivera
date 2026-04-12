@@ -5,7 +5,6 @@ function ready() {
     const id = urlParams.get('id');
 
     if (!id) {
-        mostrarMensajeError('ID de emprendedor no proporcionado');
         redireccionar('../inicio');
         return;
     }
@@ -21,15 +20,17 @@ function ready() {
         window.open(pdfUrl, '_blank');
     });
 
-    cargarDatosContrato(id);
+    cargarContrato(id);
 }
 
-function cargarDatosContrato(id) {
+function cargarContrato(id) {
     apiGetRequest(`cobranza/contrato-html/${id}`, (response) => {
         if (response && response.data && response.data.html) {
             $('.print-wrapper').html(response.data.html);
         } else {
             mostrarMensajeError('No se pudo obtener el contrato');
         }
+    }, () => {
+        redireccionar('../inicio');
     });
 }

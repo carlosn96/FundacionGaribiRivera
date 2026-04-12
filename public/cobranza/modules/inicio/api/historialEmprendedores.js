@@ -9,7 +9,7 @@ let sortConfig = {
 let emprendedorActual = null;
 
 function ready() {
-    cargarDatos();
+    cargarEmprendedores();
     inicializarEventos();
 }
 
@@ -27,7 +27,7 @@ function inicializarEventos() {
     // Botón actualizar
     $('#btn-refresh').on('click', function () {
         $(this).find('i').addClass('fa-spin');
-        cargarDatos();
+        cargarEmprendedores();
         setTimeout(() => {
             $(this).find('i').removeClass('fa-spin');
         }, 1000);
@@ -95,12 +95,12 @@ function inicializarEventos() {
     });
 }
 
-async function cargarDatos() {
+async function cargarEmprendedores() {
     mostrarCargando();
 
     try {
         const res = await CobranzaController.getHistorialEmprendedores();
-        historialData = (res.data && res.data.historial) ? res.data.historial : [];
+        historialData = res.data ?? [];
         filteredData = [...historialData];
         
         if (historialData.length === 0) {

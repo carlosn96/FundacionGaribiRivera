@@ -17,6 +17,7 @@ class HistorialEmprendedorResource extends JsonResource
             'referencia'        => $this->referencia,
             'fechaCredito'      => $this->fecha_credito,
             'fotografia'        => $this->fotografia ? base64_encode($this->fotografia) : null,
+            'id'                => $this->id
         ];
     }
 }

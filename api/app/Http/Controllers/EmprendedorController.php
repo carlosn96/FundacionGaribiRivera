@@ -6,9 +6,8 @@ use App\Models\Emprendedor;
 use App\Models\LineaBase\LineaBase;
 use App\Http\Resources\EmprendedorResource;
 use App\Http\Responses\ApiResponse;
-use Carbon\Carbon;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\HistorialEmprendedorResource;
 
 class EmprendedorController extends Controller
 {
@@ -23,8 +22,8 @@ class EmprendedorController extends Controller
     {
         try {
             $emprendedor = Emprendedor::with([
-                'usuario',                  
-                'expediente.aval.parentesco',                
+                'usuario',
+                'expediente.aval.parentesco',
                 'expediente.aval.codigoPostal.municipio.estado',
                 'expediente.inmuebleGarantia.codigoPostal.municipio.estado',
                 'expediente.resumenEjecutivo',
@@ -40,17 +39,36 @@ class EmprendedorController extends Controller
                 'domicilio.codigoPostal.municipio.estado',
                 'negocio.codigoPostal.municipio.estado',
             ])
-            ->where('id_usuario', $emprendedor->usuario->id)
-            ->latest('id_linea_base')
-            ->first();
+                ->where('id_usuario', $emprendedor->usuario->id)
+                ->latest('id_linea_base')
+                ->first();
 
             // Asignar como relación virtual para que EmprendedorResource la consuma
             $emprendedor->setRelation('lineaBase', $lineaBase);
 
-            return ApiResponse::success(new EmprendedorResource($emprendedor), 'Perfil obtenido correctamente');
+            return ApiResponse::success(new EmprendedorResource($emprendedor));
 
         } catch (\Exception $e) {
-            return ApiResponse::error('Error al obtener el perfil: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::errorInterno('Error al obtener el perfil: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Obtiene el historial de emprendedores llamando a la vista "listar_emprendedores"
+     */
+    public function getHistorialEmprendedores()
+    {
+        try {
+            $historial = DB::table('listar_emprendedores')
+                ->join("linea_base", "listar_emprendedores.id", "linea_base.id_usuario")
+                ->select("listar_emprendedores.*")->get();
+
+            $historial = HistorialEmprendedorResource::collection($historial);
+
+            return ApiResponse::success($historial);
+
+        } catch (\Exception $e) {
+            return ApiResponse::errorInterno('Error al obtener historial: ' . $e->getMessage());
         }
     }
 }
