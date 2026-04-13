@@ -1,0 +1,39 @@
+name: Desplegar Next.js a Hostinger Migration
+
+on:
+  push:
+    branches:
+      - modernize-architecture
+
+jobs:
+  web-deploy:
+    name: Deploy Frontend Next.js a Migration
+    runs-on: ubuntu-latest
+    steps:
+    - name: Obtener el último código
+      uses: actions/checkout@v4
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: app-garibirivera/package-lock.json
+
+    - name: Instalar dependencias del Frontend
+      working-directory: ./app-garibirivera
+      run: npm ci
+
+    - name: Compilar Proyecto (Static Export)
+      working-directory: ./app-garibirivera
+      run: npm run build
+
+    - name: Sincronizar FTP con Hostinger Migration
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./app-garibirivera/out/
+        # Elimina archivos huérfanos que ya no existan en tu código nuevo
+        danger-delete-ignored: true

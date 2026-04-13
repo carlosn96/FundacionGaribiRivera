@@ -6,7 +6,7 @@ nbproject/project.properties
 .env
 .dat
 /bd
-.github/
+
 /test_dev
 .agents
 /doc
