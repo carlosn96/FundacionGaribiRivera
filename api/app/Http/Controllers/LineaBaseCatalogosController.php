@@ -31,6 +31,7 @@ use App\Models\LineaBase\Catalogos\Parentesco;
 use App\Models\LineaBase\Catalogos\Viabilidad;
 use App\Models\LineaBase\Catalogos\DiagnosticoSocial;
 use App\Models\LineaBase\Catalogos\Vulnerabilidad;
+use App\Models\EtapaFormacionTipo;
 
 class LineaBaseCatalogosController extends Controller
 {
@@ -46,6 +47,7 @@ class LineaBaseCatalogosController extends Controller
         'viabilidades' => Viabilidad::class,
         'diagnostico-social' => DiagnosticoSocial::class,
         'vulnerabilidades' => Vulnerabilidad::class,
+        'tipos-etapa-formacion' => EtapaFormacionTipo::class,
     ];
     // Método unificado para obtener catálogos
     public function getCatalogo($tipo): JsonResponse
@@ -229,8 +231,94 @@ class LineaBaseCatalogosController extends Controller
         }
     }
 
-    // Método privado para obtener los datos de un catálogo específico
-    private function getCatalogoData($tipo)
+    /**
+     * Add a new item to a catalog
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $tipo = $request->input('tipo');
+            $valor = $request->input('valor');
+
+            if (!isset($this->catalogos[$tipo])) {
+                // Fallback to check by input_name if not found in catalogos mapping
+                // This is for catalogs like 'ocupacion' which are grouped in getAllCatalogosPorTipoInput
+                $modelClass = $this->getModelByInputName($tipo);
+                if (!$modelClass) {
+                    return ApiResponse::error('Tipo de catálogo no válido', ApiResponse::HTTP_BAD_REQUEST);
+                }
+            } else {
+                $modelClass = $this->catalogos[$tipo];
+            }
+
+            $item = new $modelClass();
+            $item->descripcion = $valor; // Standard column name in these tables
+            
+            // Some tables use 'nombre' instead of 'descripcion'
+            if (!in_array('descripcion', \Schema::getColumnListing($item->getTable()))) {
+                $item->nombre = $valor;
+            }
+
+            $item->save();
+
+            return ApiResponse::success($item, 'Valor agregado exitosamente');
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al agregar valor: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete an item from a catalog
+     */
+    public function destroy($tipo, $id): JsonResponse
+    {
+        try {
+            if (!isset($this->catalogos[$tipo])) {
+                $modelClass = $this->getModelByInputName($tipo);
+                if (!$modelClass) {
+                    return ApiResponse::error('Tipo de catálogo no válido', ApiResponse::HTTP_BAD_REQUEST);
+                }
+            } else {
+                $modelClass = $this->catalogos[$tipo];
+            }
+
+            $item = $modelClass::find($id);
+            if (!$item) {
+                return ApiResponse::notFound('Valor no encontrado');
+            }
+
+            $item->delete();
+            return ApiResponse::success(null, 'Valor eliminado exitosamente');
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al eliminar valor: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper to find model by its input name string
+     */
+    private function getModelByInputName($inputName) {
+        $allModels = [
+            'estado_civil' => EstadoCivil::class,
+            'grado_estudio' => Escolaridad::class,
+            'ocupacion' => Ocupacion::class,
+            'medio_conocimiento' => MedioConocimiento::class,
+            'estrategia_ventas' => EstrategiaIncrementarVentas::class,
+            'giro_negocio' => NegocioGiro::class,
+            'actividad_negocio' => NegocioActividad::class,
+            'antiguedad_negocio' => AntiguedadNegocio::class,
+            'parentesco' => Parentesco::class,
+            'genero' => Genero::class,
+            'viabilidad' => Viabilidad::class,
+            'vulnerabilidades' => Vulnerabilidad::class,
+            'diagnostico_social' => DiagnosticoSocial::class,
+            // Add more as needed based on INPUT_NAME_KEY
+        ];
+        return $allModels[$inputName] ?? null;
+    }
+
+    // Método unificado para obtener los datos de un catálogo específico (ahora público)
+    public function getCatalogoData($tipo)
     {
         try {
             $query = $this->catalogos[$tipo]::query();

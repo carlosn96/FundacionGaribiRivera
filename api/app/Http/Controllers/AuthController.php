@@ -40,6 +40,24 @@ class AuthController extends Controller
         auth()->login($user);
 
         $token = JWTAuth::fromUser($user);
+
+        // Inyectar permisos reales desde la vista de asistentes (Simulando UsuarioDAO legacy)
+        $asistente = \Illuminate\Support\Facades\DB::table('listar_asistentes')
+            ->where('id', $user->id)
+            ->first();
+        
+        if ($asistente && isset($asistente->permisos)) {
+            // El campo 'permisos' en la vista es un JSON string ej: "[2,3]"
+            $permisosDecoded = is_string($asistente->permisos) 
+                ? json_decode($asistente->permisos, true) 
+                : $asistente->permisos;
+                
+            $user->permisos = is_array($permisosDecoded) ? $permisosDecoded : [$user->tipo_usuario];
+        } else {
+            // Fallback: usar el tipo_usuario como permiso base
+            $user->permisos = [$user->tipo_usuario];
+        }
+
         return $this->respondWithToken($token, $user);
     }
 
@@ -58,8 +76,27 @@ class AuthController extends Controller
 
     public function me()
     {
-        // Log::info('Fetching authenticated user info for user ID: ' . auth()->id());
-        return ApiResponse::success(auth()->user(), "User retrieved successfully.");
+        $user = auth()->user();
+        if ($user) {
+            // Obtener el registro del asistente (que incluye permisos ya formateados en la vista)
+            $asistente = \Illuminate\Support\Facades\DB::table('listar_asistentes')
+                ->where('id', $user->id)
+                ->first();
+            
+            if ($asistente && isset($asistente->permisos)) {
+                // El campo 'permisos' en la vista es un JSON string ej: "[2,3]" 
+                // o ya viene como array si el driver lo maneja, pero por seguridad decodificamos
+                $permisosDecoded = is_string($asistente->permisos) 
+                    ? json_decode($asistente->permisos, true) 
+                    : $asistente->permisos;
+
+                $user->permisos = is_array($permisosDecoded) ? $permisosDecoded : [$user->tipo_usuario];
+            } else {
+                // Fallback: usar el tipo_usuario como permiso base
+                $user->permisos = [$user->tipo_usuario];
+            }
+        }
+        return ApiResponse::success($user, "User retrieved successfully.");
     }
 
     public function logout()

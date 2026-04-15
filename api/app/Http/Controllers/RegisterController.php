@@ -92,7 +92,7 @@ class RegisterController extends Controller
             return ApiResponse::success(['verified' => $verified], $msg)->withCookie($cookie);
         } else {
             $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
-            return ApiResponse::success(['verified' => $verified], $msg);
+            return ApiResponse::error($msg);
         }
     }
 
@@ -152,7 +152,7 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             return ApiResponse::error(
-                'Los datos proporcionados no son válidos: ' . $validator->errors()->toArray(),
+                'Los datos proporcionados no son válidos: ' . $validator->errors(),
                 ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
             );
         }

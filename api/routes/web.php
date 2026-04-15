@@ -75,6 +75,10 @@ $router->group(
         $router->get('/', 'LineaBaseController@getLineaBase');
         $router->post('/', 'LineaBaseController@saveAll');
 
+        // CRUD de catálogos para Administración
+        $router->post('/catalogos', 'LineaBaseCatalogosController@store');
+        $router->delete('/catalogos/{tipo}/{id}', 'LineaBaseCatalogosController@destroy');
+
     }
 );
 
@@ -114,5 +118,49 @@ $router->group(
     ['prefix' => 'emprendedor', 'middleware' => 'jwt.cookie'], function () use ($router) {
         $router->get('/perfil/{id}', 'EmprendedorController@getPerfil');
         $router->get('/historial', 'EmprendedorController@getHistorialEmprendedores');
+    }
+);
+
+$router->group(
+    ['prefix' => 'admin', 'middleware' => 'jwt.cookie'], function () use ($router) {
+        // Gestión de Usuarios
+        $router->get('/usuarios', 'UserController@index');
+        $router->get('/usuarios/asistentes', 'UserController@getAllAsistentes');
+        $router->get('/usuarios/{id}', 'UserController@show');
+        $router->post('/usuarios', 'UserController@store');
+        $router->post('/usuarios/{id}', 'UserController@update');
+        $router->delete('/usuarios/{id}', 'UserController@destroy');
+
+        // Gestión de Etapas de Formación
+        $router->get('etapas', 'EtapaFormacionController@index');
+        $router->get('etapas/campos', 'EtapaFormacionController@recuperarCampos');
+        $router->get('etapas/actual', 'EtapaFormacionController@getActual');
+        $router->get('etapas/{id}', 'EtapaFormacionController@show');
+        $router->post('etapas', 'EtapaFormacionController@store');
+        $router->post('etapas/{id}', 'EtapaFormacionController@update');
+        $router->delete('etapas/{id}', 'EtapaFormacionController@destroy');
+        $router->post('etapas/{id}/actual', 'EtapaFormacionController@setActual');
+        $router->get('etapas/{id}/cronograma', 'EtapaFormacionController@cronograma');
+
+        // Difusión - Talleres
+        $router->get('talleres', 'TallerController@index');
+        $router->get('talleres/{id}', 'TallerController@show');
+        $router->post('talleres', 'TallerController@store');
+        $router->post('talleres/{id}', 'TallerController@update');
+        $router->delete('talleres/{id}', 'TallerController@destroy');
+
+        // Difusión - Instructores
+        $router->get('instructores', 'InstructorController@index');
+        $router->get('instructores/{id}', 'InstructorController@show');
+        $router->get('instructores/{id}/foto', 'InstructorController@fotografia');
+        $router->post('instructores', 'InstructorController@store');
+        $router->post('instructores/{id}', 'InstructorController@update');
+        $router->delete('instructores/{id}', 'InstructorController@destroy');
+
+        // Difusión - Asistencia a Talleres
+        $router->get('asistencia/etapas', 'AsistenciaTallerController@getEtapas');
+        $router->get('asistencia/etapas/{idEtapa}/talleres', 'AsistenciaTallerController@getTalleresPorEtapa');
+        $router->get('asistencia/etapas/{idEtapa}/talleres/{idTaller}', 'AsistenciaTallerController@getEmprendedoresPorEtapaTaller');
+        $router->post('asistencia/etapas/{idEtapa}/talleres/{idTaller}', 'AsistenciaTallerController@registrarAsistencia');
     }
 );

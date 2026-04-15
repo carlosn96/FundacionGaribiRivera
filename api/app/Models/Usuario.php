@@ -21,7 +21,7 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
      *
      * @var array
      */
-    protected $appends = ['rol', 'fotografia_base64'];
+    protected $appends = ['rol', 'fotografia_base64', 'permisos'];
 
     /**
      * Indicates if the model should be timestamped.
@@ -116,6 +116,29 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
             return base64_encode($this->attributes['fotografia']);
         }
         return null;
+    }
+
+    /**
+     * Get the user's permissions.
+     *
+     * @return array
+     */
+    public function getPermisosAttribute()
+    {
+        $permisosRaw = $this->attributes['permisos'] ?? null;
+
+        if (is_array($permisosRaw)) {
+            return array_map('intval', $permisosRaw);
+        }
+
+        if (is_string($permisosRaw) && !empty($permisosRaw)) {
+            $decoded = json_decode($permisosRaw, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return array_map('intval', $decoded);
+            }
+        }
+        
+        return [$this->tipo_usuario];
     }
 
     /**
