@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  reactStrictMode: false, // Deshabilitar StrictMode para evitar doble ejecución de useEffect en desarrollo
 };
 
 export default nextConfig;
