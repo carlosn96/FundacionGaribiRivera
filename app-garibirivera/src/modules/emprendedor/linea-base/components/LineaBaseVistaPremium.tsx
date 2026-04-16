@@ -116,7 +116,7 @@ export const LineaBaseVistaPremium: React.FC<LineaBaseVistaPremiumProps> = ({
     return rawValue !== undefined && rawValue !== null ? String(rawValue) : String(value);
   };
 
-  const getYesNo = (val: number | boolean | string | undefined) => {
+  const getYesNo = (val: unknown) => {
     if (val === undefined || val === null) return 'No especificado';
     if (val === 1 || val === '1' || val === true || val === 'si') return 'Sí';
     return 'No';

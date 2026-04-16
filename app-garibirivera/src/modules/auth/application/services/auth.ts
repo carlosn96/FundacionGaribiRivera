@@ -41,6 +41,29 @@ export async function checkAuthStatus(): Promise<AuthResponse> {
   }, 2000);
 }
 
+export async function resendVerificationCode(
+  correo: string,
+  nombre: string,
+  apellidos: string
+): Promise<{ sent: boolean; message?: string }> {
+  const res = await AuthAPI.resendVerificationCode({
+    correo,
+    nombre,
+    apellidos,
+    isResend: true,
+  });
+
+  const sent =
+    'sent' in res && typeof res.sent === 'boolean'
+      ? res.sent
+      : Boolean(res.ok ?? res.success);
+
+  return {
+    sent,
+    message: typeof res.message === 'string' ? res.message : undefined,
+  };
+}
+
 // Funciones de utilidad para el wizard de registro
 export const authService = {
   checkEmail: (correo: string, nombre: string, apellidos: string) => 

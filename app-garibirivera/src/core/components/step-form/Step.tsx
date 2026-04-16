@@ -32,12 +32,12 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
     setTouchedFields(prev => new Set(prev).add(fieldName));
   };
 
-  const isFieldValid = (fieldName: string) => {
-    return touchedFields.has(fieldName) && !errors[fieldName] && data[fieldName];
+  const isFieldValid = (fieldName: string): boolean => {
+    return touchedFields.has(fieldName) && !errors[fieldName] && Boolean(data[fieldName]);
   };
 
-  const hasFieldError = (fieldName: string) => {
-    return touchedFields.has(fieldName) && errors[fieldName];
+  const hasFieldError = (fieldName: string): boolean => {
+    return touchedFields.has(fieldName) && Boolean(errors[fieldName]);
   };
 
   // Función helper para verificar si un valor corresponde a "Otro"
@@ -349,6 +349,8 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
   };
 
   const renderSelectField = (field: any, fieldValue: any, showOtherField: boolean) => {
+    const otherFieldValue = data[`${field.name}_other`];
+
     return (
       <div key={field.name} className="space-y-2">
         <Label htmlFor={field.name} className="text-sm font-medium">
@@ -394,7 +396,7 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
               id={`${field.name}_other`}
               name={`${field.name}_other`}
               type="text"
-              value={data[`${field.name}_other`] || ''}
+              value={typeof otherFieldValue === 'string' ? otherFieldValue : ''}
               onChange={(e) => onDataChange(`${field.name}_other`, e.target.value)}
               placeholder={field.otherLabel || 'Especifique ...'}
               disabled={field.disabled}
@@ -465,6 +467,8 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
   };
 
   const renderStandardRadioField = (field: any, fieldValue: any, showOtherField: boolean) => {
+    const otherFieldValue = data[`${field.name}_other`];
+
     return (
       <div key={field.name} className="space-y-3">
         <Label className="text-sm font-medium">
@@ -509,7 +513,7 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
               id={`${field.name}_other`}
               name={`${field.name}_other`}
               type="text"
-              value={data[`${field.name}_other`] || ''}
+              value={typeof otherFieldValue === 'string' ? otherFieldValue : ''}
               onChange={(e) => onDataChange(`${field.name}_other`, e.target.value)}
               placeholder="Especifique otro..."
               disabled={field.disabled}
@@ -523,6 +527,8 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
   };
 
   const renderCheckboxField = (field: any, fieldValue: any) => {
+    const otherFieldValue = data[`${field.name}_other`];
+
     // Checkbox múltiple (con opciones)
     if (field.options && field.options.length > 0) {
       const showCheckboxOtherField = isOtroSelectedInCheckbox(field, fieldValue);
@@ -589,7 +595,7 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
                 id={`${field.name}_other`}
                 name={`${field.name}_other`}
                 type="text"
-                value={data[`${field.name}_other`] || ''}
+                value={typeof otherFieldValue === 'string' ? otherFieldValue : ''}
                 onChange={(e) => onDataChange(`${field.name}_other`, e.target.value)}
                 placeholder="Especifique otro..."
                 disabled={field.disabled}
@@ -725,7 +731,7 @@ const Step: React.FC<StepProps> = ({ config, data, onDataChange, stepIndex, erro
     const fieldValue = data[field.name];
     const showOtherField = isOtroOption(field, fieldValue);
     
-    const fieldRenderers: Record<string, () => JSX.Element | null> = {
+    const fieldRenderers: Record<string, () => React.ReactNode> = {
       text: () => renderTextField(field, fieldValue),
       tel: () => renderTelField(field, fieldValue),
       number: () => renderNumberField(field, fieldValue),

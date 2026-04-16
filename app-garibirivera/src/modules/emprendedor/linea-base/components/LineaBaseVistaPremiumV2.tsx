@@ -224,7 +224,7 @@ export const LineaBaseVistaPremiumV2: React.FC<LineaBaseVistaPremiumV2Props> = (
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [scrollOptions, setScrollOptions] = useState<{ container: React.RefObject<HTMLDivElement> } | undefined>(undefined);
+  const [scrollOptions, setScrollOptions] = useState<{ container: React.RefObject<HTMLDivElement | null> } | undefined>(undefined);
   const { scrollYProgress } = useScroll(scrollOptions);
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
@@ -249,8 +249,8 @@ export const LineaBaseVistaPremiumV2: React.FC<LineaBaseVistaPremiumV2Props> = (
     const fetchCatalogos = async () => {
       try {
         const catalogosResponse = await recuperarCatalogosLineaBase();
-        if (catalogosResponse) {
-          setCatalogos(catalogosResponse);
+        if (catalogosResponse && !Array.isArray(catalogosResponse)) {
+          setCatalogos(catalogosResponse as CatalogosPorSecciones);
         }
       } catch (error) {
         console.error('Error fetching catalogos:', error);

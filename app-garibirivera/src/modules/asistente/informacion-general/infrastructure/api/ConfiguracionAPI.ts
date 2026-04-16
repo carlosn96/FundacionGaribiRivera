@@ -3,11 +3,19 @@ import { ConfiguracionInstitucional } from '@/modules/asistente/informacion-gene
 import { BaseResponse } from '@/core/http/ApiResponse';
 
 export class ConfiguracionAPI {
+  private static asString(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+  }
+
   /**
    * Obtiene la configuración actual de la institución
    */
   static async getConfiguracion(): Promise<ConfiguracionInstitucional> {
     const data = await http.get<Record<string, unknown>>('cobranza/configuracion-contrato');
+    const domicilio =
+      typeof data.domicilio === 'object' && data.domicilio !== null
+        ? (data.domicilio as Record<string, unknown>)
+        : {};
     
     // Mapeo de la respuesta legacy a la entidad de dominio
     let testigos: string[] = [];
@@ -20,18 +28,18 @@ export class ConfiguracionAPI {
     }
 
     return {
-      nombre_fundacion: data.nombre_fundacion || "",
-      representante_legal: data.representante_legal || "",
+      nombre_fundacion: this.asString(data.nombre_fundacion),
+      representante_legal: this.asString(data.representante_legal),
       domicilio: {
-        calle: data.domicilio?.calle || "",
-        numero_exterior: data.domicilio?.numero_exterior || "",
-        numero_interior: data.domicilio?.numero_interior || "",
-        colonia: data.domicilio?.colonia || "",
-        codigo_postal: data.domicilio?.codigo_postal || "",
-        municipio: data.domicilio?.municipio || "",
-        estado: data.domicilio?.estado || "",
-        entre_calles: data.domicilio?.entre_calles || "",
-        referencias: data.domicilio?.referencias || "",
+        calle: this.asString(domicilio.calle),
+        numero_exterior: this.asString(domicilio.numero_exterior),
+        numero_interior: this.asString(domicilio.numero_interior),
+        colonia: this.asString(domicilio.colonia),
+        codigo_postal: this.asString(domicilio.codigo_postal),
+        municipio: this.asString(domicilio.municipio),
+        estado: this.asString(domicilio.estado),
+        entre_calles: this.asString(domicilio.entre_calles),
+        referencias: this.asString(domicilio.referencias),
       },
       testigos
     };
