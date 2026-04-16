@@ -65,7 +65,7 @@ export function LoginForm() {
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500">
-            <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority />
+            <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} />
           </div>
           <div className="space-y-2">
             <VisionTypography variant="title-1" className="font-bold tracking-tight">

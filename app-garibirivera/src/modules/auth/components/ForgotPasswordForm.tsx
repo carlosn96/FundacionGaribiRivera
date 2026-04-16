@@ -137,7 +137,7 @@ export function ForgotPasswordForm() {
   if (isSuccess) {
     return (
       <VisionGlassWindow className="p-8 sm:p-10 shadow-2xl text-center" withNoise>
-        <div className="flex justify-center mb-6"><Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority /></div>
+        <div className="flex justify-center mb-6"><Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} /></div>
         <div className="py-8 space-y-6 animate-in fade-in zoom-in duration-500">
           <div className="flex justify-center"><div className="w-20 h-20 rounded-full bg-fundacion-verde/20 flex items-center justify-center"><CheckCircle2 className="w-10 h-10 text-fundacion-verde" /></div></div>
           <div className="space-y-2">
@@ -157,7 +157,7 @@ export function ForgotPasswordForm() {
       </div>
 
       <div className="text-center space-y-4 mb-8">
-        <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500"><Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority /></div>
+        <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500"><Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} /></div>
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-fundacion-amarillo tracking-widest uppercase mb-1">Paso {currentStep} de 3</p>
           <VisionTypography variant="title-1" className="font-bold tracking-tight">{stepMeta[currentStep - 1].title}</VisionTypography>

@@ -143,7 +143,7 @@ export function RegisterForm() {
 
       <div className="text-center space-y-4">
         <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500">
-          <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority />
+          <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} />
         </div>
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-fundacion-amarillo tracking-widest uppercase">Paso {currentStep} de 4</p>
