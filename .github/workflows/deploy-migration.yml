@@ -9,6 +9,7 @@ jobs:
   web-deploy:
     name: Deploy Frontend Next.js a Migration
     runs-on: ubuntu-latest
+    environment: migration
     steps:
     - name: Obtener el último código
       uses: actions/checkout@v4
@@ -23,6 +24,31 @@ jobs:
     - name: Instalar dependencias del Frontend
       working-directory: ./app-garibirivera
       run: npm ci
+
+    - name: Crear .env.local para build
+      working-directory: ./app-garibirivera
+      env:
+        NEXT_PUBLIC_LOCAL_API_URL: ${{ secrets.NEXT_PUBLIC_LOCAL_API_URL }}
+        NEXT_PUBLIC_FRONTEND_URL: ${{ secrets.NEXT_PUBLIC_FRONTEND_URL }}
+        NEXT_PUBLIC_USER_TOKEN_NAME: ${{ secrets.NEXT_PUBLIC_USER_TOKEN_NAME }}
+        NEXT_PUBLIC_REFRESH_TOKEN_NAME: ${{ secrets.NEXT_PUBLIC_REFRESH_TOKEN_NAME }}
+        ALLOWED_BRIDGE_SOURCES: ${{ secrets.ALLOWED_BRIDGE_SOURCES }}
+        NEXT_PUBLIC_BRIDGE_EXTERNAL_URL: ${{ secrets.NEXT_PUBLIC_BRIDGE_EXTERNAL_URL }}
+        NEXT_PUBLIC_BRIDGE_EXTERNAL_SOURCE: ${{ secrets.NEXT_PUBLIC_BRIDGE_EXTERNAL_SOURCE }}
+        BRIDGE_JWT_SECRET: ${{ secrets.BRIDGE_JWT_SECRET }}
+        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      run: |
+        cat > .env.local <<EOF
+        NEXT_PUBLIC_LOCAL_API_URL=${NEXT_PUBLIC_LOCAL_API_URL}
+        NEXT_PUBLIC_FRONTEND_URL=${NEXT_PUBLIC_FRONTEND_URL}
+        NEXT_PUBLIC_USER_TOKEN_NAME=${NEXT_PUBLIC_USER_TOKEN_NAME}
+        NEXT_PUBLIC_REFRESH_TOKEN_NAME=${NEXT_PUBLIC_REFRESH_TOKEN_NAME}
+        ALLOWED_BRIDGE_SOURCES=${ALLOWED_BRIDGE_SOURCES}
+        NEXT_PUBLIC_BRIDGE_EXTERNAL_URL=${NEXT_PUBLIC_BRIDGE_EXTERNAL_URL}
+        NEXT_PUBLIC_BRIDGE_EXTERNAL_SOURCE=${NEXT_PUBLIC_BRIDGE_EXTERNAL_SOURCE}
+        BRIDGE_JWT_SECRET=${BRIDGE_JWT_SECRET}
+        JWT_SECRET_KEY=${JWT_SECRET_KEY}
+        EOF
 
     - name: Compilar Proyecto (Static Export)
       working-directory: ./app-garibirivera
