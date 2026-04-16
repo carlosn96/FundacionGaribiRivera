@@ -2,7 +2,7 @@
 
 import { ReactNode, useMemo } from 'react';
 import AuthGuard from '@/modules/auth/components/AuthGuard';
-import { PERMISSIONS, normalizePermissions } from '@/modules/auth/domain/Roles';
+import { PERMISSIONS, normalizePermissions, ROLES } from '@/modules/auth/domain/Roles';
 import Sidebar, { MenuItem } from '@/core/components/layout/Sidebar';
 import DashboardNavbar from '@/core/components/layout/DashboardNavbar';
 import { useState } from 'react';
@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }, [userPerms, pathname]);
 
   return (
-    <AuthGuard allowedPermissions={ADMIN_ROLES}>
+    <AuthGuard allowedRoles={[ROLES.ASISTENTE]}>
       <div className="h-screen overflow-hidden spatial-bg flex flex-col">
         {/* Navbar común para personal administrativo */}
         <DashboardNavbar 

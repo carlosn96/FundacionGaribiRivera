@@ -48,14 +48,29 @@ export const normalizePermissions = (permissions: unknown): number[] => {
   }
 
   if (typeof permissions === 'string') {
+    // Intentar como JSON
     try {
       const parsed = JSON.parse(permissions);
-      return Array.isArray(parsed)
-        ? parsed.map((permission) => Number(permission)).filter((permission) => !Number.isNaN(permission))
-        : [];
+      if (Array.isArray(parsed)) {
+        return parsed.map((permission) => Number(permission)).filter((permission) => !Number.isNaN(permission));
+      }
     } catch (error) {
-      return [];
+      // No era JSON, intentar como lista separada por comas
+      if (permissions.includes(',')) {
+        return permissions.split(',')
+          .map((p) => Number(p.trim()))
+          .filter((p) => !Number.isNaN(p));
+      }
+      
+      // Intentar como un único número en string
+      const single = Number(permissions.trim());
+      if (!Number.isNaN(single)) return [single];
     }
+  }
+
+  // Si es un número directamente
+  if (typeof permissions === 'number') {
+    return [permissions];
   }
 
   return [];
