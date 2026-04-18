@@ -1,0 +1,213 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Usuario;
+use App\Models\Emprendedor;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Responses\ApiResponse;
+use App\Services\MailService;
+use App\Services\SessionService;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Controllers\Traits\RespondsWithToken;
+
+class RegisterController extends Controller
+{
+    use RespondsWithToken;
+
+    public function verifyEmail(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'correo' => 'required|email',
+                'nombre' => 'required|string|max:255',
+            ]
+        );
+        $correo = $request->input('correo');
+        if (Usuario::where('correo_electronico', $correo)->first()) {
+            return ApiResponse::success(['exists' => true], "El correo electronico {$correo} ya se encuentra registrado");
+        }
+        if (!$this->sendCode($correo, $request->input('nombre'))) {
+            return ApiResponse::error('El correo se encuentra disponible, pero hubo un error al enviar el código de verificación. Intente más tarde.', ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return ApiResponse::success(['exists' => false], "El correo electrónico {$correo} está disponible");
+    }
+
+
+    public function verifyCode(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'correo' => 'required|email',
+                'codigo' => 'required|string|max:4',
+            ]
+        );
+
+        $correo = $request->input('correo');
+        $codigo = $request->input('codigo');
+        $storedCode = SessionService::get($correo);
+
+        if (($verified = intval($storedCode) === intval($codigo))) {
+            SessionService::unset($correo);
+            $msg = 'Correo verificado exitosamente';
+            $now = Carbon::now();
+            $exp = $now->copy()->addMinutes(30);
+
+            // Claims JWT completos
+            $customClaims = [
+                'sub' => $correo,                  // identificador único (temporal)
+                'email' => $correo,               // info adicional
+                'iat' => $now->timestamp,         // emitido en
+                'exp' => $exp->timestamp,         // expira en 30 min
+                'nbf' => $now->timestamp,         // válido desde ahora
+                'iss' => 'fundacion-api',         // identificador del emisor
+                'jti' => uniqid(),                // JWT ID único
+            ];
+
+            $payload = JWTFactory::customClaims($customClaims)->make();
+            $token = JWTAuth::encode($payload)->get();
+
+            $secure = env('APP_ENV') !== 'local';
+
+            $cookie = Cookie::create(
+                'access_token',
+                $token,
+                30, // minutes
+                '/', // path
+                null, // domain
+                true, // secure (use the $secure variable)
+                true, // httponly
+                false, // raw
+                'None' // samesite (MUST be 'None' for cross-site fetch)
+            );
+            return ApiResponse::success(['verified' => $verified], $msg)->withCookie($cookie);
+        } else {
+            $msg = 'Código de verificación incorrecto, inténtalo de nuevo';
+            return ApiResponse::error($msg);
+        }
+    }
+
+    public function resendCodeVerifyAccount(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'correo' => 'required|email',
+                'nombre' => 'required|string|max:255',
+            ]
+        );
+        $codeSent = $this->sendCode($request->input('correo'), $request->input('nombre'));
+        return ApiResponse::success(
+            ['resent' => $codeSent],
+            $codeSent ? 'Código de verificación reenviado' : 'No se pudo reenviar el código de verificación, intente más tarde'
+        );
+    }
+
+    private function sendCode($correo, $nombre)
+    {
+        $codigo = \App\Services\CodeService::generateVerificationCode();
+        if (
+            ($emailSent = MailService::enviarCorreoVerificacionCuenta(
+                $correo,
+                $nombre,
+                $codigo
+            ))
+        ) {
+            SessionService::set($correo, $codigo);
+        }
+        return $emailSent;
+    }
+
+    public function register(Request $request)
+    {
+        try {
+            $payload = JWTAuth::getPayload();
+            $emailFromToken = $payload->get('email');
+        } catch (JWTException $e) {
+            return ApiResponse::error(
+                'Token inválido, expirado o no proporcionado. ' . $e->getMessage(),
+                ApiResponse::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nombre' => 'required|string|max:255',
+                'apellidos' => 'required|string|max:255',
+                'correo' => 'required|email|unique:usuario,correo_electronico',
+                'numero_celular' => 'required|string|max:15',
+                'contrasena' => 'required|string|min:6'
+            ]
+        );
+
+        if ($validator->fails()) {
+            return ApiResponse::error(
+                'Los datos proporcionados no son válidos: ' . $validator->errors(),
+                ApiResponse::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        if ($request->input('correo') !== $emailFromToken) {
+            return ApiResponse::error(
+                'El correo electrónico no coincide con el correo verificado.',
+                ApiResponse::HTTP_BAD_REQUEST
+            );
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $user = Usuario::create(
+                [
+                    'nombre' => $request->input('nombre'),
+                    'apellidos' => $request->input('apellidos'),
+                    'correo_electronico' => $emailFromToken,
+                    'numero_celular' => $request->input('numero_celular'),
+                    'contrasena' => Hash::make($request->input('contrasena')),
+                    'tipo_usuario' => 1,
+                    'fotografia' => self::obtenerFotografiaRand(),
+                ]
+            );
+
+            Emprendedor::create([
+                'id_usuario' => $user->id
+            ]);
+            
+            DB::commit();
+
+            auth()->login($user);
+            $token = JWTAuth::fromUser($user);
+            return $this->respondWithToken($token, $user, 'Registro completo.', ApiResponse::HTTP_CREATED);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ApiResponse::error(
+                'No se pudo registrar al usuario. ' . $e->getMessage(),
+                ApiResponse::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
+    private static function obtenerFotografiaRand()
+    {
+        $fotos = [];
+        $dir = base_path("../public/assets/images/profile");
+        if (is_dir($dir)) {
+            $archivos = array_diff(scandir($dir), array('.', '..'));
+            foreach ($archivos as $fotografias) {
+                $fotos[] = $dir . DIRECTORY_SEPARATOR . $fotografias;
+            }
+        }
+        return file_get_contents($fotos[rand(0, count($fotos) - 1)]);
+    }
+}
