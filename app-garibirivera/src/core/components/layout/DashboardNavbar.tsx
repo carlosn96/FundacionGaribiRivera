@@ -46,7 +46,7 @@ export default function DashboardNavbar({
 
   const handleSettings = () => {
     // Determinar URL de settings según el rol
-    const userType = user?.tipo_usuario ?? 1;
+    const userType = user?.tipoUsuario ?? 1;
     const settingsUrl = userType === 1 ? '/emprendedor/configuracion' : '/asistente/configuracion';
     router.push(settingsUrl);
   };
@@ -112,7 +112,7 @@ export default function DashboardNavbar({
     }
   }, [user]);
 
-  const displayRole = customUserRole || getUserRoleName(user?.tipo_usuario ?? 0);
+  const displayRole = customUserRole || getUserRoleName(user?.tipoUsuario ?? 0);
   const defaultWelcomeMessage = `Bienvenido a tu panel de ${displayRole.toLowerCase()}`;
 
   const getUserInitials = () => {
@@ -235,9 +235,9 @@ export default function DashboardNavbar({
               >
                 <div className="relative flex-shrink-0">
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[var(--vision-radius-small)] bg-gradient-to-br from-fundacion-amarillo via-fundacion-amarillo-light to-fundacion-verde flex items-center justify-center shadow-md overflow-hidden ring-2 ring-[var(--surface-raised)] group-hover:shadow-lg group-hover:ring-[var(--border-brand)] transition-all duration-medium ease-spring-smooth">
-                    {user.fotografia_base64 ? (
+                    {user.fotografiaBase64 ? (
                       <img
-                        src={`data:image/jpeg;base64,${user.fotografia_base64}`}
+                        src={`data:image/jpeg;base64,${user.fotografiaBase64}`}
                         alt={user.nombre}
                         className="w-full h-full object-cover"
                       />
@@ -282,7 +282,7 @@ export default function DashboardNavbar({
                       {user.nombre}
                     </p>
                     <p className="vision-caption vision-text-secondary truncate mt-1">
-                      {user.correo_electronico}
+                      {user.correoElectronico}
                     </p>
                     {/* Badge de rol – usa tokens semánticos, NO hardcoded */}
                     <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full vision-badge-brand">

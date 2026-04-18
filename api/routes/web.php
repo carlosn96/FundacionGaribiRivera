@@ -16,7 +16,8 @@
 */
 
 $router->get(
-    '/', function () use ($router) {
+    '/',
+    function () use ($router) {
         $routes = $router->getRoutes();
         $appUrl = rtrim(env('APP_URL'), '/');
         $accessPoints = [];
@@ -24,25 +25,26 @@ $router->get(
         foreach ($routes as $route) {
             $method = isset($route['method']) ? $route['method'] : '';
             $uri = isset($route['uri']) ? ltrim($route['uri'], '/') : '';
-            
+
             if ($method && $uri !== '') {
                 $accessPoints[] = $method . ' ' . $appUrl . '/' . $uri;
             }
         }
 
         $result = [
-            'app'               => 'Fundacion Garibi Rivera API',
+            'app' => 'Fundacion Garibi Rivera API',
             'framework-version' => $router->app->version(),
-            'app-version'       => "2025.08.24",
-            'author'            => 'Juan Carlos Gonzalez A.',
-            'accessPoints'      => $accessPoints
+            'app-version' => "2025.08.24",
+            'author' => 'Juan Carlos Gonzalez A.',
+            'accessPoints' => $accessPoints
         ];
         return response()->json($result);
     }
 );
 
 $router->group(
-    ['prefix' => 'auth'], function () use ($router) {
+    ['prefix' => 'auth'],
+    function () use ($router) {
         $router->post('verify-email', 'RegisterController@verifyEmail');
         $router->post('verify-code', 'RegisterController@verifyCode');
         $router->post('register', ['middleware' => 'jwt.cookie', 'uses' => 'RegisterController@register']);
@@ -59,7 +61,8 @@ $router->group(
 );
 
 $router->group(
-    ['prefix' => 'linea-base', 'middleware' => 'jwt.cookie'], function () use ($router) {
+    ['prefix' => 'linea-base', 'middleware' => 'jwt.cookie'],
+    function () use ($router) {
         // Rutas para obtener catálogos (deben ir antes de las rutas con parámetros)
         $router->get('/catalogos', 'LineaBaseCatalogosController@getAllCatalogosPorTipoInput');
         $router->get('/catalogos/municipios/{estadoId}', 'LineaBaseCatalogosController@getMunicipios');
@@ -83,10 +86,11 @@ $router->group(
 );
 
 $router->group(
-    ['prefix' => 'cobranza', 'middleware' => 'jwt.cookie'], function () use ($router) {
+    ['prefix' => 'cobranza', 'middleware' => 'jwt.cookie'],
+    function () use ($router) {
         $router->get('/configuracion-contrato', 'ContratoController@getConfiguracion');
         $router->post('/configuracion-contrato', 'ContratoController@saveConfiguracion');
-        
+
         $router->post('/referencia', 'CobranzaController@actualizarReferencia');
         $router->get('/expediente/{id}', 'CobranzaController@getExpediente');
         $router->post('/expediente', 'CobranzaController@saveInfoFinanciera');
@@ -100,11 +104,11 @@ $router->group(
         // ---- Pagos ----
         $router->get('/pagos/{idEmprendedor}', 'PagoController@getPagos');
         $router->get('/pagos/{idEmprendedor}/fechas', 'PagoController@getFechasPendientes');
-        
+
         $router->post('/pagos', 'PagoController@agregarPago');
         $router->delete('/pagos/{idPago}', 'PagoController@eliminarPago');
         $router->put('/pagos/{idPago}/fecha-recepcion', 'PagoController@actualizarFechaRecepcionPago');
-        
+
         $router->post('/pagos-parciales', 'PagoController@agregarPagoParcial');
         $router->put('/pagos-parciales/{idPago}', 'PagoController@modificarPagoParcial');
         $router->delete('/pagos-parciales/{idPago}', 'PagoController@eliminarPagoParcial');
@@ -115,14 +119,16 @@ $router->group(
 );
 
 $router->group(
-    ['prefix' => 'emprendedor', 'middleware' => 'jwt.cookie'], function () use ($router) {
+    ['prefix' => 'emprendedor', 'middleware' => 'jwt.cookie'],
+    function () use ($router) {
         $router->get('/perfil/{id}', 'EmprendedorController@getPerfil');
         $router->get('/historial', 'EmprendedorController@getHistorialEmprendedores');
     }
 );
 
 $router->group(
-    ['prefix' => 'admin', 'middleware' => 'jwt.cookie'], function () use ($router) {
+    ['prefix' => 'admin', 'middleware' => 'jwt.cookie'],
+    function () use ($router) {
         // Gestión de Usuarios
         $router->get('/usuarios', 'UserController@index');
         $router->get('/usuarios/asistentes', 'UserController@getAllAsistentes');
@@ -142,12 +148,9 @@ $router->group(
         $router->post('etapas/{id}/actual', 'EtapaFormacionController@setActual');
         $router->get('etapas/{id}/cronograma', 'EtapaFormacionController@cronograma');
 
-        // Difusión - Talleres
-        $router->get('talleres', 'TallerController@index');
-        $router->get('talleres/{id}', 'TallerController@show');
-        $router->post('talleres', 'TallerController@store');
-        $router->post('talleres/{id}', 'TallerController@update');
-        $router->delete('talleres/{id}', 'TallerController@destroy');
+
+        // Difusión - Emprendedores
+        $router->get('emprendedores/{id}/foto', 'EmprendedorController@fotografia');
 
         // Difusión - Instructores
         $router->get('instructores', 'InstructorController@index');
@@ -157,8 +160,16 @@ $router->group(
         $router->post('instructores/{id}', 'InstructorController@update');
         $router->delete('instructores/{id}', 'InstructorController@destroy');
 
+        // Difusión - Talleres
+        $router->get('talleres', 'TallerController@index');
+        $router->get('talleres/{id}', 'TallerController@show');
+        $router->post('talleres', 'TallerController@store');
+        $router->post('talleres/{id}', 'TallerController@update');
+        $router->delete('talleres/{id}', 'TallerController@destroy');
+
         // Difusión - Asistencia a Talleres
-        $router->get('asistencia/etapas', 'AsistenciaTallerController@getEtapas');
+        $router->get('asistencia/talleres/etapa-actual', 'TallerController@getTalleresPorEtapaActual');
+        $router->get('asistencia/talleres/etapa/{idEtapa}', 'TallerController@getTalleresPorEtapa');
         $router->get('asistencia/etapas/{idEtapa}/talleres', 'AsistenciaTallerController@getTalleresPorEtapa');
         $router->get('asistencia/etapas/{idEtapa}/talleres/{idTaller}', 'AsistenciaTallerController@getEmprendedoresPorEtapaTaller');
         $router->post('asistencia/etapas/{idEtapa}/talleres/{idTaller}', 'AsistenciaTallerController@registrarAsistencia');

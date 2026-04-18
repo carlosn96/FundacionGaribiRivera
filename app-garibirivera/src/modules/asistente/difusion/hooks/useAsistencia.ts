@@ -1,86 +1,73 @@
 import { useState, useCallback } from 'react';
-import { AsistenciaAPI } from '../infrastructure/api/AsistenciaAPI';
+import { asistenciaRepository } from '../infrastructure/api/AsistenciaRepository';
 import { AsistenciaEmprendedor, AsistenciaTallerResumen } from '../domain/models/Asistencia';
+import { EtapaFormacion } from '../domain/models/Etapa';
+import { useOperation } from '@/core/hooks/useOperation';
 
 export function useAsistencia() {
-  const [etapas, setEtapas] = useState<any[]>([]);
+  const [etapas, setEtapas] = useState<EtapaFormacion[]>([]);
   const [talleres, setTalleres] = useState<AsistenciaTallerResumen[]>([]);
   const [emprendedores, setEmprendedores] = useState<AsistenciaEmprendedor[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchEtapas = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await AsistenciaAPI.getEtapas();
-      setEtapas(response);
-      return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Error al obtener etapas');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Usamos useOperation para centralizar el estado de la operación principal de carga
+  const { 
+    execute: fetchTalleresEtapaActual, 
+    loading: loadingTalleres, 
+    error: errorTalleres 
+  } = useOperation(() => asistenciaRepository.getTalleresEtapaActual(), {
+    onSuccess: setTalleres
+  });
 
-  const fetchTalleresPorEtapa = useCallback(async (idEtapa: number) => {
-    setLoading(true);
-    try {
-      const response = await AsistenciaAPI.getTalleresPorEtapa(idEtapa);
-      setTalleres(response);
-      return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Error al obtener talleres');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { 
+    execute: fetchTalleresPorEtapa, 
+    loading: loadingEtapa, 
+    error: errorEtapa 
+  } = useOperation((idEtapa: number) => asistenciaRepository.getTalleresPorEtapa(idEtapa), {
+    onSuccess: setTalleres
+  });
 
-  const fetchEmprendedoresPorEtapaTaller = useCallback(async (idEtapa: number, idTaller: number) => {
-    setLoading(true);
-    try {
-      const response = await AsistenciaAPI.getEmprendedoresPorEtapaTaller(idEtapa, idTaller);
-      setEmprendedores(response);
-      return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Error al obtener asistentes');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { 
+    execute: fetchEmprendedoresPorEtapaTaller, 
+    loading: loadingEmprendedores, 
+    error: errorEmprendedores 
+  } = useOperation((idEtapa: number, idTaller: number) => asistenciaRepository.getEmprendedoresPorEtapaTaller(idEtapa, idTaller), {
+    onSuccess: setEmprendedores
+  });
 
-  const registrarAsistencia = useCallback(async (idEtapa: number, idTaller: number, idAsistente: number, asiste: number, observacion: string) => {
-    try {
-      const response = await AsistenciaAPI.registrarAsistencia(idEtapa, idTaller, {
-        id_asistente: idAsistente,
-        asiste,
-        observacion
-      });
-      
-      // Update local state optimistic
+  // Para el registro, podemos usar un estado local o el de useOperation
+  const { 
+    execute: execRegistrarAsistencia, 
+    loading: registering, 
+    error: errorRegistro 
+  } = useOperation((idEtapa: number, idTaller: number, data: any) => asistenciaRepository.registrarAsistencia(idEtapa, idTaller, data));
+
+  const registrarAsistencia = useCallback(async (idEtapa: number, idTaller: number, idAsistente: number, asiste: boolean, observacion: string) => {
+    const success = await execRegistrarAsistencia(idEtapa, idTaller, {
+      idAsistente,
+      asiste: asiste ? 1 : 0,
+      observacion
+    });
+    
+    if (success) {
+      // Update local state optimistic/confirmado
       setEmprendedores(prev => prev.map(emp => 
-        emp.id === idAsistente ? { ...emp, asiste, observacion } : emp
+        emp.emprendedor.id === idAsistente ? { ...emp, asiste, observacion } : emp
       ));
-      
-      return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Error al registrar asistencia');
-      throw err;
     }
-  }, []);
+    return success;
+  }, [execRegistrarAsistencia]);
 
   return {
     etapas,
     talleres,
     emprendedores,
-    loading,
-    error,
-    fetchEtapas,
+    loading: loadingTalleres || loadingEtapa || loadingEmprendedores || registering,
+    error: errorTalleres || errorEtapa || errorEmprendedores || errorRegistro,
+    fetchTalleresEtapaActual,
     fetchTalleresPorEtapa,
     fetchEmprendedoresPorEtapaTaller,
     registrarAsistencia,
-    setEmprendedores
+    setEmprendedores,
+    setEtapas // Agregado por si se necesita
   };
 }

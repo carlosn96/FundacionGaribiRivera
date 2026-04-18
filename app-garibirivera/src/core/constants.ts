@@ -3,7 +3,7 @@
  * This ensures that critical values are defined in one place for easy maintenance.
  */
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_URL;
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_FRONTEND_URL;
 export const USER_TOKEN_NAME = process.env.NEXT_PUBLIC_USER_TOKEN_NAME || 'access_token';
 export const REFRESH_TOKEN_NAME = process.env.NEXT_PUBLIC_REFRESH_TOKEN_NAME || 'refresh_token';

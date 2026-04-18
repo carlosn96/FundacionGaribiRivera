@@ -96,7 +96,7 @@ class AuthController extends Controller
                 $user->permisos = [$user->tipo_usuario];
             }
         }
-        return ApiResponse::success($user, "User retrieved successfully.");
+        return ApiResponse::success(new \App\Http\Resources\UsuarioResource($user), "User retrieved successfully.");
     }
 
     public function logout()
@@ -191,12 +191,12 @@ class AuthController extends Controller
             [
                 'correo' => 'required|email',
                 'codigo' => 'required|string|max:4',
-                'nueva_contrasena' => 'required|string|min:6',
+                'nuevaContrasena' => 'required|string|min:6',
             ]
         );
         $correo = $request->input('correo');
         $codigo = $request->input('codigo');
-        $nuevaContrasena = $request->input('nueva_contrasena');
+        $nuevaContrasena = $request->input('nuevaContrasena');
         $user = Usuario::where('correo_electronico', $correo)->first();
         if (!$user) {
             return ApiResponse::error('Correo no encontrado.', 404);

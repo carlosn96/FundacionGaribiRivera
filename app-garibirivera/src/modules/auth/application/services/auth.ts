@@ -75,6 +75,6 @@ export const authService = {
   forgotPassword: (correo: string) => 
     AuthAPI.forgotPassword({ correo }),
 
-  resetPassword: (correo: string, codigo: string, nueva_contrasena: string) => 
-    AuthAPI.resetPassword({ correo, codigo, nueva_contrasena })
+  resetPassword: (correo: string, codigo: string, nuevaContrasena: string) => 
+    AuthAPI.resetPassword({ correo, codigo, nuevaContrasena })
 };

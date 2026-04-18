@@ -14,44 +14,32 @@ class EmprendedorResource extends JsonResource
      */
     public function toArray($request)
     {
-        // Extraer datos de línea base si están cargados
-        $lineaBase = $this->whenLoaded('lineaBase');
-        $etapa = null;
-        $domicilioPersonal = null;
-        $domicilioNegocio = null;
+        if (!$this->resource) return null;
 
-        if ($lineaBase instanceof \App\Models\LineaBase\LineaBase) {
-            // Etapa de formación
-            $etapaModel = optional($lineaBase->etapa);
-            $etapa = $etapaModel ? [
-                'idEtapa' => $etapaModel->id_etapa,
-                'nombre'  => $etapaModel->nombre,
-            ] : null;
-
-            // Domicilio personal
-            $domicilioPersonal = new DomicilioResource($lineaBase->domicilio);
-
-            // Domicilio del negocio
-            $neg = $lineaBase->negocio;
-            $domicilioNegocio = null;
-            if ($neg) {
-                $domicilioNegocio = (new DomicilioResource($neg))->resolve();
-                $domicilioNegocio['nombreNegocio'] = $neg->nombre;
-                $domicilioNegocio['telefono']      = $neg->telefono;
-            }
+        // Simular herencia combinando UsuarioResource con datos locales
+        $userBase = [];
+        if ($this->usuario) {
+            $userBase = (new UsuarioResource($this->usuario))->resolve($request);
+        } else {
+            // Fallback para resultados planos de vistas SQL
+            $userBase = [
+                'id'                => $this->id_usuario ?? $this->id,
+                'nombre'            => $this->nombre,
+                'apellidos'         => $this->apellidos,
+                'correoElectronico' => $this->correo_electronico ?? $this->correoElectronico,
+                'numeroCelular'     => $this->numero_celular ?? $this->numeroCelular,
+                'fotografiaBase64'  => $this->fotografia_base64,
+                'tieneFoto'         => (bool)$this->tiene_foto,
+            ];
         }
 
-        return [
-            'id'              => $this->id_emprendedor,
-            'referencia'      => $this->referencia,
-            'fechaCredito'    => $this->fecha_credito,
-            'graduado'        => (bool)$this->graduado,
-            'fechaGraduacion' => $this->fecha_graduacion,
-            'etapa'              => $etapa,
-            'domicilioPersonal'  => $domicilioPersonal,
-            'domicilioNegocio'   => $domicilioNegocio,
-            'expediente' => new EmprendedorExpedienteResource($this->whenLoaded('expediente')),
-            'usuario'    => new UsuarioResource($this->whenLoaded('usuario')),
-        ];
+        return array_merge($userBase, [
+            'id'                => $this->id_asistente ?? $this->id_emprendedor ?? $this->id,
+            'idUsuario'         => $this->id_usuario ?? ($this->usuario ? $this->usuario->id : $this->id),
+            'referencia'        => $this->referencia,
+            'fechaCredito'      => $this->fecha_credito,
+            'graduado'          => (bool)$this->graduado,
+            'fechaGraduacion'   => $this->fecha_graduacion,
+        ]);
     }
 }

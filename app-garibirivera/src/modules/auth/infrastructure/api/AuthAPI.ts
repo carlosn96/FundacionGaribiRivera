@@ -36,7 +36,7 @@ export class AuthAPI {
     return http.post<{ sent: boolean }>(AUTH_ENDPOINTS.forgotPassword, data);
   }
 
-  static async resetPassword(data: { correo: string, codigo: string, nueva_contrasena: string }) {
+  static async resetPassword(data: { correo: string, codigo: string, nuevaContrasena: string }) {
     return http.post<{ reset: boolean }>(AUTH_ENDPOINTS.resetPassword, data);
   }
 }

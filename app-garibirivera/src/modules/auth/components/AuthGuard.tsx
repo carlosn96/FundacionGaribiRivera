@@ -21,8 +21,8 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
   const router = useRouter();
   const pathname = usePathname();
 
-  // 1. Verificar roles de alto nivel (tipo_usuario)
-  const hasRoleAccess = !allowedRoles || allowedRoles.length === 0 || (!!user && allowedRoles.includes(user.tipo_usuario));
+  // 1. Verificar roles de alto nivel (tipoUsuario)
+  const hasRoleAccess = !allowedRoles || allowedRoles.length === 0 || (!!user && allowedRoles.includes(user.tipoUsuario));
 
   // 2. Verificar permisos específicos
   const hasPermissionAccess = user
@@ -30,7 +30,7 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
     : false;
 
   // 3. Verificar acceso por ruta (legacy sync)
-  const hasRouteAccess = user ? hasPermission(pathname, user.tipo_usuario) : false;
+  const hasRouteAccess = user ? hasPermission(pathname, user.tipoUsuario) : false;
 
   const canRender = !!user && hasRoleAccess && hasPermissionAccess && hasRouteAccess;
 
@@ -48,7 +48,7 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
 
     // Si no tiene acceso, intentar ruteo por defecto
     if (!canRender) {
-      const fallbackPath = getRedirectPath(normalizeRole(user.tipo_usuario));
+      const fallbackPath = getRedirectPath(normalizeRole(user.tipoUsuario));
       
       // SOLO redireccionar si el destino es diferente al actual para evitar loops infinitos
       if (fallbackPath !== pathname) {
@@ -80,7 +80,7 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
 
   // Si después del loading no podemos renderizar (y el redirect no es posible/fue al mismo sitio)
   if (!canRender) {
-    const isLooping = user && getRedirectPath(normalizeRole(user.tipo_usuario)) === pathname;
+    const isLooping = user && getRedirectPath(normalizeRole(user.tipoUsuario)) === pathname;
 
     return (
       <div className="min-h-screen flex items-center justify-center spatial-bg p-4">

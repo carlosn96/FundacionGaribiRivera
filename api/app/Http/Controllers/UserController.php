@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\TipoUsuario;
+use App\Http\Resources\UsuarioResource;
 
 class UserController extends Controller
 {
@@ -20,7 +21,7 @@ class UserController extends Controller
     {
         try {
             $users = Usuario::all();
-            return ApiResponse::success($users, 'Usuarios recuperados exitosamente');
+            return ApiResponse::success(UsuarioResource::collection($users)->resolve(), 'Usuarios recuperados exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al recuperar usuarios: ' . $e->getMessage());
         }
@@ -36,23 +37,7 @@ class UserController extends Controller
                 ->where('id', '!=', $currentUser->id)
                 ->get();
 
-            // Formateamos los datos para el frontend (permisos y fotografía)
-            $users = $users->map(function($user) {
-                if (isset($user->permisos)) {
-                    $user->permisos = is_string($user->permisos) ? json_decode($user->permisos, true) : $user->permisos;
-                }
-                
-                if (isset($user->fotografia)) {
-                    if (!empty($user->fotografia)) {
-                        $user->fotografia_base64 = base64_encode($user->fotografia);
-                    }
-                    unset($user->fotografia); // Limpieza obligatoria para JSON
-                }
-                
-                return $user;
-            });
-
-            return ApiResponse::success($users, 'Usuarios recuperados exitosamente');
+            return ApiResponse::success(UsuarioResource::collection($users)->resolve(), 'Usuarios recuperados exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al recuperar usuarios: ' . $e->getMessage());
         }
@@ -68,7 +53,7 @@ class UserController extends Controller
             if (!$user) {
                 return ApiResponse::notFound('Usuario no encontrado');
             }
-            return ApiResponse::success($user, 'Usuario recuperado');
+            return ApiResponse::success(new UsuarioResource($user), 'Usuario recuperado');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al recuperar usuario: ' . $e->getMessage());
         }
@@ -83,18 +68,17 @@ class UserController extends Controller
             $this->validate($request, [
                 'nombre' => 'required|string|max:255',
                 'apellidos' => 'required|string|max:255',
-                'correo_electronico' => 'required|email|unique:usuario,correo_electronico',
-                'numero_celular' => 'nullable|string|max:20',
+                'correoElectronico' => 'required|email|unique:usuario,correo_electronico',
+                'numeroCelular' => 'nullable|string|max:20',
                 'permisos' => 'array'
             ]);
 
-            $data = $request->only([
-                'nombre',
-                'apellidos',
-                'correo_electronico',
-                'numero_celular',
-                'tipo_usuario',
-            ]);
+            $data = [
+                'nombre' => $request->input('nombre'),
+                'apellidos' => $request->input('apellidos'),
+                'correo_electronico' => $request->input('correoElectronico'),
+                'numero_celular' => $request->input('numeroCelular'),
+            ];
 
             // Handle password
             if ($request->has('contrasena') && !empty($request->contrasena)) {
@@ -104,8 +88,8 @@ class UserController extends Controller
             }
 
             // Handle base64 image
-            if ($request->has('fotografia_base64') && !empty($request->fotografia_base64)) {
-                $data['fotografia'] = base64_decode($request->fotografia_base64);
+            if ($request->has('fotografiaBase64') && !empty($request->fotografiaBase64)) {
+                $data['fotografia'] = base64_decode($request->fotografiaBase64);
             } else {
                 $data['fotografia'] = self::obtenerFotografiaRand();
             }
@@ -122,7 +106,7 @@ class UserController extends Controller
                 ]);
             }
 
-            return ApiResponse::success($user, 'Usuario creado exitosamente', 201);
+            return ApiResponse::success(new UsuarioResource($user), 'Usuario creado exitosamente', 201);
         } catch (\Exception $e) {
             return ApiResponse::error('Error al crear usuario: ' . $e->getMessage());
         }
@@ -142,19 +126,20 @@ class UserController extends Controller
             $this->validate($request, [
                 'nombre' => 'sometimes|string|max:255',
                 'apellidos' => 'sometimes|string|max:255',
-                'correo_electronico' => 'sometimes|email|unique:usuario,correo_electronico,' . $id,
-                'numero_celular' => 'nullable|string|max:20',
-                'tipo_usuario' => 'sometimes|integer',
+                'correoElectronico' => 'sometimes|email|unique:usuario,correo_electronico,' . $id,
+                'numeroCelular' => 'nullable|string|max:20',
+                'tipoUsuario' => 'sometimes|integer',
                 'permisos' => 'array'
             ]);
 
             $data = $request->only([
                 'nombre',
-                'apellidos',
-                'correo_electronico',
-                'numero_celular',
-                'tipo_usuario',
+                'apellidos'
             ]);
+
+            if ($request->has('correoElectronico')) $data['correo_electronico'] = $request->input('correoElectronico');
+            if ($request->has('numeroCelular')) $data['numero_celular'] = $request->input('numeroCelular');
+            if ($request->has('tipoUsuario')) $data['tipo_usuario'] = $request->input('tipoUsuario');
 
             // Handle password update if provided
             if ($request->has('contrasena') && !empty($request->contrasena)) {
@@ -162,8 +147,8 @@ class UserController extends Controller
             }
 
             // Handle base64 image
-            if ($request->has('fotografia_base64') && !empty($request->fotografia_base64)) {
-                $data['fotografia'] = base64_decode($request->fotografia_base64);
+            if ($request->has('fotografiaBase64') && !empty($request->fotografiaBase64)) {
+                $data['fotografia'] = base64_decode($request->fotografiaBase64);
             }
 
             $user->update($data);
@@ -176,7 +161,7 @@ class UserController extends Controller
                 ]);
             }
 
-            return ApiResponse::success($user, 'Usuario actualizado exitosamente');
+            return ApiResponse::success(new UsuarioResource($user), 'Usuario actualizado exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al actualizar usuario: ' . $e->getMessage());
         }

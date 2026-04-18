@@ -35,7 +35,7 @@ export function RegisterForm() {
       nombre: "",
       apellidos: "",
       correo: "",
-      numero_celular: "",
+      numeroCelular: "",
       contrasena: "",
     },
   });
@@ -58,7 +58,7 @@ export function RegisterForm() {
   const stepInfo = [
     { title: "Información Personal", subtitle: "¿Cómo te llamas?", fields: ["nombre", "apellidos"] as RegisterFields[] },
     { title: "Correo Electrónico", subtitle: "¿Cuál es tu correo electrónico?", fields: ["correo"] as RegisterFields[] },
-    { title: "Número de Teléfono", subtitle: "¿Cómo te contactamos?", fields: ["numero_celular"] as RegisterFields[] },
+    { title: "Número de Teléfono", subtitle: "¿Cómo te contactamos?", fields: ["numeroCelular"] as RegisterFields[] },
     { title: "Contraseña Segura", subtitle: "Protege tu cuenta", fields: ["contrasena"] as RegisterFields[] },
   ];
 
@@ -122,7 +122,7 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterPayload) => {
     const user = await registerService(data);
     if (user && user.id) {
-      const userType = Number(user.tipo_usuario || 0);
+      const userType = Number(user.tipoUsuario || 0);
       const destination = getRedirectPath(userType);
 
       router.refresh();
@@ -247,7 +247,7 @@ export function RegisterForm() {
                   <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                     <FormField
                       control={form.control}
-                      name="numero_celular"
+                      name="numeroCelular"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className="flex items-center gap-2">

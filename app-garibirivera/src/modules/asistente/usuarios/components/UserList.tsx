@@ -65,17 +65,17 @@ export function UserList({
             >
               <div className="relative flex-shrink-0">
                 <div className="w-12 h-12 rounded-full border border-fundacion-amarillo/20 overflow-hidden bg-[var(--interact-hover)] flex items-center justify-center text-[var(--text-secondary)]">
-                  {user.fotografia_base64 ? (
-                    <img src={`data:image/jpeg;base64,${user.fotografia_base64}`} alt="" className="w-full h-full object-cover" />
+                  {user.fotografiaBase64 ? (
+                    <img src={`data:image/jpeg;base64,${user.fotografiaBase64}`} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <Users className="w-6 h-6 opacity-30" />
                   )}
                 </div>
-                <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${user.estado_activo ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${user.estadoActivo ? 'bg-emerald-500' : 'bg-red-500'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold vision-text-primary text-sm truncate">{user.nombre} {user.apellidos}</div>
-                <div className="text-xs vision-text-tertiary truncate">{user.correo_electronico}</div>
+                <div className="text-xs vision-text-tertiary truncate">{user.correoElectronico}</div>
               </div>
             </button>
           ))

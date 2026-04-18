@@ -1,87 +1,145 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Calendar, Search } from "lucide-react";
-import { 
-  VisionGlassWindow
-} from "@/core/components/ui/vision-glass";
-import { Button } from "@/core/components/ui/button";
+import { Calendar, Layers, BookOpen, ChevronRight } from "lucide-react";
 import { useAsistencia } from "@/modules/asistente/difusion/hooks/useAsistencia";
+import { CorporateSelect } from "@/core/components/ui/CorporateSelect";
+import { EtapaFormacion } from "../../domain/models/Etapa";
+import { cn } from "@/core/utils/utils";
 
 interface AsistenciaFiltersProps {
   onSearch: (idTaller: number) => void;
-  idEtapaActual: number; // Por ahora, le pasaremos la id_etapa para cargar talleres.
+  etapas: EtapaFormacion[];
+  selectedYear: string;
+  availableYears: string[];
+  onYearChange: (year: string) => void;
+  selectedEtapaId: number;
+  onStageChange: (id: number) => void;
 }
 
-export function AsistenciaFilters({ onSearch, idEtapaActual }: AsistenciaFiltersProps) {
+export function AsistenciaFilters({ 
+  onSearch, 
+  etapas, 
+  selectedYear,
+  availableYears,
+  onYearChange,
+  selectedEtapaId, 
+  onStageChange 
+}: AsistenciaFiltersProps) {
   const { talleres, fetchTalleresPorEtapa, loading } = useAsistencia();
-  const [selectedTaller, setSelectedTaller] = useState<number | ''>('');
+  const [selectedTaller, setSelectedTaller] = useState<number | "">("");
 
   useEffect(() => {
-    if (idEtapaActual) {
-      fetchTalleresPorEtapa(idEtapaActual);
+    if (selectedEtapaId) {
+      fetchTalleresPorEtapa(selectedEtapaId);
+      setSelectedTaller("");
     }
-  }, [idEtapaActual, fetchTalleresPorEtapa]);
+  }, [selectedEtapaId, fetchTalleresPorEtapa]);
 
-  const handleSearch = () => {
-    if (selectedTaller) {
-      onSearch(Number(selectedTaller));
-    }
+  const yearOptions = availableYears.map(y => ({
+    value: y,
+    label: y === "all" ? "Todos los años" : y,
+  }));
+
+  const etapaOptions = etapas.map(e => ({
+    value: e.id,
+    label: e.nombre,
+  }));
+
+  const tallerOptions = talleres.map(t => ({
+    value: t.id,
+    label: `${t.nombreTaller} — ${t.fecha}`,
+  }));
+
+  const hasEtapa = !!selectedEtapaId;
+  const isReady = !!selectedTaller;
+
+  const handleTallerChange = (val: string | number) => {
+    const id = Number(val);
+    setSelectedTaller(id);
+    onSearch(id); // disparo inmediato al seleccionar
   };
 
   return (
-    <VisionGlassWindow className="p-8 md:p-10 shadow-xl border-brand/5 relative overflow-hidden group">
-        {/* Resplandor decorativo */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 difusion-accent-surface blur-[80px] rounded-full pointer-events-none transition-colors duration-1000" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end relative z-10">
-          <div className="space-y-4">
-            <label className="vision-caption-upper vision-text-tertiary font-black text-[10px] tracking-[0.2em] ml-2 opacity-60">
-                Selección de Taller
-            </label>
-            <div className="relative">
-              <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 vision-text-tertiary" />
-              <select 
-                className="vision-input-base difusion-filter-input w-full pl-14 pr-6 appearance-none cursor-pointer"
-                value={selectedTaller}
-                onChange={(e) => setSelectedTaller(Number(e.target.value))}
-                disabled={loading}
-              >
-                <option value="">{loading ? "Cargando..." : "Selecciona un taller..."}</option>
-                {talleres.map(taller => (
-                  <option key={taller.id} value={taller.id}>
-                    {taller.nombre_taller} ({taller.fecha})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+    <div className="rounded-2xl border border-subtle bg-surface-raised/60 backdrop-blur-vision-subtle px-5 py-4">
+      <div className="flex flex-wrap items-center gap-3">
 
-          <div className="space-y-4">
-            <label className="vision-caption-upper vision-text-tertiary font-black text-[10px] tracking-[0.2em] ml-2 opacity-60">
-                Buscar Emprendedor
-            </label>
-            <div className="relative">
-              <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 vision-text-tertiary" />
-              <input 
-                type="text" 
-                placeholder="Nombre o correo..."
-                className="vision-input-base difusion-filter-input w-full pl-14 pr-6" 
-                disabled
-              />
-            </div>
-          </div>
+        {/* Label de sección — anclaje visual discreto */}
+        <span className="vision-caption-upper vision-text-disabled text-[9px] flex-none hidden sm:block">
+          Filtros
+        </span>
 
-          <Button 
-            variant="visionSecondary" 
-            size="visionLg" 
-            className="h-14 rounded-2xl font-black shadow-lg active:scale-95 transition-all text-[11px] tracking-widest px-8"
-            onClick={handleSearch}
-            disabled={!selectedTaller || loading}
-          >
-            CARGAR LISTADO DE ASISTENCIA
-          </Button>
+        {/* Separador vertical */}
+        <div className="hidden sm:block w-px h-5 border-subtle self-center" />
+
+        {/* ── Año ── */}
+        <div className="w-28 flex-none">
+          <CorporateSelect
+            placeholder="Año"
+            value={selectedYear}
+            onValueChange={onYearChange}
+            options={yearOptions}
+            icon={<Calendar className="w-3.5 h-3.5" />}
+            variant="compact"
+          />
         </div>
-      </VisionGlassWindow>
+
+        {/* Chevron decorativo */}
+        <ChevronRight className="w-3.5 h-3.5 vision-text-disabled flex-none" aria-hidden />
+
+        {/* ── Etapa ── */}
+        <div className="w-52 flex-none">
+          <CorporateSelect
+            placeholder="Etapa de formación"
+            value={selectedEtapaId || ""}
+            onValueChange={(val) => onStageChange(Number(val))}
+            options={etapaOptions}
+            icon={<Layers className="w-3.5 h-3.5" />}
+            loading={loading && etapas.length === 0}
+            variant="compact"
+          />
+        </div>
+
+        {/* Chevron decorativo — sólo si hay etapa */}
+        {hasEtapa && (
+          <ChevronRight className="w-3.5 h-3.5 vision-text-disabled flex-none animate-in fade-in duration-300" aria-hidden />
+        )}
+
+        {/* ── Taller — aparece cuando hay etapa seleccionada ── */}
+        {hasEtapa && (
+          <div className="flex-1 min-w-[180px] sm:max-w-md animate-in slide-in-from-left-2 fade-in duration-300">
+            <CorporateSelect
+              placeholder="Selecciona taller..."
+              value={selectedTaller}
+              onValueChange={handleTallerChange}
+              options={tallerOptions}
+              icon={<BookOpen className="w-3.5 h-3.5" />}
+              loading={loading}
+              variant="compact"
+            />
+          </div>
+        )}
+
+        {/* Indicador de estado — extremo derecho */}
+        <div className="ml-auto flex-none flex items-center gap-2">
+          {loading ? (
+            <div className="flex items-center gap-2 animate-in fade-in duration-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-fundacion-amarillo animate-pulse" />
+              <span className="vision-caption-upper vision-badge-brand text-[9px] px-2 py-0.5 rounded-full">
+                Cargando...
+              </span>
+            </div>
+          ) : isReady && (
+            <div className="flex items-center gap-2 animate-in zoom-in duration-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-vision-green" />
+              <span className="vision-caption-upper vision-badge-success text-[9px] px-2 py-0.5 rounded-full">
+                Listado Listo
+              </span>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
   );
 }

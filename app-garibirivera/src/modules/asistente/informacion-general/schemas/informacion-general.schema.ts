@@ -3,17 +3,17 @@ import * as z from "zod";
 const MAX_TESTIGOS = 2;
 
 export const informacionGeneralSchema = z.object({
-  nombre_fundacion: z.string().min(1, "El nombre de la fundación es obligatorio"),
-  representante_legal: z.string().min(1, "El representante legal es obligatorio"),
+  nombreFundacion: z.string().min(1, "El nombre de la fundación es obligatorio"),
+  representanteLegal: z.string().min(1, "El representante legal es obligatorio"),
   domicilio: z.object({
     calle: z.string().min(1, "La calle es obligatoria"),
-    numero_exterior: z.string().min(1, "El número exterior es obligatorio"),
-    numero_interior: z.string().optional(),
+    numeroExterior: z.string().min(1, "El número exterior es obligatorio"),
+    numeroInterior: z.string().optional(),
     colonia: z.string().min(1, "La colonia es obligatoria"),
-    codigo_postal: z.string().min(1, "El código postal es obligatorio"),
+    codigoPostal: z.string().min(1, "El código postal es obligatorio"),
     municipio: z.string().min(1, "El municipio es obligatorio"),
     estado: z.string().min(1, "El estado es obligatorio"),
-    entre_calles: z.string().optional(),
+    entreCalles: z.string().optional(),
     referencias: z.string().optional(),
   }),
   testigos: z

@@ -41,11 +41,70 @@ class Emprendedor extends Model
     ];
 
     /**
+     * Relationship with attendance records.
+     */
+    public function asistencias()
+    {
+        return $this->hasMany(AsistenciaTaller::class, 'id_emprendedor', 'id_emprendedor');
+    }
+
+    /**
      * Relationship with the basic user data.
      */
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'id_usuario', 'id');
+    }
+
+    /**
+     * Accessor for the user's name.
+     */
+    public function getNombreAttribute()
+    {
+        return $this->usuario->nombre;
+    }
+
+    /**
+     * Accessor for the user's last names.
+     */
+    public function getApellidosAttribute()
+    {
+        return $this->usuario->apellidos;
+    }
+
+    /**
+     * Accessor for the user's email.
+     */
+    public function getCorreoElectronicoAttribute()
+    {
+        return $this->usuario->correo_electronico;
+    }
+
+    /**
+     * Accessor for the user's phone number.
+     */
+    public function getNumeroCelularAttribute()
+    {
+        return $this->usuario->numero_celular;
+    }
+
+    /**
+     * Accessor for the user's profile picture.
+     */
+    /**
+     * Accessor for the user's profile picture as base64.
+     */
+    public function getFotografiaBase64Attribute()
+    {
+        return $this->usuario->fotografia ? base64_encode($this->usuario->fotografia) : null;
+    }
+
+    /**
+     * Accessor for whether the user has a profile picture.
+     */
+    public function getTieneFotoAttribute()
+    {
+        return !empty($this->usuario->fotografia);
     }
 
     /**
@@ -70,5 +129,16 @@ class Emprendedor extends Model
     public function pagosParciales()
     {
         return $this->hasMany(PagoParcial::class, 'id_emprendedor', 'id_emprendedor');
+    }
+
+    /**
+     * Scope to filter entrepreneurs whose latest LineaBase is in a specific stage.
+     */
+    public function scopeEnEtapa($query, $idEtapa)
+    {
+        return $query->whereHas('usuario.lineaBase', function ($q) use ($idEtapa) {
+            $q->where('id_etapa', $idEtapa)
+              ->whereRaw('id_linea_base = (select max(lb2.id_linea_base) from linea_base lb2 where lb2.id_usuario = linea_base.id_usuario)');
+        });
     }
 }

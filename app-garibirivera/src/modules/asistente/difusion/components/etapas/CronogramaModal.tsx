@@ -14,9 +14,9 @@ import { Badge } from "@/core/components/ui/badge";
 import { Button } from "@/core/components/ui/button";
 
 interface TallerCronograma {
-  numero_taller: number;
-  nombre_taller: string;
-  fecha_formateada: string;
+  numeroTaller: number;
+  nombreTaller: string;
+  fechaFormateada: string;
   instructor: string;
 }
 
@@ -63,9 +63,9 @@ export function CronogramaModal({ idEtapa, isOpen, onClose, cronograma, loading 
                   <tbody className="divide-y divide-zinc-50 dark:divide-zinc-900/40">
                     {cronograma.map((item, idx) => (
                       <tr key={idx} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors">
-                        <td className="py-4 font-black text-xs text-fundacion-verde/60">{item.numero_taller}</td>
+                        <td className="py-4 font-black text-xs text-fundacion-verde/60">{item.numeroTaller}</td>
                         <td className="py-4 min-w-[200px]">
-                          <div className="font-bold vision-text-primary text-sm tracking-tight group-hover:text-fundacion-verde">{item.nombre_taller}</div>
+                          <div className="font-bold vision-text-primary text-sm tracking-tight group-hover:text-fundacion-verde">{item.nombreTaller}</div>
                         </td>
                         <td className="py-4">
                             <div className="flex items-center gap-2 text-xs vision-text-secondary font-medium">
@@ -75,7 +75,7 @@ export function CronogramaModal({ idEtapa, isOpen, onClose, cronograma, loading 
                         </td>
                         <td className="py-4">
                           <Badge variant="outline" className="font-black text-[10px] tracking-tight bg-fundacion-verde/5 text-fundacion-verde border-fundacion-verde/20 px-3 py-1">
-                            {item.fecha_formateada}
+                            {item.fechaFormateada}
                           </Badge>
                         </td>
                       </tr>

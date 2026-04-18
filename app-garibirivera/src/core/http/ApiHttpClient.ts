@@ -50,7 +50,11 @@ async function apiRequest<T = unknown>(
 
     const resData = response.data || {};
 
-    const payload = resData.data ? resData.data : resData;
+    // Desempaquetado agresivo (soporta una o dos capas de 'data')
+    let payload = resData.data ? resData.data : resData;
+    if (payload && !Array.isArray(payload) && typeof payload === 'object' && payload.data) {
+        payload = payload.data;
+    }
 
     if (Array.isArray(payload)) {
       return Object.assign(payload, {

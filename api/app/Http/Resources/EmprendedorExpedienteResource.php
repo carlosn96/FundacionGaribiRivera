@@ -31,6 +31,10 @@ class EmprendedorExpedienteResource extends JsonResource
             'montoPorDocumentoExtra'            => (float)$this->monto_por_documento_extra,
             'cantAportacionesSolidariasPactado' => (int)$this->cant_aportaciones_solidarias_pactado,
             'montoAportacionSolidariaPactado'   => (float)$this->monto_aportacion_solidaria_pactado,
+            
+            // Relación con el emprendedor (herencia de Usuario incluida)
+            'emprendedor' => new EmprendedorResource($this->whenLoaded('emprendedor')),
+            
             // Secciones del expediente (requeridas con eager loading)
             'aval'             => new ExpedienteAvalResource($this->whenLoaded('aval')),
             'inmuebleGarantia' => new ExpedienteInmuebleGarantiaResource($this->whenLoaded('inmuebleGarantia')),

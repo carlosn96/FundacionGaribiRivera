@@ -20,7 +20,7 @@ class EtapaFormacionController extends Controller
     {
         try {
             $etapas = EtapaFormacion::with('tipo')->get();
-            return ApiResponse::success(EtapaFormacionResource::collection($etapas), 'Etapas de formación obtenidas exitosamente');
+            return ApiResponse::success(EtapaFormacionResource::collection($etapas)->resolve(), 'Etapas de formación obtenidas exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error('Error al obtener las etapas de formación: ' . $e->getMessage(), ApiResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -38,7 +38,7 @@ class EtapaFormacionController extends Controller
             })->unique()->values()->toArray();
 
             return ApiResponse::success([
-                'etapas' => EtapaFormacionResource::collection($etapas),
+                'etapas' => EtapaFormacionResource::collection($etapas)->resolve(),
                 'tiposEtapa' => $tipos,
                 'aniosEtapas' => $anios
             ], 'Campos recuperados exitosamente');

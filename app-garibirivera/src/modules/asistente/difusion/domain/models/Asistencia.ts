@@ -1,16 +1,13 @@
+import { Emprendedor } from './Emprendedor';
+
 export interface AsistenciaEmprendedor {
-  id: number;
-  nombre: string;
-  apellidos: string;
-  correo_electronico: string;
-  numero_celular: string;
-  tiene_foto: boolean;
-  asiste: number;
+  emprendedor: Emprendedor;
+  asiste: boolean;
   observacion: string | null;
 }
 
 export interface AsistenciaTallerResumen {
   id: number;
-  nombre_taller: string;
+  nombreTaller: string;
   fecha: string;
 }

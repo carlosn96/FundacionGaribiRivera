@@ -409,9 +409,9 @@ export default function EntrepreneurDashboard() {
               <div className="space-y-6">
                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/40 border border-white/20 backdrop-blur-md">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fundacion-amarillo to-fundacion-verde flex items-center justify-center shadow-lg ring-2 ring-white">
-                    {user?.fotografia_base64 ? (
+                    {user?.fotografiaBase64 ? (
                       <img
-                        src={`data:image/jpeg;base64,${user.fotografia_base64}`}
+                        src={`data:image/jpeg;base64,${user.fotografiaBase64}`}
                         alt={user.nombre}
                         className="w-full h-full object-cover rounded-2xl"
                       />
@@ -441,8 +441,8 @@ export default function EntrepreneurDashboard() {
 
                 <div className="space-y-3">
                   {[
-                    { icon: Mail, label: "Email", value: user?.correo_electronico, color: "text-blue-600", bg: "bg-blue-50" },
-                    { icon: Phone, label: "Teléfono", value: user?.numero_celular, color: "text-purple-600", bg: "bg-purple-50" }
+                    { icon: Mail, label: "Email", value: user?.correoElectronico, color: "text-blue-600", bg: "bg-blue-50" },
+                    { icon: Phone, label: "Teléfono", value: user?.numeroCelular, color: "text-purple-600", bg: "bg-purple-50" }
                   ].map((item, idx) => (
                     <VisionInteractive key={idx} className="flex items-center gap-4 p-3 rounded-xl bg-white/30 border border-white/10 w-full text-left">
                       <div className={`p-2 rounded-lg bg-white/60 shadow-sm`}>

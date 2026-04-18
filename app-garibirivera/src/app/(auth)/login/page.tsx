@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isLoading || !user) return;
-    router.replace(getRedirectPath(Number(user.tipo_usuario || 0)));
+    router.replace(getRedirectPath(Number(user.tipoUsuario || 0)));
   }, [user, isLoading, router]);
 
   return (

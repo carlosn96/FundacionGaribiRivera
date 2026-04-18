@@ -19,7 +19,9 @@ class UsuarioResource extends JsonResource
             'estadoActivo'      => (bool)$this->estado_activo,
             'tipoUsuario'       => $this->tipo_usuario,
             'rol'               => $this->rol,
+            'permisos'          => $this->permisos,
             'fotografiaBase64'  => $this->fotografia_base64,
+            'tieneFoto'         => (bool)$this->tiene_foto,
         ];
     }
 }

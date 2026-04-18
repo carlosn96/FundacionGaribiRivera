@@ -138,8 +138,8 @@ export function UserModals({
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
                         <Input
                           type="email"
-                          value={editingUser.correo_electronico || ''} 
-                          onChange={e => setEditingUser({...editingUser, correo_electronico: e.target.value})}
+                          value={editingUser.correoElectronico || ''} 
+                          onChange={e => setEditingUser({...editingUser, correoElectronico: e.target.value})}
                           className="pl-10 bg-[var(--surface-raised)] border-transparent focus:border-[var(--border-brand)]"
                         />
                       </div>
@@ -151,8 +151,8 @@ export function UserModals({
                         <Input 
                           type="tel"
                           maxLength={10}
-                          value={editingUser.numero_celular || ''} 
-                          onChange={e => setEditingUser({...editingUser, numero_celular: e.target.value})}
+                          value={editingUser.numeroCelular || ''} 
+                          onChange={e => setEditingUser({...editingUser, numeroCelular: e.target.value})}
                           className="pl-10 bg-[var(--surface-raised)] border-transparent focus:border-[var(--border-brand)]"
                         />
                       </div>
@@ -190,8 +190,8 @@ export function UserModals({
                   </div>
                   <div className="p-8 rounded-vision-lg border-2 border-dashed border-[var(--border-brand)] bg-[var(--interact-hover)] flex flex-col items-center gap-6">
                     <div className="w-32 h-32 rounded-3xl border-4 border-white shadow-xl overflow-hidden relative group">
-                      {editingUser.fotografia_base64 ? (
-                        <img src={`data:image/jpeg;base64,${editingUser.fotografia_base64}`} className="w-full h-full object-cover" />
+                      {editingUser.fotografiaBase64 ? (
+                        <img src={`data:image/jpeg;base64,${editingUser.fotografiaBase64}`} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-[var(--interact-hover)] flex items-center justify-center"><Users className="w-12 h-12 opacity-10" /></div>
                       )}

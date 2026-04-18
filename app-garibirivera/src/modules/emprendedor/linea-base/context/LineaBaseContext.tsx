@@ -28,7 +28,7 @@ export const LineaBaseProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
 
   const fetchStatus = useCallback(async () => {
-    if (user?.tipo_usuario === ROLES.EMPRENDEDOR) {
+    if (user?.tipoUsuario === ROLES.EMPRENDEDOR) {
       setIsLoading(true);
       try {
         const response = await verificarExisteLineaBase();

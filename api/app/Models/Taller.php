@@ -33,4 +33,9 @@ class Taller extends Model
     {
         return $this->belongsTo(EtapaFormacionTipo::class, 'id_tipo_taller', 'id_tipo');
     }
+
+    public function cronograma()
+    {
+        return $this->hasMany(CronogramaTaller::class, 'id_taller', 'id_taller');
+    }
 }

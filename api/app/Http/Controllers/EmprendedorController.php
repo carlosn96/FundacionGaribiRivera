@@ -43,7 +43,7 @@ class EmprendedorController extends Controller
                 ->latest('id_linea_base')
                 ->first();
 
-            // Asignar como relación virtual para que EmprendedorResource la consuma
+            // Asignar como relación virtual para que el recurso la consuma
             $emprendedor->setRelation('lineaBase', $lineaBase);
 
             return ApiResponse::success(new EmprendedorResource($emprendedor));
@@ -63,12 +63,44 @@ class EmprendedorController extends Controller
                 ->join("linea_base", "listar_emprendedores.id", "linea_base.id_usuario")
                 ->select("listar_emprendedores.*")->get();
 
-            $historial = HistorialEmprendedorResource::collection($historial);
+            $historial = EmprendedorResource::collection($historial);
 
             return ApiResponse::success($historial);
 
         } catch (\Exception $e) {
             return ApiResponse::errorInterno('Error al obtener historial: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Endpoint dedicado para servir el BLOB de la fotografía directamente como archivo
+     * para los emprendedores (obtenida desde su registro de usuario).
+     */
+    public function fotografia($id)
+    {
+        // Encontrar al emprendedor y cargar su relación con usuario para obtener la foto
+        $emprendedor = Emprendedor::with(['usuario' => function($query) {
+            $query->select('id', 'fotografia');
+        }])->find($id);
+
+        if (!$emprendedor || !$emprendedor->usuario || empty($emprendedor->usuario->fotografia)) {
+            return response()->json(['error' => 'Fotografía no encontrada'], 404);
+        }
+
+        $fotografia = $emprendedor->usuario->fotografia;
+
+        // Intentar detectar el tipo MIME, por defecto jpeg
+        $mime = 'image/jpeg';
+        try {
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $detectedMime = $finfo->buffer($fotografia);
+            if ($detectedMime) $mime = $detectedMime;
+        } catch (\Exception $e) {
+            // Ignorar silenciosamente si finfo no está disponible
+        }
+
+        return response($fotografia)
+            ->header('Content-Type', $mime)
+            ->header('Cache-Control', 'max-age=86400, public');
     }
 }

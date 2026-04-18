@@ -21,8 +21,10 @@ trait RespondsWithToken
         JWTAuth::factory()->setTTL($expiresIn);
 
         $refreshCookie = CookieService::createRefreshToken($refreshToken, $refreshTtl);
+        
+        $userData = (new \App\Http\Resources\UsuarioResource($user))->toArray(request());
 
-        return ApiResponse::success(array_merge($user->toArray(), ['access_token' => $token]), $message, $status)
+        return ApiResponse::success(array_merge($userData, ['access_token' => $token]), $message, $status)
             ->withCookie($cookie)
             ->withCookie($refreshCookie);
     }

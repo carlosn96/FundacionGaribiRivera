@@ -1,44 +1,29 @@
 import { useState, useCallback } from 'react';
 import { Taller } from '../domain/models/Taller';
 import { Instructor } from '../domain/models/Instructor';
-import { TallerAPI } from '../infrastructure/api/TallerAPI';
-import { EtapaAPI } from '../infrastructure/api/EtapaAPI';
+import { tallerRepository } from '../infrastructure/api/TallerRepository';
+import { instructorRepository } from '../infrastructure/api/InstructorRepository';
+import { etapaRepository } from '../infrastructure/api/EtapaRepository';
+import { useOperation } from '@/core/hooks/useOperation';
 
 export const useTalleres = () => {
-  const [loading, setLoading] = useState(false);
   const [talleres, setTalleres] = useState<Taller[]>([]);
   const [instructores, setInstructores] = useState<Instructor[]>([]);
   const [tiposTaller, setTiposTaller] = useState<{id: number, descripcion: string}[]>([]);
 
-  const fetchTalleres = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await TallerAPI.getAllTalleres();
-      setTalleres(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error fetching talleres:', error);
-      setTalleres([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { execute: fetchTalleres, loading: loadingTalleres } = useOperation(
+    () => tallerRepository.getAll(),
+    { onSuccess: data => setTalleres(Array.isArray(data) ? data : []) }
+  );
 
-  const fetchInstructores = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await TallerAPI.getAllInstructores();
-      setInstructores(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error fetching instructores:', error);
-      setInstructores([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { execute: fetchInstructores, loading: loadingInstructores } = useOperation(
+    () => instructorRepository.getAll(),
+    { onSuccess: data => setInstructores(Array.isArray(data) ? data : []) }
+  );
 
   const fetchTiposTaller = useCallback(async () => {
     try {
-      const data = await EtapaAPI.getEtapaCampos();
+      const data = await etapaRepository.getEtapaCampos();
       if (data && Array.isArray(data.tiposEtapa)) {
         setTiposTaller(data.tiposEtapa);
       }
@@ -47,81 +32,47 @@ export const useTalleres = () => {
     }
   }, []);
 
-  const saveTaller = useCallback(async (data: Partial<Taller>) => {
-    setLoading(true);
-    try {
-      if (data.id) {
-        await TallerAPI.updateTaller(data.id, data as Record<string, unknown>);
-      } else {
-        await TallerAPI.createTaller(data as Record<string, unknown>);
-      }
-      await fetchTalleres();
-    } catch (error) {
-      console.error('Error saving taller:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTalleres]);
+  const { execute: execSaveTaller, loading: loadingSaveTaller } = useOperation(
+    (data: Partial<Taller>) => {
+      if (data.id) return tallerRepository.update(data.id, data as Record<string, unknown>);
+      return tallerRepository.create(data as Record<string, unknown>);
+    },
+    { onSuccess: () => fetchTalleres() }
+  );
 
-  const deleteTaller = useCallback(async (id: number) => {
-    setLoading(true);
-    try {
-      await TallerAPI.deleteTaller(id);
-      await fetchTalleres();
-    } catch (error) {
-      console.error('Error deleting taller:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTalleres]);
+  const { execute: deleteTaller, loading: loadingDeleteTaller } = useOperation(
+    (id: number) => tallerRepository.delete(id),
+    { onSuccess: () => fetchTalleres() }
+  );
 
-  const saveInstructor = useCallback(async (data: Partial<Instructor>) => {
-    setLoading(true);
-    try {
-      if (data.idInstructor) {
-        await TallerAPI.updateInstructor(data.idInstructor, data as Record<string, unknown>);
-      } else {
-        await TallerAPI.createInstructor(data as Record<string, unknown>);
-      }
-      await fetchInstructores();
-    } catch (error) {
-      console.error('Error saving instructor:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchInstructores]);
+  const { execute: execSaveInstructor, loading: loadingSaveInstructor } = useOperation(
+    (data: Partial<Instructor>) => {
+      if (data.idInstructor) return instructorRepository.update(data.idInstructor, data as Record<string, unknown>);
+      return instructorRepository.create(data as Record<string, unknown>);
+    },
+    { onSuccess: () => fetchInstructores() }
+  );
 
-  const deleteInstructor = useCallback(async (id: number) => {
-    setLoading(true);
-    try {
-      await TallerAPI.deleteInstructor(id);
-      await fetchInstructores();
-    } catch (error) {
-      console.error('Error deleting instructor:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchInstructores]);
+  const { execute: deleteInstructor, loading: loadingDeleteInstructor } = useOperation(
+    (id: number) => instructorRepository.delete(id),
+    { onSuccess: () => fetchInstructores() }
+  );
 
   const getInstructorPhotoUrl = (id: number) => {
-    return TallerAPI.getInstructorPhotoUrl(id);
+    return instructorRepository.getPhotoUrl(id);
   };
 
   return {
-    loading,
+    loading: loadingTalleres || loadingInstructores || loadingSaveTaller || loadingDeleteTaller || loadingSaveInstructor || loadingDeleteInstructor,
     talleres,
     instructores,
     tiposTaller,
     fetchTalleres,
     fetchInstructores,
     fetchTiposTaller,
-    saveTaller,
+    saveTaller: execSaveTaller,
     deleteTaller,
-    saveInstructor,
+    saveInstructor: execSaveInstructor,
     deleteInstructor,
     getInstructorPhotoUrl,
   };

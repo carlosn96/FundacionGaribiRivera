@@ -53,7 +53,7 @@ export function LoginForm() {
   const onSubmit = async (data: LoginPayload) => {
     const user = await login(data);
     if (user && user.id) {
-      const userType = Number(user.tipo_usuario || 0);
+      const userType = Number(user.tipoUsuario || 0);
       const destination = getRedirectPath(userType);
       router.refresh();
       router.replace(destination);

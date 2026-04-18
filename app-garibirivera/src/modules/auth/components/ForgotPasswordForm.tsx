@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
 
   useEffect(() => {
     if (isUserLoading || !user) return;
-    router.replace(getRedirectPath(Number(user.tipo_usuario || 0)));
+    router.replace(getRedirectPath(Number(user.tipoUsuario || 0)));
   }, [user, isUserLoading, router]);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export function ForgotPasswordForm() {
 
   const passwordForm = useForm<ResetPasswordPayload>({
     resolver: zodResolver(ResetPasswordPayloadSchema),
-    defaultValues: { contrasena: "", confirmar_contrasena: "" }
+    defaultValues: { nuevaContrasena: "", confirmarContrasena: "" }
   });
 
   // Ejecutor genérico para evitar redundancia en manejadores
@@ -130,7 +130,7 @@ export function ForgotPasswordForm() {
   };
 
   const handleResetPassword = (data: ResetPasswordPayload) => 
-    executeAction(() => authService.resetPassword(targetEmail, verificationCode, data.contrasena), () => {
+    executeAction(() => authService.resetPassword(targetEmail, verificationCode, data.nuevaContrasena), () => {
       setIsSuccess(true);
     });
 
@@ -200,7 +200,7 @@ export function ForgotPasswordForm() {
         {currentStep === 3 && (
           <Form {...passwordForm}>
             <form onSubmit={passwordForm.handleSubmit(handleResetPassword)} className="space-y-6">
-              <FormField control={passwordForm.control} name="contrasena" render={({ field }) => (
+              <FormField control={passwordForm.control} name="nuevaContrasena" render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="flex items-center gap-2"><Lock className="w-4 h-4" /> Nueva Contraseña</FormLabel>
                   <FormControl>
@@ -212,7 +212,7 @@ export function ForgotPasswordForm() {
                   <FormMessage className="text-xs" />
                 </FormItem>
               )} />
-              <FormField control={passwordForm.control} name="confirmar_contrasena" render={({ field }) => (
+              <FormField control={passwordForm.control} name="confirmarContrasena" render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Confirmar Contraseña</FormLabel>
                   <FormControl><Input {...field} type="password" className="h-12 bg-[var(--surface-raised)]" placeholder="Repite tu nueva contraseña" /></FormControl>

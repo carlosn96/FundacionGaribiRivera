@@ -72,7 +72,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     
     if (isRoot) {
       if (user) {
-        const userType = Number(user.tipo_usuario || 0);
+        const userType = Number(user.tipoUsuario || 0);
         const destination = getRedirectPath(userType);
         
         console.log('Centralized Redirect: To Dashboard', destination);

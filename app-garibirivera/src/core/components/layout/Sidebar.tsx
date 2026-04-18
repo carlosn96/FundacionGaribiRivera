@@ -72,7 +72,7 @@ export default function Sidebar({
   }, []);
 
   // Auto-derive title, subtitle, icon, and settings URL from user context
-  const userType = user?.tipo_usuario ?? 1;
+  const userType = user?.tipoUsuario ?? 1;
   const displayTitle = title || getUserRoleName(userType);
   const displaySubtitle = subtitle || "Panel de Control";
   const DisplayIcon = icon || userTypeIcons[userType] || Lightbulb;

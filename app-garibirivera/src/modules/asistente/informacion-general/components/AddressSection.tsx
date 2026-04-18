@@ -53,7 +53,7 @@ export const AddressSection: React.FC<Props> = ({ form }) => {
           <div className="md:col-span-2">
             <FormField
               control={form.control}
-              name="domicilio.numero_exterior"
+              name="domicilio.numeroExterior"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><VisionText variant="secondary" className="text-[10px] font-bold uppercase">Ext.</VisionText> <span className="text-red-500">*</span></FormLabel>
@@ -68,7 +68,7 @@ export const AddressSection: React.FC<Props> = ({ form }) => {
           <div className="md:col-span-2">
             <FormField
               control={form.control}
-              name="domicilio.numero_interior"
+              name="domicilio.numeroInterior"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><VisionText variant="secondary" className="text-[10px] font-bold uppercase">Int.</VisionText></FormLabel>
@@ -99,7 +99,7 @@ export const AddressSection: React.FC<Props> = ({ form }) => {
           <div className="md:col-span-3">
             <FormField
               control={form.control}
-              name="domicilio.codigo_postal"
+              name="domicilio.codigoPostal"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel><VisionText variant="secondary" className="text-[10px] font-bold uppercase">C.P.</VisionText> <span className="text-red-500">*</span></FormLabel>

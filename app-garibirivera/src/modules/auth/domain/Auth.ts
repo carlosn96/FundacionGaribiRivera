@@ -8,13 +8,15 @@ export const UserSchema = z.object({
   id: z.number(),
   nombre: z.string(),
   apellidos: z.string(),
-  correo_electronico: z.email({ message: 'Correo electrónico inválido' }).trim(),
-  numero_celular: z.string(),
-  estado_activo: z.union([z.number(), z.string()]).optional(),
-  tipo_usuario: z.number(),
+  correoElectronico: z.email({ message: 'Correo electrónico inválido' }).trim(),
+  numeroCelular: z.string(),
+  estadoActivo: z.boolean().optional(),
+  tipoUsuario: z.number(),
   rol: z.string(),
   permisos: z.array(z.number()).optional().default([]),
-  fotografia_base64: z.string().nullable().optional()
+  fotografiaBase64: z.string().nullable().optional(),
+  tieneFoto: z.boolean().optional().default(false),
+  contrasena: z.string().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
@@ -24,10 +26,13 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-export type LoginResponse = BaseResponse & Partial<User> & {
-  token?: string;
-  user?: User;
-};
+export interface LoginResponseData extends User {
+  accessToken: string;
+}
+
+export interface LoginResponse extends BaseResponse {
+  data: LoginResponseData;
+}
 
 export interface RegisterResponse extends BaseResponse {
   user?: User;
@@ -64,7 +69,7 @@ export const RegisterPayloadSchema = z.object({
   correo: z.email({ message: 'Correo electrónico inválido' })
     .trim()
     .min(1, { message: 'El correo es requerido' }),
-  numero_celular: z.string()
+  numeroCelular: z.string()
     .trim()
     .min(1, { message: 'El teléfono es requerido' })
     .regex(/^\d{10}$/, { message: 'Deben ser exactamente 10 dígitos' }),
@@ -83,15 +88,17 @@ export const ForgotPasswordPayloadSchema = z.object({
 });
 
 export const ResetPasswordPayloadSchema = z.object({
-  contrasena: z.string()
+  correo: z.string().email(),
+  codigo: z.string().min(4).max(4),
+  nuevaContrasena: z.string()
     .min(1, { message: 'La contraseña es requerida' })
     .min(8, { message: 'Mínimo 8 caracteres' })
     .regex(/[A-Z]/, { message: 'Falta una mayúscula' })
     .regex(/\d/, { message: 'Falta un número' }),
-  confirmar_contrasena: z.string().min(1, { message: 'Confirma tu contraseña' }),
-}).refine((data) => data.contrasena === data.confirmar_contrasena, {
+  confirmarContrasena: z.string().min(1, { message: 'Confirma tu contraseña' }),
+}).refine((data) => data.nuevaContrasena === data.confirmarContrasena, {
   message: "Las contraseñas no coinciden",
-  path: ["confirmar_contrasena"],
+  path: ["confirmarContrasena"],
 });
 
 export type ForgotPasswordPayload = z.infer<typeof ForgotPasswordPayloadSchema>;

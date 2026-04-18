@@ -1,18 +1,13 @@
-export interface Emprendedor {
-  id: number;
-  id_usuario: number;
-  nombre: string;
-  apellidos: string;
-  correo: string;
-  numero_celular: string;
-  fotografia?: string;
-  fecha_graduacion?: string;
-  graduado?: boolean;
+import { User } from '@/modules/auth/domain/Auth';
+
+export interface Emprendedor extends User {
   referencia?: number;
-  fecha_credito?: string;
+  fechaCredito?: string;
+  graduado?: boolean;
+  fechaGraduacion?: string;
 }
 
 export interface EmprendedorFortalecimiento extends Emprendedor {
-  id_fortalecimiento: number;
-  fecha_registro: string;
+  idFortalecimiento: number;
+  fechaRegistroFortalecimiento: string;
 }

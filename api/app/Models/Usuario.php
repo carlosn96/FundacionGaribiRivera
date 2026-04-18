@@ -21,7 +21,7 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
      *
      * @var array
      */
-    protected $appends = ['rol', 'fotografia_base64', 'permisos'];
+    protected $appends = ['rol', 'fotografia_base64', 'permisos', 'tiene_foto'];
 
     /**
      * Indicates if the model should be timestamped.
@@ -139,6 +139,16 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
         }
         
         return [$this->tipo_usuario];
+    }
+
+    /**
+     * Get whether the user has a profile picture.
+     * 
+     * @return bool
+     */
+    public function getTieneFotoAttribute()
+    {
+        return !empty($this->attributes['fotografia']);
     }
 
     /**

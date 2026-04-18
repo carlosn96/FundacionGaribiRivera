@@ -36,7 +36,7 @@ export const LegalIdentitySection: React.FC<Props> = ({ form }) => {
       <div className="grid gap-6">
         <FormField
           control={form.control}
-          name="nombre_fundacion"
+          name="nombreFundacion"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export const LegalIdentitySection: React.FC<Props> = ({ form }) => {
 
         <FormField
           control={form.control}
-          name="representante_legal"
+          name="representanteLegal"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import { Button } from "@/core/components/ui/button";
 import { Presentation } from "lucide-react";
 import { Taller } from "../../domain/models/Taller";
 import { Instructor } from "../../domain/models/Instructor";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/core/components/ui/select";
+import { CorporateSelect } from "@/core/components/ui/CorporateSelect";
 import { Switch } from "@/core/components/ui/switch";
 
 interface TallerFormModalProps {
@@ -92,7 +92,7 @@ export function TallerFormModal({ isOpen, onClose, onSave, tallerToEdit, instruc
         <DialogHeader className="p-8 pb-4 bg-gradient-to-br from-fundacion-verde to-fundacion-verde-dark text-white">
           <DialogTitle className="text-2xl font-black tracking-tight uppercase flex items-center gap-4">
             <Presentation className="w-8 h-8" />
-            {tallerToEdit ? "Editar Sesión / Taller" : "Nueva Sesión / Taller"}
+            {tallerToEdit ? "Editar Taller" : "Nuevo Taller"}
           </DialogTitle>
           <DialogDescription className="text-zinc-100/70 font-medium">
             {tallerToEdit ? "Modifica los detalles operativos del taller seleccionado." : "Configura un nuevo taller para los emprendedores vinculados."}
@@ -102,7 +102,7 @@ export function TallerFormModal({ isOpen, onClose, onSave, tallerToEdit, instruc
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest">
-              {tallerToEdit ? "Nombre del Taller" : "Nombre de la Sesión"}
+             Nombre del Taller
             </label>
             <input 
               required
@@ -110,13 +110,13 @@ export function TallerFormModal({ isOpen, onClose, onSave, tallerToEdit, instruc
               value={formData.nombre}
               onChange={handleChange}
               className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-bold text-sm focus:ring-fundacion-verde/20 focus:border-fundacion-verde/50 transition-colors"
-              placeholder={tallerToEdit ? "Ej. Modelo de Negocio con Alma" : "Ej. Aspectos Legales y Laborales"}
+              placeholder={"Ej. Modelo de Negocio"}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest">Secuencia (1 a 15)</label>
+              <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest ml-1 opacity-60">Secuencia (1 a 15)</label>
               <input 
                 required
                 type="number"
@@ -125,55 +125,31 @@ export function TallerFormModal({ isOpen, onClose, onSave, tallerToEdit, instruc
                 name="numeroTaller"
                 value={formData.numeroTaller}
                 onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-bold text-sm focus:ring-fundacion-verde/20 focus:border-fundacion-verde/50"
+                className="w-full h-[46px] bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-bold text-sm focus:ring-[3px] focus:ring-fundacion-verde/10 focus:border-fundacion-verde/30 transition-all outline-none"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest">Módulo</label>
-              <Select value={formData.idTipoTaller?.toString()} onValueChange={(val) => handleSelectChange('idTipoTaller', val)}>
-                <SelectTrigger className="w-full h-[46px] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-bold focus:ring-fundacion-verde/20">
-                  <SelectValue placeholder="Selecciona el tipo" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-zinc-200 dark:border-zinc-800 shadow-xl">
-                  {tiposTaller.map((tipo) => (
-                    <SelectItem 
-                      key={tipo.id} 
-                      value={tipo.id.toString()} 
-                      className="font-bold py-3 pr-8 focus:bg-fundacion-verde/5 focus:text-fundacion-verde rounded-lg mx-1 cursor-pointer"
-                    >
-                      {tipo.descripcion}
-                    </SelectItem>
-                  ))}
-                  {tiposTaller.length === 0 && (
-                    <SelectItem value="1" className="font-bold py-3 pr-8 focus:bg-fundacion-verde/5 focus:text-fundacion-verde rounded-lg mx-1 cursor-pointer">Cargando...</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+            
+            <CorporateSelect
+              label="Módulo"
+              placeholder="Selecciona el tipo"
+              value={formData.idTipoTaller}
+              onValueChange={(val) => handleSelectChange('idTipoTaller', val)}
+              options={tiposTaller.map(t => ({ value: t.id, label: t.descripcion }))}
+              loading={tiposTaller.length === 0}
+            />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest">Instructor Asignado</label>
-            <Select value={formData.idInstructor?.toString()} onValueChange={(val) => handleSelectChange('idInstructor', val)}>
-              <SelectTrigger className="w-full h-[46px] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-bold focus:ring-fundacion-verde/20">
-                <SelectValue placeholder="Selecciona un instructor" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-zinc-200 dark:border-zinc-800 shadow-xl max-h-60">
-                {instructores.map((instructor) => (
-                  <SelectItem 
-                    key={instructor.idInstructor} 
-                    value={instructor.idInstructor.toString()} 
-                    className="font-bold py-3 pr-8 focus:bg-fundacion-verde/5 focus:text-fundacion-verde rounded-lg mx-1 cursor-pointer"
-                  >
-                    {instructor.nombreCompleto || `${instructor.nombre} ${instructor.apellidoPaterno}`}
-                  </SelectItem>
-                ))}
-                {instructores.length === 0 && (
-                  <SelectItem value="0" className="font-bold py-3 pr-8 focus:bg-fundacion-verde/5 focus:text-fundacion-verde rounded-lg mx-1 cursor-pointer">Sin instructores</SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
+          <CorporateSelect
+            label="Instructor Asignado"
+            placeholder="Selecciona un instructor"
+            value={formData.idInstructor}
+            onValueChange={(val) => handleSelectChange('idInstructor', val)}
+            options={instructores.map(i => ({ 
+              value: i.idInstructor, 
+              label: i.nombreCompleto || `${i.nombre} ${i.apellidoPaterno}` 
+            }))}
+            loading={instructores.length === 0}
+          />
 
           <div className="space-y-2">
             <label className="text-[10px] font-black vision-text-tertiary uppercase tracking-widest">Observaciones</label>

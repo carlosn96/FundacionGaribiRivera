@@ -1,29 +1,21 @@
 import { useState, useCallback } from 'react';
 import { EtapaFormacion } from '../domain/models/Etapa';
-import { EtapaAPI } from '../infrastructure/api/EtapaAPI';
+import { etapaRepository } from '../infrastructure/api/EtapaRepository';
+import { useOperation } from '@/core/hooks/useOperation';
 
 export const useEtapa = () => {
-  const [loading, setLoading] = useState(false);
   const [etapas, setEtapas] = useState<EtapaFormacion[]>([]);
   const [tiposEtapa, setTiposEtapa] = useState<{id: number, descripcion: string}[]>([]);
   const [currentEtapa, setCurrentEtapa] = useState<EtapaFormacion | null>(null);
 
-  const fetchEtapas = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await EtapaAPI.getAllEtapas();
-      setEtapas(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error fetching etapas:', error);
-      setEtapas([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { execute: getAllEtapas, loading: loadingAll } = useOperation(
+    () => etapaRepository.getAllEtapas(),
+    { onSuccess: data => setEtapas(Array.isArray(data) ? data : []) }
+  );
 
   const fetchMetadataEtapas = useCallback(async () => {
     try {
-      const resp = await EtapaAPI.getEtapaCampos();
+      const resp = await etapaRepository.getEtapaCampos();
       if (resp && resp.tiposEtapa) {
         setTiposEtapa(resp.tiposEtapa);
       }
@@ -32,72 +24,34 @@ export const useEtapa = () => {
     }
   }, []);
 
-  const setEtapaActual = useCallback(async (id: number) => {
-    setLoading(true);
-    try {
-      await EtapaAPI.setEtapaActual(id);
-      await fetchEtapas();
-    } catch (error) {
-      console.error('Error setting actual etapa:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchEtapas]);
+  const { execute: execSetActual, loading: loadingSetActual } = useOperation(
+    (id: number) => etapaRepository.setEtapaActual(id),
+    { onSuccess: () => getAllEtapas() }
+  );
 
-  const fetchEtapaActual = useCallback(async () => {
-    setLoading(true);
-    try {
-      const resp = await EtapaAPI.getEtapaActual();
-      setCurrentEtapa(resp || null);
-    } catch (error) {
-      console.error('Error fetching actual etapa:', error);
-      setCurrentEtapa(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { execute: fetchEtapaActual, loading: loadingActual } = useOperation(
+    () => etapaRepository.getEtapaActual(),
+    { onSuccess: setCurrentEtapa }
+  );
 
-  const removeEtapa = useCallback(async (id: number) => {
-    setLoading(true);
-    try {
-      await EtapaAPI.deleteEtapa(id);
-      await fetchEtapas();
-    } catch (error) {
-      console.error('Error deleting etapa:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchEtapas]);
+  const { execute: removeEtapa, loading: loadingDelete } = useOperation(
+    (id: number) => etapaRepository.deleteEtapa(id),
+    { onSuccess: () => getAllEtapas() }
+  );
 
-  const addEtapa = useCallback(async (data: any) => {
-    setLoading(true);
-    try {
-      await EtapaAPI.createEtapa(data);
-      await fetchEtapas();
-    } catch (error) {
-      console.error('Error creating etapa:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchEtapas]);
+  const { execute: addEtapa, loading: loadingAdd } = useOperation(
+    (data: Record<string, any>) => etapaRepository.createEtapa(data),
+    { onSuccess: () => getAllEtapas() }
+  );
 
-  const updateEtapa = useCallback(async (id: number, data: any) => {
-    setLoading(true);
-    try {
-      await EtapaAPI.updateEtapa(id, data);
-      await fetchEtapas();
-    } catch (error) {
-      console.error('Error updating etapa:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchEtapas]);
+  const { execute: updateEtapa, loading: loadingUpdate } = useOperation(
+    (id: number, data: Record<string, any>) => etapaRepository.updateEtapa(id, data),
+    { onSuccess: () => getAllEtapas() }
+  );
 
   const fetchCronograma = async (id: number) => {
     try {
-      return await EtapaAPI.getEtapaCronograma(id);
+      return await etapaRepository.getEtapaCronograma(id);
     } catch (error) {
       console.error('Error fetching cronograma:', error);
       return [];
@@ -105,13 +59,13 @@ export const useEtapa = () => {
   };
 
   return {
-    loading,
+    loading: loadingAll || loadingSetActual || loadingActual || loadingDelete || loadingAdd || loadingUpdate,
     etapas,
     tiposEtapa,
     currentEtapa,
-    fetchEtapas,
+    fetchEtapas: getAllEtapas,
     fetchMetadataEtapas,
-    setEtapaActual,
+    setEtapaActual: execSetActual,
     fetchEtapaActual,
     removeEtapa,
     addEtapa,

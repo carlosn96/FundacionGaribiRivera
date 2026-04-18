@@ -94,11 +94,11 @@ export function EmprendedorTable({ emprendedores, loading, onDelete }: Emprended
                 <td className="px-8 py-6">
                   <div className="space-y-1">
                     <p className="text-sm vision-text-secondary font-bold tracking-tight truncate max-w-[200px] opacity-80 group-hover:opacity-100 transition-opacity">
-                      {emp.correo || "SIN CORREO"}
+                      {emp.correoElectronico || "SIN CORREO"}
                     </p>
                     <p className="vision-caption vision-text-tertiary font-black text-[9px] tracking-widest uppercase flex items-center gap-2">
                         <span className="w-1 h-1 rounded-full bg-fundacion-verde" />
-                        CEL: {emp.numero_celular || "NO REGISTRADO"}
+                        CEL: {emp.numeroCelular || "NO REGISTRADO"}
                     </p>
                   </div>
                 </td>

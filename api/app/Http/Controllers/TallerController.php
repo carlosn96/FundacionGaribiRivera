@@ -7,6 +7,8 @@ use App\Http\Resources\TallerResource;
 use Illuminate\Http\Request;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use App\Models\CronogramaTaller;
+use App\Models\EtapaFormacion;
 
 class TallerController extends Controller
 {
@@ -64,7 +66,7 @@ class TallerController extends Controller
                 'id_tipo_taller' => $tipoTaller,
                 'id_instructor' => $data['idInstructor'],
             ];
-            
+
             $taller = Taller::create($tallerData);
             $taller->load(['instructor', 'tipo_taller_rel']);
 
@@ -92,7 +94,7 @@ class TallerController extends Controller
                 'observaciones' => 'nullable|string',
                 'evaluacionHabilitada' => 'nullable|boolean'
             ]);
-            
+
             $data = $request->all();
 
             $numeroTaller = $data['numeroTaller'] ?? 0;
@@ -139,4 +141,40 @@ class TallerController extends Controller
             return ApiResponse::error('Error al eliminar el taller: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Lista los talleres que estan asociados al cronograma de una etapa
+     *
+     * @param mixed $idEtapa
+     * @return JsonResponse
+     */
+    public function getTalleresPorEtapa($idEtapa): JsonResponse
+    {
+        try {
+            $rows = CronogramaTaller::with('taller')
+                ->where('id_etapa', $idEtapa)
+                ->orderBy('fecha', 'asc')
+                ->get();
+            $result = $rows->map(function ($c) {
+                return [
+                    'id' => $c->taller ? $c->taller->id_taller : null,
+                    'nombre_taller' => $c->taller ? $c->taller->nombre : null,
+                    'fecha' => $c->fecha ? $c->fecha->format('d/m/Y') : null,
+                ];
+            })->values();
+            return ApiResponse::success($result);
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al obtener los talleres: ' . $e->getMessage());
+        }
+    }
+
+    public function getTalleresPorEtapaActual(): JsonResponse
+    {
+        try {
+            return $this->getTalleresPorEtapa(EtapaFormacion::actual()->id_etapa);
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error al obtener los talleres: ' . $e->getMessage());
+        }
+    }
+
 }

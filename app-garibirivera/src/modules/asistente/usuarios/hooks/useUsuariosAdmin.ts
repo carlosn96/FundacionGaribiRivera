@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
-import { UserAPI } from '@/modules/asistente/usuarios/infrastructure/api/UserAPI';
+import { userRepository } from '@/modules/asistente/usuarios/infrastructure/api/UserRepository';
 import type { User } from '@/modules/auth/domain/Auth';
 import { useToast } from '@/core/hooks/use-toast';
 import { normalizePermissions, PERMISSIONS } from '@/modules/auth/domain/Roles';
+import { useOperation } from '@/core/hooks/useOperation';
 
 export function useUsuariosAdmin() {
   const { toast } = useToast();
   const [usuarios, setUsuarios] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPermission, setFilterPermission] = useState<number | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -15,47 +15,84 @@ export function useUsuariosAdmin() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingUser, setEditingUser] = useState<Partial<User> | null>(null);
-  const [saveLoading, setSaveLoading] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordUser, setPasswordUser] = useState<User | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const loadUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await UserAPI.getAllAsistentes();
-      setUsuarios(data);
-      if (data.length > 0 && !selectedUserId) {
-        setSelectedUserId(data[0].id);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los usuarios",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
+  // Operación: Cargar usuarios
+  const { execute: loadUsers, loading: loadingUsers } = useOperation(
+    () => userRepository.getAllAsistentes(),
+    {
+      onSuccess: (data) => {
+        setUsuarios(Array.isArray(data) ? data : []);
+        if (data.length > 0 && !selectedUserId) {
+          setSelectedUserId(data[0].id);
+        }
+      },
+      onError: () => toast({ title: "Error", description: "No se pudieron cargar los usuarios", variant: "destructive" })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]);
+  );
 
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
 
+  // Operación: Guardar/Editar usuario
+  const { execute: execSave, loading: saveLoading } = useOperation(
+    async (mode: 'create' | 'edit', user: Partial<User>) => {
+      if (mode === 'edit') {
+        if (!user.id) return;
+        return userRepository.update(user.id, user);
+      }
+      return userRepository.create(user as User);
+    },
+    {
+      onSuccess: () => {
+        toast({ title: "Éxito", description: `Usuario ${modalMode === 'edit' ? 'actualizado' : 'creado'} correctamente` });
+        setIsEditModalOpen(false);
+        loadUsers();
+      },
+      onError: () => toast({ title: "Error", description: `No se pudo ${modalMode === 'edit' ? 'actualizar' : 'crear'} el usuario`, variant: "destructive" })
+    }
+  );
+
+  // Operación: Eliminar usuario
+  const { execute: execDelete, loading: deleteLoading } = useOperation(
+    (id: number) => userRepository.delete(id),
+    {
+      onSuccess: () => {
+        toast({ title: "Éxito", description: "Usuario eliminado correctamente" });
+        setIsDeleteModalOpen(false);
+        setUserToDelete(null);
+        if (selectedUserId === userToDelete?.id) setSelectedUserId(null);
+        loadUsers();
+      },
+      onError: () => toast({ title: "Error", description: "No se pudo eliminar el usuario", variant: "destructive" })
+    }
+  );
+
+  // Operación: Actualizar contraseña
+  const { execute: execUpdatePassword, loading: passwordLoading } = useOperation(
+    (id: number, pass: string) => userRepository.update(id, { contrasena: pass }),
+    {
+      onSuccess: () => {
+        toast({ title: "Éxito", description: "Contraseña actualizada correctamente" });
+        setIsPasswordModalOpen(false);
+      },
+      onError: () => toast({ title: "Error", description: "No se pudo actualizar la contraseña", variant: "destructive" })
+    }
+  );
+
   const filteredUsers = usuarios.filter(user => {
     const matchesSearch = 
       user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || 
       user.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.correo_electronico.toLowerCase().includes(searchTerm.toLowerCase());
+      user.correoElectronico.toLowerCase().includes(searchTerm.toLowerCase());
     
     const userPermsList = normalizePermissions(user.permisos);
     const matchesPermission = filterPermission ? userPermsList.map(Number).includes(Number(filterPermission)) : true;
@@ -70,10 +107,10 @@ export function useUsuariosAdmin() {
     setEditingUser({
       nombre: '',
       apellidos: '',
-      correo_electronico: '',
-      numero_celular: '',
+      correoElectronico: '',
+      numeroCelular: '',
       permisos: [],
-      estado_activo: 1,
+      estadoActivo: true,
       rol: ''
     });
     setIsEditModalOpen(true);
@@ -110,56 +147,17 @@ export function useUsuariosAdmin() {
       return;
     }
 
-    try {
-      setPasswordLoading(true);
-      await UserAPI.update(passwordUser.id, { contrasena: newPassword });
-      toast({ title: "Éxito", description: "Contraseña actualizada correctamente" });
-      setIsPasswordModalOpen(false);
-    } catch (error) {
-      toast({ title: "Error", description: "No se pudo actualizar la contraseña", variant: "destructive" });
-    } finally {
-      setPasswordLoading(false);
-    }
+    await execUpdatePassword(passwordUser.id, newPassword);
   };
 
   const handleConfirmDelete = async () => {
     if (!userToDelete) return;
-    try {
-      setDeleteLoading(true);
-      await UserAPI.delete(userToDelete.id);
-      toast({ title: "Éxito", description: "Usuario eliminado correctamente" });
-      setIsDeleteModalOpen(false);
-      setUserToDelete(null);
-      if (selectedUserId === userToDelete.id) {
-        setSelectedUserId(null);
-      }
-      loadUsers();
-    } catch (error) {
-      toast({ title: "Error", description: "No se pudo eliminar el usuario", variant: "destructive" });
-    } finally {
-      setDeleteLoading(false);
-    }
+    await execDelete(userToDelete.id);
   };
 
   const handleSaveUser = async () => {
     if (!editingUser) return;
-    try {
-      setSaveLoading(true);
-      if (modalMode === 'edit') {
-        if (!editingUser.id) return;
-        await UserAPI.update(editingUser.id, editingUser);
-        toast({ title: "Éxito", description: "Usuario actualizado correctamente" });
-      } else {
-        await UserAPI.create(editingUser as User);
-        toast({ title: "Éxito", description: "Usuario creado correctamente" });
-      }
-      setIsEditModalOpen(false);
-      loadUsers();
-    } catch (error) {
-      toast({ title: "Error", description: `No se pudo ${modalMode === 'edit' ? 'actualizar' : 'crear'} el usuario`, variant: "destructive" });
-    } finally {
-      setSaveLoading(false);
-    }
+    await execSave(modalMode, editingUser);
   };
 
   const togglePermission = (permissionId: number) => {
@@ -182,10 +180,10 @@ export function useUsuariosAdmin() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setEditingUser({
-          ...editingUser!,
-          fotografia_base64: base64String.split(',')[1]
-        });
+        setEditingUser(prev => prev ? ({
+          ...prev,
+          fotografiaBase64: base64String.split(',')[1]
+        }) : null);
       };
       reader.readAsDataURL(file);
     }
@@ -205,7 +203,7 @@ export function useUsuariosAdmin() {
 
   return {
     usuarios,
-    loading,
+    loading: loadingUsers,
     searchTerm, setSearchTerm,
     filterPermission, setFilterPermission,
     selectedUserId, setSelectedUserId,

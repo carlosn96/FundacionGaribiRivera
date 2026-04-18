@@ -66,15 +66,15 @@ export function UserDetail({
               <div className="relative">
                 <div className="w-24 h-24 rounded-3xl border-2 border-[var(--border-brand)] overflow-hidden bg-[var(--interact-hover)] p-1">
                   <div className="w-full h-full rounded-2xl overflow-hidden">
-                    {selectedUser.fotografia_base64 ? (
-                      <img src={`data:image/jpeg;base64,${selectedUser.fotografia_base64}`} alt="" className="w-full h-full object-cover" />
+                    {selectedUser.fotografiaBase64 ? (
+                      <img src={`data:image/jpeg;base64,${selectedUser.fotografiaBase64}`} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <Users className="w-full h-full p-4 opacity-20" />
                     )}
                   </div>
                 </div>
-                <div className={`absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border-2 border-white shadow-sm ${selectedUser.estado_activo ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
-                  {selectedUser.estado_activo ? 'Activo' : 'Inactivo'}
+                <div className={`absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border-2 border-white shadow-sm ${selectedUser.estadoActivo ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+                  {selectedUser.estadoActivo ? 'Activo' : 'Inactivo'}
                 </div>
               </div>
               <div>
@@ -107,7 +107,7 @@ export function UserDetail({
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase text-[var(--text-disabled)] leading-none mb-1">Teléfono</p>
-                    <p className="text-md font-bold vision-text-primary">{selectedUser.numero_celular || "Sin registrar"}</p>
+                    <p className="text-md font-bold vision-text-primary">{selectedUser.numeroCelular || "Sin registrar"}</p>
                   </div>
                 </div>
                 
@@ -117,7 +117,7 @@ export function UserDetail({
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase text-[var(--text-disabled)] leading-none mb-1">Correo Electrónico</p>
-                    <p className="text-md font-bold vision-text-primary break-all">{selectedUser.correo_electronico}</p>
+                    <p className="text-md font-bold vision-text-primary break-all">{selectedUser.correoElectronico}</p>
                   </div>
                 </div>
               </div>

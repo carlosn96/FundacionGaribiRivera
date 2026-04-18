@@ -65,6 +65,7 @@ class CobranzaController extends Controller
     {
         try {
             $expediente = EmprendedorExpediente::with([
+                'emprendedor.usuario',
                 'aval.codigoPostal.municipio.estado',
                 'inmuebleGarantia.codigoPostal.municipio.estado',
                 'resumenEjecutivo.viabilidad',

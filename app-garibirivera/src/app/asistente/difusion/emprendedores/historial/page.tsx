@@ -25,7 +25,7 @@ export default function HistorialEmprendedoresPage() {
   // Lógica de filtrado en vista (Idealmente debería estar en el hook)
   const filteredUsers = emprendedores.filter(emp => 
     `${emp.nombre} ${emp.apellidos}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.correo?.toLowerCase().includes(searchTerm.toLowerCase())
+    emp.correoElectronico?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
