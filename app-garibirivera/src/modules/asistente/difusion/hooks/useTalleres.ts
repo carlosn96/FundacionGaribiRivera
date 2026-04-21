@@ -13,12 +13,12 @@ export const useTalleres = () => {
 
   const { execute: fetchTalleres, loading: loadingTalleres } = useOperation(
     () => tallerRepository.getAll(),
-    { onSuccess: data => setTalleres(Array.isArray(data) ? data : []) }
+    { onSuccess: data => setTalleres(Array.isArray(data) ? data : []), showToast: false }
   );
 
   const { execute: fetchInstructores, loading: loadingInstructores } = useOperation(
     () => instructorRepository.getAll(),
-    { onSuccess: data => setInstructores(Array.isArray(data) ? data : []) }
+    { onSuccess: data => setInstructores(Array.isArray(data) ? data : []), showToast: false }
   );
 
   const fetchTiposTaller = useCallback(async () => {

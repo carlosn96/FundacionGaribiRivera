@@ -10,7 +10,7 @@ import { useUser } from '@/modules/auth/context/UserContext';
 import { guardarLineaBase, recuperarCatalogosLineaBase } from '@/modules/emprendedor/linea-base/application/services/lineaBase';
 import { Alert, AlertDescription } from '@/core/components/ui/alert';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
-import { CatalogResponseSchema, type CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { CatalogResponseSchema, type CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 import { createInformacionPreliminarConfig, CatalogosSeccionPreliminar } from './configs/seccionPreliminarConfig';
 import { createIdentificacionConfig, CatalogosSeccionIdentificacion } from './configs/seccionIdentificacionConfig';
 import { createDomicilioConfig } from './configs/seccionDomicilioConfig';

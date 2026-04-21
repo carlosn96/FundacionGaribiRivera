@@ -1,49 +1,161 @@
 "use client";
 
-import React from 'react';
-import { Eye, Edit, Trash2, Users, UserPlus } from "lucide-react";
-import { 
-  VisionGlassWindow, 
-  VisionBadge 
-} from "@/core/components/ui/vision-glass";
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { Eye, Edit, Trash2, Users, UserPlus, MoreVertical } from "lucide-react";
+import { VisionBadge } from "@/core/components/ui/vision-glass";
 import { Button } from "@/core/components/ui/button";
 import { Emprendedor } from "../../domain/models/Emprendedor";
 import ModuleEmptyState from "@/core/components/ui/module-empty-state";
+import { VisionAvatar } from "@/core/components/ui/vision-avatar";
+import { CorporateTable, CorporateColumn } from "@/core/components/ui/CorporateTable";
+import { useConfirm } from "@/core/context/ConfirmContext";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/core/components/ui/dropdown-menu";
 
 interface EmprendedorTableProps {
   emprendedores: Emprendedor[];
   loading?: boolean;
   onDelete?: (id: number) => void;
+  onGetPhoto: (emp: Emprendedor) => string;
 }
 
-export function EmprendedorTable({ emprendedores, loading, onDelete }: EmprendedorTableProps) {
-  if (loading) {
-    return (
-      <VisionGlassWindow className="p-0 overflow-hidden shadow-xl border-zinc-200/50">
-        <div className="h-20 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100" />
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="px-8 py-8 flex items-center justify-between gap-8 animate-pulse border-b border-zinc-50">
-            <div className="flex items-center gap-6">
-              <div className="w-11 h-11 rounded-xl bg-zinc-200" />
-              <div className="space-y-3">
-                <div className="h-4 bg-zinc-200 rounded w-40" />
-                <div className="h-3 bg-zinc-100 rounded w-24" />
-              </div>
-            </div>
-            <div className="h-6 bg-zinc-100 rounded-lg w-32" />
-            <div className="h-8 bg-zinc-100 rounded-lg w-48" />
-          </div>
-        ))}
-      </VisionGlassWindow>
-    );
-  }
+export function EmprendedorTable({ emprendedores, loading, onDelete, onGetPhoto }: EmprendedorTableProps) {
+  const router = useRouter();
+  const confirm = useConfirm();
 
-  if (!emprendedores || emprendedores.length === 0) {
+  const handleDelete = async (emp: Emprendedor) => {
+    const isConfirmed = await confirm({
+      title: "¿Eliminar Emprendedor?",
+      description: `¿Estás seguro de que deseas eliminar permanentemente a ${emp.nombre} ${emp.apellidos}? Esta acción no se puede deshacer.`,
+      variant: "destructive"
+    });
+
+    if (isConfirmed) {
+      onDelete?.(emp.id);
+    }
+  };
+  
+  const columns = useMemo((): CorporateColumn<Emprendedor>[] => [
+    {
+      key: 'nombreComp',
+      header: 'Información del Emprendedor',
+      sortable: true,
+      className: 'min-w-[250px]',
+      render: (emp) => (
+        <div className="flex items-center gap-5">
+          <VisionAvatar 
+            src={onGetPhoto(emp)} 
+            alt={emp.nombre} 
+            initials={`${emp.nombre?.charAt(0)}${emp.apellidos?.charAt(0)}`}
+          />
+          <div className="min-w-0">
+            <p className="font-bold vision-text-primary text-sm leading-tight truncate transition-colors uppercase tracking-tight">
+              {emp.nombre} {emp.apellidos}
+            </p>
+            <p className="vision-caption vision-text-tertiary mt-1.5 font-black tracking-widest text-[8px] uppercase opacity-40">
+              EXPEDIENTE: {emp.idEmprendedor || "SIN ASIGNAR"}
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'contacto',
+      header: 'Datos de Contacto',
+      hiddenOn: 'sm',
+      render: (emp) => (
+        <div className="space-y-1">
+          <p className="text-sm vision-text-secondary font-bold tracking-tight truncate max-w-[200px] opacity-80">
+            {emp.correoElectronico || "SIN CORREO"}
+          </p>
+          <p className="vision-caption vision-text-tertiary font-black text-[9px] tracking-widest uppercase flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-fundacion-verde" />
+              CEL: {emp.numeroCelular || "NO REGISTRADO"}
+          </p>
+        </div>
+      )
+    },
+    {
+      key: 'graduado',
+      header: 'Estatus',
+      sortable: true,
+      hiddenOn: 'md',
+      render: (emp) => (
+        <VisionBadge
+          sentiment={emp.graduado ? "success" : "brand"}
+          className="px-4 py-1.5 font-black text-[9px] tracking-[0.2em] border shadow-sm uppercase h-8 flex items-center w-max"
+        >
+          {emp.graduado ? "GRADUADO" : "EN PROGRAMA"}
+        </VisionBadge>
+      )
+    },
+    {
+      key: 'acciones',
+      header: 'Acciones',
+      headerClassName: 'text-right',
+      className: 'text-right w-20',
+      render: (emp) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="visionGlass" 
+              size="icon" 
+              className="h-9 w-9 rounded-xl shadow-sm border border-border-default hover:bg-fundacion-amarillo/10 group transition-all"
+            >
+              <MoreVertical className="w-4 h-4 text-vision-text-tertiary group-hover:text-fundacion-amarillo transition-colors" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 vision-glass">
+            <DropdownMenuLabel className="vision-caption-upper px-2 py-1.5 opacity-50">Acciones</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              className="flex items-center gap-3 cursor-pointer py-2.5 hover:bg-fundacion-amarillo/5"
+              onClick={() => router.push(`/asistente/difusion/emprendedores/detalle?id=${emp.idEmprendedor}`)}
+            >
+              <div className="p-1.5 rounded-lg bg-fundacion-amarillo/10 text-fundacion-amarillo">
+                <Eye className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-semibold text-xs">Ver Perfil</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem 
+              className="flex items-center gap-3 cursor-pointer py-2.5 text-red-500 hover:bg-red-500/10"
+              onClick={() => handleDelete(emp)}
+            >
+              <div className="p-1.5 rounded-lg bg-red-500/10">
+                <Trash2 className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-semibold text-xs">Eliminar Permanente</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
+  ], [onDelete, onGetPhoto]);
+
+  // Aplanamos datos para que el sortable por 'nombreComp' funcione bien
+  const flatData = useMemo(() => {
+    if (!emprendedores) return [];
+    return emprendedores.map(emp => ({
+      ...emp,
+      nombreComp: `${emp.nombre} ${emp.apellidos}`.toLowerCase()
+    }));
+  }, [emprendedores]);
+
+  // Mantenemos el estado vacío enriquecido de antes en lugar de usar el genérico de CorporateTable
+  if (!loading && (!emprendedores || emprendedores.length === 0)) {
     return (
       <ModuleEmptyState
         icon={Users}
-        title="Sin emprendedores registrados"
-        description="Aún no hay prospectos en el historial. Registre el primero para comenzar con el proceso de difusión y seguimiento."
+        title="Sin emprendedores disponibles"
+        description="La consulta no arrojó resultados"
         action={{
           label: "Registrar Nuevo Emprendedor",
           href: "/asistente/difusion/emprendedores/nuevo",
@@ -55,85 +167,11 @@ export function EmprendedorTable({ emprendedores, loading, onDelete }: Emprended
   }
 
   return (
-    <VisionGlassWindow className="p-0 overflow-hidden shadow-xl border-brand/5 animate-in slide-in-from-bottom-5 fade-in duration-700">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/30 backdrop-blur-sm">
-              {["Información del Emprendedor", "Datos de Contacto", "Estatus del Programa", "Acciones Administrativas"].map((h) => (
-                <th
-                  key={h}
-                  className="px-8 py-6 vision-caption-upper vision-text-tertiary font-black tracking-widest text-[9px] uppercase opacity-70"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[var(--border-subtle)]">
-            {emprendedores.map((emp) => (
-              <tr
-                key={emp.id}
-                className="hover:bg-[var(--interact-hover)] transition-all group border-l-4 border-l-transparent hover:border-l-fundacion-verde"
-              >
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fundacion-verde to-fundacion-verde-dark flex items-center justify-center text-white text-xs font-black shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                      {emp.nombre?.charAt(0)}{emp.apellidos?.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold vision-text-primary text-sm leading-tight truncate group-hover:text-fundacion-verde-light dark:group-hover:text-fundacion-amarillo transition-colors uppercase tracking-tight">
-                        {emp.nombre} {emp.apellidos}
-                      </p>
-                      <p className="vision-caption vision-text-tertiary mt-1.5 font-black tracking-widest text-[8px] uppercase opacity-40">
-                        EXPEDIENTE: {emp.id || "SIN ASIGNAR"}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="space-y-1">
-                    <p className="text-sm vision-text-secondary font-bold tracking-tight truncate max-w-[200px] opacity-80 group-hover:opacity-100 transition-opacity">
-                      {emp.correoElectronico || "SIN CORREO"}
-                    </p>
-                    <p className="vision-caption vision-text-tertiary font-black text-[9px] tracking-widest uppercase flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-fundacion-verde" />
-                        CEL: {emp.numeroCelular || "NO REGISTRADO"}
-                    </p>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <VisionBadge
-                    sentiment={emp.graduado ? "success" : "brand"}
-                    className="px-4 py-1.5 font-black text-[9px] tracking-[0.2em] border difusion-accent-border shadow-sm uppercase h-8 flex items-center"
-                  >
-                    {emp.graduado ? "GRADUADO" : "EN PROGRAMA"}
-                  </VisionBadge>
-                </td>
-                <td className="px-8 py-6 text-right">
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all justify-end scale-90 group-hover:scale-100 origin-right">
-                    <Button variant="visionGlass" size="icon" className="h-10 w-10 rounded-xl hover:bg-[var(--interact-hover)] hover:text-fundacion-verde-light dark:hover:text-fundacion-amarillo shadow-sm border border-zinc-100 dark:border-zinc-800" title="Ver perfil detallado">
-                      <Eye className="w-4.5 h-4.5" />
-                    </Button>
-                    <Button variant="visionGlass" size="icon" className="h-10 w-10 rounded-xl hover:bg-[var(--interact-hover)] hover:text-fundacion-verde-light dark:hover:text-fundacion-amarillo shadow-sm border border-zinc-100 dark:border-zinc-800" title="Editar registro">
-                      <Edit className="w-4.5 h-4.5" />
-                    </Button>
-                    <Button
-                      variant="visionDestructive"
-                      size="icon"
-                      className="h-10 w-10 rounded-xl shadow-lg border border-red-500/10 hover:rotate-12 transition-all"
-                      title="Eliminar registro permanentemente"
-                      onClick={() => onDelete?.(emp.id)}
-                    >
-                      <Trash2 className="w-4.5 h-4.5" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </VisionGlassWindow>
+    <CorporateTable 
+      columns={columns}
+      data={flatData}
+      isLoading={loading}
+      defaultSortKey="nombreComp"
+    />
   );
 }

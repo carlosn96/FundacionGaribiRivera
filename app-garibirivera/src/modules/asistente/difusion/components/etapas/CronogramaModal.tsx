@@ -12,13 +12,7 @@ import {
 import { ScrollArea } from "@/core/components/ui/scroll-area";
 import { Badge } from "@/core/components/ui/badge";
 import { Button } from "@/core/components/ui/button";
-
-interface TallerCronograma {
-  numeroTaller: number;
-  nombreTaller: string;
-  fechaFormateada: string;
-  instructor: string;
-}
+import { TallerCronograma } from "@/modules/asistente/difusion/domain/models/Etapa";
 
 interface CronogramaModalProps {
   idEtapa: number | null;
@@ -75,7 +69,7 @@ export function CronogramaModal({ idEtapa, isOpen, onClose, cronograma, loading 
                         </td>
                         <td className="py-4">
                           <Badge variant="outline" className="font-black text-[10px] tracking-tight bg-fundacion-verde/5 text-fundacion-verde border-fundacion-verde/20 px-3 py-1">
-                            {item.fechaFormateada}
+                            {item.fecha}
                           </Badge>
                         </td>
                       </tr>

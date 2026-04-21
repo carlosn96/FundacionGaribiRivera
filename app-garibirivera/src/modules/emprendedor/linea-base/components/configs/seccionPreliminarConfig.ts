@@ -1,7 +1,7 @@
 // src/config/seccionPreliminarConfig.ts
 
 import { StepConfig } from '@/core/components/step-form';
-import { MedioConocimientoData, TiempoCapacitacionData, RazonRecurreData, SolicitaCreditoData, UtilizaCreditoData } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { MedioConocimientoData, TiempoCapacitacionData, RazonRecurreData, SolicitaCreditoData, UtilizaCreditoData } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 export type CatalogosSeccionPreliminar = {
   medioConocimiento: MedioConocimientoData;

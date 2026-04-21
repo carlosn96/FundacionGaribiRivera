@@ -9,32 +9,32 @@ class TallerRepository extends BaseRepository implements ITallerRepository {
   protected readonly prefix = 'admin/talleres';
 
   async getAll(): Promise<Taller[]> {
-    return this.doGet<Taller[]>();
+    return this.get<Taller[]>();
   }
 
   async getById(id: number): Promise<Taller> {
-    return this.doGet<Taller>(`/${id}`);
+    return this.get<Taller>(`/${id}`);
   }
 
   async create(data: Record<string, unknown>): Promise<Taller> {
-    return this.doPost<Taller>('', data);
+    return this.post<Taller>('', data);
   }
 
   async update(id: number, data: Record<string, unknown>): Promise<Taller> {
-    return this.doPost<Taller>(`/${id}`, data);
+    return this.post<Taller>(`/${id}`, data);
   }
 
   async delete(id: number): Promise<any> {
-    return this.doDelete(`/${id}`);
+    return this.remove(`/${id}`);
   }
 
   // Asistencia (Contexto de talleres)
   async getAsistencia(tallerId: number): Promise<any> {
-    return this.doGet(`/asistencia/${tallerId}`);
+    return this.get(`/asistencia/${tallerId}`);
   }
 
   async registerAsistencia(data: { taller_id: number; emprendedores: number[] }): Promise<any> {
-    return this.doPost('/asistencia', data);
+    return this.post('/asistencia', data);
   }
 }
 

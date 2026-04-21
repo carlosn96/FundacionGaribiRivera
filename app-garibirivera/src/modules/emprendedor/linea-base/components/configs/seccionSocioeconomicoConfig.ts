@@ -3,7 +3,7 @@ import {
     CantidadDependientesEconomicosData,
     IngresoMensualData,
     OcupacionActualData
-} from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+} from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 export type CatalogosSeccionSocioeconomico = {
     cantidadDependientesEconomicos: CantidadDependientesEconomicosData;

@@ -2,7 +2,7 @@ import React from 'react';
 import EmprendedorLayout from '@/modules/emprendedor/components/EmprendedorLayout';
 import { LineaBaseProvider } from '@/modules/emprendedor/linea-base/context/LineaBaseContext';
 import AuthGuard from '@/modules/auth/components/AuthGuard';
-import { ROLES } from '@/modules/auth/domain/Roles';
+import { ROLES } from '@/modules/auth/domain/policies/Roles';
 
 export default function EmprendedorRootLayout({
   children,

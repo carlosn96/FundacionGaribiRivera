@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Calendar, Layers, BookOpen, ChevronRight } from "lucide-react";
-import { useAsistencia } from "@/modules/asistente/difusion/hooks/useAsistencia";
 import { CorporateSelect } from "@/core/components/ui/CorporateSelect";
 import { EtapaFormacion } from "../../domain/models/Etapa";
-import { cn } from "@/core/utils/utils";
+import { AsistenciaTallerResumen } from "../../domain/models/Asistencia";
 
 interface AsistenciaFiltersProps {
   onSearch: (idTaller: number) => void;
@@ -15,6 +14,8 @@ interface AsistenciaFiltersProps {
   onYearChange: (year: string) => void;
   selectedEtapaId: number;
   onStageChange: (id: number) => void;
+  talleres: AsistenciaTallerResumen[];
+  loading?: boolean;
 }
 
 export function AsistenciaFilters({ 
@@ -24,17 +25,15 @@ export function AsistenciaFilters({
   availableYears,
   onYearChange,
   selectedEtapaId, 
-  onStageChange 
+  onStageChange,
+  talleres,
+  loading
 }: AsistenciaFiltersProps) {
-  const { talleres, fetchTalleresPorEtapa, loading } = useAsistencia();
   const [selectedTaller, setSelectedTaller] = useState<number | "">("");
 
   useEffect(() => {
-    if (selectedEtapaId) {
-      fetchTalleresPorEtapa(selectedEtapaId);
-      setSelectedTaller("");
-    }
-  }, [selectedEtapaId, fetchTalleresPorEtapa]);
+    setSelectedTaller("");
+  }, [selectedEtapaId]);
 
   const yearOptions = availableYears.map(y => ({
     value: y,
@@ -57,7 +56,7 @@ export function AsistenciaFilters({
   const handleTallerChange = (val: string | number) => {
     const id = Number(val);
     setSelectedTaller(id);
-    onSearch(id); // disparo inmediato al seleccionar
+    onSearch(id);
   };
 
   return (

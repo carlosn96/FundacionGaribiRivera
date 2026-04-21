@@ -1,7 +1,7 @@
 /**
- * @fileoverview ALERTA DE DEPRECACION: Mock catalogs para LÃnea Base form.
- * @deprecated [FASE 2.5] Estos catÃ¡logos estÃ¡ticos se estÃ¡n cargando en runtime.
- * DeberÃ¡n removerse una vez se consolide la hidrataciÃ³n desde el backend en Fase 4.
+ * @fileoverview ALERTA DE DEPRECACION: Mock catalogs para Línea Base form.
+ * @deprecated [FASE 2.5] Estos catálogos estáticos se están cargando en runtime.
+ * Deberán removerse una vez se consolide la hidratación desde el backend en Fase 4.
  */
 
 import {
@@ -22,7 +22,7 @@ import {
   EstrategiasIncrementarVentasData,
   ObjetivosAhorroData,
   GeneroData
-} from "@/modules/emprendedor/linea-base/domain/schemas/lineaBase";
+} from "@/modules/emprendedor/linea-base/domain/models/lineaBase";
 
 
 // ============================================

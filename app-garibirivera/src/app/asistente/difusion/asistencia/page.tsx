@@ -13,19 +13,24 @@ import { useEtapa } from "@/modules/asistente/difusion/hooks/useEtapa";
 export default function AsistenciaPage() {
   const { fetchEtapaActual, fetchEtapas, etapas, currentEtapa } = useEtapa();
   const { 
-    fetchTalleresPorEtapa,
-    fetchEmprendedoresPorEtapaTaller, 
-    fetchTalleresEtapaActual,
-    emprendedores, 
+    handleYearChange,
+    handleStageChange,
+    handleSearchTaller,
     registrarAsistencia, 
+    getEmprendedorPhoto,
+    emprendedores,
+    selectedYear,
+    selectedEtapaId,
+    selectedTallerId,
+    searchTerm,
+    setSearchTerm,
+    setSelectedYear,
+    setSelectedEtapaId,
+    fetchTalleresEtapaActual,
+    talleres,
     loading: isLoadingAsistencia 
   } = useAsistencia();
   
-  const [selectedYear, setSelectedYear] = useState<string>("all");
-  const [selectedEtapaId, setSelectedEtapaId] = useState<number | null>(null);
-  const [selectedTallerId, setSelectedTallerId] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-
   useEffect(() => {
     fetchEtapaActual();
     fetchEtapas();
@@ -37,7 +42,7 @@ export default function AsistenciaPage() {
        setSelectedYear(new Date(currentEtapa.fechaInicio).getFullYear().toString());
        fetchTalleresEtapaActual();
     }
-  }, [currentEtapa, fetchTalleresEtapaActual]);
+  }, [currentEtapa, fetchTalleresEtapaActual, setSelectedEtapaId, setSelectedYear]);
 
   // Extract available years
   const availableYears = useMemo(() => {
@@ -45,46 +50,14 @@ export default function AsistenciaPage() {
     return ["all", ...Array.from(new Set(years)).sort((a, b) => b.localeCompare(a))];
   }, [etapas]);
 
-  // Filter stages by year
+  // Filter stages by year (Only stages filtering remains in page as it depends on useEtapa)
   const filteredEtapas = useMemo(() => {
     if (selectedYear === "all") return etapas;
     return etapas.filter(e => new Date(e.fechaInicio).getFullYear().toString() === selectedYear);
   }, [etapas, selectedYear]);
 
-  // Filter entrepreneurs by search term
-  const filteredEmprendedores = useMemo(() => {
-    if (!searchTerm) return emprendedores;
-    const term = searchTerm.toLowerCase();
-    return emprendedores.filter(emp => 
-      emp.emprendedor.nombre?.toLowerCase().includes(term) || 
-      emp.emprendedor.apellidos?.toLowerCase().includes(term) ||
-      emp.emprendedor.correoElectronico?.toLowerCase().includes(term)
-    );
-  }, [emprendedores, searchTerm]);
-
-  const handleYearChange = (year: string) => {
-    setSelectedYear(year);
-    setSelectedEtapaId(null);
-    setSelectedTallerId(null);
-  };
-
-  const handleStageChange = (id: number) => {
-    setSelectedEtapaId(id);
-    setSelectedTallerId(null);
-    fetchTalleresPorEtapa(id);
-  };
-
-  const handleSearch = (idTaller: number) => {
-    setSelectedTallerId(idTaller);
-    if (selectedEtapaId) {
-      fetchEmprendedoresPorEtapaTaller(selectedEtapaId, idTaller);
-    }
-  };
-
   const handleToggleAsistencia = async (idAsistente: number, asiste: boolean, observacion: string) => {
-    if (selectedEtapaId && selectedTallerId) {
-      await registrarAsistencia(selectedEtapaId, selectedTallerId, idAsistente, asiste, observacion);
-    }
+    await registrarAsistencia(idAsistente, asiste, observacion);
   };
 
   return (
@@ -102,13 +75,15 @@ export default function AsistenciaPage() {
       />
 
       <AsistenciaFilters 
-        onSearch={handleSearch}
+        onSearch={handleSearchTaller}
         etapas={filteredEtapas}
         selectedYear={selectedYear}
         availableYears={availableYears}
         onYearChange={handleYearChange}
         selectedEtapaId={selectedEtapaId || 0}
         onStageChange={handleStageChange}
+        talleres={talleres}
+        loading={isLoadingAsistencia}
       />
 
       <div className="pt-4 animate-in slide-in-from-bottom-5 duration-700">
@@ -128,7 +103,7 @@ export default function AsistenciaPage() {
                   Listado de Asistencia
                 </h3>
                 <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest opacity-60">
-                  {filteredEmprendedores.length} Emprendedores Registrados
+                  {emprendedores.length} Emprendedores Registrados
                 </p>
               </div>
 
@@ -145,11 +120,12 @@ export default function AsistenciaPage() {
             </div>
 
             <AsistenciaTable 
-              emprendedores={filteredEmprendedores}
+              emprendedores={emprendedores}
               idEtapa={selectedEtapaId || 0}
               idTaller={selectedTallerId}
               isLoading={isLoadingAsistencia}
               onToggleAsistencia={handleToggleAsistencia}
+              onGetPhoto={getEmprendedorPhoto}
             />
           </div>
         )}

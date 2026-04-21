@@ -1,5 +1,5 @@
 import { StepConfig } from '@/core/components/step-form';
-import { EstadoCivilData, EscolaridadData, GeneroData } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { EstadoCivilData, EscolaridadData, GeneroData } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 export type CatalogosSeccionIdentificacion = {
     estadoCivil: EstadoCivilData;

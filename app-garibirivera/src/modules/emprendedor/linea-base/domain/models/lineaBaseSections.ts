@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BaseResponse } from '@/core/http/ApiResponse';
+
 import {
   MedioConocimientoItemSchema,
   TiempoCapacitacionItemSchema,
@@ -205,7 +205,10 @@ export type AdministracionIngresosType = z.infer<typeof AdministracionIngresosSc
 export type AhorrosType = z.infer<typeof AhorrosSchema>;
 export type LineaBaseType = z.infer<typeof LineaBaseSchema>;
 
-export interface LineaBaseDataExistsResponse extends BaseResponse {
+export interface LineaBaseDataExistsResponse {
   exists: boolean;
   lineaBase: LineaBaseType | null;
+  ok: boolean;
+  success: boolean;
+  message?: string;
 }

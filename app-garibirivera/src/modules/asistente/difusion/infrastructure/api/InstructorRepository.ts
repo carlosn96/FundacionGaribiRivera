@@ -10,23 +10,23 @@ class InstructorRepository extends BaseRepository implements IInstructorReposito
   protected readonly prefix = 'admin/instructores';
 
   async getAll(): Promise<Instructor[]> {
-    return this.doGet<Instructor[]>();
+    return this.get<Instructor[]>();
   }
 
   async getById(id: number): Promise<Instructor> {
-    return this.doGet<Instructor>(`/${id}`);
+    return this.get<Instructor>(`/${id}`);
   }
 
   async create(data: Record<string, unknown>): Promise<Instructor> {
-    return this.doPost<Instructor>('', data);
+    return this.post<Instructor>('', data);
   }
 
   async update(id: number, data: Record<string, unknown>): Promise<Instructor> {
-    return this.doPost<Instructor>(`/${id}`, data);
+    return this.post<Instructor>(`/${id}`, data);
   }
 
   async delete(id: number): Promise<any> {
-    return this.doDelete(`/${id}`);
+    return this.remove(`/${id}`);
   }
 
   getPhotoUrl(id: number): string {

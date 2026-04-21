@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { History, UserPlus } from "lucide-react";
 import { VisionSpringContainer } from "@/core/components/ui/vision-glass";
 import { useEmprendedores } from "@/modules/asistente/difusion/hooks/useEmprendedores";
@@ -11,22 +11,21 @@ import { EmprendedorTable } from "@/modules/asistente/difusion/components/histor
 
 /**
  * PÁGINA: Historial de Prospectos y Emprendedores
- * -----------------------------------------------
- * Refactorización Completa: Arquitectura Limpia y SOLID.
  */
 export default function HistorialEmprendedoresPage() {
-  const { emprendedores, loading, fetchEmprendedores, deleteEmprendedor } = useEmprendedores();
-  const [searchTerm, setSearchTerm] = useState("");
+  const { 
+    emprendedores, 
+    loading, 
+    searchTerm, 
+    setSearchTerm, 
+    fetchEmprendedores, 
+    deleteEmprendedor,
+    getEmprendedorPhoto
+  } = useEmprendedores();
 
   useEffect(() => {
     fetchEmprendedores();
   }, [fetchEmprendedores]);
-
-  // Lógica de filtrado en vista (Idealmente debería estar en el hook)
-  const filteredUsers = emprendedores.filter(emp => 
-    `${emp.nombre} ${emp.apellidos}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.correoElectronico?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <VisionSpringContainer className="space-y-12 py-8 animate-in fade-in duration-1000">
@@ -34,7 +33,7 @@ export default function HistorialEmprendedoresPage() {
       <ModuleHeader 
         title="Historial de"
         titleHighlight="Emprendedores"
-        description="Base de datos centralizada de prospectos y beneficiarios del programa institucional de difusión y seguimiento social."
+        description="Listado de emprendedores registrados en el sistema."
         icon={History}
         action={{
           href: "/asistente/difusion/emprendedores/nuevo",
@@ -47,15 +46,16 @@ export default function HistorialEmprendedoresPage() {
       <HistorialFilters 
         searchTerm={searchTerm} 
         setSearchTerm={setSearchTerm}
-        count={filteredUsers.length}
+        count={emprendedores.length}
         loading={loading}
       />
 
       {/* 3. TABLA DE DATOS (Con Skeletons y Estados Vacíos internos) */}
       <EmprendedorTable 
-        emprendedores={filteredUsers} 
+        emprendedores={emprendedores} 
         loading={loading}
         onDelete={deleteEmprendedor}
+        onGetPhoto={getEmprendedorPhoto}
       />
 
     </VisionSpringContainer>

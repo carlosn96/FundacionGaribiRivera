@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useUser } from '@/modules/auth/context/UserContext';
-import { ROLES } from '@/modules/auth/domain/Roles';
+import { ROLES } from '@/modules/auth/domain/policies/Roles';
 import { verificarExisteLineaBase } from '@/modules/emprendedor/linea-base/application/services/lineaBase';
-import { LineaBaseDataExistsResponse } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBaseSections';
+import { LineaBaseDataExistsResponse } from '@/modules/emprendedor/linea-base/domain/models/lineaBaseSections';
 
 interface LineaBaseContextType {
   lineaBaseResponse: LineaBaseDataExistsResponse;

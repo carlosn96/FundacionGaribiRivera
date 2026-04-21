@@ -2,53 +2,51 @@ import { BaseRepository } from '@/core/infrastructure/BaseRepository';
 import { Emprendedor, EmprendedorFortalecimiento } from '../../domain/models/Emprendedor';
 import { IEmprendedorRepository } from '../../domain/repositories/IEmprendedorRepository';
 import { API_BASE_URL } from '@/core/constants';
-import { http } from '@/core/http/ApiHttpClient';
 
 /**
  * Implementación del repositorio de Emprendedores.
  */
 class EmprendedorRepository extends BaseRepository implements IEmprendedorRepository {
-  protected readonly prefix = 'admin/emprendedores';
+  protected readonly prefix = 'admin/usuarios/emprendedores';
 
   async getAll(): Promise<Emprendedor[]> {
-    // El listado general está en un grupo diferente en Lumen (fuera de admin/emprendedores)
-    return http.get<Emprendedor[]>('emprendedor/historial');
+    return this.get<Emprendedor[]>();
   }
 
   async getById(id: number): Promise<Emprendedor> {
-    return this.doGet<Emprendedor>(`/${id}`);
+    return this.get<Emprendedor>(`/${id}`);
   }
 
   async getEnFortalecimiento(): Promise<EmprendedorFortalecimiento[]> {
-    return this.doGet<EmprendedorFortalecimiento[]>('/fortalecimiento');
+    return this.get<EmprendedorFortalecimiento[]>('/fortalecimiento');
   }
 
-  async create(data: FormData | Record<string, unknown>): Promise<Emprendedor> {
-    return this.doPost<Emprendedor>('', data);
+  async create(data: FormData | Record<string, unknown>): Promise<any> {
+    return this.raw<any>('post', 'admin/usuarios/emprendedores', data);
   }
 
   async update(id: number, data: FormData | Record<string, unknown>): Promise<Emprendedor> {
     if (data instanceof FormData) {
       if (!data.has('_method')) data.append('_method', 'PUT');
-      return this.doPost<Emprendedor>(`/${id}`, data);
+      return this.post<Emprendedor>(`/${id}`, data);
     }
-    return this.doPut<Emprendedor>(`/${id}`, data);
+    return this.put<Emprendedor>(`/${id}`, data);
   }
 
   async delete(id: number): Promise<any> {
-    return this.doDelete(`/${id}`);
+    return this.raw('delete', `admin/usuarios/${id}`);
   }
 
   async deleteMultiple(ids: number[]): Promise<any> {
-    return this.doPost('/delete-multiple', { ids });
+    return this.post('/delete-multiple', { ids });
   }
 
   async updateGraduacion(id: number, data: { graduado: boolean; fechaGraduacion: string }): Promise<any> {
-    return this.doPost(`/${id}/graduacion`, data);
+    return this.post(`/${id}/graduacion`, data);
   }
 
-  getEmprendedorPhotoUrl(id: number): string {
-    return `${API_BASE_URL}/${this.prefix}/${id}/foto?t=${new Date().getTime()}`;
+  getEmprendedorPhotoByUrl(emprendedor: Emprendedor): string {
+    return `${API_BASE_URL}${emprendedor.fotoUrl}`;
   }
 }
 

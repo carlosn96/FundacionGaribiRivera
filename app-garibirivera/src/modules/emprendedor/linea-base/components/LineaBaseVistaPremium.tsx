@@ -33,9 +33,9 @@ import {
   ChevronUp,
   Info
 } from 'lucide-react';
-import { LineaBaseSchema, type LineaBaseType } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBaseSections';
+import { LineaBaseSchema, type LineaBaseType } from '@/modules/emprendedor/linea-base/domain/models/lineaBaseSections';
 import { recuperarCatalogosLineaBase } from '@/modules/emprendedor/linea-base/application/services/lineaBase';
-import { CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 import { cn } from '@/core/utils/utils';
 
 interface LineaBaseVistaPremiumProps {

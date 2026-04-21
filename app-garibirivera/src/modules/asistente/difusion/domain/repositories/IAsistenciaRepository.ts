@@ -8,5 +8,5 @@ export interface IAsistenciaRepository {
   getTalleresEtapaActual(): Promise<AsistenciaTallerResumen[]>;
   getTalleresPorEtapa(idEtapa: number): Promise<AsistenciaTallerResumen[]>;
   getEmprendedoresPorEtapaTaller(idEtapa: number, idTaller: number): Promise<AsistenciaEmprendedor[]>;
-  registrarAsistencia(idEtapa: number, idTaller: number, data: { idAsistente: number; asiste: number; observacion: string }): Promise<any>;
+  registrarAsistencia(idEtapa: number, idTaller: number, data: { idAsistente: number; asiste: boolean; observacion: string }): Promise<any>;
 }

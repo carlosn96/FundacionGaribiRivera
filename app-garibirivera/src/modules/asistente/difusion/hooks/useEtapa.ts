@@ -10,7 +10,10 @@ export const useEtapa = () => {
 
   const { execute: getAllEtapas, loading: loadingAll } = useOperation(
     () => etapaRepository.getAllEtapas(),
-    { onSuccess: data => setEtapas(Array.isArray(data) ? data : []) }
+    {
+      onSuccess: data => setEtapas(Array.isArray(data) ? data : []),
+      showToast: false
+    }
   );
 
   const fetchMetadataEtapas = useCallback(async () => {
@@ -31,7 +34,7 @@ export const useEtapa = () => {
 
   const { execute: fetchEtapaActual, loading: loadingActual } = useOperation(
     () => etapaRepository.getEtapaActual(),
-    { onSuccess: setCurrentEtapa }
+    { onSuccess: setCurrentEtapa, showToast: false }
   );
 
   const { execute: removeEtapa, loading: loadingDelete } = useOperation(

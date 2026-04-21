@@ -9,3 +9,10 @@ export interface EtapaFormacion {
   modalidad: number;
   talleres?: number[];
 }
+
+export interface TallerCronograma {
+  numeroTaller: number;
+  nombreTaller: string;
+  fecha: string;
+  instructor: string;
+}

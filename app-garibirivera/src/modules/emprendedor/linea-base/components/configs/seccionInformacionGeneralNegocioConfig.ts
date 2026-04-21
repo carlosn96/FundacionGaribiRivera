@@ -1,7 +1,7 @@
 // src/components/lineaBase/configs/seccionAnalisisNegocioConfig.ts
 
 import { StepConfig } from '@/core/components/step-form';
-import { GiroNegocioData, ActividadNegocioData, AntiguedadNegocioData } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { GiroNegocioData, ActividadNegocioData, AntiguedadNegocioData } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 import { buscarCodigosPostales } from '@/modules/emprendedor/linea-base/application/services/lineaBase';
 
 export type CatalogosSeccionInformacionGeneralNegocio = {

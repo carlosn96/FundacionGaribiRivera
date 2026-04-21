@@ -8,9 +8,9 @@ import React, { useEffect, useState } from 'react';
 import { VisionGlassWindow, VisionTypography, VisionText, VisionSpringContainer } from '@/core/components/ui/vision-glass';
 import { Button } from '@/core/components/ui/button';
 import { CheckCircle2, ArrowLeft, FileText, User, MapPin, Wallet, Building, TrendingUp, DollarSign, PiggyBank, Loader2 } from 'lucide-react';
-import { LineaBaseSchema, type LineaBaseType } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBaseSections';
+import { LineaBaseSchema, type LineaBaseType } from '@/modules/emprendedor/linea-base/domain/models/lineaBaseSections';
 import { recuperarCatalogosLineaBase } from '@/modules/emprendedor/linea-base/application/services/lineaBase';
-import { CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { CatalogosPorSecciones } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 interface LineaBaseVistaProps {
   initialData: LineaBaseType; // Using any because of potential validation failures or raw API data

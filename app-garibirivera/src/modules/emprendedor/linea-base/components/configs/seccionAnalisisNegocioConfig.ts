@@ -1,7 +1,7 @@
 // src/components/lineaBase/configs/seccionAnalisisNegocioDetalladoConfig.ts
 
 import { StepConfig } from '@/core/components/step-form';
-import { EstrategiasIncrementarVentasData, ComoEmpleaGananciasData } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { EstrategiasIncrementarVentasData, ComoEmpleaGananciasData } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 export type CatalogosSeccionAnalisisNegocio = {
     estrategiasIncrementarVentas: EstrategiasIncrementarVentasData;

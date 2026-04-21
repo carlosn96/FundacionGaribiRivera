@@ -1,5 +1,5 @@
 import { StepConfig } from '@/core/components/step-form';
-import { ObjetivosAhorroData } from '@/modules/emprendedor/linea-base/domain/schemas/lineaBase';
+import { ObjetivosAhorroData } from '@/modules/emprendedor/linea-base/domain/models/lineaBase';
 
 export type CatalogosSeccionAhorros = {
     objetivosAhorro: ObjetivosAhorroData;
