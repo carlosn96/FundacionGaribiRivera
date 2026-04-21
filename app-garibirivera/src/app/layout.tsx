@@ -36,6 +36,8 @@ export const viewport: Viewport = {
 
 import { UserProvider } from "@/modules/auth/context/UserContext";
 import { ThemeProvider } from "@/core/context/ThemeContext";
+import { Toaster } from "@/core/components/ui/sonner";
+import { ConfirmProvider } from "@/core/context/ConfirmContext";
 
 export default function RootLayout({
   children,
@@ -53,7 +55,10 @@ export default function RootLayout({
       >
         <ThemeProvider defaultTheme="light">
           <UserProvider>
-            {children}
+            <ConfirmProvider>
+              {children}
+              <Toaster position="bottom-right" closeButton richColors />
+            </ConfirmProvider>
           </UserProvider>
         </ThemeProvider>
       </body>
