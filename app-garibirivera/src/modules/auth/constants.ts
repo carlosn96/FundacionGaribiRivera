@@ -6,6 +6,7 @@ export const AUTH_ENDPOINTS = {
   me: 'auth/me',
   logout: 'auth/logout',
   forgotPassword: 'auth/forgot-password',
+  verifyResetCode: 'auth/verify-reset-code',
   resetPassword: 'auth/reset-password',
   generateBridgeToken: 'auth/generate-bridge-token',
 } as const;

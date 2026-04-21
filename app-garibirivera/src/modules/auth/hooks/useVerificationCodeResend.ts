@@ -6,7 +6,7 @@
  * Failed attempts, network errors, and validation failures do NOT count.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { resendVerificationCode } from '@/modules/auth/application/services/auth';
+import { resendVerificationCode } from '@/modules/auth/application/auth.service';
 import { useToast } from '@/core/hooks/use-toast';
 
 const MAX_RESEND_ATTEMPTS = 5;

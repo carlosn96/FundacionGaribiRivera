@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, AlertTriangle, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { getRedirectPath } from "@/modules/auth/domain/Roles";
-import { LoginPayloadSchema, LoginPayload } from "@/modules/auth/domain/Auth";
+import { getRedirectPath } from "@/modules/auth/domain/policies/Roles";
+import { LoginPayloadSchema, LoginPayload } from "@/modules/auth/domain/models/AuthSchemas";
 import { 
   VisionGlassWindow, 
   VisionTypography, 
@@ -37,8 +37,8 @@ export function LoginForm() {
     resolver: zodResolver(LoginPayloadSchema),
     mode: "onBlur",
     defaultValues: {
-      correo: "",
-      contrasena: "",
+      correo: "carlos_n96@hotmail.com",
+      contrasena: "Pa$$w0rd!",
       rememberMe: false
     }
   });
@@ -65,7 +65,7 @@ export function LoginForm() {
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500">
-            <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} />
+            <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ width: 'auto', height: 'auto' }} />
           </div>
           <div className="space-y-2">
             <VisionTypography variant="title-1" className="font-bold tracking-tight">

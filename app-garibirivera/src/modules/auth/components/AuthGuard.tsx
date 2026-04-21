@@ -3,7 +3,7 @@
 import { ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser } from '@/modules/auth/context/UserContext';
-import { hasPermission, getRedirectPath, normalizeRole, hasRequiredPermissions } from '@/modules/auth/domain/Roles';
+import { hasPermission, getRedirectPath, normalizeRole, hasRequiredPermissions } from '@/modules/auth/domain/policies/Roles';
 import { VisionGlassWindow, VisionText } from '@/core/components/ui/vision-glass';
 
 interface AuthGuardProps {
@@ -65,13 +65,13 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
   }, [user, isLoading, router, canRender, pathname]);
 
   // Mostrar loading mientras se valida o no hay acceso confirmado
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center spatial-bg">
         <VisionGlassWindow className="p-8 flex flex-col items-center gap-4">
           <div className="animate-spin h-10 w-10 border-4 border-fundacion-amarillo border-t-transparent rounded-full"></div>
           <VisionText variant="secondary" className="font-bold">
-            Verificando acceso seguro...
+            {isLoading ? "Verificando acceso seguro..." : "Redirigiendo..."}
           </VisionText>
         </VisionGlassWindow>
       </div>
@@ -96,7 +96,7 @@ export default function AuthGuard({ children, allowedPermissions, allowedRoles, 
             <VisionText variant="secondary" className="text-sm">
               {isLooping 
                 ? "No cuentas con los permisos necesarios para este módulo administrativo."
-                : "Validando permisos de seguridad..."}
+                : "Se ha denegado el acceso por falta de permisos específicos."}
             </VisionText>
           </div>
 

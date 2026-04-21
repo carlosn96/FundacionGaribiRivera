@@ -1,23 +1,69 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Mail, Phone, Lock, Eye, EyeOff, Loader2, AlertTriangle } from "lucide-react";
+import { User, Mail, Phone, Lock, Eye, EyeOff, Loader2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/core/components/ui/alert";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { RegisterPayloadSchema, RegisterPayload } from "@/modules/auth/domain/Auth";
+import { RegisterPayloadSchema, RegisterPayload } from "@/modules/auth/domain/models/AuthSchemas";
+import { isAuthServiceError } from "@/modules/auth/domain/models/Auth";
 import { VisionGlassWindow, VisionTypography, VisionText } from "@/core/components/ui/vision-glass";
 import { Input } from "@/core/components/ui/input";
 import { Button } from "@/core/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/core/components/ui/form";
 import { CodeVerificationStep } from "./CodeVerificationStep";
-import { getRedirectPath } from "@/modules/auth/domain/Roles";
+import { getRedirectPath } from "@/modules/auth/domain/policies/Roles";
 
 type RegisterFields = keyof RegisterPayload;
+
+type PasswordRule = {
+  key: string;
+  label: string;
+  test: (value: string) => boolean;
+};
+
+const PASSWORD_RULES: PasswordRule[] = [
+  { key: 'length', label: 'Al menos 8 caracteres', test: (value) => value.length >= 8 },
+  { key: 'uppercase', label: 'Una letra mayúscula', test: (value) => /[A-Z]/.test(value) },
+  { key: 'lowercase', label: 'Una letra minúscula', test: (value) => /[a-z]/.test(value) },
+  { key: 'number', label: 'Un número', test: (value) => /\d/.test(value) },
+];
+
+function evaluatePassword(password: string) {
+  const checks = PASSWORD_RULES.map((rule) => ({
+    ...rule,
+    passed: rule.test(password),
+  }));
+
+  const passedCount = checks.filter((rule) => rule.passed).length;
+  const strength = (passedCount / checks.length) * 100;
+
+  let strengthLabel = 'Muy débil';
+  if (passedCount === 2) strengthLabel = 'Débil';
+  if (passedCount === 3) strengthLabel = 'Media';
+  if (passedCount === checks.length) strengthLabel = 'Fuerte';
+
+  return {
+    checks,
+    passedCount,
+    strength,
+    strengthLabel,
+  };
+}
+
+function getAuthErrorMessage(error: unknown, fallback: string): string {
+  if (isAuthServiceError(error)) {
+    if (error.fieldErrors?.codigo?.[0]) return error.fieldErrors.codigo[0];
+    return error.message || fallback;
+  }
+
+  if (error instanceof Error) return error.message || fallback;
+  return fallback;
+}
 
 export function RegisterForm() {
   const {
@@ -50,6 +96,12 @@ export function RegisterForm() {
   const [emailVerified, setEmailVerified] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const passwordValue = form.watch("contrasena");
+
+  const passwordValidation = useMemo(
+    () => evaluatePassword(passwordValue || ""),
+    [passwordValue]
+  );
 
   useEffect(() => {
     setIsMounted(true);
@@ -78,16 +130,24 @@ export function RegisterForm() {
     const values = form.getValues();
 
     if (currentStep === 2 && !emailVerified) {
+      setVerificationError(null);
       setIsVerifying(true);
-      const res = await verifyEmailExists(values.correo, values.nombre, values.apellidos);
-      setIsVerifying(false);
+      try {
+        const res = await verifyEmailExists(values.correo, values.nombre, values.apellidos);
 
-      if (res.success) {
-        if (res.exists) {
-          form.setError("correo", { message: "Este correo ya está registrado" });
-        } else {
-          setShowVerification(true);
+        if (res.success) {
+          if (res.exists) {
+            form.setError("correo", { message: "Este correo ya está registrado" });
+          } else {
+            setShowVerification(true);
+          }
         }
+      } catch (error: unknown) {
+        form.setError("correo", {
+          message: getAuthErrorMessage(error, "No fue posible verificar el correo."),
+        });
+      } finally {
+        setIsVerifying(false);
       }
       return;
     }
@@ -98,25 +158,36 @@ export function RegisterForm() {
   const handleVerifyCode = async () => {
     setIsVerifying(true);
     setVerificationError(null);
-    const res = await verifyValidationCode(form.getValues().correo, verificationCode);
-    setIsVerifying(false);
+    try {
+      const res = await verifyValidationCode(form.getValues().correo, verificationCode);
 
-    if (res.success) {
-      setEmailVerified(true);
-      setShowVerification(false);
-      setCurrentStep(3);
-    } else {
-      setVerificationError(res.message || "Código incorrecto");
+      if (res.success) {
+        setEmailVerified(true);
+        setShowVerification(false);
+        setCurrentStep(3);
+      } else {
+        setVerificationError(res.message || "Código incorrecto");
+      }
+    } catch (error: unknown) {
+      setVerificationError(getAuthErrorMessage(error, "No fue posible verificar el código."));
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   const handleResendCode = async () => {
     if (resendCooldown > 0) return;
     setIsVerifying(true);
-    const values = form.getValues();
-    await verifyEmailExists(values.correo, values.nombre, values.apellidos);
-    setIsVerifying(false);
-    setResendCooldown(60);
+    setVerificationError(null);
+    try {
+      const values = form.getValues();
+      await verifyEmailExists(values.correo, values.nombre, values.apellidos);
+      setResendCooldown(60);
+    } catch (error: unknown) {
+      setVerificationError(getAuthErrorMessage(error, "No fue posible reenviar el código."));
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const onSubmit = async (data: RegisterPayload) => {
@@ -143,7 +214,7 @@ export function RegisterForm() {
 
       <div className="text-center space-y-4">
         <div className="flex justify-center mb-6 animate-in fade-in zoom-in duration-500">
-          <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ height: 'auto' }} />
+          <Image src="/images/logo.svg" width={180} height={60} alt="Logo" priority style={{ width: 'auto', height: 'auto' }} />
         </div>
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-fundacion-amarillo tracking-widest uppercase">Paso {currentStep} de 4</p>
@@ -291,6 +362,45 @@ export function RegisterForm() {
                             </div>
                           </FormControl>
                           <FormMessage className="text-xs" />
+
+                          <div className="mt-3 space-y-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 p-3">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-semibold vision-text-secondary">Fortaleza</span>
+                                <span className="font-bold text-[var(--text-primary)]">{passwordValidation.strengthLabel}</span>
+                              </div>
+
+                              <div className="h-2 w-full overflow-hidden rounded-full bg-black/10">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-300 ${
+                                    passwordValidation.strength >= 100
+                                      ? 'bg-fundacion-verde'
+                                      : passwordValidation.strength >= 75
+                                        ? 'bg-emerald-500'
+                                        : passwordValidation.strength >= 50
+                                          ? 'bg-fundacion-amarillo'
+                                          : 'bg-red-400'
+                                  }`}
+                                  style={{ width: `${passwordValidation.strength}%` }}
+                                />
+                              </div>
+                            </div>
+
+                            <ul className="space-y-1.5">
+                              {passwordValidation.checks.map((rule) => (
+                                <li key={rule.key} className="flex items-center gap-2 text-xs">
+                                  {rule.passed ? (
+                                    <CheckCircle2 className="h-3.5 w-3.5 text-fundacion-verde" />
+                                  ) : (
+                                    <XCircle className="h-3.5 w-3.5 text-red-400" />
+                                  )}
+                                  <span className={rule.passed ? 'text-[var(--text-primary)]' : 'vision-text-secondary'}>
+                                    {rule.label}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </FormItem>
                       )}
                     />

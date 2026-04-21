@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { User } from '@/modules/auth/domain/Auth';
-import { getRedirectPath } from '@/modules/auth/domain/Roles';
-import { checkAuthStatus, logoutUser as logoutUserService } from '@/modules/auth/application/services/auth';
+import { User } from '@/modules/auth/domain/models/User';
+import { getRedirectPath } from '@/modules/auth/domain/policies/Roles';
+import { checkAuthStatus, logoutUser as logoutUserService } from '@/modules/auth/application/auth.service';
 
 interface UserContextType {
   user: User | null;

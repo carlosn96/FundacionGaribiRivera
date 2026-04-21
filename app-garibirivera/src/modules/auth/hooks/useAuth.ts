@@ -4,10 +4,10 @@ import {
   loginUser, 
   registerUser, 
   authService 
-} from '@/modules/auth/application/services/auth';
+} from '@/modules/auth/application/auth.service';
 
 /**
- * Hook de autenticación directo y sin "puerquero".
+ * Hook de autenticación.
  * Conecta los componentes con los servicios y el estado global.
  */
 export function useAuth() {

@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { VisionSpringContainer } from "@/core/components/ui/vision-glass";
 import { LoginForm } from "@/modules/auth/components/LoginForm";
 import { useUser } from "@/modules/auth/context/UserContext";
-import { getRedirectPath } from "@/modules/auth/domain/Roles";
+import { getRedirectPath } from "@/modules/auth/domain/policies/Roles";
 
 export default function LoginPage() {
   const { user, isLoading } = useUser();

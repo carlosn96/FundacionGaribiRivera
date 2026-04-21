@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
-import { AUTH_ENDPOINTS } from '@/modules/auth/constants';
+import { logoutUser } from '@/modules/auth/application/auth.service';
 
 // Constantes para evitar números mágicos
 const MS_PER_MINUTE = 1000 * 60;
@@ -38,12 +38,7 @@ const useIdleSession = (options: UseIdleSessionOptions = {}) => {
 
     setTimeout(async () => {
       try {
-        const response = await fetch(AUTH_ENDPOINTS.logout, {
-          method: 'POST'
-        });
-        if (!response.ok) {
-          console.error('Logout failed with status:', response.status);
-        }
+        await logoutUser();
       } catch (error) {
         console.error('Error during logout:', error);
       } finally {
