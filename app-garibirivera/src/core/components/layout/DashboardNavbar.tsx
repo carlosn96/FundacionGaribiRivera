@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/core/components/ui/button";
 import { User, Bell, Menu, Search, ChevronDown, Settings, LogOut, Sun, Moon, Sparkles } from "lucide-react";
 import { useUser } from "@/modules/auth/context/UserContext";
-import { getRoleName as getUserRoleName } from "@/modules/auth/domain/Roles";
+import { getRoleName as getUserRoleName } from "@/modules/auth/domain/policies/Roles";
 import { useTheme } from "@/core/hooks/useTheme";
 import { useRouter } from "next/navigation";
 

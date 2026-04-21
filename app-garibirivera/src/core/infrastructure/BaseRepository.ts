@@ -1,84 +1,73 @@
-import { http } from '@/core/http/ApiHttpClient';
-import { ApiResponse } from '@/core/http/ApiResponse';
+import { HttpGateway, httpGateway } from '@/core/http/HttpGateway';
+import { AxiosRequestConfig } from 'axios';
 
 /**
- * Clase base para la capa de infraestructura (Repositores).
- * Proporciona métodos estandarizados para peticiones HTTP y manejo de errores.
+ * Clase base para la capa de infraestructura (Repositorios).
+ * Implementa el patrón Repository bajo principios SOLID.
+ * 
+ * Se comporta como una capa delgada que orquestra rutas y delega
+ * la comunicacion al gateway HTTP compartido.
  */
 export abstract class BaseRepository {
+  protected readonly client: HttpGateway = httpGateway;
+
   /**
-   * Prefijo de ruta base para el recurso.
+   * Prefijo de ruta base para el recurso (definido en subclases).
    */
   protected abstract readonly prefix: string;
 
   /**
-   * Ejecuta una petición GET.
+   * Realiza una petición GET relativa al prefijo.
    */
-  protected async doGet<T>(path: string = '', params?: any): Promise<T> {
-    const url = this.buildUrl(path);
-    const response = await http.get<T>(url, params);
-    return this.handleResponse(response);
+  protected async get<T>(path: string = '', params?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.client.get<T>(this.buildUrl(path), params, config);
   }
 
   /**
-   * Ejecuta una petición POST.
+   * Realiza una petición POST relativa al prefijo.
    */
-  protected async doPost<T>(path: string = '', data?: any): Promise<T> {
-    const url = this.buildUrl(path);
-    const response = await http.post<T>(url, data);
-    return this.handleResponse(response);
+  protected async post<T>(path: string = '', data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.client.post<T>(this.buildUrl(path), data, config);
   }
 
   /**
-   * Ejecuta una petición PUT.
+   * Realiza una petición PUT relativa al prefijo.
    */
-  protected async doPut<T>(path: string = '', data?: any): Promise<T> {
-    const url = this.buildUrl(path);
-    const response = await http.put<T>(url, data);
-    return this.handleResponse(response);
+  protected async put<T>(path: string = '', data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.client.put<T>(this.buildUrl(path), data, config);
   }
 
   /**
-   * Ejecuta una petición DELETE.
+   * Realiza una petición DELETE relativa al prefijo.
    */
-  protected async doDelete<T>(path: string = ''): Promise<T> {
-    const url = this.buildUrl(path);
-    const response = await http.delete<T>(url);
-    return this.handleResponse(response);
+  protected async remove<T>(path: string = '', params?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.client.delete<T>(this.buildUrl(path), params, config);
+  }
+
+  /**
+   * Realiza una petición "cruda" fuera del prefijo del repositorio, 
+   * pero aprovecha el cliente estandarizado y su manejo de errores.
+   */
+  protected async raw<T>(
+    method: 'get' | 'post' | 'put' | 'delete', 
+    url: string, 
+    data?: any, 
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    return this.client.request<T>(method, url, data, config);
   }
 
   /**
    * Construye la URL completa uniendo el prefijo y el path opcional.
-   * Resuelve el problema de barras dobles o faltantes.
    */
   private buildUrl(path: string): string {
     const cleanPrefix = this.prefix.replace(/^\/+|\/+$/g, '');
-    const cleanPath = path.replace(/^\/+|\/+$/g, '');
+    const cleanPath = path.toString().replace(/^\/+|\/+$/g, '');
     
-    // Si no hay path, retornamos solo el prefijo
     if (!cleanPath) return cleanPrefix;
-    
-    // Si no hay prefijo (repositorio raíz), retornamos solo el path
     if (!cleanPrefix) return cleanPath;
 
     return `${cleanPrefix}/${cleanPath}`;
   }
-
-  /**
-   * Despaqueta la respuesta y lanza error si la operación falló.
-   */
-  private handleResponse<T>(response: ApiResponse<T>): T {
-    if (!response.ok) {
-      // Lanzamos el error para que sea capturado por los hooks (useOperation o try/catch)
-      throw new Error(response.message || 'Error en la comunicación con el servidor');
-    }
-
-    // Aplanamos el objeto eliminando la metadata de BaseResponse para el consumidor
-    const { ok, success, message, status, details, ...data } = response as any;
-    
-    // Si el payload original era un array, 'data' contendrá las propiedades del array
-    // pero ApiResponse lo trata de forma especial en ApiHttpClient.
-    // Retornamos el payload tal cual, el tipado se encarga del resto.
-    return response as unknown as T;
-  }
 }
+

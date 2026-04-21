@@ -6,7 +6,7 @@ import { Button } from "@/core/components/ui/button";
 import { Badge } from "@/core/components/ui/badge";
 import { LucideIcon, X, ChevronRight, Settings, LogOut, Lightbulb, Users, Shield, Briefcase } from "lucide-react";
 import { useUser } from "@/modules/auth/context/UserContext";
-import { getRoleName as getUserRoleName } from "@/modules/auth/domain/Roles";
+import { getRoleName as getUserRoleName } from "@/modules/auth/domain/policies/Roles";
 import { useRouter } from "next/navigation";
 
 export interface MenuItem {

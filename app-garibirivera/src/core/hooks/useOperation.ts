@@ -1,17 +1,19 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface OperationOptions<T, Args extends any[]> {
   onSuccess?: (data: T, ...args: Args) => void;
   onError?: (error: Error) => void;
   autoResetError?: boolean;
+  successMessage?: string | ((data: T) => string);
+  errorMessage?: string;
+  showToast?: boolean;
 }
 
 /**
  * Hook utilitario para gestionar el ciclo de vida de una operación asíncrona.
- * Centraliza los estados de 'loading' y 'error', reduciendo el boilerplate en los hooks de módulo.
- * 
- * NOTA DE ESTABILIDAD: Utiliza useRef para que la función 'execute' sea estable y no
- * provoque bucles infinitos cuando se usa como dependencia en useEffect.
+ * Centraliza los estados de 'loading' y 'error', y proporciona feedback proactivo
+ * mediante el sistema de notificaciones institucional.
  */
 export function useOperation<T, Args extends any[]>(
   operation: (...args: Args) => Promise<T>,
@@ -20,7 +22,6 @@ export function useOperation<T, Args extends any[]>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Mantenemos referencias actualizadas para no requerir recrear el useCallback
   const opRef = useRef(operation);
   const optionsRef = useRef(options);
 
@@ -38,18 +39,38 @@ export function useOperation<T, Args extends any[]>(
 
     try {
       const result = await opRef.current(...args);
+      
+      // Feedback de éxito automático
+      const { successMessage, showToast = true } = optionsRef.current;
+      const explicitMsg = typeof successMessage === 'function' ? successMessage(result as T) : successMessage;
+      const serverMsg = (result as any)?.message;
+      
+      if (showToast) {
+        if (explicitMsg) {
+          toast.success(explicitMsg);
+        } else if (serverMsg && typeof serverMsg === 'string') {
+          toast.success(serverMsg);
+        }
+      }
+
       optionsRef.current.onSuccess?.(result, ...args);
       return result;
     } catch (err: any) {
       const message = err.message || 'Ocurrió un error inesperado';
       setError(message);
+      
+      // Feedback de error automático
+      const { errorMessage, showToast = true } = optionsRef.current;
+      if (showToast) {
+        toast.error(errorMessage || message);
+      }
+
       optionsRef.current.onError?.(err);
       return undefined;
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Dependencias vacías para estabilidad total
+  }, []); 
 
   const clearError = useCallback(() => setError(null), []);
 
