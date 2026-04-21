@@ -141,9 +141,11 @@ class Util
         return $date->format($format);
     }
 
-    public static function respuestaBoolToStr(bool $respuesta)
+    public static function respuestaBoolToStr(bool|float|int|string|null $respuesta): string
     {
-        return $respuesta ? "Sí" : "No";
+        return filter_var($respuesta, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+            ? "Sí"
+            : "No";
     }
 
     public static function obtenerFotografiaRand()
