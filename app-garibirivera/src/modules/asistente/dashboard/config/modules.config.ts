@@ -1,5 +1,5 @@
-import { LucideIcon, Users, UserPlus, ListTodo, Receipt, Megaphone, Layers, Presentation, UserCheck, ClipboardCheck, History, Lightbulb, GraduationCap, Banknote, BarChart, HandHelping, FileText, Settings, CreditCard, FileSignature, Home } from 'lucide-react';
-import { PERMISSIONS } from '@/modules/auth/domain/Roles';
+﻿import { LucideIcon, Users, UserPlus, ListTodo, Receipt, Megaphone, Layers, Presentation, UserCheck, ClipboardCheck, History, Lightbulb, GraduationCap, Banknote, BarChart, HandHelping, FileText, Settings, CreditCard, FileSignature, Home } from 'lucide-react';
+import { PERMISSIONS } from '@/modules/auth/domain/policies/Roles';
 
 export interface AssistantModuleLink {
   id: string;

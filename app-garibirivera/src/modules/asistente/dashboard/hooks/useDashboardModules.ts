@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useUser } from '@/modules/auth/context/UserContext';
-import { normalizePermissions } from '@/modules/auth/domain/Roles';
+import { normalizePermissions } from '@/modules/auth/domain/policies/Roles';
 import { ASSISTANT_MODULES_CONFIG } from '../config/modules.config';
 
 export function useDashboardModules() {

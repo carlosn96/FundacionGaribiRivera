@@ -32,9 +32,9 @@ function AdminDashboardContent() {
         mainAction={mainAction}
       />
 
-      {/* 2. ESTADÍSTICAS (Placeholder Legacy) */}
+      {/* 2. ESTADÍSTICAS (Placeholder Legacy) 
       <DashboardStats />
-
+      */}
       {/* 3. ACCESOS RÁPIDOS */}
       <QuickActionsGrid 
         quickActions={quickActions} 

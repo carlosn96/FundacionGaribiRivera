@@ -7,17 +7,17 @@ import {
   VisionSpringContainer 
 } from "@/core/components/ui/vision-glass";
 import { Loader2, Building2 } from "lucide-react";
-import { PERMISSIONS } from "@/modules/auth/domain/Roles";
+import { PERMISSIONS } from "@/modules/auth/domain/policies/Roles";
 import AuthGuard from "@/modules/auth/components/AuthGuard";
 
 // Clean Architecture Components
-import { LegalIdentitySection } from "@/modules/asistente/informacion-general/components/LegalIdentitySection";
-import { AddressSection } from "@/modules/asistente/informacion-general/components/AddressSection";
-import { WitnessSection } from "@/modules/asistente/informacion-general/components/WitnessSection";
-import { ActionSidebar } from "@/modules/asistente/informacion-general/components/ActionSidebar";
+import { LegalIdentitySection } from "@/modules/asistente/administracion-general/informacion-general/components/LegalIdentitySection";
+import { AddressSection } from "@/modules/asistente/administracion-general/informacion-general/components/AddressSection";
+import { WitnessSection } from "@/modules/asistente/administracion-general/informacion-general/components/WitnessSection";
+import { ActionSidebar } from "@/modules/asistente/administracion-general/informacion-general/components/ActionSidebar";
 
 // Hooks & Logic
-import { useConfiguracionForm } from "@/modules/asistente/informacion-general/hooks/useConfiguracionForm";
+import { useConfiguracionForm } from "@/modules/asistente/administracion-general/informacion-general/hooks/useConfiguracionForm";
 
 function InformacionInstitucionalContent() {
   const { form, isLoading, isSaving, onSubmit } = useConfiguracionForm();
@@ -70,10 +70,6 @@ function InformacionInstitucionalContent() {
 }
 
 export default function InformacionInstitucionalPage() {
-  return (
-    <AuthGuard allowedPermissions={[PERMISSIONS.ADMINISTRACION_GENERAL]}>
-      <InformacionInstitucionalContent />
-    </AuthGuard>
-  );
+  return <InformacionInstitucionalContent />;
 }
 

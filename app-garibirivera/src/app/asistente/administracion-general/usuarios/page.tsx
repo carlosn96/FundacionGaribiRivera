@@ -1,19 +1,21 @@
 "use client";
 
-import React from 'react';
-import { PERMISSIONS } from '@/modules/auth/domain/Roles';
-import AuthGuard from '@/modules/auth/components/AuthGuard';
+import { useState } from 'react';
 
 // Modular Components
-import { UserSidebar } from '@/modules/asistente/usuarios/components/UserSidebar';
-import { UserList } from '@/modules/asistente/usuarios/components/UserList';
-import { UserDetail } from '@/modules/asistente/usuarios/components/UserDetail';
-import { UserModals } from '@/modules/asistente/usuarios/components/UserModals';
+import { UserSidebar } from '@/modules/asistente/administracion-general/components/UserSidebar';
+import { UserList } from '@/modules/asistente/administracion-general/components/UserList';
+import { UserDetail } from '@/modules/asistente/administracion-general/components/UserDetail';
+import { UserModals } from '@/modules/asistente/administracion-general/components/UserModals';
 
 // Custom Hooks
-import { useUsuariosAdmin } from '@/modules/asistente/usuarios/hooks/useUsuariosAdmin';
+import { useUsuariosAdmin } from '@/modules/asistente/administracion-general/hooks/useUsuariosAdmin';
+
 
 function UsuariosAdminContent() {
+  const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const {
     loading,
     searchTerm, setSearchTerm,
@@ -42,39 +44,70 @@ function UsuariosAdminContent() {
     togglePermission,
     handleImageChange,
     getRoleNameById,
+    getPhotoUrl,
     userToDelete
   } = useUsuariosAdmin();
 
+  // Seleccionar usuario y cambiar a vista de detalle en móvil
+  const handleSelectUser = (id: number | null) => {
+    setSelectedUserId(id);
+    if (id !== null) setMobileView('detail');
+  };
+
   return (
-    <div className="h-[calc(100vh-140px)] flex gap-6 animate-in fade-in duration-700">
-      {/* 1. SIDEBAR IZQUIERDO: Filtros y Permisos */}
-      <UserSidebar 
-        filterPermission={filterPermission}
-        setFilterPermission={setFilterPermission}
-        handleCreateClick={handleCreateClick}
-        getRoleNameById={getRoleNameById}
-      />
+    <div className="h-[calc(100vh-140px)] flex gap-4 lg:gap-6 animate-in fade-in duration-700 relative overflow-hidden">
 
-      {/* 2. LISTA CENTRAL: Usuarios */}
-      <UserList 
-        loading={loading}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filteredUsers={filteredUsers}
-        selectedUserId={selectedUserId}
-        setSelectedUserId={setSelectedUserId}
-      />
+      {/* SIDEBAR: Visible solo en 2xl+ o si se activa manualmente */}
+      <div className={`
+        ${sidebarOpen ? 'flex w-64' : 'hidden 2xl:flex 2xl:w-64'} 
+        flex-col flex-shrink-0 transition-all duration-300
+      `}>
+        <UserSidebar 
+          filterPermission={filterPermission}
+          setFilterPermission={setFilterPermission}
+          handleCreateClick={handleCreateClick}
+          getRoleNameById={getRoleNameById}
+        />
+      </div>
 
-      {/* 3. PANEL DERECHO: Detalle del Usuario */}
-      <UserDetail 
-        selectedUser={selectedUser}
-        handleEditClick={handleEditClick}
-        handleDeleteClick={handleDeleteClick}
-        handleChangePasswordClick={handleChangePasswordClick}
-        getRoleNameById={getRoleNameById}
-      />
+      {/* LISTA: Visible siempre en lg+, en móvil solo si mobileView === 'list' */}
+      <div className={`
+        flex-1 lg:flex-none lg:w-[340px] xl:w-[360px] flex-shrink-0 flex flex-col min-w-0 min-h-0 h-full
+        ${mobileView === 'detail' ? 'hidden lg:flex' : 'flex'}
+      `}>
+        <UserList 
+          loading={loading}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filteredUsers={filteredUsers}
+          selectedUserId={selectedUserId}
+          setSelectedUserId={handleSelectUser}
+          getPhotoUrl={getPhotoUrl}
+          filterPermission={filterPermission}
+          setFilterPermission={setFilterPermission}
+          handleCreateClick={handleCreateClick}
+          getRoleNameById={getRoleNameById}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          sidebarOpen={sidebarOpen}
+        />
+      </div>
 
-      {/* MODALES DEL MÓDULO */}
+      {/* DETALLE: Visible siempre en lg+, en móvil solo si mobileView === 'detail' */}
+      <div className={`
+        flex-1 flex flex-col min-w-[400px] min-h-0 h-full
+        ${mobileView === 'list' ? 'hidden lg:flex' : 'flex'}
+      `}>
+        <UserDetail 
+          selectedUser={selectedUser}
+          handleEditClick={handleEditClick}
+          handleDeleteClick={handleDeleteClick}
+          handleChangePasswordClick={handleChangePasswordClick}
+          getRoleNameById={getRoleNameById}
+          getPhotoUrl={getPhotoUrl}
+          onBack={() => setMobileView('list')}
+        />
+      </div>
+
       <UserModals 
         isEditModalOpen={isEditModalOpen}
         setIsEditModalOpen={setIsEditModalOpen}
@@ -100,16 +133,12 @@ function UsuariosAdminContent() {
         setConfirmPassword={setConfirmPassword}
         passwordLoading={passwordLoading}
         handleUpdatePassword={handleUpdatePassword}
+        getPhotoUrl={getPhotoUrl as any}
       />
     </div>
   );
 }
 
 export default function UsuariosAdminPage() {
-  return (
-    <AuthGuard allowedPermissions={[PERMISSIONS.ADMINISTRACION_GENERAL]}>
-      <UsuariosAdminContent />
-    </AuthGuard>
-  );
+  return <UsuariosAdminContent />;
 }
-

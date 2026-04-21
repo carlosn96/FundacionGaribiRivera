@@ -7,11 +7,11 @@ import { Button } from '@/core/components/ui/button';
 import { Skeleton } from '@/core/components/ui/skeleton';
 
 // Modular Components
-import { CatalogSelector } from '@/modules/asistente/configuracion/components/CatalogSelector';
-import { CatalogEditor } from '@/modules/asistente/configuracion/components/CatalogEditor';
+import { CatalogSelector } from '@/modules/asistente/administracion-general/configuracion/components/CatalogSelector';
+import { CatalogEditor } from '@/modules/asistente/administracion-general/configuracion/components/CatalogEditor';
 
 // Hooks
-import { useCatalogAdmin } from '@/modules/asistente/configuracion/hooks/useCatalogAdmin';
+import { useCatalogAdmin } from '@/modules/asistente/administracion-general/configuracion/hooks/useCatalogAdmin';
 
 function ConfiguracionAdminContent() {
   const {
