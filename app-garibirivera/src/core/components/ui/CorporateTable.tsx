@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell,
   TableHead, TableHeader, TableRow
 } from "@/core/components/ui/table";
-import { ScrollArea } from "@/core/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/core/components/ui/scroll-area";
 import { cn } from "@/core/utils/utils";
 import { useMediaQuery } from "@/core/hooks/useMediaQuery";
 
@@ -316,71 +316,74 @@ export function CorporateTable<T>({
   return (
     <div className="rounded-2xl border border-subtle surface-raised overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
       <ScrollArea 
-        className="w-full [&_[data-radix-scroll-area-viewport]>div]:!block"
+        className="w-full"
         style={{ height: maxHeight }}
       >
-        <Table className="border-separate border-spacing-0">
-          <TableHeader className="relative z-30">
-            <TableRow className="hover:bg-transparent border-none">
-              {columns.map((col) => (
-                <TableHead 
-                  key={col.key}
-                  className={cn(
-                    "sticky z-30 bg-surface-base border-b border-subtle py-3",
-                    "transition-colors duration-200 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]",
-                    col.hiddenOn === 'sm' && "hidden sm:table-cell",
-                    col.hiddenOn === 'md' && "hidden md:table-cell",
-                    col.hiddenOn === 'lg' && "hidden lg:table-cell",
-                    col.headerClassName
-                  )}
-                  style={{ top: stickyOffset }}
-                >
-                  {col.sortable ? (
-                    <SortHeader 
-                      label={col.header} 
-                      active={sortConfig.key === col.key} 
-                      direction={sortConfig.direction} 
-                      onToggle={() => handleSort(col.key)} 
-                    />
-                  ) : (
-                    <span className="vision-caption-upper vision-text-disabled text-[9px]">
-                      {col.header}
-                    </span>
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {sortedData.map((item, index) => (
-              <TableRow
-                key={index}
-                onClick={() => onRowClick?.(item)}
-                className={cn(
-                  "group border-b border-subtle transition-colors duration-200",
-                  "hover:surface-raised",
-                  onRowClick && "cursor-pointer"
-                )}
-              >
+        <div className="min-w-full inline-block align-middle">
+          <Table className="border-separate border-spacing-0 min-w-full">
+            <TableHeader className="relative z-30">
+              <TableRow className="hover:bg-transparent border-none">
                 {columns.map((col) => (
-                  <TableCell 
+                  <TableHead 
                     key={col.key}
                     className={cn(
-                      "py-3 transition-all duration-300",
+                      "sticky z-30 bg-surface-base border-b border-subtle py-3",
+                      "transition-colors duration-200 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]",
                       col.hiddenOn === 'sm' && "hidden sm:table-cell",
                       col.hiddenOn === 'md' && "hidden md:table-cell",
                       col.hiddenOn === 'lg' && "hidden lg:table-cell",
-                      col.className
+                      col.headerClassName
                     )}
+                    style={{ top: stickyOffset }}
                   >
-                    {col.render ? col.render(item) : (item as any)[col.key]}
-                  </TableCell>
+                    {col.sortable ? (
+                      <SortHeader 
+                        label={col.header} 
+                        active={sortConfig.key === col.key} 
+                        direction={sortConfig.direction} 
+                        onToggle={() => handleSort(col.key)} 
+                      />
+                    ) : (
+                      <span className="vision-caption-upper vision-text-disabled text-[9px]">
+                        {col.header}
+                      </span>
+                    )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+
+            <TableBody>
+              {sortedData.map((item, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => onRowClick?.(item)}
+                  className={cn(
+                    "group border-b border-subtle transition-colors duration-200",
+                    "hover:surface-raised",
+                    onRowClick && "cursor-pointer"
+                  )}
+                >
+                  {columns.map((col) => (
+                    <TableCell 
+                      key={col.key}
+                      className={cn(
+                        "py-3 transition-all duration-300",
+                        col.hiddenOn === 'sm' && "hidden sm:table-cell",
+                        col.hiddenOn === 'md' && "hidden md:table-cell",
+                        col.hiddenOn === 'lg' && "hidden lg:table-cell",
+                        col.className
+                      )}
+                    >
+                      {col.render ? col.render(item) : (item as any)[col.key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   );
