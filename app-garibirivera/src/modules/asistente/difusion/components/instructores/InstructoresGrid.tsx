@@ -5,6 +5,7 @@ import { UserCheck, Plus } from "lucide-react";
 import { Instructor } from "../../domain/models/Instructor";
 import { InstructorCard } from "./InstructorCard";
 import ModuleEmptyState from "@/core/components/ui/module-empty-state";
+import { CorporateGrid } from "@/core/components/ui/CorporateGrid";
 
 interface InstructoresGridProps {
   instructores: Instructor[];
@@ -17,24 +18,23 @@ interface InstructoresGridProps {
 export function InstructoresGrid({ instructores, loading, onEdit, onDelete, onCreate }: InstructoresGridProps) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <CorporateGrid columns={{ default: 1, md: 2, lg: 3 }}>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-72 vision-glass-window animate-pulse flex flex-col p-8 gap-8 border-brand/10">
+          <div key={i} className="h-64 vision-glass-window animate-pulse flex flex-col p-8 gap-8 border-subtle">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-zinc-200" />
+              <div className="w-16 h-16 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
               <div className="flex-1 space-y-3">
-                <div className="h-4 bg-zinc-200 rounded w-3/4" />
-                <div className="h-3 bg-zinc-200 rounded w-1/2" />
+                <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4" />
+                <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-1/2" />
               </div>
             </div>
-            <div className="space-y-4 mt-4">
-              <div className="h-10 bg-zinc-100 rounded-xl w-full" />
-              <div className="h-10 bg-zinc-100 rounded-xl w-full" />
+            <div className="grid grid-cols-2 gap-4 mt-auto">
+              <div className="h-12 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl w-full" />
+              <div className="h-12 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl w-full" />
             </div>
-            <div className="mt-auto h-10 bg-zinc-50 rounded" />
           </div>
         ))}
-      </div>
+      </CorporateGrid>
     );
   }
 
@@ -55,7 +55,7 @@ export function InstructoresGrid({ instructores, loading, onEdit, onDelete, onCr
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+    <CorporateGrid columns={{ default: 1, md: 2, lg: 3 }} className="animate-in fade-in slide-in-from-bottom-5 duration-700">
       {instructores.map((instructor) => (
         <InstructorCard 
           key={instructor.idInstructor} 
@@ -64,6 +64,6 @@ export function InstructoresGrid({ instructores, loading, onEdit, onDelete, onCr
           onDelete={() => onDelete?.(instructor.idInstructor)}
         />
       ))}
-    </div>
+    </CorporateGrid>
   );
 }

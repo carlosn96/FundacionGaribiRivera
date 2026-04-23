@@ -6,6 +6,7 @@ import { Database, Plus, Trash2, Settings } from 'lucide-react';
 import { Button } from '@/core/components/ui/button';
 import { Input } from '@/core/components/ui/input';
 import { CatalogMap, CatalogEntry, CatalogItem } from '@/modules/asistente/administracion-general/configuracion/schemas/configuracion.schema';
+import { useConfirm } from '@/core/context/ConfirmContext';
 
 interface CatalogEditorProps {
   selectedCatalog: string;
@@ -24,6 +25,7 @@ export function CatalogEditor({
   handleAdd,
   handleDelete
 }: CatalogEditorProps) {
+  const { confirmDelete } = useConfirm();
   const catalogEntry = selectedCatalog ? (catalogos?.[selectedCatalog] as CatalogEntry) : null;
 
   return (
@@ -73,7 +75,11 @@ export function CatalogEditor({
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    onClick={() => handleDelete((item as any).id || (item as any).id_rubro || (item as any).id_catalogo_estado_civil)}
+                    onClick={async () => {
+                      const label = item.descripcion || item.nombre || "este elemento";
+                      const isConfirmed = await confirmDelete(label);
+                      if (isConfirmed) handleDelete((item as any).id || (item as any).id_rubro || (item as any).id_catalogo_estado_civil);
+                    }}
                     className="h-8 w-8 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-500/10 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />

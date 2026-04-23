@@ -37,7 +37,7 @@ export function DifusionCategories() {
       desc: 'Administración de cuestionarios y evaluaciones iniciales de emprendedores.',
       icon: ListTodo,
       gradient: 'from-fundacion-verde to-fundacion-verde-light',
-      href: '/asistente/difusion/seguimiento/linea-base',
+      href: '/asistente/difusion/linea-base',
       options: 4
     }
   ];

@@ -6,6 +6,7 @@ import { EtapaFormacion } from "../../domain/models/Etapa";
 import { EtapaItem } from "./EtapaItem";
 import ModuleEmptyState from "@/core/components/ui/module-empty-state";
 import { CronogramaModal } from './CronogramaModal';
+import { CorporateGrid } from '@/core/components/ui/CorporateGrid';
 
 interface EtapasListProps {
   etapas: EtapaFormacion[];
@@ -40,9 +41,9 @@ export function EtapasList({ etapas, loading, onSetActual, onDelete, onFetchCron
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 animate-pulse">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="h-64 rounded-3xl bg-white/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-800 p-6 flex flex-col justify-between">
+      <CorporateGrid columns={{ default: 1, md: 2, lg: 3 }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-64 rounded-3xl bg-surface-base animate-pulse border border-subtle p-6 flex flex-col justify-between">
             <div className="flex gap-4">
               <div className="w-14 h-14 bg-zinc-200 dark:bg-zinc-800 rounded-2xl shrink-0" />
               <div className="space-y-3 w-full pt-1">
@@ -50,13 +51,13 @@ export function EtapasList({ etapas, loading, onSetActual, onDelete, onFetchCron
                 <div className="h-3 bg-zinc-100 dark:bg-zinc-800/50 rounded w-1/2" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 mt-auto">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-subtle mt-auto">
               <div className="h-10 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl" />
               <div className="h-10 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl" />
             </div>
           </div>
         ))}
-      </div>
+      </CorporateGrid>
     );
   }
 
@@ -78,7 +79,7 @@ export function EtapasList({ etapas, loading, onSetActual, onDelete, onFetchCron
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 animate-in slide-in-from-bottom-5 fade-in duration-700">
+      <CorporateGrid columns={{ default: 1, md: 2, lg: 3 }} className="animate-in slide-in-from-bottom-5 fade-in duration-700">
         {etapas.map((etapa) => (
           <EtapaItem 
             key={etapa.id} 
@@ -89,7 +90,7 @@ export function EtapasList({ etapas, loading, onSetActual, onDelete, onFetchCron
             onEdit={onEdit}
           />
         ))}
-      </div>
+      </CorporateGrid>
 
       <CronogramaModal 
         idEtapa={cronogramaModal.id}

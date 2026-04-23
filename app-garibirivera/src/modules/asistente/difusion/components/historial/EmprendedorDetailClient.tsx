@@ -20,18 +20,19 @@ import {
   FileText
 } from "lucide-react";
 import { VisionSpringContainer, VisionGlassWindow, VisionBadge } from "@/core/components/ui/vision-glass";
-import { useEmprendedor } from "@/modules/asistente/difusion/hooks/useEmprendedor";
+import { useEmprendedores } from "@/modules/asistente/difusion/hooks/useEmprendedores";
 import { Button } from "@/core/components/ui/button";
 import { VisionAvatar } from "@/core/components/ui/vision-avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/core/components/ui/tabs";
 import { Separator } from "@/core/components/ui/separator";
 import { LineaBaseVistaPremium } from "@/modules/emprendedor/linea-base/components/LineaBaseVistaPremium";
+import { Emprendedor } from "../../domain/models/Emprendedor";
 
 export default function EmprendedorDetailClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const { emprendedor, loading, fetchById, getEmprendedorPhoto } = useEmprendedor();
+  const { emprendedor, loading, fetchById, getEmprendedorPhoto } = useEmprendedores();
 
   useEffect(() => {
     if (id) {
@@ -77,7 +78,7 @@ export default function EmprendedorDetailClient() {
           </Button>
           <div className="flex items-center gap-5">
             <VisionAvatar 
-              src={getEmprendedorPhoto()} 
+              src={getEmprendedorPhoto(emprendedor as Emprendedor)} 
               alt={emprendedor?.nombre} 
               initials={`${emprendedor?.nombre?.charAt(0)}${emprendedor?.apellidos?.charAt(0)}`}
               className="w-20 h-20 text-xl border-2 border-fundacion-amarillo/30 shadow-lg"

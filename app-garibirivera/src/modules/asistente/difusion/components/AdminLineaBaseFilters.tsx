@@ -1,98 +1,80 @@
 "use client";
 
 import React from "react";
-import { Search, Filter, RefreshCcw } from "lucide-react";
-import { VisionGlassWindow, VisionBadge } from "@/core/components/ui/vision-glass";
+import { Search, RefreshCcw, Layers } from "lucide-react";
+import { VisionGlassWindow } from "@/core/components/ui/vision-glass";
 import { Button } from "@/core/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/core/components/ui/dropdown-menu";
+import { CorporateSelect, CorporateSelectOption } from "@/core/components/ui/CorporateSelect";
+import { cn } from "@/core/utils/utils";
 
 interface AdminLineaBaseFiltersProps {
-  count: number;
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onRefresh: () => void;
-  etapas: Array<{ idEtapa: number; nombre: string }>;
-  selectedEtapas: number[];
-  onEtapaToggle: (id: number) => void;
+  loading?: boolean;
+  /** Si se proveen, se muestra el filtro de etapa */
+  etapas?: { idEtapa: number; nombre: string }[];
+  selectedEtapaId?: number;
+  onEtapaChange?: (id: number) => void;
+  className?: string;
 }
 
 export const AdminLineaBaseFilters: React.FC<AdminLineaBaseFiltersProps> = ({
-  count,
   searchTerm,
   onSearchChange,
   onRefresh,
+  loading,
   etapas,
-  selectedEtapas,
-  onEtapaToggle,
+  selectedEtapaId,
+  onEtapaChange,
+  className
 }) => {
+  // Solo se muestra el filtro de etapa si se proporcionan los datos y la función de cambio
+  const showStageFilter = etapas !== undefined && onEtapaChange !== undefined && selectedEtapaId !== undefined;
+
+  const etapaOptions: CorporateSelectOption[] = etapas ? [
+    { value: -1, label: "Histórico (Todas las Etapas)" },
+    ...etapas.map(e => ({
+      value: e.idEtapa.toString(),
+      label: e.nombre
+    }))
+  ] : [];
+
   return (
-    <VisionGlassWindow className="p-4 flex items-center gap-4 flex-wrap shadow-lg border-brand/5 backdrop-blur-md">
+    <VisionGlassWindow className={cn("p-4 flex items-center gap-4 flex-wrap shadow-xl border-brand/5", className)}>
       <div className="relative flex-1 min-w-[280px] group">
-        <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 vision-text-tertiary transition-colors group-focus-within:text-vision-brand" />
+        <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 vision-text-tertiary transition-colors group-focus-within:text-fundacion-verde" />
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Buscar por nombre o correo..."
-          className="vision-input-base w-full pl-14 pr-6 h-12"
+          placeholder="Buscar emprendedor por nombre o correo..."
+          className="vision-input-base w-full pl-14 pr-6 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-950/30 border-subtle focus:border-fundacion-verde transition-all"
         />
       </div>
 
-      <div className="flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="vision-button-outline h-12 px-6">
-              <Filter className="w-4 h-4 mr-2" />
-              Filtrar por Etapa
-              {selectedEtapas.length > 0 && (
-                <span className="ml-2 bg-vision-brand text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">
-                  {selectedEtapas.length}
-                </span>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 vision-dropdown">
-            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50">Etapas</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {etapas.map((etapa) => (
-              <DropdownMenuCheckboxItem
-                key={etapa.idEtapa}
-                checked={selectedEtapas.includes(etapa.idEtapa)}
-                onCheckedChange={() => onEtapaToggle(etapa.idEtapa)}
-              >
-                {etapa.nombre}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex items-center gap-3">
+        {showStageFilter && (
+          <div className="w-72">
+            <CorporateSelect
+              placeholder="Filtrar por Ciclo/Etapa"
+              value={selectedEtapaId.toString()}
+              onValueChange={(val) => onEtapaChange(Number(val))}
+              options={etapaOptions}
+              icon={<Layers className="w-4 h-4 text-fundacion-verde" />}
+              loading={loading}
+            />
+          </div>
+        )}
 
         <Button 
           variant="outline" 
           size="icon" 
-          className="h-12 w-12 vision-button-outline" 
+          className="h-12 w-12 rounded-2xl vision-button-outline border-subtle hover:bg-fundacion-verde/10 hover:text-fundacion-verde transition-all" 
           onClick={onRefresh}
-          title="Actualizar datos"
         >
-          <RefreshCcw className="w-4 h-4" />
+          <RefreshCcw className={cn("w-5 h-5", loading && "animate-spin")} />
         </Button>
-
-        <div className="h-10 w-px bg-zinc-200 dark:bg-zinc-800 hidden md:block mx-2" />
-
-        <div className="flex flex-col items-end">
-          <p className="vision-caption-upper vision-text-tertiary font-black text-[9px] tracking-[0.2em] uppercase opacity-50">
-            Total Resultados
-          </p>
-          <p className="font-bold vision-text-primary text-sm">
-            {count} EMPRENDEDORES
-          </p>
-        </div>
       </div>
     </VisionGlassWindow>
   );

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Edit, Trash2, Users, UserPlus, MoreVertical } from "lucide-react";
+import { Eye, Edit, Trash2, Users, UserPlus, MoreVertical, KeyRound } from "lucide-react";
 import { VisionBadge } from "@/core/components/ui/vision-glass";
 import { Button } from "@/core/components/ui/button";
 import { Emprendedor } from "../../domain/models/Emprendedor";
@@ -18,25 +18,36 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/core/components/ui/dropdown-menu";
+import { ResetPasswordModal } from "./ResetPasswordModal";
+import { useState } from "react";
 
 interface EmprendedorTableProps {
   emprendedores: Emprendedor[];
   loading?: boolean;
   onDelete?: (id: number) => void;
+  onResetPassword?: (id: number, password?: string) => Promise<void>;
   onGetPhoto: (emp: Emprendedor) => string;
 }
 
-export function EmprendedorTable({ emprendedores, loading, onDelete, onGetPhoto }: EmprendedorTableProps) {
+export function EmprendedorTable({ emprendedores, loading, onDelete, onResetPassword, onGetPhoto }: EmprendedorTableProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const [selectedEmprendedor, setSelectedEmprendedor] = useState<Emprendedor | null>(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+
+  const handleOpenResetModal = (emp: Emprendedor) => {
+    setSelectedEmprendedor(emp);
+    setIsResetModalOpen(true);
+  };
+
+  const handleResetPassword = async (id: number, password?: string) => {
+    if (onResetPassword) {
+      return await onResetPassword(id, password);
+    }
+  };
 
   const handleDelete = async (emp: Emprendedor) => {
-    const isConfirmed = await confirm({
-      title: "¿Eliminar Emprendedor?",
-      description: `¿Estás seguro de que deseas eliminar permanentemente a ${emp.nombre} ${emp.apellidos}? Esta acción no se puede deshacer.`,
-      variant: "destructive"
-    });
-
+    const isConfirmed = await confirm.confirmDelete(`${emp.nombre} ${emp.apellidos}`);
     if (isConfirmed) {
       onDelete?.(emp.id);
     }
@@ -60,7 +71,7 @@ export function EmprendedorTable({ emprendedores, loading, onDelete, onGetPhoto 
               {emp.nombre} {emp.apellidos}
             </p>
             <p className="vision-caption vision-text-tertiary mt-1.5 font-black tracking-widest text-[8px] uppercase opacity-40">
-              EXPEDIENTE: {emp.idEmprendedor || "SIN ASIGNAR"}
+              ID: {emp.idEmprendedor}
             </p>
           </div>
         </div>
@@ -126,6 +137,18 @@ export function EmprendedorTable({ emprendedores, loading, onDelete, onGetPhoto 
             </DropdownMenuItem>
 
             <DropdownMenuItem 
+              className="flex items-center gap-3 cursor-pointer py-2.5 hover:bg-fundacion-amarillo/5"
+              onClick={() => handleOpenResetModal(emp)}
+            >
+              <div className="p-1.5 rounded-lg bg-fundacion-amarillo/10 text-fundacion-amarillo">
+                <KeyRound className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-semibold text-xs">Restablecer Contraseña</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem 
               className="flex items-center gap-3 cursor-pointer py-2.5 text-red-500 hover:bg-red-500/10"
               onClick={() => handleDelete(emp)}
             >
@@ -167,11 +190,21 @@ export function EmprendedorTable({ emprendedores, loading, onDelete, onGetPhoto 
   }
 
   return (
-    <CorporateTable 
-      columns={columns}
-      data={flatData}
-      isLoading={loading}
-      defaultSortKey="nombreComp"
-    />
+    <>
+      <CorporateTable 
+        columns={columns}
+        data={flatData}
+        isLoading={loading}
+        defaultSortKey="nombreComp"
+      />
+
+      <ResetPasswordModal 
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        emprendedor={selectedEmprendedor}
+        onConfirm={handleResetPassword}
+        loading={loading}
+      />
+    </>
   );
 }

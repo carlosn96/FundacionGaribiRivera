@@ -1,20 +1,12 @@
 "use client";
 
 import React from 'react';
-import { Presentation, Calendar, ArrowRight } from "lucide-react";
-import { 
-  VisionGlassWindow, 
-  VisionBadge 
-} from "@/core/components/ui/vision-glass";
+import { Presentation, Calendar, Edit2, Trash2, ArrowRight, User } from "lucide-react";
 import { Taller } from "../../domain/models/Taller";
 import { InstructorAvatar } from "../shared/InstructorAvatar";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/core/components/ui/dropdown-menu";
-import { MoreVertical, Edit2, Trash2 } from "lucide-react";
+import { CorporateGridItem } from "@/core/components/ui/CorporateGridItem";
+import { DropdownMenuItem, DropdownMenuSeparator } from "@/core/components/ui/dropdown-menu";
+import { VisionBadge } from "@/core/components/ui/vision-glass";
 
 interface TallerCardProps {
   taller: Taller;
@@ -24,89 +16,91 @@ interface TallerCardProps {
 }
 
 export function TallerCard({ taller, onClick, onEdit, onDelete }: TallerCardProps) {
+  const instructorName = taller.instructor?.nombreCompleto ||
+    (taller.instructor
+      ? `${taller.instructor.nombre} ${taller.instructor.apellidoPaterno}`
+      : null);
+
   return (
-    <VisionGlassWindow
-      className="p-6 sm:p-8 cursor-pointer group difusion-card flex flex-col h-full"
+    <CorporateGridItem
+      visual={
+        <div className="w-14 h-14 rounded-2xl bg-fundacion-verde flex items-center justify-center text-white shadow-md shrink-0">
+          <Presentation className="w-7 h-7" />
+        </div>
+      }
+      title={taller.nombre}
+      subtitle={taller.tipoTaller?.descripcion ?? undefined}
+      caption={
+        <VisionBadge
+          sentiment={taller.evaluacionHabilitada ? "success" : "muted"}
+          className="text-[9px] font-bold tracking-widest"
+        >
+          {taller.evaluacionHabilitada ? "Con evaluación" : "Sin evaluación"}
+        </VisionBadge>
+      }
+      metadata={[
+        {
+          icon: Calendar,
+          label: "Secuencia",
+          value: `#${taller.numeroTaller}`,
+          variant: 'accent',
+        },
+        {
+          icon: User,
+          label: "Instructor",
+          value: instructorName ? (
+            <div className="flex items-center gap-1.5 min-w-0">
+              <InstructorAvatar
+                idInstructor={taller.idInstructor}
+                nombre={taller.instructor?.nombre}
+                apellidoPaterno={taller.instructor?.apellidoPaterno}
+                size="sm"
+                className="w-5 h-5 shrink-0"
+              />
+              <span className="truncate">{instructorName}</span>
+            </div>
+          ) : "Sin asignar",
+          variant: instructorName ? 'default' : 'muted',
+        },
+      ]}
+      actions={
+        <>
+          <DropdownMenuItem
+            onClick={onEdit}
+            className="gap-3 py-3 cursor-pointer rounded-xl focus:bg-[var(--interact-hover)] group/item"
+          >
+            <div className="p-2 rounded-lg bg-[var(--interact-hover)] text-[var(--text-secondary)] transition-transform group-hover/item:scale-110">
+              <Edit2 className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-semibold text-sm vision-text-primary">Editar Taller</span>
+              <span className="text-[10px] vision-text-tertiary uppercase tracking-widest">Ajustar datos y evaluación</span>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator className="border-[var(--border-subtle)] my-1" />
+
+          <DropdownMenuItem
+            onClick={onDelete}
+            className="gap-3 py-3 cursor-pointer rounded-xl focus:bg-red-50 dark:focus:bg-red-950/30 group/item"
+          >
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-600 transition-transform group-hover/item:scale-110">
+              <Trash2 className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-semibold text-sm text-red-600">Eliminar Sesión</span>
+              <span className="text-[10px] text-red-400 uppercase tracking-widest">Retirar definitivamente</span>
+            </div>
+          </DropdownMenuItem>
+        </>
+      }
+      footer={
+        <div className="flex items-center justify-between w-full vision-caption-upper vision-text-tertiary">
+          <span>Ver logística</span>
+          <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+        </div>
+      }
       onClick={() => onClick?.(taller)}
-    >
-      {/* Header: Icon + Info + Actions */}
-      <div className="flex flex-col gap-6 mb-6">
-        <div className="flex items-start justify-between">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-fundacion-verde to-fundacion-verde-light flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-500 shrink-0">
-            <Presentation className="w-7 h-7" />
-          </div>
-          
-          <div onClick={(e) => e.stopPropagation()}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors">
-                  <MoreVertical className="w-4 h-4 text-zinc-400" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 rounded-xl border-zinc-200/50 dark:border-zinc-800/50 shadow-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl">
-                <DropdownMenuItem onClick={onEdit} className="py-3 px-4 font-bold cursor-pointer rounded-lg mx-1 focus:bg-fundacion-verde/10 focus:text-fundacion-verde">
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Editar Taller
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete} className="py-3 px-4 font-bold cursor-pointer rounded-lg mx-1 text-red-500 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-950/30">
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Eliminar Taller
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-bold vision-text-primary text-lg leading-tight group-hover:text-fundacion-verde-light dark:group-hover:text-fundacion-amarillo transition-colors uppercase tracking-tight line-clamp-2 min-h-[3.5rem]">
-            {taller.nombre}
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            <VisionBadge 
-              sentiment="brand" 
-              className="vision-caption-upper px-2.5 py-1 font-black text-[8px] tracking-widest bg-fundacion-verde/10 text-fundacion-verde border-none"
-            >
-              MÓDULO: {taller.tipoTaller?.descripcion || "N/A"}
-            </VisionBadge>
-            <VisionBadge
-              sentiment={taller.evaluacionHabilitada ? "success" : "muted"}
-              className="vision-caption-upper px-2.5 py-1 font-black text-[8px] tracking-widest"
-            >
-              {taller.evaluacionHabilitada ? "EVALUACIÓN ACTIVA" : "SIN EVALUACIÓN"}
-            </VisionBadge>
-          </div>
-        </div>
-      </div>
-
-      {/* Meta info */}
-      <div className="space-y-4 flex-1">
-        <div className="flex items-center gap-3 vision-caption vision-text-secondary font-bold text-xs">
-          <div className="w-8 h-8 rounded-lg difusion-accent-surface flex items-center justify-center shrink-0">
-            <Calendar className="w-4 h-4 difusion-accent-text opacity-70" />
-          </div>
-          <span className="opacity-80">Secuencia #{taller.numeroTaller} — Programada</span>
-        </div>
-        <div className="flex items-center gap-3 vision-caption vision-text-secondary font-bold text-xs">
-          <InstructorAvatar 
-            idInstructor={taller.idInstructor}
-            nombre={taller.instructor?.nombre}
-            apellidoPaterno={taller.instructor?.apellidoPaterno}
-            size="sm"
-            shape="square"
-          />
-          <span className="opacity-80 truncate">
-            {taller.instructor?.nombreCompleto || "SIN INSTRUCTOR ASIGNADO"}
-          </span>
-        </div>
-      </div>
-
-      {/* Footer corporativo */}
-      <div className="mt-8 pt-5 border-t border-[var(--border-subtle)] flex items-center justify-between transition-colors">
-        <span className="vision-caption-upper vision-text-tertiary font-black tracking-widest text-[9px] opacity-50 group-hover:opacity-100 group-hover:text-fundacion-verde-light dark:group-hover:text-fundacion-amarillo transition-all">Ver detalles operativos</span>
-        <div className="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-[var(--interact-hover)] transition-all">
-          <ArrowRight className="w-5 h-5 vision-text-secondary group-hover:translate-x-1 group-hover:text-fundacion-verde-light dark:group-hover:text-fundacion-amarillo transition-all" />
-        </div>
-      </div>
-    </VisionGlassWindow>
+    />
   );
 }

@@ -8,16 +8,7 @@ import {
   DialogDescription,
   DialogFooter 
 } from "@/core/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/core/components/ui/alert-dialog";
+import { VisionConfirmDialog } from '@/core/components/ui/VisionConfirmDialog';
 import { Button } from '@/core/components/ui/button';
 import { Input } from '@/core/components/ui/input';
 import { Checkbox } from "@/core/components/ui/checkbox";
@@ -232,29 +223,16 @@ export function UserModals({
       </Dialog>
 
       {/* MODAL DE ELIMINAR */}
-      <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <AlertDialogContent className="bg-[var(--surface-base)] border-[var(--border-subtle)] rounded-3xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-500">
-              <Trash2 className="w-5 h-5" /> ¿Está seguro de eliminar este usuario?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              Esta acción no se puede deshacer. Se eliminará permanentemente a <strong>{userToDelete?.nombre} {userToDelete?.apellidos}</strong> del sistema.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteLoading} className="rounded-vision-md border-[var(--border-default)]">Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => { e.preventDefault(); handleConfirmDelete(); }}
-              disabled={deleteLoading}
-              className="bg-red-500 text-white hover:bg-red-600 rounded-vision-md"
-            >
-              {deleteLoading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
-              Sí, eliminar usuario
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <VisionConfirmDialog
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        title="¿Está seguro de eliminar este usuario?"
+        description={userToDelete ? `Esta acción no se puede deshacer. Se eliminará permanentemente a ${userToDelete.nombre} ${userToDelete.apellidos} del sistema.` : ""}
+        confirmText="Sí, eliminar usuario"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        loading={deleteLoading}
+      />
       
       {/* MODAL DE CAMBIO DE CONTRASEÑA */}
       <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
