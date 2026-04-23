@@ -41,21 +41,27 @@ export default function AsistenciaPage() {
   useEffect(() => {
     if (currentEtapa?.id) {
       setSelectedEtapaId(currentEtapa.id);
-      setSelectedYear(new Date(currentEtapa.fechaInicio).getFullYear().toString());
+      if (currentEtapa.fechaInicio) {
+        setSelectedYear(new Date(currentEtapa.fechaInicio).getFullYear().toString());
+      }
       fetchTalleresEtapaActual();
     }
   }, [currentEtapa, fetchTalleresEtapaActual, setSelectedEtapaId, setSelectedYear]);
 
   // Extract available years
   const availableYears = useMemo(() => {
-    const years = etapas.map(e => new Date(e.fechaInicio).getFullYear().toString());
+    const years = etapas
+      .filter(e => !!e.fechaInicio)
+      .map(e => new Date(e.fechaInicio!).getFullYear().toString());
     return ["all", ...Array.from(new Set(years)).sort((a, b) => b.localeCompare(a))];
   }, [etapas]);
 
   // Filter stages by year (Only stages filtering remains in page as it depends on useEtapa)
   const filteredEtapas = useMemo(() => {
     if (selectedYear === "all") return etapas;
-    return etapas.filter(e => new Date(e.fechaInicio).getFullYear().toString() === selectedYear);
+    return etapas.filter(e => 
+      e.fechaInicio && new Date(e.fechaInicio).getFullYear().toString() === selectedYear
+    );
   }, [etapas, selectedYear]);
 
   const handleToggleAsistencia = async (idAsistente: number, asiste: boolean, observacion: string) => {
