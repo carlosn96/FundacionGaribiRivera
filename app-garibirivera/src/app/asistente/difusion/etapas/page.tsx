@@ -23,14 +23,18 @@ export default function EtapasPage() {
 
   // Extract unique years for filtering
   const availableYears = useMemo(() => {
-    const years = etapas.map(e => new Date(e.fechaInicio).getFullYear().toString());
+    const years = etapas
+      .filter(e => !!e.fechaInicio)
+      .map(e => new Date(e.fechaInicio!).getFullYear().toString());
     return ["all", ...Array.from(new Set(years)).sort((a, b) => b.localeCompare(a))];
   }, [etapas]);
 
   // Filtered list
   const filteredEtapas = useMemo(() => {
     if (selectedYear === "all") return etapas;
-    return etapas.filter(e => new Date(e.fechaInicio).getFullYear().toString() === selectedYear);
+    return etapas.filter(e => 
+      e.fechaInicio && new Date(e.fechaInicio).getFullYear().toString() === selectedYear
+    );
   }, [etapas, selectedYear]);
 
   return (

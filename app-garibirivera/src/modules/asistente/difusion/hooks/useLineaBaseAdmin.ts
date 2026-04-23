@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useOperation } from "@/core/hooks/useOperation";
 import { lineaBaseAdminRepository } from "../infrastructure/api/LineaBaseAdminRepository";
-import { LineaBaseAdminInitialResponse } from "../domain/models/LineaBaseAdministracion";
+import { LineaBaseAdminResponse } from "../domain/models/LineaBaseAdministracion";
 import { Emprendedor } from "../domain/models/Emprendedor";
 
 /**
@@ -9,7 +9,7 @@ import { Emprendedor } from "../domain/models/Emprendedor";
  * Sincronizado con los esquemas de dominio reales y optimización de tráfico.
  */
 export const useLineaBaseAdmin = () => {
-  const [data, setData] = useState<LineaBaseAdminInitialResponse | null>(null);
+  const [data, setData] = useState<LineaBaseAdminResponse | null>(null);
   const [stageEmprendedores, setStageEmprendedores] = useState<Emprendedor[] | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   

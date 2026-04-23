@@ -8,7 +8,7 @@ import { EtapaFormacionSchema } from './Etapa';
 /**
  * ESQUEMA DE LÍNEA BASE COMPLETO: Extiende el esquema base con metadatos de la API.
  */
-export const LineaBaseFullSchema = /* LineaBaseSchema.extend({*/ z.object({
+export const LineaBaseFullSchema = LineaBaseSchema.extend({
   idLineaBase: z.number().optional(),
   fechaCreacion: z.string().optional(),
   etapa: EtapaFormacionSchema

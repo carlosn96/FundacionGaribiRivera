@@ -109,7 +109,7 @@ export function EtapaFormModal({ isOpen, onClose, onSave, etapaToEdit, tiposEtap
                 required
                 type="date"
                 name="fechaInicio"
-                value={formData.fechaInicio}
+                value={formData.fechaInicio || ""}
                 onChange={handleChange}
                 className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-bold text-sm focus:ring-fundacion-verde/20 focus:border-fundacion-verde/50"
               />
@@ -120,7 +120,7 @@ export function EtapaFormModal({ isOpen, onClose, onSave, etapaToEdit, tiposEtap
                 required
                 type="date"
                 name="fechaFin"
-                value={formData.fechaFin}
+                value={formData.fechaFin || ""}
                 onChange={handleChange}
                 className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-bold text-sm focus:ring-fundacion-verde/20 focus:border-fundacion-verde/50"
               />

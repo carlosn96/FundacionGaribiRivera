@@ -25,7 +25,7 @@ interface EmprendedorTableProps {
   emprendedores: Emprendedor[];
   loading?: boolean;
   onDelete?: (id: number) => void;
-  onResetPassword?: (id: number, password?: string) => Promise<void>;
+  onResetPassword?: (id: number, password?: string) => Promise<any>;
   onGetPhoto: (emp: Emprendedor) => string;
 }
 

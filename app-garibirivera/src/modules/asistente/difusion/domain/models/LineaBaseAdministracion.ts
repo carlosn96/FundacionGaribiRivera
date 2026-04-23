@@ -13,7 +13,7 @@ export const LineaBaseAdminResponseSchema = z.object({
   listaEtapas: z.array(EtapaFormacionSchema)
 });
 
-export type LineaBaseAdminInitialResponse = z.infer<typeof LineaBaseAdminResponseSchema>;
+export type LineaBaseAdminResponse = z.infer<typeof LineaBaseAdminResponseSchema>;
 
 /**
  * Esquema para el seguimiento de caso.

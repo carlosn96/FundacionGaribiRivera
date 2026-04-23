@@ -1,15 +1,15 @@
 import { z } from "zod";
 import { BaseRepository } from "@/core/infrastructure/BaseRepository";
-import { LineaBaseAdminInitialResponse, LineaBaseAdminResponseSchema } from "../../domain/models/LineaBaseAdministracion";
+import { LineaBaseAdminResponse, LineaBaseAdminResponseSchema } from "../../domain/models/LineaBaseAdministracion";
 import { ILineaBaseAdminRepository } from "../../domain/repositories/ILineaBaseAdminRepository";
 import { Emprendedor, EmprendedorSchema } from "../../domain/models/Emprendedor";
 
 class LineaBaseAdminRepository extends BaseRepository implements ILineaBaseAdminRepository {
   protected readonly prefix = "/admin/lineas-base";
 
-  async getEmprendedoresEtapaActual(): Promise<LineaBaseAdminInitialResponse> {
+  async getEmprendedoresEtapaActual(): Promise<LineaBaseAdminResponse> {
     const url = `emprendedores/etapa-actual`;
-    const data = await this.get<LineaBaseAdminInitialResponse>(url);
+    const data = await this.get<LineaBaseAdminResponse>(url);
     return LineaBaseAdminResponseSchema.parse(data);
   }
 
