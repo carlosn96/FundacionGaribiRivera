@@ -12,5 +12,6 @@ export interface IEmprendedorRepository {
   delete(id: number): Promise<any>;
   deleteMultiple(ids: number[]): Promise<any>;
   updateGraduacion(id: number, data: { graduado: boolean; fechaGraduacion: string }): Promise<any>;
+  updatePassword(id: number, password?: string): Promise<{contrasena: string, emprendedor: Emprendedor}>;
   getEmprendedorPhotoByUrl(emprendedor: Emprendedor): string;
 }

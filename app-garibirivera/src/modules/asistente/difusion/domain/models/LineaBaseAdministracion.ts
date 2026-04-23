@@ -1,30 +1,23 @@
 // src/modules/asistente/difusion/domain/models/LineaBaseAdministracion.ts
 import { z } from "zod";
+import { EmprendedorSchema } from "./Emprendedor";
+import { EtapaFormacionSchema } from "./Etapa";
 
-export const EmprendedorLineaBaseSchema = z.object({
-  idUsuario: z.coerce.number(),
-  nombre: z.string(),
-  apellidos: z.string(),
-  correo: z.string().nullable().optional(),
-  idEtapa: z.coerce.number().optional().nullable(),
-  etapa: z.string(),
-  idLineaBase: z.coerce.number().optional().nullable(),
-  fechaCreacion: z.string().optional().nullable()
-});
-
-export type EmprendedorLineaBase = z.infer<typeof EmprendedorLineaBaseSchema>;
-
+/**
+ * Respuesta de administración de Línea Base orientada al modelo de dominio.
+ */
 export const LineaBaseAdminResponseSchema = z.object({
-  emprendedores: z.array(EmprendedorLineaBaseSchema),
-  emprendedoresNoLineaBase: z.array(EmprendedorLineaBaseSchema),
-  etapas: z.array(z.object({
-    idEtapa: z.coerce.number(),
-    nombre: z.string()
-  }))
+  emprendedores: z.array(EmprendedorSchema),
+  emprendedoresNoLineaBase: z.array(EmprendedorSchema),
+  etapa: z.number(),
+  listaEtapas: z.array(EtapaFormacionSchema)
 });
 
-export type LineaBaseAdminResponse = z.infer<typeof LineaBaseAdminResponseSchema>;
+export type LineaBaseAdminInitialResponse = z.infer<typeof LineaBaseAdminResponseSchema>;
 
+/**
+ * Esquema para el seguimiento de caso.
+ */
 export const SeguimientoCasoSchema = z.object({
   idSeguimiento: z.number(),
   idLineaBase: z.number(),
@@ -35,4 +28,3 @@ export const SeguimientoCasoSchema = z.object({
 });
 
 export type SeguimientoCaso = z.infer<typeof SeguimientoCasoSchema>;
-

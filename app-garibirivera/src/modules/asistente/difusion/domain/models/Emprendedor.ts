@@ -3,18 +3,15 @@ import { UserSchema } from '@/modules/auth/domain/models/User';
 import { 
   LineaBaseSchema
 } from '@/modules/emprendedor/linea-base/domain/models/lineaBaseSections';
+import { EtapaFormacionSchema } from './Etapa';
 
 /**
  * ESQUEMA DE LÍNEA BASE COMPLETO: Extiende el esquema base con metadatos de la API.
  */
-export const LineaBaseFullSchema = LineaBaseSchema.extend({
-  id_linea_base: z.number().optional(),
-  id_usuario: z.number().optional(),
-  fecha_creacion: z.string().optional(),
-  etapa: z.object({
-    id_etapa: z.number(),
-    nombre_etapa: z.string(),
-  }).nullable().optional(),
+export const LineaBaseFullSchema = /* LineaBaseSchema.extend({*/ z.object({
+  idLineaBase: z.number().optional(),
+  fechaCreacion: z.string().optional(),
+  etapa: EtapaFormacionSchema
 });
 
 /**
@@ -43,11 +40,11 @@ export const ExpedienteSchema = z.object({
 
 export const EmprendedorSchema = UserSchema.extend({
   idEmprendedor: z.number(),
-  referencia: z.number().optional(),
-  fechaCredito: z.string().optional().nullable(),
+  referencia: z.number().nullable(),
+  fechaCredito: z.string().nullable(),
   graduado: z.boolean(),
   fechaGraduacion: z.string().nullable(),
-  lineaBase: LineaBaseFullSchema.optional(),
+  lineaBase: LineaBaseFullSchema.optional().nullable(),
   expediente: ExpedienteSchema.optional().nullable(),
 });
 

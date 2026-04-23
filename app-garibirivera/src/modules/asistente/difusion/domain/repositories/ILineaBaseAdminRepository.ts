@@ -1,11 +1,15 @@
+import { Emprendedor } from "../models/Emprendedor";
 import { LineaBaseAdminResponse, SeguimientoCaso } from "../models/LineaBaseAdministracion";
 
 /**
  * Contrato para el Repositorio de Administración de Línea Base.
  */
 export interface ILineaBaseAdminRepository {
-  /** Obtiene la lista de emprendedores (con y sin línea base) y el catálogo de etapas. */
-  getAdminData(): Promise<LineaBaseAdminResponse>;
+  /** Obtiene la lista de emprendedores (con y sin línea base). Puede filtrarse por etapa. */
+  getEmprendedoresEtapaActual(): Promise<LineaBaseAdminResponse>;
+
+  /** Obtiene emprendedores con línea base por etapa */
+  getEmprendedoresConLineaBasePorEtapa(idEtapa?: number): Promise<Emprendedor[]>;
   
   /** Obtiene el detalle completo de una línea base por ID de usuario. */
   getDetail(idUsuario: number): Promise<any>;
