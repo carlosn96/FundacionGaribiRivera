@@ -1,21 +1,31 @@
+import { z } from "zod";
 import { BaseRepository } from "@/core/infrastructure/BaseRepository";
-import { LineaBaseAdminResponse, LineaBaseAdminResponseSchema } from "../../domain/models/LineaBaseAdministracion";
+import { LineaBaseAdminInitialResponse, LineaBaseAdminResponseSchema } from "../../domain/models/LineaBaseAdministracion";
 import { ILineaBaseAdminRepository } from "../../domain/repositories/ILineaBaseAdminRepository";
+import { Emprendedor, EmprendedorSchema } from "../../domain/models/Emprendedor";
 
 class LineaBaseAdminRepository extends BaseRepository implements ILineaBaseAdminRepository {
   protected readonly prefix = "/admin/lineas-base";
 
-  async getAdminData(): Promise<LineaBaseAdminResponse> {
-    const data = await this.get<any>("/emprendedores");
+  async getEmprendedoresEtapaActual(): Promise<LineaBaseAdminInitialResponse> {
+    const url = `emprendedores/etapa-actual`;
+    const data = await this.get<LineaBaseAdminInitialResponse>(url);
     return LineaBaseAdminResponseSchema.parse(data);
+  }
+
+  async getEmprendedoresConLineaBasePorEtapa(idEtapa?: number): Promise<Emprendedor[]> {
+    const url = `emprendedores/etapa/${idEtapa}`;
+    const data = await this.get<Emprendedor[]>(url);
+    return z.array(EmprendedorSchema).parse(data);
   }
 
   async getDetail(idUsuario: number): Promise<any> {
     return this.get(`/emprendedores/${idUsuario}`);
   }
 
-  async delete(idUsuario: number): Promise<void> {
-    await this.remove(`/emprendedores/${idUsuario}`);
+  async delete(idLineaBase: number | undefined): Promise<void> {
+    if (!idLineaBase) return;
+    await this.remove(`/${idLineaBase}`);
   }
 
   async updateStage(idLineaBase: number, idEtapa: number): Promise<void> {

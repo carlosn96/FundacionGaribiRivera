@@ -14,7 +14,7 @@ class AsistenciaRepository extends BaseRepository implements IAsistenciaReposito
   }
 
   async getEmprendedoresPorEtapaTaller(idEtapa: number, idTaller: number): Promise<AsistenciaEmprendedor[]> {
-    return this.get<AsistenciaEmprendedor[]>(`/etapas/${idEtapa}/talleres/${idTaller}`);
+    return this.get<AsistenciaEmprendedor[]>(`lista-emprendedores/etapa/${idEtapa}/taller/${idTaller}`);
   }
 
   async registrarAsistencia(idEtapa: number, idTaller: number, data: { idAsistente: number; asiste: boolean; observacion: string }): Promise<any> {

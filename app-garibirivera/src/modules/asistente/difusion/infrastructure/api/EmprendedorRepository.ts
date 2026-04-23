@@ -45,6 +45,10 @@ class EmprendedorRepository extends BaseRepository implements IEmprendedorReposi
     return this.post(`/${id}/graduacion`, data);
   }
 
+  async updatePassword(id: number, password?: string): Promise<{ contrasena: string; emprendedor: Emprendedor }> {
+    return this.put(`/${id}/password`, { contrasena: password });
+  }
+
   getEmprendedorPhotoByUrl(emprendedor: Emprendedor): string {
     return `${API_BASE_URL}${emprendedor.fotoUrl}`;
   }

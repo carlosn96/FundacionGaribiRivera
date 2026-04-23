@@ -26,7 +26,7 @@ export class AsistenteRepository extends BaseRepository implements IAsistenteRep
   }
 
   async updatePassword(id: number, contrasena: string): Promise<void> {
-    return this.raw("put", `admin/usuarios/password/${id}`, { contrasena });
+    return this.put<void>(`/${id}/password`, { contrasena });
   }
 
   getAsistentePhotoByUrl(usuario: UsuarioAsistente): string {

@@ -5,8 +5,18 @@ import { useOperation } from '@/core/hooks/useOperation';
 
 export const useEmprendedores = (options?: { onCreateSuccess?: (data: any) => void }) => {
   const [emprendedores, setEmprendedores] = useState<Emprendedor[]>([]);
+  const [emprendedor, setEmprendedor] = useState<Emprendedor | null>(null);
   const [enFortalecimiento, setEnFortalecimiento] = useState<EmprendedorFortalecimiento[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  
+  const { execute: fetchById, loading: loadingFetch } = useOperation(
+    (id: number) => emprendedorRepository.getById(id),
+    { 
+      onSuccess: data => setEmprendedor(data),
+      showToast: false 
+    }
+  );
 
   const { execute: fetchEmprendedores, loading: loadingAll } = useOperation(
     () => emprendedorRepository.getAll(),
@@ -55,6 +65,21 @@ export const useEmprendedores = (options?: { onCreateSuccess?: (data: any) => vo
     }
   );
 
+  const { execute: execResetPassword, loading: loadingResetPassword } = useOperation(
+    (id: number, password?: string) => emprendedorRepository.updatePassword(id, password),
+    {
+      successMessage: (data) => `Contraseña restablecida: ${data.contrasena}`,
+      errorMessage: "No se pudo restablecer la contraseña",
+      onSuccess: (data) => {
+        setEmprendedores(prev => prev.map(e => e.id === data.emprendedor.id ? data.emprendedor : e));
+      }
+    }
+  );
+
+  const resetPassword = useCallback(async (id: number, password?: string): Promise<{ contrasena: string; emprendedor: Emprendedor } | undefined> => {
+    return execResetPassword(id, password);
+  }, [execResetPassword]);
+
   const downloadEmprendedorCSV = useCallback((emprendedor: any, contrasenaPlano: string) => {
     const headers = ["ID", "Nombre", "Apellidos", "Correo", "Celular", "Contrasena_Temporal"];
     const row = [
@@ -80,7 +105,7 @@ export const useEmprendedores = (options?: { onCreateSuccess?: (data: any) => vo
   }, []);
 
   return {
-    loading: loadingAll || loadingFort || loadingDelete || loadingCreate,
+    loading: loadingAll || loadingFort || loadingDelete || loadingCreate || loadingResetPassword,
     emprendedores: filteredEmprendedores, 
     allEmprendedores: emprendedores,
     enFortalecimiento,
@@ -90,7 +115,11 @@ export const useEmprendedores = (options?: { onCreateSuccess?: (data: any) => vo
     fetchEnFortalecimiento,
     deleteEmprendedor,
     createEmprendedor,
+    resetPassword,
     getEmprendedorPhoto,
-    downloadEmprendedorCSV
+    downloadEmprendedorCSV,
+    fetchById,
+    loadingFetch,
+    emprendedor
   };
 };

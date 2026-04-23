@@ -70,10 +70,6 @@ export function useAsistencia() {
     return success;
   }, [execRegistrarAsistencia, selectedEtapaId, selectedTallerId]);
 
-  const getEmprendedorPhoto = useCallback((emp: any) => {
-    return emprendedorRepository.getEmprendedorPhotoByUrl(emp);
-  }, []);
-
   // Handlers
   const handleYearChange = useCallback((year: string) => {
     setSelectedYear(year);
@@ -131,6 +127,5 @@ export function useAsistencia() {
     handleStageChange,
     handleSearchTaller,
     registrarAsistencia,
-    getEmprendedorPhoto,
   };
 }
