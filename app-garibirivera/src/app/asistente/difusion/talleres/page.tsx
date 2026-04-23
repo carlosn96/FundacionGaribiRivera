@@ -10,10 +10,12 @@ import { TalleresTable } from "@/modules/asistente/difusion/components/talleres/
 import { TallerFormModal } from "@/modules/asistente/difusion/components/talleres/TallerFormModal";
 import { Taller } from "@/modules/asistente/difusion/domain/models/Taller";
 import { ViewSwitcher } from "@/modules/asistente/difusion/components/shared/ViewSwitcher";
+import { useConfirm } from "@/core/context/ConfirmContext";
 
 
 export default function TalleresPage() {
   const { talleres, instructores, tiposTaller, loading, fetchTalleres, fetchInstructores, fetchTiposTaller, saveTaller, deleteTaller } = useTalleres();
+  const { confirmDelete } = useConfirm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [tallerToEdit, setTallerToEdit] = useState<Taller | undefined>(undefined);
@@ -40,7 +42,9 @@ export default function TalleresPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("¿Está seguro de que desea eliminar este taller? Esta acción no se puede deshacer.")) {
+    const taller = talleres.find(t => t.id === id);
+    const isConfirmed = await confirmDelete(taller?.nombre || "este taller");
+    if (isConfirmed) {
       await deleteTaller(id);
     }
   };
@@ -78,6 +82,7 @@ export default function TalleresPage() {
       ) : (
         <TalleresTable
           talleres={talleres}
+          loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

@@ -9,15 +9,15 @@ import { AsistenciaFilters } from "@/modules/asistente/difusion/components/asist
 import { AsistenciaTable } from "@/modules/asistente/difusion/components/asistencia/AsistenciaTable";
 import { useAsistencia } from "@/modules/asistente/difusion/hooks/useAsistencia";
 import { useEtapa } from "@/modules/asistente/difusion/hooks/useEtapa";
+import { useEmprendedores } from "@/modules/asistente/difusion/hooks/useEmprendedores";
 
 export default function AsistenciaPage() {
   const { fetchEtapaActual, fetchEtapas, etapas, currentEtapa } = useEtapa();
-  const { 
+  const {
     handleYearChange,
     handleStageChange,
     handleSearchTaller,
-    registrarAsistencia, 
-    getEmprendedorPhoto,
+    registrarAsistencia,
     emprendedores,
     selectedYear,
     selectedEtapaId,
@@ -28,9 +28,11 @@ export default function AsistenciaPage() {
     setSelectedEtapaId,
     fetchTalleresEtapaActual,
     talleres,
-    loading: isLoadingAsistencia 
+    loading: isLoadingAsistencia
   } = useAsistencia();
-  
+
+  const { getEmprendedorPhoto } = useEmprendedores();
+
   useEffect(() => {
     fetchEtapaActual();
     fetchEtapas();
@@ -38,9 +40,9 @@ export default function AsistenciaPage() {
 
   useEffect(() => {
     if (currentEtapa?.id) {
-       setSelectedEtapaId(currentEtapa.id);
-       setSelectedYear(new Date(currentEtapa.fechaInicio).getFullYear().toString());
-       fetchTalleresEtapaActual();
+      setSelectedEtapaId(currentEtapa.id);
+      setSelectedYear(new Date(currentEtapa.fechaInicio).getFullYear().toString());
+      fetchTalleresEtapaActual();
     }
   }, [currentEtapa, fetchTalleresEtapaActual, setSelectedEtapaId, setSelectedYear]);
 
@@ -74,7 +76,7 @@ export default function AsistenciaPage() {
         }}
       />
 
-      <AsistenciaFilters 
+      <AsistenciaFilters
         onSearch={handleSearchTaller}
         etapas={filteredEtapas}
         selectedYear={selectedYear}
@@ -109,7 +111,7 @@ export default function AsistenciaPage() {
 
               <div className="relative w-full md:w-80">
                 <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
-                <input 
+                <input
                   type="text"
                   placeholder="Filtrar por nombre o correo..."
                   className="w-full h-11 pl-11 pr-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm font-bold focus:ring-[3px] focus:ring-fundacion-verde/10 focus:border-fundacion-verde/30 transition-all outline-none"
@@ -119,7 +121,7 @@ export default function AsistenciaPage() {
               </div>
             </div>
 
-            <AsistenciaTable 
+            <AsistenciaTable
               emprendedores={emprendedores}
               idEtapa={selectedEtapaId || 0}
               idTaller={selectedTallerId}

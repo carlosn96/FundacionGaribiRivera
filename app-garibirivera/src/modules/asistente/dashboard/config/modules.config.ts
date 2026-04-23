@@ -1,4 +1,4 @@
-﻿import { LucideIcon, Users, UserPlus, ListTodo, Receipt, Megaphone, Layers, Presentation, UserCheck, ClipboardCheck, History, Lightbulb, GraduationCap, Banknote, BarChart, HandHelping, FileText, Settings, CreditCard, FileSignature, Home } from 'lucide-react';
+import { LucideIcon, Users, UserPlus, ListTodo, Receipt, Megaphone, Layers, Presentation, UserCheck, ClipboardCheck, History, Lightbulb, GraduationCap, Banknote, BarChart, HandHelping, FileText, Settings, CreditCard, FileSignature, Home } from 'lucide-react';
 import { PERMISSIONS } from '@/modules/auth/domain/policies/Roles';
 
 export interface AssistantModuleLink {
@@ -48,7 +48,7 @@ export const ASSISTANT_MODULES_CONFIG: AssistantModuleConfig[] = [
       { id: 'dif_asistencia', text: 'Asistencia', href: '/asistente/difusion/asistencia', icon: ClipboardCheck, priority: 4 },
       { id: 'dif_nuevo', text: 'Nuevo Emprendedor', href: '/asistente/difusion/emprendedores/nuevo', icon: UserPlus, priority: 1 },
       { id: 'dif_historial', text: 'Historial de Emprendedores', href: '/asistente/difusion/emprendedores/historial', icon: History, priority: 13 },
-      { id: 'dif_lineabase', text: 'Administracion de la Linea Base', href: '/asistente/difusion/seguimiento/linea-base', icon: ListTodo, priority: 16 },
+      { id: 'dif_lineabase', text: 'Administracion de la Linea Base', href: '/asistente/difusion/linea-base', icon: ListTodo, priority: 16 },
     ]
   },
   {

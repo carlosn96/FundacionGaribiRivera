@@ -21,7 +21,10 @@ import { EmprendedorSuccessCard } from "@/modules/asistente/difusion/components/
 export default function NuevoEmprendedorPage() {
   const [createdData, setCreatedData] = useState<any>(null);
   const { createEmprendedor, downloadEmprendedorCSV, loading } = useEmprendedores({
-    onCreateSuccess: (data) => setCreatedData(data)
+    onCreateSuccess: (data) => {
+      console.log(data);
+      setCreatedData(data)
+    }
   });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<EmprendedorRegistro>({
@@ -75,7 +78,7 @@ export default function NuevoEmprendedorPage() {
                     Datos de Identificación Personal
                   </VisionTypography>
                   <VisionText variant="secondary" className="mt-1 block vision-caption font-medium italic opacity-60">
-                    Información básica legal del prospecto
+                    Información básica legal
                   </VisionText>
                 </div>
               </div>
@@ -120,9 +123,6 @@ export default function NuevoEmprendedorPage() {
                 <VisionTypography variant="headline" as="h2" className="vision-text-primary text-xl font-bold tracking-tight uppercase text-[13px] opacity-80">
                   Canales de Comunicación
                 </VisionTypography>
-                <VisionText variant="secondary" className="mt-1 block vision-caption font-medium italic opacity-60">
-                  Datos para seguimiento y notificaciones del programa
-                </VisionText>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

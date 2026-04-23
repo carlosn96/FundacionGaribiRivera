@@ -9,6 +9,7 @@ import { InstructoresGrid } from "@/modules/asistente/difusion/components/instru
 import { InstructoresTable } from "@/modules/asistente/difusion/components/instructores/InstructoresTable";
 import { Instructor } from "@/modules/asistente/difusion/domain/models/Instructor";
 import { ViewSwitcher } from "@/modules/asistente/difusion/components/shared/ViewSwitcher";
+import { useConfirm } from "@/core/context/ConfirmContext";
 
 /**
  * PÁGINA: Catálogo de Instructores de Difusión
@@ -17,6 +18,7 @@ import { ViewSwitcher } from "@/modules/asistente/difusion/components/shared/Vie
  */
 export default function InstructoresPage() {
   const { instructores, loading, fetchInstructores, deleteInstructor } = useTalleres();
+  const { confirmDelete } = useConfirm();
   const [view, setView] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
@@ -32,12 +34,10 @@ export default function InstructoresPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("¿Está seguro de que desea retirar a este instructor? Esta acción no se puede deshacer.")) {
-      try {
-        await deleteInstructor(id);
-      } catch (error) {
-        alert("Error al intentar eliminar el instructor.");
-      }
+    const instructor = instructores.find(ins => ins.idInstructor === id);
+    const isConfirmed = await confirmDelete(`${instructor?.nombre || 'este instructor'}`);
+    if (isConfirmed) {
+      await deleteInstructor(id);
     }
   };
 
@@ -74,6 +74,7 @@ export default function InstructoresPage() {
       ) : (
         <InstructoresTable
           instructores={instructores}
+          loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

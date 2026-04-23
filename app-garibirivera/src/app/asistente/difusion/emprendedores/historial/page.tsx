@@ -20,6 +20,7 @@ export default function HistorialEmprendedoresPage() {
     setSearchTerm, 
     fetchEmprendedores, 
     deleteEmprendedor,
+    resetPassword,
     getEmprendedorPhoto
   } = useEmprendedores();
 
@@ -55,6 +56,7 @@ export default function HistorialEmprendedoresPage() {
         emprendedores={emprendedores} 
         loading={loading}
         onDelete={deleteEmprendedor}
+        onResetPassword={resetPassword}
         onGetPhoto={getEmprendedorPhoto}
       />
 
