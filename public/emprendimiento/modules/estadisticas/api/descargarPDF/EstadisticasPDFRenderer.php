@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once '../../../../../../admin/dompdf/vendor/autoload.php';
 

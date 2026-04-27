@@ -40,11 +40,11 @@ include_once "controlPermisos.php";
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
                             <a class="dropdown-item" href="../../../configuracionUsuario">
-                                <i class="fas fa-tools me-2"></i>Configuración de perfil</a>
+                                <i class="fas fa-tools me-2"></i>Configuraciónn de perfil</a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="javascript:cerrarSesion()">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a>
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesiónn</a>
                         </li>
                     </ul>
                 </div>
@@ -66,14 +66,8 @@ include_once "controlPermisos.php";
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
-                            title="Administración">
-                            <i class="fas fa-users-cog"></i><span class="ms-2">Administración</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#difusionModal"
-                            title="Difusión">
-                            <i class="fas fa-bullhorn"></i><span class="ms-2">Difusión</span>
+                            title="Administraciónn">
+                            <i class="fas fa-users-cog"></i><span class="ms-2">Administraciónn</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -122,7 +116,7 @@ include_once "controlPermisos.php";
         <!-- STATS -->
         <p class="text-muted small mb-3 text-center">
             <i class="fas fa-info-circle"></i>
-            <strong>Función en desarrollo:</strong> La información mostrada es con fines ilustrativos. Próximamente se mostrará el conteo y estadísticas reales.
+            <strong>Funciónn en desarrollo:</strong> La información mostrada es con fines ilustrativos. Próximamente se mostrará el conteo y estadísticas reales.
         </p>
         <div class="stats-grid">
             <div class="stat-card primary">
@@ -267,13 +261,13 @@ include_once "controlPermisos.php";
 
     <!-- MODALS -->
 
-    <!-- Modal Administración -->
+    <!-- Modal Administraciónn -->
     <div class="modal fade" id="adminModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title fw-bold" style="color: var(--primary);">
-                        <i class="fas fa-users-cog me-2"></i>Administración General
+                        <i class="fas fa-users-cog me-2"></i>Administraciónn General
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -281,11 +275,11 @@ include_once "controlPermisos.php";
                     <div class="modal-links">
                         <a href="../../../administracionGeneral/" class="modal-link">
                             <i class="fas fa-user-plus"></i>
-                            <span>Administración de usuarios</span>
+                            <span>Administraciónn de usuarios</span>
                         </a>
                         <a href="#" class="modal-link">
                             <i class="fas fa-file-invoice"></i>
-                            <span>Información general</span>
+                            <span>Informaciónn general</span>
                         </a>
                         <a href="#" class="modal-link">
                             <i class="fas fa-tasks"></i>
@@ -297,55 +291,9 @@ include_once "controlPermisos.php";
         </div>
     </div>
 
-    <!-- Modal Difusión -->
-    <div class="modal fade" id="difusionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" style="color: var(--success);">
-                        <i class="fas fa-bullhorn me-2"></i>Difusión
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="modal-links">
-                        <a href="../../../difusion/modules/etapa/" class="modal-link">
-                            <i class="fas fa-layer-group"></i>
-                            <span>Etapas</span>
-                        </a>
-                        <a href="../../../difusion/modules/taller/" class="modal-link">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Talleres</span>
-                        </a>
-                        <a href="../../../difusion/modules/instructores/" class="modal-link">
-                            <i class="fas fa-user-tie"></i>
-                            <span>Instructores</span>
-                        </a>
-                        <a href="../../../difusion/modules/asistenciaTaller/" class="modal-link">
-                            <i class="fas fa-clipboard-check"></i>
-                            <span>Asistencia</span>
-                        </a>
-                        <a href="../../../difusion/modules/altaEmprendedores/" class="modal-link">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Nuevo Emprendedor</span>
-                        </a>
-                        <a href="../../../difusion/modules/listadoGeneralEmprendedores/" class="modal-link">
-                            <i class="fas fa-history"></i>
-                            <span>Historial de Emprendedores</span>
-                        </a>
-                        <a href="../../../difusion/modules/lineaBaseAdministracion/" class="modal-link">
-                            <i class="fas fa-tasks"></i>
-                            <span>Administración de la Linea Base</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Emprendimiento -->
+            <!-- Modal Emprendimiento -->
     <div class="modal fade" id="emprendimientoModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title fw-bold" style="color: var(--accent);">
@@ -355,6 +303,42 @@ include_once "controlPermisos.php";
                 </div>
                 <div class="modal-body">
                     <div class="modal-links">
+                        <a href="../../../emprendimiento/modules/etapa/" class="modal-link">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Etapas</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/taller/" class="modal-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Talleres</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/instructores/" class="modal-link">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Instructores</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/asistenciaTaller/" class="modal-link">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Asistencia</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/altaEmprendedores/" class="modal-link">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Nuevo Emprendedor</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/listadoGeneralEmprendedores/" class="modal-link">
+                            <i class="fas fa-history"></i>
+                            <span>Historial de registros</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/lineaBaseAdministracion/" class="modal-link">
+                            <i class="fas fa-tasks"></i>
+                            <span>Administración de la Línea Base</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/emprendedoresFortalecimiento/" class="modal-link">
+                            <i class="fas fa-users"></i>
+                            <span>En Fortalecimiento</span>
+                        </a>
+                        <a href="../../../emprendimiento/modules/visitaSeguimiento/" class="modal-link">
+                            <i class="fas fa-walking"></i>
+                            <span>Visitas de Seguimiento</span>
+                        </a>
                         <a href="../../../emprendimiento/modules/historialEmprendedores/" class="modal-link">
                             <i class="fas fa-user-graduate"></i>
                             <span>Seguimiento a Graduados</span>
@@ -371,19 +355,17 @@ include_once "controlPermisos.php";
                             <i class="fas fa-chart-bar"></i>
                             <span>Estadísticas</span>
                         </a>
-                        <a href="../../../emprendimiento/modules/historialEmprendedores/" class="modal-link">
-                            <i class="fas fa-history"></i>
-                            <span>Historial de Emprendedores</span>
-                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    </div>
 
     <!-- Modal Trabajo Social -->
     <div class="modal fade" id="socialModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title fw-bold" style="color: var(--info);">
@@ -403,7 +385,7 @@ include_once "controlPermisos.php";
                         </a>
                         <a href="../../../trabajoSocial/modules/configuracionConeval/" class="modal-link">
                             <i class="fas fa-cogs"></i>
-                            <span>Configuración de Parámetros (CONEVAL)</span>
+                            <span>Configuraciónn de Parámetros (CONEVAL)</span>
                         </a>
                     </div>
                 </div>
@@ -413,7 +395,7 @@ include_once "controlPermisos.php";
 
     <!-- Modal Crédito y cobranza -->
     <div class="modal fade" id="creditoModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title fw-bold" style="color: var(--primary);">
@@ -447,3 +429,4 @@ include_once "controlPermisos.php";
 </body>
 
 </html>
+

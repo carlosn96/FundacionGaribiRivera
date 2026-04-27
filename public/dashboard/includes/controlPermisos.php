@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 //include_once __DIR__ . "/../../../../loader.php";
 
@@ -14,12 +14,12 @@ const dataPermisos = [
     ],
     TipoUsuario::AUXILIAR_DIFUSION => [
         "key" => "difusion",
-        "modal_target" => "#difusionModal",
+        "modal_target" => "#emprendimientoModal",
         "icon" => "fas fa-bullhorn",
         "gradient" => "var(--success)",
-        "title" => "Difusión",
-        "count" => "7 módulos",
-        "description" => "Gestión de talleres, etapas y registro de emprendedores",
+        "title" => "Difusión (Consolidado)",
+        "count" => "11 módulos",
+        "description" => "Gestión de talleres, etapas, registro de emprendedores y medición de impactos",
     ],
     TipoUsuario::COORDINADOR_EMPRENDIMIENTO => [
         "key" => "emprendimiento",
@@ -27,8 +27,8 @@ const dataPermisos = [
         "icon" => "fas fa-lightbulb",
         "gradient" => "linear-gradient(135deg, var(--accent), #d4b534); color: var(--primary);",
         "title" => "Emprendimiento",
-        "count" => "4 módulos",
-        "description" => "Medición de impactos en créditos y capacitación",
+        "count" => "11 módulos",
+        "description" => "Gestión de talleres, etapas, registro de emprendedores y medición de impactos",
     ],
     TipoUsuario::TRABABAJOR_SOCIAL => [
         "key" => "social",
@@ -66,7 +66,7 @@ const ACCIONES_PRIORIDAD = [
     "Historial de Emprendedores" => 13,
     "Etapas" => 14,
     "Instructores" => 15,
-    "Administración de la Linea Base" => 16,
+    "Administración de la Línea Base" => 16,
     "Información general" => 17,
     "Parámetros de Línea base" => 18,
 ];
@@ -119,22 +119,21 @@ function obtenerAccesoPorTipoUsuario($tipoUsuario)
                 ["href" => "#", "icon" => "fa-tasks", "text" => "Parámetros de Línea base"],
             ];
         case TipoUsuario::AUXILIAR_DIFUSION:
-            return [
-                ["href" => "../../../difusion/modules/etapa/", "icon" => "fa-layer-group", "text" => "Etapas"],
-                ["href" => "../../../difusion/modules/taller/", "icon" => "fa-chalkboard-teacher", "text" => "Talleres"],
-                ["href" => "../../../difusion/modules/instructores/", "icon" => "fa-user-tie", "text" => "Instructores"],
-                ["href" => "../../../difusion/modules/asistenciaTaller/", "icon" => "fa-clipboard-check", "text" => "Asistencia"],
-                ["href" => "../../../difusion/modules/altaEmprendedores/", "icon" => "fa-user-plus", "text" => "Nuevo Emprendedor"],
-                ["href" => "../../../difusion/modules/listadoGeneralEmprendedores/", "icon" => "fa-history", "text" => "Historial de Emprendedores"],
-                ["href" => "../../../difusion/modules/lineaBaseAdministracion/", "icon" => "fa-tasks", "text" => "Administración de la Linea Base"],
-            ];
         case TipoUsuario::COORDINADOR_EMPRENDIMIENTO:
             return [
+                ["href" => "../../../emprendimiento/modules/etapa/", "icon" => "fa-layer-group", "text" => "Etapas"],
+                ["href" => "../../../emprendimiento/modules/taller/", "icon" => "fa-chalkboard-teacher", "text" => "Talleres"],
+                ["href" => "../../../emprendimiento/modules/instructores/", "icon" => "fa-user-tie", "text" => "Instructores"],
+                ["href" => "../../../emprendimiento/modules/asistenciaTaller/", "icon" => "fa-clipboard-check", "text" => "Asistencia"],
+                ["href" => "../../../emprendimiento/modules/altaEmprendedores/", "icon" => "fa-user-plus", "text" => "Nuevo Emprendedor"],
+                ["href" => "../../../emprendimiento/modules/listadoGeneralEmprendedores/", "icon" => "fa-history", "text" => "Historial de registros"],
+                ["href" => "../../../emprendimiento/modules/lineaBaseAdministracion/", "icon" => "fa-tasks", "text" => "Administración de la Línea Base"],
+                ["href" => "../../../emprendimiento/modules/emprendedoresFortalecimiento/", "icon" => "fa-users", "text" => "En Fortalecimiento"],
+                ["href" => "../../../emprendimiento/modules/visitaSeguimiento/", "icon" => "fa-walking", "text" => "Visitas de Seguimiento"],
                 ["href" => "../../../emprendimiento/modules/historialEmprendedores/", "icon" => "fa-user-graduate", "text" => "Seguimiento a Graduados"],
                 ["href" => "../../../emprendimiento/modules/medicionImpactosCapacitacion/", "icon" => "fa-chalkboard-teacher", "text" => "Medición de Impacto: Capacitación"],
                 ["href" => "../../../emprendimiento/modules/medicionImpactosCredito/", "icon" => "fa-money-bill-wave", "text" => "Medición de Impacto: Crédito"],
                 ["href" => "../../../emprendimiento/modules/estadisticas/", "icon" => "fa-chart-bar", "text" => "Estadísticas"],
-                ["href" => "../../../emprendimiento/modules/historialEmprendedores/", "icon" => "fa-history", "text" => "Historial de Emprendedores"],
             ];
         case TipoUsuario::TRABABAJOR_SOCIAL:
             return [
@@ -240,3 +239,4 @@ function renderizarAccionPrincipal() {
     </div>
 HTML;
 }
+

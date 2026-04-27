@@ -1,4 +1,4 @@
-<aside class="left-sidebar with-vertical">
+﻿<aside class="left-sidebar with-vertical">
     <!-- ---------------------------------- -->
     <!-- Start Vertical Layout Sidebar -->
     <!-- ---------------------------------- -->
@@ -29,26 +29,109 @@
                         <span class="hide-menu ps-1">Dashboard</span>
                     </a>
                 </li>
+
                 <!-- ============================= -->
-                <!-- Inicio -->
-                <!-- =============================
+                <!-- Configuraciones -->
+                <!-- ============================= -->
                 <li class="nav-small-cap">
-                    <span class="hide-menu">Inicio</span>
+                    <span class="hide-menu">Configuraciones</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link warning-hover-bg" href="../inicio/" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-
-                            <iconify-icon icon="mdi:view-dashboard" class="fs-6"></iconify-icon>
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../etapa/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-warning-subtle rounded-1">
+                            <iconify-icon icon="solar:calendar-add-broken" class="fs-6"></iconify-icon>
                         </span>
-                        <span class="hide-menu ps-1">Inicio</span>
+                        <span class="hide-menu ps-1">Etapas de formación</span>
                     </a>
-                </li> -->
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow success-hover-bg" href="javascript:void(0)" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-warning-subtle rounded-1">
+                            <iconify-icon icon="solar:square-academic-cap-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Talleres</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a href="../taller/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Lista de talleres</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="../instructores/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Instructores</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="../asistenciaTaller/" class="sidebar-link">
+                                <span class="sidebar-icon"></span>
+                                <span class="hide-menu">Asistencia</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- ============================= -->
+                <!-- Emprendedores -->
+                <!-- ============================= -->
+                <li class="nav-small-cap">
+                    <span class="hide-menu">Emprendedores</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../altaEmprendedores/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:user-plus-broken" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Nuevo </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../listadoGeneralEmprendedores/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:history-linear" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Historial de registros </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBaseAdministracion/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:file-text-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Línea Base </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../emprendedoresFortalecimiento/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:users-group-rounded-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">En fortalecimiento</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../historialEmprendedores"
+                        aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="mdi:history" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Seguimiento de Capacitación</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link success-hover-bg" href="../visitaSeguimiento/" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                            <iconify-icon icon="solar:walking-bold-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Visitas de Seguimiento</span>
+                    </a>
+                </li>
 
                 <!-- ============================= -->
                 <!-- Medición de Impacto -->
                 <!-- ============================= -->
-
                 <li class="nav-small-cap">
                     <span class="hide-menu">Medición de Impacto</span>
                 </li>
@@ -56,7 +139,6 @@
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCapacitacion/"
                         aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <!-- Icono de Capacitación -->
                             <iconify-icon icon="mdi:school" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Capacitación</span>
@@ -66,7 +148,6 @@
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../medicionImpactosCredito/"
                         aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <!-- Icono de Crédito -->
                             <iconify-icon icon="mdi:credit-card" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Crédito</span>
@@ -82,27 +163,9 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../estadisticas" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <!-- Icono de Gráfico (Estadísticas) -->
                             <iconify-icon icon="mdi:chart-bar" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Estadísticas</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Historial -->
-                <!-- ============================= -->
-                <li class="nav-small-cap">
-                    <span class="hide-menu">Historial</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="../historialEmprendedores"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <!-- Icono de Historial -->
-                            <iconify-icon icon="mdi:history" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Emprendedores</span>
                     </a>
                 </li>
             </ul>

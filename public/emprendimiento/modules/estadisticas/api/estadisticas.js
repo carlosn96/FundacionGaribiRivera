@@ -186,7 +186,6 @@ function initializeDashboard() {
 
     // Cargar datos
     crearPeticion(urlAPI, { case: 'init' }, function (respuesta) {
-        print(respuesta);
         const estadistica = respuesta.estadistica;
         const etapas = respuesta.listaEtapas;
         const campos = respuesta.campos;

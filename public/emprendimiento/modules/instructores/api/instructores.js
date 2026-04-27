@@ -1,0 +1,236 @@
+const urlAPI = "api/InstructorAPI.php";
+let allInstructores = []; // Store all instructor data
+let instructorsDataTable = null;
+
+function ready() {
+    crearPeticion(urlAPI, { case: "recuperarInstructores" }, function (instructores) {
+        allInstructores = instructores;
+ 
+        construirCardsInstructores(allInstructores);
+        construirTablaInstructores(allInstructores);
+
+        // Initialize DataTable
+        instructorsDataTable = crearDataTable($('#instructorsTable'));
+
+        configurarEventosInstructores();
+        configurarViewSwitcherInstructors();
+        configurarBusquedaInstructores();
+
+        // Initialize tooltips after all elements are rendered
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+
+    $("#fotografiaInstructor").change(function () {
+        const file = this.files[0]; // Accedemos al archivo seleccionado
+        const tamMaximo = 2 * 1024 * 1024; // 2MB en bytes
+        if (file) {
+            // Comprobamos el tamaño del archivo
+            if (file.size > tamMaximo) {
+                mostrarMensajeAdvertencia("El tamaño del archivo es demasiado grande. El tamaño máximo permitido es 2MB.", false);
+                $(this).val('');  // Limpiamos el input si el archivo es muy grande
+            } else {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Establecer la imagen de vista previa
+                    $("#previewImage").attr("src", e.target.result);
+                    $("#previewImage").removeClass("d-none"); // Mostrar la imagen de vista previa si es válida
+                };
+                reader.readAsDataURL(file); // Leer el archivo como una URL
+            }
+        }
+    });
+
+    // Solo resetear cuando se hace click manual en la pestaña de "Nuevo" 
+    // y para asegurar que es intencional, podemos hacerlo siempre.
+    $('#tabNuevoInstructor').on('click', function (e) {
+        // Si el texto dice "Editar", y el usuario hace click en el TAB, lo forzamos a volver a "Nuevo"
+        if ($("#idInstructor").val() !== "0") {
+            reseteoFormularioInstructor();
+        }
+    });
+
+    fijarSubmitFormulario("instructorForm", urlAPI, "guardarInstructor");
+}
+
+function reseteoFormularioInstructor() {
+    $("#instructorForm")[0].reset();
+    $("#idInstructor").val("0");
+    $("#tabNuevoInstructorText").text("Nuevo Instructor");
+    $("#btnGuardarInstructorText").text("Registrar Instructor");
+    $("#previewImage").attr("src", "../../../assets/images/profile/user-1.jpg");
+}
+
+function configurarBusquedaInstructores() {
+    $("#searchInstructor").on("input", function () {
+        const query = $(this).val().toLowerCase();
+
+        // Filter cards
+        const filteredInstructores = allInstructores.filter(function (instructor) {
+            const nombreCompleto = instructor.nombreCompleto.toLowerCase();
+            const correo = instructor.correoElectronico.toLowerCase();
+            const telefono = instructor.telefono.toLowerCase();
+            return nombreCompleto.includes(query) || correo.includes(query) || telefono.includes(query);
+        });
+        construirCardsInstructores(filteredInstructores);
+
+        // Filter table
+        instructorsDataTable.search(query).draw();
+    });
+}
+
+function configurarViewSwitcherInstructors() {
+    $('#btn-grid-view-instructors').on('click', function () {
+        $(this).addClass('active').siblings().removeClass('active');
+        $('#cardsInstructores').show();
+        $('#instructorsTableView').hide();
+    });
+
+    $('#btn-table-view-instructors').on('click', function () {
+        $(this).addClass('active').siblings().removeClass('active');
+        $('#cardsInstructores').hide();
+        $('#instructorsTableView').show();
+        // Adjust DataTables columns when switching to table view
+        if (instructorsDataTable) {
+            instructorsDataTable.columns.adjust().draw();
+        }
+    });
+}
+
+function construirCardsInstructores(instructores) {
+    const $container = $("#cardsInstructores");
+    $container.empty();
+
+    if (instructores.length === 0) {
+        $container.html('<div class="col-12"><p class="text-center text-muted mt-4">No se encontraron instructores.</p></div>');
+        return;
+    }
+
+    instructores.forEach(function (i) {
+        const dataInstructorStr = JSON.stringify(i).replace(/"/g, "'");
+        const card = `
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="bg-primary bg-opacity-10 w-100" style="height: 80px;"></div>
+                <div class="card-body p-4 text-center d-flex flex-column align-items-center">
+                    <img src="data:image/jpeg;base64,${i.fotografia}" alt="${i.nombreCompleto}" class="rounded-circle border border-4 border-white shadow-sm bg-white" style="width: 90px; height: 90px; object-fit: cover; margin-top: -45px; position: relative; z-index: 1;">
+                    <h5 class="fw-bold mt-3 mb-1 text-dark">${i.nombreCompleto}</h5>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 mb-3">Instructor</span>
+                    
+                    <div class="mt-auto w-100 bg-light border-top rounded-4 p-3 d-flex justify-content-center gap-3">
+                        <!-- <a href="../instructor/?id=${i.id}" class="btn btn-primary rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Detalles">
+                            <i class="fs-5 ti ti-eye"></i>
+                        </a> -->
+                        <a href="javascript:void(0)" onclick="editarInstructor(${i.id})" class="btn btn-primary rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                            <i class="fs-5 ti ti-pencil"></i>
+                        </a>
+                        <a href="javascript:void(0)" onclick="eliminarInstructor(${i.id})" class="btn btn-outline-danger rounded-circle shadow-sm p-0 flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
+                            <i class="fs-5 ti ti-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        $container.append(card);
+    });
+}
+
+function construirTablaInstructores(instructores) {
+    const $tableBody = $("#instructorsTableBody");
+    $tableBody.empty();
+
+    if (instructores.length === 0) {
+        return;
+    }
+
+    instructores.forEach(function (instructor) {
+        const dataInstructorStr = JSON.stringify(instructor).replace(/"/g, "'");
+        const row = `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <img src="data:image/jpeg;base64,${instructor.fotografia}" alt="Foto de ${instructor.nombreCompleto}" width="48" height="48" class="rounded-circle shadow-sm border border-2 border-white" style="object-fit: cover;" />
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-semibold text-dark">
+                                <a href="../instructor/?id=${instructor.id}" class="text-dark fw-bold text-decoration-none">${instructor.nombreCompleto}</a>
+                            </h6>
+                            <span class="text-muted small">${instructor.correoElectronico}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-muted fw-medium">${instructor.telefono}</td>
+                <td class="text-end">
+                    <div class="dropdown">
+                        <a href="javascript:void(0)" class="btn btn-light rounded-circle shadow-sm text-muted dropdown-toggle-hide d-flex align-items-center justify-content-center ms-auto p-0 flex-shrink-0" id="dropdownMenuButtonTable_${instructor.id}" data-bs-toggle="dropdown" aria-expanded="false" style="width: 36px; height: 36px; min-width: 36px; aspect-ratio: 1/1;">
+                            <i class="ti ti-dots-vertical fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2 p-2" aria-labelledby="dropdownMenuButtonTable_${instructor.id}">
+                            <!-- <li>
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 rounded-2 mb-1 text-primary" href="../instructor/?id=${instructor.id}">
+                                    <i class="fs-4 ti ti-eye me-3"></i> Detalles
+                                </a>
+                            </li> -->
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 rounded-2 mb-1 text-primary" href="javascript:void(0)" onclick="editarInstructor(${instructor.id})">
+                                    <i class="fs-4 ti ti-pencil me-3"></i> Editar
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2 px-3 text-danger rounded-2" href="javascript:void(0)" onclick="eliminarInstructor(${instructor.id})">
+                                    <i class="fs-4 ti ti-trash me-3"></i> Eliminar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
+        $tableBody.append(row);
+    });
+}
+
+function configurarEventosInstructores() {
+    // Any specific event listeners for instructor page can go here
+    // For example, if there are edit modals for instructors, their submit handlers
+    // or other dynamic elements.
+}
+
+function eliminarInstructor(id) {
+    alertaEliminar({
+        mensajeAlerta: "Se eliminará el instructor",
+        url: urlAPI,
+        data: { "case": "eliminarInstructor", "data": `idInstructor=${id}` }
+    });
+}
+
+function editarInstructor(id) {
+    const instructor = allInstructores.find(i => i.id == id);
+    if (!instructor) return;
+
+    // Resetform firstly
+    reseteoFormularioInstructor();
+
+    // Populate data
+    $("#idInstructor").val(instructor.id);
+    $("#nombreInstructor").val(instructor.nombre);
+    $("#apellidoPaterno").val(instructor.apellidoPaterno);
+    $("#apellidoMaterno").val(instructor.apellidoMaterno);
+    $("#correoInstructor").val(instructor.correoElectronico);
+    $("#telefonoInstructor").val(instructor.telefono);
+
+    if (instructor.fotografia) {
+        $("#previewImage").attr("src", `data:image/jpeg;base64,${instructor.fotografia}`);
+    } else {
+        $("#previewImage").attr("src", "../../../assets/images/profile/user-1.jpg");
+    }
+
+    $("#tabNuevoInstructorText").text("Editar Instructor");
+    $("#btnGuardarInstructorText").text("Guardar Cambios");
+
+    // Switch to tab
+    const tabEl = document.querySelector('#tabNuevoInstructor');
+    const tab = new bootstrap.Tab(tabEl);
+    tab.show();
+}

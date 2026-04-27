@@ -1,15 +1,14 @@
-
+﻿
 const urlAPI = "api/SeguimientoGraduadoAPI.php";
 
 function ready() {
     bloquearSeccion($("#contenido"));
     crearPeticion(urlAPI, { case: "recuperarCamposInformacion" }, (rs) => {
-        //print(rs);
         if (rs.lineaBase.existeLineaBase) {
             completarInfoEmprendedor(rs.emprendedor);
             completarCamposFormulario(rs);
         } else {
-            mostrarMensajeInfo("Sin información disponible de la Linea Base", false, () => {
+            mostrarMensajeInfo("Sin información disponible de la Línea Base", false, () => {
                 redireccionar("../historialEmprendedores");
             });
         }

@@ -4,7 +4,7 @@ const urlAPI = "api/MedicionImpactosCapacitacionAPI.php";
 function ready() {
     crearPeticion(urlAPI, { case: "consultarMedicionImpactos" }, (res) => {
         const impactos = res.impactos;
-        print(impactos);
+ 
         if (impactos.fechas.fin) {
             generarImpactoHTML(impactos, res.emprendedores);
             completarParametrosConfiguracion();

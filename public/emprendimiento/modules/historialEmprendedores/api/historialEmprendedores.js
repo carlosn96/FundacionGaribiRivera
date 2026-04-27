@@ -419,7 +419,7 @@ function generarTabla(data) {
                     <div class="d-flex align-items-center">
                         ${fotografiaDisplay}
                         <div>
-                           <a href="./../../../difusion/modules/actualizarEmprendedores?id=${item.id}" class="fw-semibold">
+                           <a href="./../../../emprendimiento/modules/actualizarEmprendedores?id=${item.id}" class="fw-semibold">
                             ${item.nombre} ${item.apellidos}
                            </a>
                         </div>
@@ -544,8 +544,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
 
 function realizarSeguimientoGraduacion(emprendedorId) {
     const emprendedor = historialData.find(item => item.id_emprendedor == emprendedorId);
-    print(emprendedor);
-
     if (emprendedor) {
         crearPeticion(urlAPI, {
             case: "realizarSeguimientoGraduado",

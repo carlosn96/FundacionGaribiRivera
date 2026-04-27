@@ -4,7 +4,6 @@ const urlAPI = "api/MedicionImpactosCreditoAPI.php";
 function ready() {
     crearPeticion(urlAPI, { case: "consultarMedicionImpactos" }, (res) => {
         const data = res && res.impactos ? res.impactos : {};
-        print({ raw: res, data });
         if (data.fechas && data.fechas.fin) {
             generarImpactoHTML(data, res.emprendedores || []);
             completarParametrosConfiguracion();
@@ -19,7 +18,6 @@ function mostrarMensajeNoHayInformacion() {
 }
 
 function crearPanelPreprocesamiento(preprocesamiento) {
-    print(preprocesamiento);
     const preguntas = [
         { name: 'registraEntradaSalida', text: '¿Llevas registros de entradas y salidas de dinero?' },
         { name: 'asignaSueldo', text: '¿Tienes asignado un sueldo?' },
