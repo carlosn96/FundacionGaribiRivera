@@ -665,6 +665,30 @@ main {
     gap: 0.8rem;
 }
 
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto !important;
+    padding-right: 1.5rem;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--bg-hover);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--text-brand);
+}
+
 .modal-link {
     display: flex;
     align-items: center;

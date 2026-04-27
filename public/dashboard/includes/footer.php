@@ -1,4 +1,4 @@
-<footer class="footer-dashboard mt-auto">
+﻿<footer class="footer-dashboard mt-auto">
     <div class="footer-top py-5">
         <div class="container">
             <div class="row gy-4">
@@ -34,7 +34,6 @@
                 <div class="col-lg-3 col-md-6">
                     <h6 class="text-white fw-bold mb-3">Módulos Principales</h6>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#difusionModal"><i class="fas fa-angle-right me-2"></i>Difusión</a></li>
                         <li><a href="#" data-bs-toggle="modal" data-bs-target="#emprendimientoModal"><i class="fas fa-angle-right me-2"></i>Emprendimiento</a></li>
                         <li><a href="#" data-bs-toggle="modal" data-bs-target="#socialModal"><i class="fas fa-angle-right me-2"></i>Trabajo Social</a></li>
                         <li><a href="#" data-bs-toggle="modal" data-bs-target="#creditoModal"><i class="fas fa-angle-right me-2"></i>Crédito y Cobranza</a></li>
