@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 require_once '../../../../../loader.php';
 require_once '../../../../../admin/dompdf/autoload.inc.php';
@@ -79,7 +79,7 @@ function renderGastos($economia)
         "internet" => "Internet",
         "deudas" => "Pago de deudas",
         "cable" => "Cable/TV",
-        "medicinas" => "Medicamentos",
+        "mediciónas" => "Medicamentos",
         "otros" => "Otros gastos"
     ];
     

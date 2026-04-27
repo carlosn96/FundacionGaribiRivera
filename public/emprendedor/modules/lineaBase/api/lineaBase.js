@@ -4,7 +4,6 @@ const urlAPI = "api/LineaBaseAPI.php";
 function ready() {
     bloquearSeccion($("#contenido"));
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
-        //print(rs);
         if (rs.existeLineaBase) {
             redireccionar("../lineaBaseVista/");
         } else {

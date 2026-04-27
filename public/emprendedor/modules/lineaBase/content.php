@@ -1,7 +1,7 @@
-
+﻿
 <div class="card" id="contenido">
     <div class="card-body wizard-content">
-        <h4 class="card-title">Ficha de inscripción (Linea Base inicial)</h4>
+        <h4 class="card-title">Ficha de inscripción (Línea Base inicial)</h4>
         <p class="mb-3">
             Nos da gusto que estés interesado en los programas de <strong><ins>Promoción y Solidaridad</ins></strong>  
             que se promueven desde la <strong><ins>Fundación Cardenal Garibi Rivera</ins></strong>. 

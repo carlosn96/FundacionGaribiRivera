@@ -22,7 +22,6 @@ function ready() {
 }
 
 function recuperarInfoSeguimientoCaso(emprendedor) {
-    print(emprendedor);
     const [idLineaBase, nombre, correo] = emprendedor;
     $("#nombre").text(`${nombre}`);
     $("#correo").text(correo);

@@ -1,4 +1,4 @@
-const urlAPI = "api/EstudioSocioeconomicoNuevoAPI.php";
+﻿const urlAPI = "api/EstudioSocioeconomicoNuevoAPI.php";
 
 let familiarCount = 0;
 
@@ -6,7 +6,6 @@ function ready() {
     const idEmprendedor = extraerParametrosURL(window.location).id;
     if (idEmprendedor) {
         crearPeticion(urlAPI, { case: "recuperarCamposInformacion", data: $.param({ id: idEmprendedor }) }, (rs) => {
-            print(rs);
             if (rs.existeLineaBase) {
                 if (rs.existeEstudioSocioeconomico) {
                     redireccionar("../estudioSocioeconomicoVer");
@@ -145,7 +144,7 @@ function crearEgresos() {
         { id: "internet", label: "Internet", icon: "wifi", color: "text-danger" },
         { id: "deudas", label: "Pago de deudas", icon: "credit-card", color: "text-warning" },
         { id: "cable", label: "Cable", icon: "device-tv", color: "text-success" },
-        { id: "medicinas", label: "Medicinas", icon: "pills", color: "text-danger" },
+        { id: "mediciónas", label: "Mediciónas", icon: "pills", color: "text-danger" },
         { id: "otros", label: "Otros", icon: "archive", color: "text-primary" }
     ];
 

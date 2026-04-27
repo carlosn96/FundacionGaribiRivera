@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Theme Manager for Fundación Garibi Rivera
  * Handles persistence of Light/Dark mode using localStorage.
  * Prevents FOUC by applying theme immediately on load.

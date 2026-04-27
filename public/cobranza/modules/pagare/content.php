@@ -1,4 +1,4 @@
-<!-- TOOLBAR (sin impresión) -->
+﻿<!-- TOOLBAR (sin impresión) -->
 <div class="no-print pagare-toolbar">
     <button class="btn-tool btn-tool--back" id="btn-volver-p">
         <i class="fas fa-arrow-left"></i> Volver al Expediente

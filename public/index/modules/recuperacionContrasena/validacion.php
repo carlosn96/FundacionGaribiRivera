@@ -1,4 +1,4 @@
-<?php require_once 'assets/sesion.php'; ?>
+﻿<?php require_once 'assets/sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 

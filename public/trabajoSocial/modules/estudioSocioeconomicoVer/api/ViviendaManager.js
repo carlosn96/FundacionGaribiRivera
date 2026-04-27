@@ -30,7 +30,6 @@ const iconosServicios = {
 
 // Función principal para crear la sección de vivienda
 function renderVivienda(datos) {
-    //print(datos);
     datosVivienda = datos;
     distribucion = datos.distribucion || [];
     actualizarInformacionGeneral(datos);
@@ -244,7 +243,6 @@ function eliminarEspacio(id) {
             data: $.param({ idVivienda: datosVivienda.id, idEspacio: id })
         },
         function (response) {
-            print(response);
             desbloquearContenedor();
             if (!response || response.es_valor_error === true) {
                 mostrarMensajeError('Error al eliminar el espacio. Inténtalo de nuevo.', false);

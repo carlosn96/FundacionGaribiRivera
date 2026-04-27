@@ -199,11 +199,8 @@ function cambiarEstadoVulnerabilidad(id, nuevoEstado, botonElement) {
         })
     };
 
-    print(data);
-
     crearPeticion(urlAPI, data, function (response) {
         const esError = response?.es_valor_error === true;
-        print(response);
         if (esError) {
             mostrarMensajeAdvertencia('Error al actualizar la vulnerabilidad.', false);
         } else {

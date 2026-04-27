@@ -4,8 +4,6 @@ $(document).ready(function () {
     $("#formModalModificarTupla").submit(modificarTupla);
 
     crearPeticion(urlAction, {"case": "recuperarInfo"}, function (res) {
-        //print(res);
-        //print(JSON.parse(res));
         $.each(JSON.parse(res), function (idx, values) {
             var html = "";
             $.each(values, function (id, values) {

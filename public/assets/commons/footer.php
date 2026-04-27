@@ -1,4 +1,4 @@
-<footer class="footer bg-light text-dark mt-5">
+﻿<footer class="footer bg-light text-dark mt-5">
     <div class="container">
         <!-- Copyright Section -->
         <div class="copyright text-center text-success py-3">

@@ -390,7 +390,6 @@ function editMemberFromModal() {
 }
 
 function deleteMember(id) {
-  print(id);
   alertaEliminar({
     mensajeAlerta: "La informacion del familiar se eliminará permanentemente.",
     url: urlAPI,

@@ -1,4 +1,4 @@
-
+﻿
 let totalGastosGlobal = 0;
 
 const urlAPI = "api/ESAPI.php";
@@ -6,7 +6,6 @@ const urlAPI = "api/ESAPI.php";
 function ready() {
     crearPeticion(urlAPI, { case: "consultarEstudioSocioeconomico" }, function (data) {
         const estudio = data.estudioSocioeconomico;
-        print(data);
         crearSeccionResumen(data);
         crearSeccionEmpleabilidad(estudio.empleabilidad);
         crearSeccionFamiliares(estudio.familiares);
@@ -33,7 +32,6 @@ function crearSeccionConeval(coneval) {
 function crearSeccionResumen(data) {
     const emprendedor = data.emprendedor;
     const es = data.estudioSocioeconomico.conclusiones;
-    //print(es);
     $("#emprendedorProfilePicture").prop("src", "data:image/jpeg;base64," + emprendedor.fotografia);
     $("#emprendedorNombre").text(emprendedor.nombre + " " + emprendedor.apellidos);
     $("#resultadoVisita").text(data.estudioSocioeconomico.resultadoVisita);
@@ -232,7 +230,6 @@ function crearSeccionEmpleabilidad(empleabilidad) {
 
 
 function crearSeccionFamiliares(familiares) {
-    //print(familiares);
     generateFamilyTable(familiares);
     /*familiares.forEach(function (familiar) {
         const color = getRandomBoostrapColor();
@@ -293,7 +290,7 @@ function crearSeccionEconomia(economia) {
         internet: { icon: 'wifi', color: 'text-danger', label: 'Internet' },
         deudas: { icon: 'credit-card', color: 'text-warning', label: 'Pago de deudas' },
         cable: { icon: 'device-tv', color: 'text-success', label: 'Cable' },
-        medicinas: { icon: 'pills', color: 'text-danger', label: 'Medicinas' },
+        mediciónas: { icon: 'pills', color: 'text-danger', label: 'Mediciónas' },
         otros: { icon: 'archive', color: 'text-primary', label: 'Otros' }
     };
 

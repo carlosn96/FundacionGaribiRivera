@@ -1,9 +1,8 @@
-
+﻿
 const urlAPI = "api/LineaBaseFinalAPI.php";
 
 function ready() {
     crearPeticion(urlAPI, {case: "recuperarCamposInformacion"}, (rs) => {
-        print(rs);
         let {inicial, final} = rs.lineaBase;
         if (inicial.existeLineaBase) {
             completarInfoEmprendedor(rs.emprendedor);
@@ -13,7 +12,7 @@ function ready() {
                 redireccionar("../lineaBaseVer");
             }
         } else {
-            mostrarMensajeInfo("Sin información disponible de la Linea Base", false, () => {
+            mostrarMensajeInfo("Sin información disponible de la Línea Base", false, () => {
                 redireccionar("../lineaBaseAdministracion");
             });
         }
@@ -50,14 +49,10 @@ function completarCamposFormulario(rs) {
 function enviarForm() {
     const formData = crearFormData($("#lineaBaseForm"));
     formData.append("case", "guardar");
-    //print(formData);
-    //crear un FormData con los elementos de #lineaBaseForm, incluyendo archivos. Agrega el key case=guardar
-    //crearPeticion(urlAPI, {case: "guardar", data: $("#lineaBaseForm").serialize()});
     crearPeticion(urlAPI, formData);
 }
 
 function configurarSeccionAnalisisNegocio(analisisNegocio) {
-    //print(analisisNegocio);
     $('input[name="identificaCompetencia"]').change(function () {
         let deshabilitar = $(this).val() !== "1";
         $("#competenciaField").prop("hidden", deshabilitar);
@@ -93,8 +88,6 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
         $("#ventajasNegocio").val(analisisNegocio.ventajasNegocio);
         $("#problemasNegocio").val(analisisNegocio.problemasNegocio);
 
-        print(analisisNegocio.listaEstrategiaVentas);
-
         if (analisisNegocio.listaEstrategiaVentas.length !== 0) {
             analisisNegocio.listaEstrategiaVentas.forEach(item => {
                 $(`#estrategiasIncrementarVentas${item.idEstrategia}`).prop('checked', true);
@@ -125,7 +118,6 @@ function configurarSeccionAnalisisNegocio(analisisNegocio) {
 }
 
 function configurarSeccionInformacionNegocio(negocio) {
-    //print(negocio);
     $("#btnEditarCodigoPostal").click(function () {
         $("#codigoPostalView").hide();
         $("#selectorCodigoPostal").removeAttr("hidden").show();
@@ -186,7 +178,6 @@ function configurarSeccionInformacionNegocio(negocio) {
 }
 
 function configurarSeccionAdministracionIngresosNegocio(administracionIngresos) {
-    //print(administracionIngresos);
     $("input[name='cuentaConSistemaAhorro']").change(function () {
         let sinSistema = $(this).val() === "0";
         $("#seccionDetallesSistemaAhorro").prop("hidden", sinSistema);
@@ -216,7 +207,6 @@ function configurarSeccionAdministracionIngresosNegocio(administracionIngresos) 
 }
 
 function configurarSeccionPreliminar(data) {
-    //print(data);
     $('input[name="huboBeneficioPersonal"]').change(function () {
         $('#beneficiosObtenidos').prop('disabled', !($(this).val() === '1'));
     });

@@ -1,4 +1,4 @@
-const urlAPI = "api/LineaBaseAdministracionAPI.php";
+﻿const urlAPI = "api/LineaBaseAdministracionAPI.php";
 
 function ready() {
     crearPeticion(urlAPI, {case: "recuperarEmprendedores"}, function (data) {
@@ -24,7 +24,7 @@ function ready() {
 function construirTablaEmprendedores(data) {
     const dataTabla = data.emprendedores.map(emprendedor => ({
             "Etapa": emprendedor.etapa,
-            "Nombre": `<a href="../../../difusion/modules/actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>`,
+            "Nombre": `<a href="../../../emprendimiento/modules/actualizarEmprendedores?id=${emprendedor.idUsuario}" class="text-info">${emprendedor.nombre} ${emprendedor.apellidos}</a>`,
             "Seguimiento": crearMenuSeguimiento(emprendedor)
         }));
     if (dataTabla.length > 0) {
@@ -62,7 +62,7 @@ function crearMenuSeguimiento(emprendedor) {
     return $('<div>', {
         class: 'dropdown dropstart',
         role: 'group',
-        'aria-label': 'Botones Linea Base'
+        'aria-label': 'Botones Línea Base'
     }).append(
         $('<a>', {
             href: 'javascript:void(0)',

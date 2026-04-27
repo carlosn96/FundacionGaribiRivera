@@ -1,4 +1,4 @@
-<aside class="left-sidebar with-vertical">
+﻿<aside class="left-sidebar with-vertical">
     <!-- ---------------------------------- -->
     <!-- Start Vertical Layout Sidebar -->
     <!-- ---------------------------------- -->
@@ -35,7 +35,7 @@
                 <!-- ============================= -->
                 <li class="nav-small-cap">
                 <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                <span class="hide-menu">Linea Base</span>
+                <span class="hide-menu">Línea Base</span>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link success-hover-bg" href="../lineaBase/" aria-expanded="false">

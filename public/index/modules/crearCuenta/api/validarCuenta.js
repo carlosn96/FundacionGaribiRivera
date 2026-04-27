@@ -72,7 +72,7 @@ function reenviarCodigo() {
                 if (response.success) {
                     refresh();
                 } else {
-                    print("codigo no enviado");
+                    console.log("codigo no enviado");
                 }
             },
             function (xhr, status, error) {

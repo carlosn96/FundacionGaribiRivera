@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 include_once '../../../../../loader.php';
 
@@ -11,7 +11,7 @@ class LineaBaseVerAPI extends API {
         $existeLineaBase = $lb[$tipo]["existeLineaBase"];
         $data = $lb[$tipo]["data"];
         if($existeLineaBase && $tipo === "final") {
-            $data["generalidades"] = getAdminEmprendedor()->recuperarSeguimientoCaso($data["idLineaBase"]); // El seguimiento de caso desaparece y se combina con la Linea Base Final (ahora Seguimiento)
+            $data["generalidades"] = getAdminEmprendedor()->recuperarSeguimientoCaso($data["idLineaBase"]); // El seguimiento de caso desaparece y se combina con la Línea Base Final (ahora Seguimiento)
         }
         $emprendedor = getAdminUsuario()->buscarUsuarioPorID($id);
         $this->enviarRespuesta(compact('existeLineaBase','tipo', 'emprendedor', 'data'));

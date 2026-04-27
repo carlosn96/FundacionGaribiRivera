@@ -1,4 +1,4 @@
-<?php include_once 'assets/sesion.php'; ?>
+﻿<?php include_once 'assets/sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 

@@ -10,7 +10,6 @@ var permisosDisponibles = [];
 
 // Creates HTML for the contact list items
 function createChatUsersList(contacts) {
-    //print(contacts);
     const chatUsersHtml = contacts.map(contact => `
         <li class="border-bottom">
             <a href="javascript:void(0)"
@@ -456,7 +455,6 @@ function guardarUsuario() {
     btnGuardar.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Guardando...');
 
     crearPeticion(urlAction, formData, function (res) {
-        print(res);
         const msg = res.msg;
         if (msg.es_valor_error) {
             btnGuardar.prop('disabled', false);
